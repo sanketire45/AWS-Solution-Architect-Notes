@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IAM Masterclass — From Zero to Solution Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F2E8;
+    --bg-alt: #EFE7D6;
+    --ink: #1B1B26;
+    --ink-soft: #3C3C4A;
+    --ink-mute: #6B6B7A;
+    --rule: #D9CDB4;
+    --paper: #FFFCF5;
+    --accent: #8B2635;
+    --accent-deep: #5A1820;
+    --gold: #B8860B;
+    --gold-soft: #E8D9A8;
+    --green: #2D5F3E;
+    --green-soft: #D4E4D9;
+    --blue: #1E3A5F;
+    --blue-soft: #D6DFEA;
+    --red-soft: #F0D6D9;
+    --code-bg: #1B1B26;
+    --code-text: #E8DDC4;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.75;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 60px 56px 120px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 48px;
+    margin-bottom: 64px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero-eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  h1.hero-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(48px, 7vw, 92px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin: 0 0 28px;
+    color: var(--ink);
+  }
+  h1.hero-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 900px;
+    font-style: italic;
+    margin-bottom: 32px;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+  .hero-meta strong {
+    display: block;
+    color: var(--ink);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  /* ─── TOC ─── */
+  .toc {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 40px 48px;
+    margin-bottom: 80px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  }
+  .toc-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 24px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: chapter;
+    padding: 0;
+    margin: 0;
+    columns: 2;
+    column-gap: 56px;
+  }
+  .toc li {
+    counter-increment: chapter;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--rule);
+    break-inside: avoid;
+    font-size: 17px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .toc li::before {
+    content: counter(chapter, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .toc a {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--accent); }
+
+  /* ─── CHAPTERS ─── */
+  section.chapter {
+    margin-bottom: 96px;
+    scroll-margin-top: 40px;
+  }
+
+  .chapter-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.16em;
+    margin-bottom: 14px;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(36px, 4.5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 32px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 20px;
+  }
+
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 56px 0 20px;
+    color: var(--ink);
+  }
+
+  h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 23px;
+    margin: 36px 0 14px;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+
+  p { margin: 0 0 20px; max-width: 1080px; }
+
+  p.lead {
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-bottom: 32px;
+  }
+
+  strong { color: var(--ink); font-weight: 600; }
+  em { color: var(--accent-deep); font-style: italic; }
+
+  ul, ol { padding-left: 28px; margin: 0 0 24px; max-width: 1080px; }
+  li { margin-bottom: 10px; }
+
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ─── ANALOGY ─── */
+  .analogy {
+    background: linear-gradient(to right, var(--bg-alt), transparent);
+    border-left: 4px solid var(--gold);
+    padding: 28px 36px;
+    margin: 32px 0;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+  }
+  .analogy::before {
+    content: "Think of it like this —";
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  /* ─── CALLOUTS ─── */
+  .callout {
+    border: 1px solid;
+    padding: 24px 28px 24px 60px;
+    margin: 28px 0;
+    position: relative;
+    font-size: 17.5px;
+    line-height: 1.65;
+    border-radius: 2px;
+  }
+  .callout::before {
+    position: absolute;
+    left: 20px;
+    top: 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .callout-label {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .exam-tip {
+    background: var(--green-soft);
+    border-color: var(--green);
+    color: #1A3A24;
+  }
+  .exam-tip::before { content: "✓"; color: var(--green); }
+  .exam-tip .callout-label { color: var(--green); }
+
+  .trap {
+    background: var(--red-soft);
+    border-color: var(--accent);
+    color: var(--accent-deep);
+  }
+  .trap::before { content: "✕"; color: var(--accent); }
+  .trap .callout-label { color: var(--accent); }
+
+  .industry {
+    background: var(--gold-soft);
+    border-color: var(--gold);
+    color: #4A3500;
+  }
+  .industry::before { content: "◆"; color: var(--gold); }
+  .industry .callout-label { color: #7A5A00; }
+
+  .real-example {
+    background: var(--blue-soft);
+    border-color: var(--blue);
+    color: #142841;
+  }
+  .real-example::before { content: "▸"; color: var(--blue); }
+  .real-example .callout-label { color: var(--blue); }
+
+  .note {
+    background: var(--paper);
+    border-color: var(--rule);
+    color: var(--ink-soft);
+  }
+  .note::before { content: "✎"; color: var(--ink-mute); }
+  .note .callout-label { color: var(--ink-mute); }
+
+  /* ─── CODE BLOCKS ─── */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 24px 28px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    line-height: 1.65;
+    margin: 24px 0;
+    border-left: 4px solid var(--gold);
+  }
+  pre .k { color: #E8B86C; }
+  pre .s { color: #B8D9A8; }
+  pre .n { color: #8CB4E0; }
+  pre .c { color: #6B6B7A; font-style: italic; }
+  pre .o { color: #E89494; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+    background: var(--bg-alt);
+    padding: 2px 7px;
+    border-radius: 3px;
+    color: var(--accent-deep);
+    font-weight: 500;
+  }
+
+  /* ─── TABLES ─── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 28px 0;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16.5px;
+    font-family: 'Inter', sans-serif;
+  }
+  th {
+    background: var(--ink);
+    color: var(--bg);
+    text-align: left;
+    padding: 16px 20px;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  td {
+    padding: 16px 20px;
+    border-top: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  tr:nth-child(even) td { background: var(--bg-alt); }
+  td strong { color: var(--accent-deep); }
+
+  /* ─── DIAGRAM CONTAINER ─── */
+  .diagram {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 32px 28px;
+    margin: 36px 0;
+    border-radius: 4px;
+    text-align: center;
+  }
+  .diagram svg { max-width: 100%; height: auto; }
+  .diagram-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--ink-mute);
+    margin-top: 16px;
+    font-style: italic;
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── PULL QUOTE ─── */
+  .pull {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-style: italic;
+    line-height: 1.25;
+    color: var(--accent);
+    border-left: 4px solid var(--accent);
+    padding: 8px 0 8px 32px;
+    margin: 44px 0;
+    max-width: 950px;
+  }
+
+  /* ─── TWO COLUMN ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin: 28px 0;
+  }
+  .two-col > div {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 24px 28px;
+    border-radius: 3px;
+  }
+  .two-col h4 { margin-top: 0; }
+
+  /* ─── KEY-VAL ─── */
+  .keyval {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 24px 32px;
+    margin: 24px 0;
+    border-radius: 3px;
+  }
+  .keyval dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 14px 32px; }
+  .keyval dt {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 3px;
+  }
+  .keyval dd { margin: 0; font-size: 17px; line-height: 1.55; }
+
+  /* ─── ORNAMENTAL DIVIDER ─── */
+  .divider {
+    text-align: center;
+    margin: 80px 0;
+    color: var(--rule);
+    font-size: 24px;
+    letter-spacing: 1.5em;
+  }
+
+  /* ─── FOOTNOTE-STYLE ─── */
+  .marginal {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--ink-mute);
+    border-top: 1px solid var(--rule);
+    padding-top: 12px;
+    margin-top: 36px;
+    font-style: italic;
+  }
+
+  @media (max-width: 900px) {
+    .container { padding: 40px 24px 80px; }
+    .toc ol { columns: 1; }
+    .two-col { grid-template-columns: 1fr; }
+    .keyval dl { grid-template-columns: 1fr; gap: 4px 0; }
+    .keyval dt { margin-top: 12px; }
+    body { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="container">
+
+<!-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-eyebrow">SAA-C03 · Topic 01</div>
+  <h1 class="hero-title">Identity &amp;<br>Access<br><em>Management.</em></h1>
+  <p class="hero-sub">The doorman of the entire AWS cloud. Every API call, every click, every line of code that touches AWS — passes through IAM first. Get this right and the rest of the exam stops being scary.</p>
+  <div class="hero-meta">
+    <div><strong>Difficulty</strong>Foundational</div>
+    <div><strong>Exam Weight</strong>~30% of all questions touch IAM</div>
+    <div><strong>Reading Time</strong>~70 minutes</div>
+    <div><strong>Goal</strong>Understand, not memorise</div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════ TOC ═══════════════════════════════════════ -->
+<nav class="toc">
+  <h2 class="toc-title">What we'll walk through, in order</h2>
+  <ol>
+    <li><a href="#c1">The 30-second story of IAM</a></li>
+    <li><a href="#c2">The AWS Account &amp; The Dangerous Root User</a></li>
+    <li><a href="#c3">IAM Users — Identities for Humans &amp; Apps</a></li>
+    <li><a href="#c4">Passwords, Access Keys, and MFA</a></li>
+    <li><a href="#c5">IAM Groups — Stop Managing People One-by-One</a></li>
+    <li><a href="#c6">Policies — The JSON Rulebook</a></li>
+    <li><a href="#c7">The Four Flavours of Policy</a></li>
+    <li><a href="#c8">How AWS Actually Decides Allow vs Deny</a></li>
+    <li><a href="#c9">IAM Roles — The Real Magic</a></li>
+    <li><a href="#c10">AWS STS &amp; AssumeRole — Behind the Curtain</a></li>
+    <li><a href="#c11">Cross-Account Access — The Classic Pattern</a></li>
+    <li><a href="#c12">Identity Federation — SAML &amp; OIDC</a></li>
+    <li><a href="#c13">IAM Identity Center — The Modern Way</a></li>
+    <li><a href="#c14">AWS Organizations &amp; SCPs</a></li>
+    <li><a href="#c15">Permission Boundaries — Delegated Admin Safely</a></li>
+    <li><a href="#c16">The Full Evaluation Pipeline (Put It All Together)</a></li>
+    <li><a href="#c17">Conditions — Where Real Power Lives</a></li>
+    <li><a href="#c18">ABAC vs RBAC — Tags Change Everything</a></li>
+    <li><a href="#c19">IAM Best Practices (AWS's Modern Gospel)</a></li>
+    <li><a href="#c20">The IAM Audit &amp; Diagnostic Toolkit</a></li>
+    <li><a href="#c21">How Real Companies Actually Use IAM</a></li>
+    <li><a href="#c22">Mental Models to Carry Into the Exam</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════════════════════════ CHAPTER 1 ═══════════════════════════════════════ -->
+<section class="chapter" id="c1">
+  <div class="chapter-num">CHAPTER 01</div>
+  <h2>The 30-Second Story of IAM</h2>
+  <p class="lead">Before we touch a single AWS feature, let's understand the problem IAM exists to solve. Once that clicks, everything else falls into place.</p>
+
+  <p>Imagine you own a 60-story office tower in the middle of a city. Inside that tower, there are <strong>thousands of rooms</strong> — server rooms, finance offices, executive suites, a kitchen, a parking garage, mailrooms. Different people need to enter different rooms: cleaners go everywhere but touch nothing, accountants go to the finance floor only, the CEO can go anywhere.</p>
+
+  <p>You can't just hand everyone a master key. That would be a disaster. Instead, you hire a security desk. Every person who walks in shows ID, the desk checks who they are, looks up what they're allowed to do, and either lets them through the right doors — or stops them at the elevator.</p>
+
+  <p><strong>AWS is that office tower.</strong> Every S3 bucket, every EC2 instance, every database, every Lambda function is a room. IAM is the security desk. It's not optional, it's not bolted on — IAM is literally checked on <em>every single request</em> that anyone or anything makes to AWS. Click a button in the console? IAM check. EC2 instance reads a file from S3? IAM check. Lambda function writes to DynamoDB? IAM check.</p>
+
+  <div class="analogy">
+    IAM doesn't <strong>do</strong> anything for you in the cloud — it doesn't compute, store, or serve. It just stands at the door and asks two questions on every request: <em>"Who are you?"</em> (authentication) and <em>"What are you allowed to do?"</em> (authorisation). That's it. The rest of this entire chapter is just unpacking the surprisingly elegant machinery behind those two questions.
+  </div>
+
+  <h3>Why this matters more than any other AWS topic</h3>
+
+  <p>IAM is the most-tested service family on the SAA-C03 exam. The Security domain alone is <strong>30%</strong> of your score, and almost every Security question pivots on IAM. But here's the deeper truth: in the real industry, more AWS breaches happen because of bad IAM than every other cause combined. Leaked access keys in GitHub. Over-permissioned roles. Forgotten admin users from 2019 who still have full access. A single IAM mistake can expose your entire company.</p>
+
+  <p>So your job here isn't to memorise — it's to <strong>build judgement</strong>. By the end of this chapter you should be able to look at any AWS scenario and instinctively think: <em>"who is the principal, what's the action, what's the resource, and what's the policy chain that decides if this is allowed?"</em></p>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Why This Pays Off on the Exam</span>
+    Every question about S3, EC2, Lambda, RDS — at some level — is also an IAM question. The exam loves to give you a "service A needs to access service B" scenario. The correct answer is almost always "create an IAM role with the right trust and permission policy." If you internalise this instinct, you can confidently eliminate two wrong answers on roughly half the exam.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 2 ═══════════════════════════════════════ -->
+<section class="chapter" id="c2">
+  <div class="chapter-num">CHAPTER 02</div>
+  <h2>The AWS Account &amp; The Dangerous Root User</h2>
+  <p class="lead">Every story starts somewhere. The AWS story starts with an <strong>account</strong>, and inside every account is a single all-powerful identity called the <strong>root user</strong>. Understanding the root user is the first step.</p>
+
+  <h3>What is an AWS Account?</h3>
+  <p>An AWS account is a container. It holds your resources (S3 buckets, EC2 instances, databases), your billing, and your identities. Every resource in AWS lives inside exactly one account. When you sign up at aws.amazon.com with an email and a credit card, you create an account.</p>
+
+  <p>Each account has a unique 12-digit number — for example, <code>123456789012</code>. You'll see this number embedded in something called an <strong>ARN</strong> (Amazon Resource Name), which is just a fancy globally-unique address for any resource. An ARN looks like this:</p>
+
+  <pre><span class="c"># Structure of an ARN — memorise the shape, you'll see this everywhere</span>
+arn:aws:<span class="k">s3</span>:::my-bucket-name
+arn:aws:<span class="k">iam</span>::<span class="n">123456789012</span>:user/Alice
+arn:aws:<span class="k">ec2</span>:us-east-1:<span class="n">123456789012</span>:instance/i-0abc1234
+       └─partition─┘└service┘└─region─┘└──account──┘└────resource────┘</pre>
+
+  <h3>The Root User — the Original Sin</h3>
+
+  <p>When you create the account, the email and password you used become the credentials for the <strong>root user</strong>. The root user is godlike. It can do <em>literally anything</em> in that account — delete every resource, close the account, change billing, even ignore any other security control you've set up. There is no policy you can attach to restrict the root user inside its own account.</p>
+
+  <div class="callout trap">
+    <span class="callout-label">Trap — Daily-Use Root</span>
+    The single most catastrophic security mistake on AWS is using the root user for day-to-day work. If those credentials leak (laptop stolen, password in a Slack message, phishing email), the attacker owns everything — and there is no upper guard rail to stop them inside that account. The exam tests this idea repeatedly: <em>"what's the first thing you do when you create an AWS account?"</em> The answer is always <strong>"lock away the root credentials and create an admin IAM user / Identity Center user for daily work."</strong>
+  </div>
+
+  <h4>What you should actually do with the root user</h4>
+  <ol>
+    <li><strong>Set a very strong password</strong> and enable MFA on the root user immediately.</li>
+    <li><strong>Delete any root access keys.</strong> Root access keys should never exist. If you find them, delete them. The exam will reward "delete root access keys" as the answer to several questions.</li>
+    <li><strong>Create your first IAM user with admin permissions</strong> for daily use, and lock the root credentials in a vault (1Password, AWS-approved physical safe, whatever).</li>
+    <li><strong>Use the root user only for tasks that literally require it</strong> — and they are few. Closing the account, changing the account email, restoring IAM permissions after a self-lockout, signing up for certain enterprise support plans, and a handful of billing operations.</li>
+  </ol>
+
+  <div class="callout industry">
+    <span class="callout-label">Industry Reality</span>
+    Large enterprises don't just hide the root password — they store it in a tamper-evident envelope inside a physical safe, with two-person retrieval procedures. Some companies rotate the root password annually and require board-level sign-off to retrieve it. The principle is the same at every scale: <strong>root is a "break glass in case of emergency" identity</strong>, not a working identity.
+  </div>
+
+  <h3>So if you can't use root… who do you use?</h3>
+  <p>That's what the next twenty chapters are about. You create other identities — IAM users, IAM roles, Identity Center users — each with carefully scoped permissions. The root user becomes an emergency fallback you hope to never use. With that mental model in place, let's meet your first non-root identity.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 3 ═══════════════════════════════════════ -->
+<section class="chapter" id="c3">
+  <div class="chapter-num">CHAPTER 03</div>
+  <h2>IAM Users — Identities for Humans &amp; Apps</h2>
+  <p class="lead">An IAM user is a permanent identity that lives inside one AWS account. It represents a person or an application that needs long-term access to AWS.</p>
+
+  <h3>What an IAM User actually is</h3>
+  <p>Concretely, an IAM user is a record stored by AWS that has:</p>
+  <ul>
+    <li>A <strong>name</strong> (e.g., <code>alice</code>, <code>backup-script</code>)</li>
+    <li>Optionally a <strong>console password</strong> — for humans who log into the AWS Console UI</li>
+    <li>Optionally one or two <strong>access keys</strong> — for programs that call AWS APIs (more on these in a moment)</li>
+    <li>A set of <strong>policies</strong> attached, defining what this user can do</li>
+    <li>An <strong>ARN</strong>: <code>arn:aws:iam::123456789012:user/alice</code></li>
+  </ul>
+
+  <p>An IAM user is created <em>inside</em> a specific AWS account. It does not exist anywhere else. If your company has 5 AWS accounts, you'd traditionally need to create the same person as 5 separate IAM users — once in each account. <em>(This is one of the big reasons IAM Identity Center exists, which we'll cover later — but it's important to understand the basic model first.)</em></p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .box { fill: #FFFCF5; stroke: #1B1B26; stroke-width: 2; }
+          .acc { fill: #EFE7D6; stroke: #1B1B26; stroke-width: 2; stroke-dasharray: 6 4; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 14px; fill: #1B1B26; font-weight: 600; }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6B6B7A; }
+          .title { font-family: 'Fraunces', serif; font-size: 16px; fill: #1B1B26; font-weight: 600; }
+          .root { fill: #8B2635; }
+          .user { fill: #1E3A5F; }
+        </style>
+      </defs>
+      <!-- Account box -->
+      <rect x="40" y="30" width="820" height="260" class="acc" rx="4"/>
+      <text x="60" y="55" class="title">AWS Account · 123456789012</text>
+      <!-- Root user -->
+      <circle cx="180" cy="160" r="38" class="root"/>
+      <text x="180" y="166" text-anchor="middle" fill="#FFFCF5" class="lbl">ROOT</text>
+      <text x="180" y="220" text-anchor="middle" class="sm">all-powerful · 1 per account</text>
+      <text x="180" y="238" text-anchor="middle" class="sm">never used for daily work</text>
+      <!-- separator -->
+      <line x1="320" y1="80" x2="320" y2="270" stroke="#D9CDB4" stroke-width="1" stroke-dasharray="3 3"/>
+      <!-- IAM Users -->
+      <text x="600" y="90" text-anchor="middle" class="title">IAM Users (created by you)</text>
+      <circle cx="450" cy="160" r="32" class="user"/>
+      <text x="450" y="166" text-anchor="middle" fill="#FFFCF5" class="lbl">alice</text>
+      <text x="450" y="218" text-anchor="middle" class="sm">human</text>
+      <text x="450" y="234" text-anchor="middle" class="sm">console + MFA</text>
+
+      <circle cx="600" cy="160" r="32" class="user"/>
+      <text x="600" y="166" text-anchor="middle" fill="#FFFCF5" class="lbl">bob</text>
+      <text x="600" y="218" text-anchor="middle" class="sm">human</text>
+      <text x="600" y="234" text-anchor="middle" class="sm">console + MFA</text>
+
+      <circle cx="750" cy="160" r="32" class="user"/>
+      <text x="750" y="166" text-anchor="middle" fill="#FFFCF5" class="lbl">backup</text>
+      <text x="750" y="218" text-anchor="middle" class="sm">app</text>
+      <text x="750" y="234" text-anchor="middle" class="sm">access keys only</text>
+    </svg>
+    <div class="diagram-caption">Inside one AWS account: one root (locked away) and however many IAM users you create.</div>
+  </div>
+
+  <h3>When do you create an IAM user?</h3>
+  <p>Honestly, in 2024+ AWS best-practice, you create <strong>fewer</strong> IAM users than you think. For humans, AWS strongly recommends using IAM Identity Center (federated sign-in) instead. For workloads (EC2, Lambda, ECS tasks), you should use IAM <em>roles</em>, not users. So IAM users are mainly used for:</p>
+  <ul>
+    <li>Very small accounts or learning/sandbox environments</li>
+    <li>Third-party SaaS tools that don't support role assumption (they want a static access key pair)</li>
+    <li>Legacy applications running outside AWS that need long-term programmatic access</li>
+    <li>Emergency "break glass" accounts as backup to federation</li>
+  </ul>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    On the exam, if a question describes <strong>an EC2 instance, Lambda function, or any AWS service needing to access another AWS service</strong>, the answer is <strong>never</strong> "create an IAM user with access keys." It's always "create an IAM role." The presence of "access keys" or "IAM user" in an answer for a service-to-service scenario is a giant red flag.
+  </div>
+
+  <h3>Hard limits worth knowing</h3>
+  <p>You can have up to <strong>5,000 IAM users</strong> per AWS account. Each user can be a member of up to <strong>10 groups</strong>. Each user can have up to <strong>2 access keys</strong> at a time (which exists deliberately, to support rotation — you create a new key, switch your app to use it, then delete the old one without downtime).</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 4 ═══════════════════════════════════════ -->
+<section class="chapter" id="c4">
+  <div class="chapter-num">CHAPTER 04</div>
+  <h2>Passwords, Access Keys, and MFA</h2>
+  <p class="lead">An identity is useless without a way to prove who it is. AWS gives you three credential types, each for a different purpose. Knowing which to use when is foundational.</p>
+
+  <h3>1. Console Password — for humans clicking buttons</h3>
+  <p>This is the password Alice types into <code>aws.amazon.com/console</code> when she signs in. It's only used in the web console — never in code, never in scripts. As an account admin, you can enforce a <strong>password policy</strong>: minimum length, must include numbers, symbols, uppercase letters, expiration period (e.g., 90 days), and prevention of password reuse.</p>
+
+  <h3>2. Access Keys — for programs calling AWS APIs</h3>
+  <p>An access key is a pair of strings:</p>
+  <pre><span class="k">AWS_ACCESS_KEY_ID</span>     = AKIAIOSFODNN7EXAMPLE       <span class="c"># public-ish, ~20 chars</span>
+<span class="k">AWS_SECRET_ACCESS_KEY</span> = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY <span class="c"># like a password, 40 chars</span></pre>
+  <p>Any program that calls AWS APIs — the AWS CLI, the boto3 Python SDK, Terraform, a custom Node.js script — needs an identity. If that program runs as an IAM user, it uses these two strings to sign every request. AWS verifies the signature and identifies the caller.</p>
+
+  <div class="callout trap">
+    <span class="callout-label">The #1 Cause of AWS Breaches</span>
+    Hardcoding access keys in source code and accidentally pushing to GitHub is — no exaggeration — the most common way AWS accounts get compromised in the real world. Bots crawl public GitHub repos looking for AWS keys 24/7. The keys are usually weaponised within <strong>minutes</strong> of being published. AWS even runs its own scanner and will email you (and quarantine the keys) if it detects yours in a public repo, but you should never rely on that net.
+  </div>
+
+  <h4>Rules for access keys</h4>
+  <ul>
+    <li>Each IAM user can have up to <strong>2</strong> active access key pairs at a time</li>
+    <li>You see the secret key <strong>exactly once</strong>, at creation. If you lose it, you must create a new one</li>
+    <li>Rotate access keys regularly (90 days is a common policy)</li>
+    <li><strong>Never commit them to git.</strong> Never paste them in chat. Use <code>aws configure</code> to store them locally in <code>~/.aws/credentials</code>, or use environment variables</li>
+    <li>Even better: avoid them entirely when running on AWS infrastructure — use IAM roles instead</li>
+  </ul>
+
+  <h3>3. MFA — Multi-Factor Authentication</h3>
+  <p>MFA adds a second layer on top of a password. Even if an attacker steals the password, they need the second factor (typically a 6-digit code that refreshes every 30 seconds, or a physical security key) to actually log in.</p>
+
+  <p>AWS supports several MFA types:</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Type</th><th>What it is</th><th>When to use</th></tr>
+    <tr><td><strong>Virtual MFA</strong></td><td>An app like Google Authenticator, Authy, or 1Password that generates a 6-digit code refreshed every 30 seconds (TOTP).</td><td>Default for most users. Free, easy.</td></tr>
+    <tr><td><strong>Hardware TOTP</strong></td><td>A small physical device that displays a rolling 6-digit code (Gemalto, SurePassID).</td><td>When phones aren't allowed (some government / finance shops).</td></tr>
+    <tr><td><strong>FIDO Security Key / U2F</strong></td><td>A physical key (e.g., YubiKey) plugged into USB or tapped via NFC. Strongest option — phishing-resistant.</td><td>High-security users — root user, admins, anyone with sensitive permissions.</td></tr>
+    <tr><td><strong>Passkeys</strong></td><td>Newer FIDO2-based MFA bound to your device biometrics (Face ID, fingerprint). Rolled out by AWS in 2024.</td><td>Modern setup, replacing TOTP gradually for many orgs.</td></tr>
+  </table>
+  </div>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    Anything mentioning the words <em>"strongest MFA"</em>, <em>"phishing-resistant"</em>, or <em>"FIPS-compliant hardware token"</em> points to <strong>FIDO security keys</strong>. Anything mentioning <em>"basic MFA on a smartphone"</em> points to <strong>virtual MFA</strong>. The root user should always have MFA enabled — that's a frequent question.
+  </div>
+
+  <h4>Forcing MFA via policy</h4>
+  <p>Beyond just requiring MFA at login, you can write IAM policies that <strong>refuse to perform sensitive operations</strong> unless the calling session was authenticated with MFA. This is done with a condition key called <code>aws:MultiFactorAuthPresent</code> — we'll see exactly how when we get to conditions in Chapter 17.</p>
+
+  <div class="callout industry">
+    <span class="callout-label">Industry Reality</span>
+    Most mature companies enforce MFA on <em>every</em> human IAM identity, period. Many require a hardware key (YubiKey) for any role that can read production data or change infrastructure. The cost is ~$50 per developer for the key, which is trivial vs. the risk of an account takeover. If you join a tech company, expect a YubiKey to be shipped to you alongside your laptop.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 5 ═══════════════════════════════════════ -->
+<section class="chapter" id="c5">
+  <div class="chapter-num">CHAPTER 05</div>
+  <h2>IAM Groups — Stop Managing People One-by-One</h2>
+  <p class="lead">If you have 50 developers and you give each one permissions individually, you have created 50 places where something can go wrong. Groups exist to make this sane.</p>
+
+  <h3>The simplest possible concept</h3>
+  <p>A group is just a labelled bucket. You put IAM users into the bucket, you attach policies to the bucket, and every user in the bucket inherits those policies. That's it. The whole feature.</p>
+
+  <div class="analogy">
+    A group is like a "Developers" Slack channel. Anyone in the channel gets the same announcements. Add a new dev to the channel, they instantly get all the announcements. Remove them, they stop getting anything. The channel itself has no opinions — it's just a label that gathers people.
+  </div>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .grp { fill: #D6DFEA; stroke: #1E3A5F; stroke-width: 2; }
+          .usr { fill: #1E3A5F; }
+          .pol { fill: #F0D6D9; stroke: #8B2635; stroke-width: 1.5; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 13px; fill: #1B1B26; font-weight: 600; }
+          .lblw { font-family: 'Inter', sans-serif; font-size: 13px; fill: #FFFCF5; font-weight: 600; }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6B6B7A; }
+          .arrow { stroke: #6B6B7A; stroke-width: 1.5; fill: none; marker-end: url(#ar); }
+        </style>
+        <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#6B6B7A"/>
+        </marker>
+      </defs>
+      <!-- Group box -->
+      <rect x="220" y="50" width="320" height="180" class="grp" rx="6"/>
+      <text x="380" y="80" text-anchor="middle" class="lbl">Developers (group)</text>
+      <!-- users in group -->
+      <circle cx="290" cy="140" r="22" class="usr"/>
+      <text x="290" y="146" text-anchor="middle" class="lblw">alice</text>
+      <circle cx="380" cy="140" r="22" class="usr"/>
+      <text x="380" y="146" text-anchor="middle" class="lblw">bob</text>
+      <circle cx="470" cy="140" r="22" class="usr"/>
+      <text x="470" y="146" text-anchor="middle" class="lblw">carol</text>
+      <text x="380" y="195" text-anchor="middle" class="sm">all inherit the group's policies</text>
+
+      <!-- Policies -->
+      <rect x="600" y="60" width="220" height="50" class="pol" rx="4"/>
+      <text x="710" y="92" text-anchor="middle" class="lbl">S3ReadOnlyAccess</text>
+      <rect x="600" y="130" width="220" height="50" class="pol" rx="4"/>
+      <text x="710" y="162" text-anchor="middle" class="lbl">EC2DevAccess</text>
+
+      <!-- Arrows policy → group -->
+      <path d="M600 85 L545 100" class="arrow"/>
+      <path d="M600 155 L545 180" class="arrow"/>
+    </svg>
+    <div class="diagram-caption">Attach policies once, to the group. Membership does the rest.</div>
+  </div>
+
+  <h3>Rules you must remember</h3>
+  <ul>
+    <li><strong>A group is not an identity.</strong> You cannot "log in as a group" or have a group assume a role. It's purely an administrative tool.</li>
+    <li><strong>Groups cannot be nested.</strong> No groups-inside-groups. (This is a difference from corporate Active Directory — exam loves this trap.)</li>
+    <li>A user can be in up to <strong>10 groups</strong>.</li>
+    <li>An AWS account can have up to <strong>300 groups</strong>.</li>
+    <li>Policies attached to a group apply to every member. Removing a user from the group instantly revokes those permissions.</li>
+  </ul>
+
+  <div class="callout trap">
+    <span class="callout-label">Trap — Nested Groups</span>
+    Anyone with AD/LDAP background reflexively assumes group nesting works. It doesn't. If the question asks <em>"how do you create a hierarchy of permissions in IAM Groups?"</em>, the answer is <strong>you can't</strong>. For hierarchical access control across accounts, you use AWS Organizations with OUs (organisational units) and SCPs — which we'll meet in Chapter 14.
+  </div>
+
+  <h3>A real example of group design</h3>
+  <p>A typical startup's IAM layout, before Identity Center is brought in:</p>
+  <div class="keyval">
+    <dl>
+      <dt>Admins</dt><dd>Full admin access. 2–3 users, all with MFA + hardware key.</dd>
+      <dt>Developers</dt><dd>Full access to dev/staging environments; read-only in production; can deploy via CI/CD only.</dd>
+      <dt>DataScientists</dt><dd>Read S3 data lake, run Athena, read-write SageMaker notebooks. No infrastructure.</dd>
+      <dt>Finance</dt><dd>Read-only access to AWS billing console only. Cannot see resources.</dd>
+      <dt>Contractors</dt><dd>Scoped to a single project — only resources tagged with their project name.</dd>
+    </dl>
+  </div>
+
+  <p>Notice that even with only 5 groups, you've already covered most real-world permission needs of a small company. Onboarding becomes "create user, add to group(s)" — 30 seconds instead of writing custom policies for everyone.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 6 ═══════════════════════════════════════ -->
+<section class="chapter" id="c6">
+  <div class="chapter-num">CHAPTER 06</div>
+  <h2>Policies — The JSON Rulebook</h2>
+  <p class="lead">Everything in IAM eventually comes down to a policy. A policy is a JSON document that says: <em>"this principal can / cannot do these actions on these resources, under these conditions."</em> Master the shape and you've mastered IAM.</p>
+
+  <h3>A minimal real policy, dissected</h3>
+
+  <pre><span class="k">{</span>
+  <span class="s">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="s">"Statement"</span>: [
+    {
+      <span class="s">"Sid"</span>:      <span class="s">"AllowReadingTheReportsBucket"</span>,
+      <span class="s">"Effect"</span>:   <span class="s">"Allow"</span>,
+      <span class="s">"Action"</span>:   [<span class="s">"s3:GetObject"</span>, <span class="s">"s3:ListBucket"</span>],
+      <span class="s">"Resource"</span>: [
+        <span class="s">"arn:aws:s3:::company-reports"</span>,
+        <span class="s">"arn:aws:s3:::company-reports/*"</span>
+      ],
+      <span class="s">"Condition"</span>: {
+        <span class="s">"IpAddress"</span>: { <span class="s">"aws:SourceIp"</span>: <span class="s">"203.0.113.0/24"</span> }
+      }
+    }
+  ]
+<span class="k">}</span></pre>
+
+  <p>Let's walk through every line. These are the same six concepts you'll see in every IAM policy ever written.</p>
+
+  <div class="keyval">
+    <dl>
+      <dt>Version</dt><dd>Always <code>"2012-10-17"</code>. It's a syntax version, not a date. Just write it.</dd>
+      <dt>Statement</dt><dd>A list of one or more rules. Each rule has Effect / Action / Resource (and optional Condition). You can have many statements in one policy.</dd>
+      <dt>Sid</dt><dd>"Statement ID" — a label for humans. Optional. Useful for debugging and CloudTrail logs.</dd>
+      <dt>Effect</dt><dd>Either <code>"Allow"</code> or <code>"Deny"</code>. There is no third value.</dd>
+      <dt>Action</dt><dd>What API calls are covered. Format: <code>service:Operation</code>. You can use wildcards: <code>s3:*</code> means every S3 action. <code>s3:Get*</code> means every action whose name starts with "Get".</dd>
+      <dt>Resource</dt><dd>Which specific resources the actions apply to. Uses ARNs. <code>"*"</code> means every resource.</dd>
+      <dt>Condition</dt><dd>Optional. Adds extra restrictions — only allow from a certain IP, only when MFA is present, only at certain times, etc. We'll deep-dive in Chapter 17.</dd>
+      <dt>Principal</dt><dd><em>(Not shown in this policy — appears only in <strong>resource-based</strong> policies.)</em> Specifies <em>who</em> the rule applies to. In an identity-based policy, the principal is implied (it's whoever the policy is attached to).</dd>
+    </dl>
+  </div>
+
+  <h3>What this specific policy says, in English</h3>
+  <p>"Whoever this policy is attached to is allowed to list and read objects from the <code>company-reports</code> S3 bucket, but only if the request comes from an IP address in the <code>203.0.113.0/24</code> range (probably the company office network)."</p>
+
+  <p>That's the entire concept of IAM in one document: <strong>a list of allow/deny rules with optional fine-grained conditions</strong>. Every policy you ever read is just a more elaborate version of this.</p>
+
+  <h3>Reading actions correctly</h3>
+  <p>Action names follow the pattern <code>service:ApiCallName</code>. You don't have to memorise them — you look them up. But you should recognise the shape:</p>
+
+  <ul>
+    <li><code>s3:GetObject</code> — download a single object from S3</li>
+    <li><code>s3:PutObject</code> — upload a single object to S3</li>
+    <li><code>s3:ListBucket</code> — list the contents of a bucket (note: this is a different permission from reading objects — common exam trap)</li>
+    <li><code>ec2:RunInstances</code> — launch a new EC2 instance</li>
+    <li><code>iam:PassRole</code> — give an IAM role to a service (e.g., attach a role to an EC2 instance at launch) — a very dangerous permission</li>
+    <li><code>kms:Decrypt</code> — decrypt something using a KMS key</li>
+  </ul>
+
+  <div class="callout trap">
+    <span class="callout-label">Subtle Trap — s3:GetObject vs s3:ListBucket</span>
+    <code>s3:GetObject</code> applies to <em>objects</em> (resource: <code>arn:aws:s3:::bucket/*</code>). <code>s3:ListBucket</code> applies to the <em>bucket itself</em> (resource: <code>arn:aws:s3:::bucket</code> — no <code>/*</code>). Many people write policies that grant <code>s3:GetObject</code> and wonder why <code>aws s3 ls</code> doesn't work. It's because listing requires a separate permission on a different resource. This subtlety shows up on the exam.
+  </div>
+
+  <h3>Wildcards — short, but dangerous</h3>
+  <p>You can use <code>*</code> to mean "anything" and <code>?</code> to mean "any single character." So:</p>
+  <ul>
+    <li><code>"Action": "s3:*"</code> — every S3 action</li>
+    <li><code>"Action": "s3:Get*"</code> — every action starting with "Get"</li>
+    <li><code>"Resource": "*"</code> — every resource in the account that the action could apply to</li>
+    <li><code>"Resource": "arn:aws:s3:::logs-*"</code> — every bucket whose name starts with "logs-"</li>
+  </ul>
+
+  <p>The famous <strong>AdministratorAccess</strong> AWS-managed policy is just one statement:</p>
+  <pre>{
+  <span class="s">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="s">"Statement"</span>: [{
+    <span class="s">"Effect"</span>:   <span class="s">"Allow"</span>,
+    <span class="s">"Action"</span>:   <span class="s">"*"</span>,
+    <span class="s">"Resource"</span>: <span class="s">"*"</span>
+  }]
+}</pre>
+  <p>"Allow all actions on all resources." That's all <em>"admin"</em> means in AWS. Powerful, simple, terrifying.</p>
+
+  <h3>The <em>principle of least privilege</em></h3>
+  <p>This phrase will come up in every AWS book, exam question, and security audit you ever encounter. It just means: <strong>grant the smallest set of permissions someone needs to do their job — no more.</strong> Don't give <code>s3:*</code> when <code>s3:GetObject</code> on one specific bucket is enough. Don't give <code>"Resource": "*"</code> when one specific ARN works.</p>
+
+  <p>Why? Because if those credentials are ever compromised, the blast radius is contained. A leaked key with <code>s3:GetObject</code> on one bucket is a manageable incident. A leaked key with admin access is "evening news" territory.</p>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    Any answer choice that grants <code>"*"</code> permissions is almost certainly wrong on the SAA exam — unless the question explicitly says "minimum administrative effort" AND the alternatives are clearly impractical. The exam-writers heavily favour least-privilege answers.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 7 ═══════════════════════════════════════ -->
+<section class="chapter" id="c7">
+  <div class="chapter-num">CHAPTER 07</div>
+  <h2>The Four Flavours of Policy</h2>
+  <p class="lead">Policies are all JSON, but where you attach them and what they apply to creates a few distinct categories. Knowing the difference is exam gold and real-life essential.</p>
+
+  <h3>Cut #1: Identity-Based vs Resource-Based</h3>
+
+  <div class="two-col">
+    <div>
+      <h4>Identity-Based Policies</h4>
+      <p>Attached to a <strong>user, group, or role</strong>. Say <em>what that identity can do</em>. The principal is implicit (it's whoever the policy is attached to).</p>
+      <p><strong>Example:</strong> Attach <code>S3ReadOnlyAccess</code> to user Alice. Now Alice can read S3 — anywhere.</p>
+    </div>
+    <div>
+      <h4>Resource-Based Policies</h4>
+      <p>Attached to a <strong>resource</strong> (S3 bucket, KMS key, SQS queue, Lambda function, etc.). Say <em>who can access this specific resource</em>. The principal is explicit — you must list it.</p>
+      <p><strong>Example:</strong> An S3 bucket policy that says "anyone in account 222 can read this bucket."</p>
+    </div>
+  </div>
+
+  <p>The huge advantage of resource-based policies: they can grant <strong>cross-account access</strong> without the source account needing to set anything up on their side beyond an IAM identity. Identity-based policies cannot, by themselves, grant access to a resource in a different AWS account.</p>
+
+  <p>Common resources that support resource-based policies:</p>
+  <ul>
+    <li>S3 bucket policies</li>
+    <li>SQS queue policies</li>
+    <li>SNS topic policies</li>
+    <li>KMS key policies <em>(actually <strong>required</strong> for KMS — the key policy is the primary access control)</em></li>
+    <li>Lambda function resource policies (used for cross-account invokes)</li>
+    <li>API Gateway resource policies</li>
+    <li>ECR repository policies</li>
+    <li>Secrets Manager secret policies</li>
+    <li>EFS file system policies</li>
+  </ul>
+
+  <p>An EC2 instance does <strong>not</strong> have a resource-based policy. Neither does a DynamoDB table (DynamoDB doesn't support resource policies — there was finally a resource-based policy added for DynamoDB tables in 2024, but historically it didn't exist; older exam materials reflect "no").</p>
+
+  <pre><span class="c">// S3 bucket policy example — note the explicit "Principal"</span>
+{
+  <span class="s">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="s">"Statement"</span>: [{
+    <span class="s">"Effect"</span>:    <span class="s">"Allow"</span>,
+    <span class="s">"Principal"</span>: { <span class="s">"AWS"</span>: <span class="s">"arn:aws:iam::222222222222:root"</span> },
+    <span class="s">"Action"</span>:    <span class="s">"s3:GetObject"</span>,
+    <span class="s">"Resource"</span>:  <span class="s">"arn:aws:s3:::my-bucket/*"</span>
+  }]
+}</pre>
+  <p>This bucket policy says: "any principal in account 222 (root means 'the whole account') can get objects from my-bucket." For the access to actually work, the user in account 222 also needs an identity-based policy that allows <code>s3:GetObject</code> on that bucket — both sides must permit it. We'll see this two-key dance in detail in Chapter 11.</p>
+
+  <h3>Cut #2: AWS Managed vs Customer Managed vs Inline</h3>
+
+  <p>For <strong>identity-based</strong> policies specifically, there are three storage flavours:</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Flavour</th><th>Who created it</th><th>Reusable across identities?</th><th>When to use</th></tr>
+    <tr>
+      <td><strong>AWS Managed</strong></td>
+      <td>AWS provides them; AWS maintains them</td>
+      <td>Yes — pre-built, share-able to many identities</td>
+      <td>Common roles like <code>AdministratorAccess</code>, <code>ReadOnlyAccess</code>, <code>AmazonS3FullAccess</code>. Convenient, but often too broad.</td>
+    </tr>
+    <tr>
+      <td><strong>Customer Managed</strong></td>
+      <td>You write it</td>
+      <td>Yes — attach to many users/groups/roles</td>
+      <td>Your real production permissions. Tailored, least-privilege, versioned.</td>
+    </tr>
+    <tr>
+      <td><strong>Inline</strong></td>
+      <td>You write it</td>
+      <td>No — lives inside one user/group/role</td>
+      <td>One-off, tightly bound permissions you never want to detach or share. Rare.</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    "Need to apply the same custom permissions to multiple users / make changes once and propagate" → <strong>Customer Managed Policy</strong>. The Inline option exists, but it's almost always the wrong answer on the exam, because it doesn't scale and isn't reusable.
+  </div>
+
+  <h3>Two policies that live on every role: trust vs permission</h3>
+  <p>This is a foreshadowing for Chapter 9, but it's worth flagging here so you don't get confused: every IAM <em>role</em> has <strong>two</strong> policies attached:</p>
+  <ul>
+    <li>A <strong>trust policy</strong> (a resource-based policy on the role itself) — says <em>who can assume this role</em></li>
+    <li>One or more <strong>permission policies</strong> (identity-based) — says <em>what this role can do once assumed</em></li>
+  </ul>
+  <p>The trust policy is unique to roles. We'll unpack it shortly.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 8 ═══════════════════════════════════════ -->
+<section class="chapter" id="c8">
+  <div class="chapter-num">CHAPTER 08</div>
+  <h2>How AWS Actually Decides Allow vs Deny</h2>
+  <p class="lead">When a request hits AWS, IAM runs an evaluation algorithm. The rules are not complicated, but they are <strong>strict</strong>, and getting them wrong is one of the most reliable ways to fail the exam. So we'll do this precisely.</p>
+
+  <h3>The four golden rules — memorise these</h3>
+  <ol>
+    <li><strong>Everything is denied by default.</strong> If no policy explicitly allows you, you are denied.</li>
+    <li><strong>An explicit <code>Allow</code> overrides the default deny.</strong> This is how you actually get permissions.</li>
+    <li><strong>An explicit <code>Deny</code> always wins.</strong> If any applicable policy contains an <code>"Effect": "Deny"</code> for the action and resource in question, the request is denied — no matter how many Allows exist.</li>
+    <li><strong>Allows do not stack to "more allowed."</strong> Once something is allowed, allowing it again in another policy changes nothing. Conversely, a single Deny anywhere is fatal.</li>
+  </ol>
+
+  <p class="pull">"Deny wins. Always. If you remember nothing else, remember that one sentence — it answers about 40% of all IAM trick questions on the exam."</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 720 480" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .box { fill: #FFFCF5; stroke: #1B1B26; stroke-width: 2; rx: 6; }
+          .deny { fill: #F0D6D9; stroke: #8B2635; stroke-width: 2; }
+          .allow { fill: #D4E4D9; stroke: #2D5F3E; stroke-width: 2; }
+          .start { fill: #1B1B26; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 13px; fill: #1B1B26; font-weight: 600; }
+          .lblw { font-family: 'Inter', sans-serif; font-size: 13px; fill: #FFFCF5; font-weight: 600; }
+          .arrow { stroke: #1B1B26; stroke-width: 1.5; fill: none; marker-end: url(#a2); }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6B6B7A; }
+        </style>
+        <marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#1B1B26"/>
+        </marker>
+      </defs>
+      <!-- Start -->
+      <rect x="280" y="20" width="160" height="44" class="start" rx="22"/>
+      <text x="360" y="46" text-anchor="middle" class="lblw">Request arrives</text>
+      <line x1="360" y1="64" x2="360" y2="90" class="arrow"/>
+      <!-- Q1 -->
+      <polygon points="360,90 510,150 360,210 210,150" class="box"/>
+      <text x="360" y="145" text-anchor="middle" class="lbl">Any explicit DENY</text>
+      <text x="360" y="165" text-anchor="middle" class="lbl">that matches?</text>
+      <!-- to deny -->
+      <line x1="510" y1="150" x2="610" y2="150" class="arrow"/>
+      <text x="555" y="143" text-anchor="middle" class="sm">YES</text>
+      <rect x="600" y="125" width="100" height="50" class="deny" rx="6"/>
+      <text x="650" y="156" text-anchor="middle" class="lbl">DENIED</text>
+      <!-- down to Q2 -->
+      <line x1="360" y1="210" x2="360" y2="240" class="arrow"/>
+      <text x="370" y="232" class="sm">NO</text>
+      <!-- Q2 -->
+      <polygon points="360,240 510,300 360,360 210,300" class="box"/>
+      <text x="360" y="295" text-anchor="middle" class="lbl">Any explicit ALLOW</text>
+      <text x="360" y="315" text-anchor="middle" class="lbl">that matches?</text>
+      <!-- to allow -->
+      <line x1="510" y1="300" x2="610" y2="300" class="arrow"/>
+      <text x="555" y="293" text-anchor="middle" class="sm">YES</text>
+      <rect x="600" y="275" width="100" height="50" class="allow" rx="6"/>
+      <text x="650" y="306" text-anchor="middle" class="lbl">ALLOWED</text>
+      <!-- to deny default -->
+      <line x1="360" y1="360" x2="360" y2="400" class="arrow"/>
+      <text x="370" y="385" class="sm">NO → default</text>
+      <rect x="310" y="400" width="100" height="50" class="deny" rx="6"/>
+      <text x="360" y="431" text-anchor="middle" class="lbl">DENIED</text>
+    </svg>
+    <div class="diagram-caption">The simplified evaluation flow. We'll add SCPs and boundaries on top in Chapter 16.</div>
+  </div>
+
+  <h3>A worked example</h3>
+  <p>Suppose Alice has these policies attached to her IAM user:</p>
+  <ul>
+    <li><strong>Policy A:</strong> Allow <code>s3:*</code> on <code>*</code></li>
+    <li><strong>Policy B:</strong> Deny <code>s3:DeleteBucket</code> on <code>*</code></li>
+  </ul>
+  <p>Alice tries to delete a bucket. Walk through the algorithm:</p>
+  <ol>
+    <li>Is there a matching explicit Deny? <strong>Yes</strong> — Policy B denies <code>s3:DeleteBucket</code>. <strong>Stop. Denied.</strong></li>
+  </ol>
+  <p>Even though Policy A's <code>s3:*</code> would normally allow <code>s3:DeleteBucket</code>, the explicit deny in Policy B kills the request.</p>
+
+  <p>Now Alice tries to upload a file (<code>s3:PutObject</code>):</p>
+  <ol>
+    <li>Is there a matching explicit Deny? <strong>No</strong> — Policy B only denies <code>s3:DeleteBucket</code>.</li>
+    <li>Is there a matching explicit Allow? <strong>Yes</strong> — Policy A allows <code>s3:*</code>, which includes <code>s3:PutObject</code>. <strong>Allowed.</strong></li>
+  </ol>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    The phrase <em>"how do you make sure a user can <strong>never</strong> do X, even if they get other policies later"</em> = attach an <strong>explicit Deny</strong> policy. The phrase <em>"prevent a region from being used"</em> = an explicit deny with a <code>aws:RequestedRegion</code> condition. The phrase <em>"override permissions inherited via group/role"</em> = explicit deny.
+  </div>
+
+  <h3>What "matching" means</h3>
+  <p>A policy statement matches a request only if <em>all</em> of these are true:</p>
+  <ul>
+    <li>The <strong>Action</strong> includes the API call being made (e.g., <code>s3:GetObject</code> matches <code>s3:*</code>, <code>s3:Get*</code>, or <code>s3:GetObject</code>)</li>
+    <li>The <strong>Resource</strong> includes the ARN being targeted</li>
+    <li>The <strong>Condition</strong> block, if present, evaluates to true</li>
+    <li>For resource-based policies, the <strong>Principal</strong> includes the caller</li>
+  </ul>
+  <p>If any of those don't match, the statement is simply ignored for this request — it neither helps nor hurts.</p>
+
+  <p>That's the core algorithm. We'll come back to it in Chapter 16 once we've added all the layers — SCPs, permission boundaries, and resource policies — to see the full evaluation pipeline.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 9 ═══════════════════════════════════════ -->
+<section class="chapter" id="c9">
+  <div class="chapter-num">CHAPTER 09</div>
+  <h2>IAM Roles — The Real Magic</h2>
+  <p class="lead">This is the most important chapter in the whole guide. If users are permanent identities like full-time employees, <strong>roles are like name-tags that anyone can pick up, wear briefly, and use for one specific purpose</strong>. Understanding roles is what separates beginners from people who actually understand cloud security.</p>
+
+  <h3>Why roles exist — the problem first</h3>
+  <p>Imagine an EC2 instance running a web application that needs to read images from an S3 bucket. The naïve approach: create an IAM user, generate access keys, copy the keys onto the EC2 instance (in a config file or environment variable), let the app use the keys to call S3.</p>
+
+  <p>This is bad. Why?</p>
+  <ul>
+    <li>The keys sit on disk on the instance. Anyone who SSHs in can read them.</li>
+    <li>If the instance is compromised, the attacker gets long-lived keys.</li>
+    <li>If you want to rotate the keys, you have to update every instance.</li>
+    <li>If you have 200 instances, you have to manage keys on every single one.</li>
+    <li>Snapshots / AMIs of the instance now contain credentials. If you share the AMI, you share the keys.</li>
+  </ul>
+
+  <p>IAM roles solve all of this. Instead of giving the instance a permanent identity, you give it the ability to <strong>temporarily become</strong> an identity. AWS automatically rotates the credentials behind the scenes. The instance never sees a long-lived secret.</p>
+
+  <h3>What a role really is</h3>
+  <p>A role is an IAM identity, just like a user — it has an ARN (<code>arn:aws:iam::123456789012:role/ImageReaderRole</code>), permission policies, the works. But it has <strong>no password and no long-term access keys</strong>. Instead, it has a <strong>trust policy</strong> that says: "I can be assumed by this specific entity."</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .role { fill: #FFFCF5; stroke: #B8860B; stroke-width: 3; rx: 8; }
+          .trust { fill: #FDF7E6; stroke: #B8860B; stroke-width: 1.5; }
+          .perm { fill: #D4E4D9; stroke: #2D5F3E; stroke-width: 1.5; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 14px; fill: #1B1B26; font-weight: 600; }
+          .lblbig { font-family: 'Fraunces', serif; font-size: 18px; fill: #1B1B26; font-weight: 700; }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6B6B7A; }
+        </style>
+      </defs>
+      <rect x="60" y="40" width="760" height="200" class="role" rx="8"/>
+      <text x="440" y="76" text-anchor="middle" class="lblbig">An IAM Role</text>
+      <text x="440" y="98" text-anchor="middle" class="sm">arn:aws:iam::123456789012:role/ImageReaderRole</text>
+
+      <!-- trust -->
+      <rect x="100" y="120" width="320" height="100" class="trust" rx="4"/>
+      <text x="260" y="148" text-anchor="middle" class="lbl">Trust Policy (resource-based)</text>
+      <text x="260" y="172" text-anchor="middle" class="sm">"Who is allowed to wear this hat?"</text>
+      <text x="260" y="192" text-anchor="middle" class="sm">e.g. ec2.amazonaws.com</text>
+      <text x="260" y="208" text-anchor="middle" class="sm">e.g. account 222 user Alice</text>
+
+      <!-- permission -->
+      <rect x="460" y="120" width="320" height="100" class="perm" rx="4"/>
+      <text x="620" y="148" text-anchor="middle" class="lbl">Permission Policy (identity-based)</text>
+      <text x="620" y="172" text-anchor="middle" class="sm">"What can you do while wearing it?"</text>
+      <text x="620" y="192" text-anchor="middle" class="sm">e.g. s3:GetObject on this-bucket/*</text>
+      <text x="620" y="208" text-anchor="middle" class="sm">e.g. dynamodb:Query on Users table</text>
+    </svg>
+    <div class="diagram-caption">Every role has two policies that answer two very different questions.</div>
+  </div>
+
+  <h3>An EC2 role end-to-end</h3>
+  <p>Let's solve the original problem properly. Web app on EC2 needs to read images from S3.</p>
+
+  <ol>
+    <li>Create an IAM role called <code>ImageReaderRole</code>.</li>
+    <li>Its <strong>trust policy</strong> says: <em>"The EC2 service can assume me."</em></li>
+    <li>Its <strong>permission policy</strong> says: <em>"Can do <code>s3:GetObject</code> on <code>arn:aws:s3:::images-bucket/*</code>."</em></li>
+    <li>Attach this role to the EC2 instance when launching it (or after, via Modify IAM Role).</li>
+    <li>The application running on EC2 just calls AWS — no credentials in code.</li>
+    <li>Under the hood, the EC2 metadata service (IMDSv2) provides temporary credentials to the instance automatically. The SDK picks them up. AWS rotates them every few hours. The app never knows.</li>
+  </ol>
+
+  <pre><span class="c">// The trust policy on ImageReaderRole — note the Principal is a service</span>
+{
+  <span class="s">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="s">"Statement"</span>: [{
+    <span class="s">"Effect"</span>:    <span class="s">"Allow"</span>,
+    <span class="s">"Principal"</span>: { <span class="s">"Service"</span>: <span class="s">"ec2.amazonaws.com"</span> },
+    <span class="s">"Action"</span>:    <span class="s">"sts:AssumeRole"</span>
+  }]
+}</pre>
+
+  <pre><span class="c">// The permission policy on ImageReaderRole — what it can actually do</span>
+{
+  <span class="s">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="s">"Statement"</span>: [{
+    <span class="s">"Effect"</span>:   <span class="s">"Allow"</span>,
+    <span class="s">"Action"</span>:   <span class="s">"s3:GetObject"</span>,
+    <span class="s">"Resource"</span>: <span class="s">"arn:aws:s3:::images-bucket/*"</span>
+  }]
+}</pre>
+
+  <p>That's it. The EC2 instance can now read from S3 with zero credentials on disk. If the instance is compromised, the attacker gets temporary creds (typically valid 1–6 hours) — not a long-term secret.</p>
+
+  <div class="callout industry">
+    <span class="callout-label">Industry Reality</span>
+    Real engineering teams use IAM roles for <em>every</em> AWS workload — EC2, Lambda, ECS tasks, EKS pods (via IRSA), CodeBuild jobs, Step Functions, even on-premises servers (via IAM Roles Anywhere). The presence of access keys in any production codebase is treated as a serious incident at most mature companies.
+  </div>
+
+  <h3>Instance Profiles — the weird wrinkle</h3>
+  <p>For historical reasons, when you attach a role to an EC2 instance, AWS actually wraps it in something called an <strong>instance profile</strong>. The instance profile is a container with the same name as the role. The console hides this from you — when you click "attach role" to an instance, it creates and uses the instance profile automatically. But if you use the AWS CLI or Terraform, you might see "instance profile" mentioned and wonder what it is. Now you know: it's a thin wrapper around a role, specifically for EC2.</p>
+
+  <p>For Lambda, ECS tasks, and other services, no instance profile is involved — the role is attached directly. So this quirk is EC2-only.</p>
+
+  <h3>The three big use cases for roles</h3>
+  <ol>
+    <li><strong>Service roles:</strong> AWS service A needs to act on AWS service B (the EC2-to-S3 example above). The most common type by far.</li>
+    <li><strong>Cross-account roles:</strong> A user/role in account A needs access to resources in account B (Chapter 11).</li>
+    <li><strong>Federation roles:</strong> A user signed into your corporate identity provider (Okta, Active Directory) gets temporary AWS access by assuming a role (Chapter 12).</li>
+  </ol>
+
+  <p>All three rest on the same underlying mechanism, which is the next chapter.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 10 ═══════════════════════════════════════ -->
+<section class="chapter" id="c10">
+  <div class="chapter-num">CHAPTER 10</div>
+  <h2>AWS STS &amp; AssumeRole — Behind the Curtain</h2>
+  <p class="lead">Roles aren't magic — there's an AWS service running the machinery underneath them. That service is called <strong>STS</strong>, the Security Token Service. Understanding how STS works clarifies a lot of fuzzy thinking about roles, federation, and temporary credentials.</p>
+
+  <h3>What STS does, in one sentence</h3>
+  <p>STS takes a request that says "I want to act as role X" and, if you're allowed, hands you back a set of <strong>temporary credentials</strong> that act exactly like access keys but expire after a configurable lifetime.</p>
+
+  <p>A "temporary credentials" bundle has three parts:</p>
+  <ul>
+    <li><code>AccessKeyId</code> — starts with <code>ASIA…</code> (note: <strong>not</strong> <code>AKIA</code> like a permanent user's key — that's a giveaway in logs)</li>
+    <li><code>SecretAccessKey</code> — the secret half</li>
+    <li><code>SessionToken</code> — a third value that must be included in every signed request</li>
+    <li>An <code>Expiration</code> timestamp</li>
+  </ul>
+
+  <p>That bundle is what your code uses. When the expiration passes, the credentials stop working — you (or the SDK on your behalf) must request a new set.</p>
+
+  <h3>The five STS API calls worth knowing</h3>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>API call</th><th>What it does</th><th>Typical caller</th></tr>
+    <tr><td><code>sts:AssumeRole</code></td><td>An IAM identity (user or role) assumes another IAM role within AWS.</td><td>Cross-account access, dev tools, service-to-service.</td></tr>
+    <tr><td><code>sts:AssumeRoleWithSAML</code></td><td>Trade a SAML assertion (from Active Directory / Okta / Azure AD) for temporary AWS credentials.</td><td>Corporate enterprise federation.</td></tr>
+    <tr><td><code>sts:AssumeRoleWithWebIdentity</code></td><td>Trade a Google/Facebook/Cognito/OIDC token for temporary AWS credentials.</td><td>Consumer mobile apps; EKS pods (IRSA).</td></tr>
+    <tr><td><code>sts:GetSessionToken</code></td><td>Get short-lived creds for the caller themselves, often combined with MFA, to do MFA-protected calls.</td><td>Manual workflows that need MFA on API calls.</td></tr>
+    <tr><td><code>sts:GetFederationToken</code></td><td>Older mechanism for federation via a custom identity broker. Mostly legacy now.</td><td>Pre-IAM-Identity-Center custom federation.</td></tr>
+  </table>
+  </div>
+
+  <h3>What happens, step-by-step, when EC2 calls S3</h3>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .svc { fill: #1E3A5F; }
+          .role { fill: #B8860B; }
+          .s3 { fill: #2D5F3E; }
+          .ec2 { fill: #8B2635; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 13px; fill: #1B1B26; font-weight: 600; }
+          .lblw { font-family: 'Inter', sans-serif; font-size: 12px; fill: #FFFCF5; font-weight: 600; }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #1B1B26; }
+          .smw { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6B6B7A; }
+          .arrow { stroke: #1B1B26; stroke-width: 1.5; fill: none; marker-end: url(#a3); }
+        </style>
+        <marker id="a3" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#1B1B26"/>
+        </marker>
+      </defs>
+
+      <!-- EC2 -->
+      <rect x="40" y="140" width="140" height="80" class="ec2" rx="6"/>
+      <text x="110" y="172" text-anchor="middle" class="lblw">EC2 instance</text>
+      <text x="110" y="192" text-anchor="middle" class="lblw">your app</text>
+
+      <!-- IMDS -->
+      <rect x="240" y="60" width="140" height="60" fill="#FFFCF5" stroke="#1B1B26" stroke-width="1.5" rx="4"/>
+      <text x="310" y="85" text-anchor="middle" class="lbl">EC2 Metadata</text>
+      <text x="310" y="103" text-anchor="middle" class="sm">169.254.169.254</text>
+
+      <!-- STS -->
+      <rect x="240" y="240" width="140" height="60" class="svc" rx="6"/>
+      <text x="310" y="265" text-anchor="middle" class="lblw">AWS STS</text>
+      <text x="310" y="283" text-anchor="middle" class="smw">issues temp creds</text>
+
+      <!-- Role -->
+      <rect x="450" y="60" width="180" height="60" class="role" rx="6"/>
+      <text x="540" y="85" text-anchor="middle" class="lblw">ImageReaderRole</text>
+      <text x="540" y="103" text-anchor="middle" class="smw">attached to EC2</text>
+
+      <!-- S3 -->
+      <rect x="680" y="140" width="160" height="80" class="s3" rx="6"/>
+      <text x="760" y="172" text-anchor="middle" class="lblw">S3</text>
+      <text x="760" y="192" text-anchor="middle" class="lblw">images-bucket</text>
+
+      <!-- Arrows -->
+      <path d="M180 160 Q210 110 240 100" class="arrow"/>
+      <text x="195" y="135" class="sm">① ask for creds</text>
+
+      <path d="M310 120 Q310 200 310 240" class="arrow"/>
+      <text x="320" y="190" class="sm">② STS assumes role</text>
+
+      <path d="M380 270 Q420 250 450 110" class="arrow"/>
+      <text x="380" y="240" class="sm">trust policy ✓</text>
+
+      <path d="M240 95 Q210 130 180 175" class="arrow"/>
+      <text x="195" y="80" class="sm">③ temp creds</text>
+
+      <path d="M180 200 Q420 320 680 200" class="arrow"/>
+      <text x="430" y="320" text-anchor="middle" class="sm">④ s3:GetObject with temp creds + session token</text>
+    </svg>
+    <div class="diagram-caption">EC2 → Metadata → STS → Role → temp creds → S3. The app never sees a long-term secret.</div>
+  </div>
+
+  <h3>Session duration</h3>
+  <p>By default, <code>AssumeRole</code> issues credentials valid for <strong>1 hour</strong>. You can configure the role's <em>maximum session duration</em> up to <strong>12 hours</strong>. SDKs automatically renew before expiration, so apps don't usually notice. For roles assumed via the AWS Console "Switch Role" feature, sessions max out at 1 hour and you'll see the "session expired" notice.</p>
+
+  <p>One subtle wrinkle for the exam: <strong>you cannot chain role assumptions for more than 1 hour total</strong>. If role A assumes role B, and B then assumes role C, the resulting session of C cannot exceed 1 hour — even if C's max duration is set higher. This is called the <em>role chaining limit</em>.</p>
+
+  <div class="callout trap">
+    <span class="callout-label">Trap — Role Chaining</span>
+    "Why did my role chain session expire after 1 hour even though I set 12 hours?" — because role chaining is hard-capped at 1 hour. You'd need to assume directly from the original identity, not through an intermediate role, to get the full duration.
+  </div>
+
+  <h3>The "PassRole" permission — a quiet danger</h3>
+  <p>To attach a role to an EC2 instance (or Lambda, or any service), the caller needs the <code>iam:PassRole</code> permission on that specific role. <code>PassRole</code> doesn't let you assume the role yourself — it lets you <em>give</em> it to a service. This is critical: if a developer can <code>PassRole</code> any role to an EC2 instance, they could attach an admin role to an instance and then SSH in and become admin. So you scope <code>PassRole</code> tightly to specific roles.</p>
+
+  <pre><span class="c">// "Developer can launch EC2 instances but only attach the dev-app role"</span>
+{
+  <span class="s">"Effect"</span>:   <span class="s">"Allow"</span>,
+  <span class="s">"Action"</span>:   <span class="s">"iam:PassRole"</span>,
+  <span class="s">"Resource"</span>: <span class="s">"arn:aws:iam::123456789012:role/DevAppRole"</span>
+}</pre>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    Any question about <em>"the developer needs to launch EC2 instances with a specific IAM role attached"</em> — the missing permission is almost always <code>iam:PassRole</code>. Many candidates miss this one.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 11 ═══════════════════════════════════════ -->
+<section class="chapter" id="c11">
+  <div class="chapter-num">CHAPTER 11</div>
+  <h2>Cross-Account Access — The Classic Pattern</h2>
+  <p class="lead">In a single AWS account, IAM is straightforward. Real companies use many accounts — production, staging, dev, security, audit, per-team — and you need a way for principals in one account to safely access resources in another. The pattern is a workhorse on the exam and in the real world.</p>
+
+  <h3>Why have multiple accounts at all?</h3>
+  <p>A single AWS account is a fault and security boundary. Putting dev, staging, and production in one account means:</p>
+  <ul>
+    <li>A developer mistake in dev (wildcard policy) can affect production resources</li>
+    <li>You can't easily limit blast radius — one credential leak owns everything</li>
+    <li>Billing is mixed together; cost attribution is harder</li>
+    <li>Service quotas (EC2 limits, etc.) are shared across all your workloads</li>
+  </ul>
+  <p>So the modern AWS guidance — strongly encouraged for any non-trivial deployment — is <strong>multiple accounts, organised via AWS Organizations</strong>, with cross-account access for the legitimate handoffs.</p>
+
+  <h3>The two-account scenario</h3>
+  <p>Let's say you have <strong>Account A (Dev — 111111111111)</strong> and <strong>Account B (Prod — 222222222222)</strong>. Alice is a developer in account A. She needs to read CloudWatch logs from production for debugging. You don't want her to have a Prod IAM user — too much friction, and too many doors to keep locked.</p>
+
+  <h4>Step-by-step</h4>
+  <ol>
+    <li><strong>In Account B (Prod), create a role:</strong> <code>ProdReadOnlyRole</code></li>
+    <li><strong>Trust policy on the role:</strong> "I can be assumed by anyone in account A."
+      <pre>{
+  <span class="s">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="s">"Statement"</span>: [{
+    <span class="s">"Effect"</span>:    <span class="s">"Allow"</span>,
+    <span class="s">"Principal"</span>: { <span class="s">"AWS"</span>: <span class="s">"arn:aws:iam::111111111111:root"</span> },
+    <span class="s">"Action"</span>:    <span class="s">"sts:AssumeRole"</span>,
+    <span class="s">"Condition"</span>: {
+      <span class="s">"Bool"</span>: { <span class="s">"aws:MultiFactorAuthPresent"</span>: <span class="s">"true"</span> }
+    }
+  }]
+}</pre>
+      <em>(The MFA condition is best-practice — require the assumer to have authenticated with MFA. The exam loves to test this.)</em>
+    </li>
+    <li><strong>Permission policy on the role:</strong> read-only on CloudWatch Logs.</li>
+    <li><strong>Back in Account A, give Alice (or her group) permission to assume the role:</strong>
+      <pre>{
+  <span class="s">"Effect"</span>:   <span class="s">"Allow"</span>,
+  <span class="s">"Action"</span>:   <span class="s">"sts:AssumeRole"</span>,
+  <span class="s">"Resource"</span>: <span class="s">"arn:aws:iam::222222222222:role/ProdReadOnlyRole"</span>
+}</pre>
+    </li>
+    <li>Alice now calls <code>aws sts assume-role --role-arn arn:aws:iam::222222222222:role/ProdReadOnlyRole --role-session-name alice-debug</code> or uses the "Switch Role" feature in the console. She gets temp creds for account B and can read prod logs.</li>
+  </ol>
+
+  <p class="pull">Two policies — one in each account — both have to allow the assumption. This "both sides must agree" pattern is the heart of cross-account security.</p>
+
+  <h3>The External ID — for third-party access</h3>
+  <p>If you're letting a <strong>third-party SaaS</strong> assume a role in your account (e.g., Datadog, a monitoring tool, a backup vendor), there's a special threat called the <em>"confused deputy"</em>: the third-party might have multiple customers, and an attacker could trick it into assuming a role in your account by claiming to be one of its other customers.</p>
+
+  <p>The fix: include an <code>ExternalId</code> condition in your trust policy. The third party gives you a unique random string (the External ID); you put it in the trust policy; they must provide it when assuming the role.</p>
+
+  <pre>{
+  <span class="s">"Effect"</span>:    <span class="s">"Allow"</span>,
+  <span class="s">"Principal"</span>: { <span class="s">"AWS"</span>: <span class="s">"arn:aws:iam::ThirdPartyAccountId:root"</span> },
+  <span class="s">"Action"</span>:    <span class="s">"sts:AssumeRole"</span>,
+  <span class="s">"Condition"</span>: {
+    <span class="s">"StringEquals"</span>: { <span class="s">"sts:ExternalId"</span>: <span class="s">"a-unique-string-the-vendor-gave-me"</span> }
+  }
+}</pre>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    Any scenario where <em>"a third-party company needs to access your AWS account"</em> — the correct answer mentions both <strong>cross-account role</strong> AND <strong>External ID</strong>. The wrong answers usually suggest giving the third party an IAM user with access keys (insecure, and operationally awkward).
+  </div>
+
+  <h3>S3 cross-account access — three flavours</h3>
+  <p>S3 specifically supports three ways to grant cross-account access. Worth knowing because S3 is the single most-tested service:</p>
+  <ul>
+    <li><strong>Bucket Policy</strong> (resource-based) — most common. Grants account B's principals access to the bucket.</li>
+    <li><strong>Cross-Account IAM Role</strong> — the pattern we just walked through; account B users assume a role in account A.</li>
+    <li><strong>ACLs (Access Control Lists)</strong> — legacy mechanism, mostly deprecated. AWS recommends bucket policies instead. Now disabled by default on new buckets.</li>
+  </ul>
+
+  <div class="callout trap">
+    <span class="callout-label">Trap — S3 ACLs</span>
+    If a question offers "use S3 ACLs" as an answer in 2024+, it's almost certainly wrong. AWS now disables ACLs by default and recommends bucket policies for everything. The exception is some legacy cross-account scenarios where ACLs are the only thing that historically worked — but the exam now prefers bucket policies in nearly every case.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 12 ═══════════════════════════════════════ -->
+<section class="chapter" id="c12">
+  <div class="chapter-num">CHAPTER 12</div>
+  <h2>Identity Federation — SAML &amp; OIDC</h2>
+  <p class="lead">Companies don't want to maintain a second username and password for every employee just to access AWS. Their employees already have Active Directory / Okta / Azure AD credentials. <strong>Identity federation</strong> means: log in once at the corporate identity provider, get AWS credentials automatically. No IAM user required.</p>
+
+  <h3>The core idea</h3>
+  <p>Your corporate identity provider (Okta, Azure AD, Google Workspace, AD FS) and AWS have a pre-arranged trust relationship. When Alice signs into her corporate IdP, the IdP gives her a signed token saying "this is Alice, she's in the Developers group." Alice presents that token to AWS STS. STS verifies the signature (because the trust was pre-arranged), looks up which IAM role corresponds to her group, assumes that role, and gives her temporary credentials.</p>
+
+  <p>Result: Alice never had an IAM user. AWS never stored her password. If she leaves the company and is removed from the corporate IdP, her AWS access vanishes the next time her token expires. Single source of truth = the corporate IdP. This is exactly what every large organisation wants.</p>
+
+  <h3>The two main protocols</h3>
+
+  <div class="two-col">
+    <div>
+      <h4>SAML 2.0 Federation</h4>
+      <p>The enterprise standard for over 20 years. Used with AD FS, Okta, OneLogin, Ping, Azure AD. The token is a signed XML document (the SAML assertion).</p>
+      <p>AWS API call: <code>sts:AssumeRoleWithSAML</code></p>
+      <p><strong>When you see it on the exam:</strong> "corporate users with existing Active Directory want to sign into AWS without IAM users."</p>
+    </div>
+    <div>
+      <h4>OIDC / Web Identity Federation</h4>
+      <p>The modern, lightweight standard. Used by Google, Facebook, Amazon Cognito, GitHub Actions. The token is a signed JSON Web Token (JWT).</p>
+      <p>AWS API call: <code>sts:AssumeRoleWithWebIdentity</code></p>
+      <p><strong>When you see it on the exam:</strong> mobile/web apps that let users sign in with social accounts; EKS pods using IRSA (IAM Roles for Service Accounts); GitHub Actions deploying to AWS without long-lived access keys.</p>
+    </div>
+  </div>
+
+  <h3>A typical SAML flow</h3>
+  <ol>
+    <li>Alice clicks "Sign into AWS" on her corporate intranet.</li>
+    <li>The intranet redirects her to AD FS (or Okta etc.) — the corporate identity provider.</li>
+    <li>She enters her corporate username + password + MFA. The IdP verifies her.</li>
+    <li>The IdP responds with a SAML assertion: a signed XML blob saying "Alice, Developers group."</li>
+    <li>Her browser POSTs the SAML assertion to <code>signin.aws.amazon.com/saml</code>.</li>
+    <li>AWS verifies the signature (it has the IdP's public key, configured earlier as a SAML identity provider). The trust relationship was set up once, in advance.</li>
+    <li>AWS looks up the IAM role mapped to "Developers" and assumes it on Alice's behalf via <code>sts:AssumeRoleWithSAML</code>.</li>
+    <li>Alice lands in the AWS Console with her role's permissions, no IAM user involved.</li>
+  </ol>
+
+  <h3>OIDC for cloud-native workloads — IRSA &amp; GitHub Actions</h3>
+  <p>Two modern uses of OIDC federation are huge in industry right now:</p>
+
+  <div class="callout industry">
+    <span class="callout-label">Industry — IRSA (IAM Roles for Service Accounts)</span>
+    Kubernetes pods running on EKS need to call AWS APIs. The old way: shove access keys into the pod. The modern way: <strong>IRSA</strong> — the EKS cluster runs an OIDC identity provider, each pod gets a JWT that identifies its Kubernetes Service Account, and the pod uses that JWT to assume an IAM role via <code>sts:AssumeRoleWithWebIdentity</code>. No static credentials anywhere.
+  </div>
+
+  <div class="callout industry">
+    <span class="callout-label">Industry — GitHub Actions ↔ AWS</span>
+    For years, the standard way to deploy from GitHub Actions to AWS was to store an access key as a GitHub secret. That key was a permanent attack target. The modern pattern: <strong>configure GitHub's OIDC provider as a trusted identity provider in AWS</strong>, then a GitHub Actions workflow gets a short-lived JWT that it trades for AWS credentials via <code>sts:AssumeRoleWithWebIdentity</code>. No long-lived secrets in GitHub. Every major engineering org migrated to this in 2022–2024.
+  </div>
+
+  <h3>The relationship to IAM Identity Center</h3>
+  <p>You might wonder: if federation is the answer, why does AWS keep talking about IAM Identity Center? Because Identity Center is essentially federation, plus a centralised UI and management layer that makes it simpler to operate across many AWS accounts. We'll meet it next.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 13 ═══════════════════════════════════════ -->
+<section class="chapter" id="c13">
+  <div class="chapter-num">CHAPTER 13</div>
+  <h2>IAM Identity Center — The Modern Way</h2>
+  <p class="lead">Previously known as <strong>AWS Single Sign-On (AWS SSO)</strong> — renamed in 2022. This is AWS's recommended way to give humans access to AWS in 2024. If you read AWS's own best-practice guides, every other paragraph mentions Identity Center.</p>
+
+  <h3>What problem does it solve?</h3>
+  <p>Imagine your company has <strong>15 AWS accounts</strong> (one for each major team / environment, all under one AWS Organization). Before Identity Center, giving developers access was painful:</p>
+  <ul>
+    <li>Create an IAM user in each account, or</li>
+    <li>Set up SAML federation in each account separately, configuring the same IdP 15 times, or</li>
+    <li>Create cross-account roles in 14 accounts that trust an "identity hub" account, and have everyone log in there first</li>
+  </ul>
+  <p>All of these work. None of them are pleasant. Identity Center bundles them into a single managed service.</p>
+
+  <h3>What it actually does</h3>
+  <p>Identity Center is a directory + portal. You either:</p>
+  <ul>
+    <li>Connect it to your existing identity provider (Okta, Azure AD, Google Workspace, Active Directory), OR</li>
+    <li>Use the built-in user directory ("Identity Center directory") for smaller orgs that don't have an IdP</li>
+  </ul>
+  <p>You then define <strong>Permission Sets</strong> (effectively pre-baked IAM roles — like "DeveloperAccess," "ReadOnlyAccess"), and assign users/groups to <em>account × permission set</em> combinations.</p>
+
+  <p>End result: each user logs into a single portal (<code>https://yourcompany.awsapps.com/start</code>) and sees a list of AWS accounts they can access, each with one or more permission sets. They click, get temporary credentials, get into AWS. One sign-on.</p>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    Any scenario like <em>"a company has 10+ AWS accounts and wants to provide centralised SSO access to developers using their existing corporate directory"</em> — the answer is <strong>IAM Identity Center</strong>, integrated with the corporate IdP. Wrong answers will suggest creating IAM users in every account, or setting up SAML federation 10 times.
+  </div>
+
+  <h3>Identity Center vs Cognito vs IAM Federation</h3>
+  <p>These get confused often. The clean way to remember:</p>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Service</th><th>Who it's for</th><th>Typical scenario</th></tr>
+    <tr><td><strong>IAM Identity Center</strong></td><td>Your <em>employees</em></td><td>Internal users signing into AWS Console &amp; CLI across multiple accounts.</td></tr>
+    <tr><td><strong>Cognito</strong></td><td>Your app's <em>end-users</em></td><td>External users of an app you've built (e.g., your mobile app's customers).</td></tr>
+    <tr><td><strong>IAM SAML/OIDC Federation</strong></td><td>Single-account use, or programmatic federation</td><td>Direct IdP-to-IAM trust, particularly for workloads (GitHub Actions, EKS).</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 14 ═══════════════════════════════════════ -->
+<section class="chapter" id="c14">
+  <div class="chapter-num">CHAPTER 14</div>
+  <h2>AWS Organizations &amp; Service Control Policies (SCPs)</h2>
+  <p class="lead">Once you have more than one AWS account, you need a way to manage them together — billing, security, structure. <strong>AWS Organizations</strong> is the wrapper service, and <strong>SCPs</strong> are how you enforce policy across all of them at once.</p>
+
+  <h3>The Organisation structure</h3>
+  <p>An Organization is a tree of accounts:</p>
+  <ul>
+    <li><strong>Root</strong> — the top of the tree. Every org has exactly one root.</li>
+    <li><strong>Organisational Units (OUs)</strong> — folders inside the root. You can nest OUs.</li>
+    <li><strong>Accounts</strong> — the leaves. Every AWS account belongs to exactly one OU (or directly to the root).</li>
+  </ul>
+  <p>You also pick one account to be the <strong>management account</strong> (formerly "master account") — it's the one that pays the bills and the only one that can administer the Organization.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 380" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .ou { fill: #EFE7D6; stroke: #1B1B26; stroke-width: 1.5; stroke-dasharray: 5 3; rx: 4; }
+          .acc { fill: #FFFCF5; stroke: #1E3A5F; stroke-width: 2; rx: 4; }
+          .mgmt { fill: #FFFCF5; stroke: #8B2635; stroke-width: 3; rx: 4; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 13px; fill: #1B1B26; font-weight: 600; }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6B6B7A; }
+          .scp { fill: #F0D6D9; stroke: #8B2635; stroke-width: 1.5; rx: 4; }
+        </style>
+      </defs>
+
+      <!-- Root -->
+      <rect x="360" y="20" width="160" height="50" class="ou"/>
+      <text x="440" y="42" text-anchor="middle" class="lbl">Organization Root</text>
+      <text x="440" y="60" text-anchor="middle" class="sm">where SCPs can attach</text>
+
+      <!-- Lines down -->
+      <line x1="440" y1="70" x2="200" y2="120" stroke="#6B6B7A" stroke-width="1"/>
+      <line x1="440" y1="70" x2="440" y2="120" stroke="#6B6B7A" stroke-width="1"/>
+      <line x1="440" y1="70" x2="680" y2="120" stroke="#6B6B7A" stroke-width="1"/>
+
+      <!-- OUs -->
+      <rect x="100" y="120" width="200" height="50" class="ou"/>
+      <text x="200" y="142" text-anchor="middle" class="lbl">Production OU</text>
+      <text x="200" y="160" text-anchor="middle" class="sm">strict SCPs</text>
+
+      <rect x="340" y="120" width="200" height="50" class="ou"/>
+      <text x="440" y="142" text-anchor="middle" class="lbl">Development OU</text>
+      <text x="440" y="160" text-anchor="middle" class="sm">loose SCPs</text>
+
+      <rect x="580" y="120" width="200" height="50" class="ou"/>
+      <text x="680" y="142" text-anchor="middle" class="lbl">Sandbox OU</text>
+      <text x="680" y="160" text-anchor="middle" class="sm">very restricted</text>
+
+      <!-- Account leaves -->
+      <line x1="160" y1="170" x2="120" y2="220" stroke="#6B6B7A" stroke-width="1"/>
+      <line x1="240" y1="170" x2="280" y2="220" stroke="#6B6B7A" stroke-width="1"/>
+      <rect x="60" y="220" width="120" height="50" class="acc"/>
+      <text x="120" y="242" text-anchor="middle" class="lbl">prod-app</text>
+      <text x="120" y="260" text-anchor="middle" class="sm">111111111111</text>
+      <rect x="220" y="220" width="120" height="50" class="acc"/>
+      <text x="280" y="242" text-anchor="middle" class="lbl">prod-data</text>
+      <text x="280" y="260" text-anchor="middle" class="sm">222222222222</text>
+
+      <line x1="380" y1="170" x2="380" y2="220" stroke="#6B6B7A" stroke-width="1"/>
+      <line x1="500" y1="170" x2="500" y2="220" stroke="#6B6B7A" stroke-width="1"/>
+      <rect x="320" y="220" width="120" height="50" class="acc"/>
+      <text x="380" y="242" text-anchor="middle" class="lbl">dev-app</text>
+      <rect x="440" y="220" width="120" height="50" class="acc"/>
+      <text x="500" y="242" text-anchor="middle" class="lbl">staging</text>
+
+      <line x1="680" y1="170" x2="680" y2="220" stroke="#6B6B7A" stroke-width="1"/>
+      <rect x="620" y="220" width="120" height="50" class="acc"/>
+      <text x="680" y="242" text-anchor="middle" class="lbl">sandbox-alice</text>
+
+      <!-- Management acct -->
+      <rect x="340" y="320" width="200" height="50" class="mgmt"/>
+      <text x="440" y="342" text-anchor="middle" class="lbl">Management Account</text>
+      <text x="440" y="360" text-anchor="middle" class="sm">pays bills, runs the Org</text>
+    </svg>
+    <div class="diagram-caption">A typical small Organization. SCPs can attach at the Root, any OU, or any single account.</div>
+  </div>
+
+  <h3>What is an SCP?</h3>
+  <p>A <strong>Service Control Policy</strong> is a JSON policy that defines the <em>maximum permissions</em> any IAM identity within an account can have. It looks almost identical to an IAM policy, but its job is different:</p>
+
+  <ul>
+    <li>SCPs <strong>do not grant any permissions.</strong> They only restrict. Even if an SCP says "Allow s3:*," nobody gets S3 access from that alone — they still need a regular IAM policy granting it.</li>
+    <li>SCPs apply to <strong>every principal in the affected account(s)</strong>, including IAM users, IAM roles, and — yes — even the root user of the member account.</li>
+    <li>An action is allowed in a member account only if every applicable SCP <em>and</em> the IAM identity policy <em>and</em> any resource policy permits it.</li>
+    <li>SCPs <strong>do not apply to the management account itself.</strong> This is a critical detail. The management account is exempt.</li>
+  </ul>
+
+  <p class="pull">SCP = ceiling on what's possible. IAM policy = what's actually allowed within that ceiling.</p>
+
+  <h3>Concrete SCP examples</h3>
+
+  <h4>Example 1 — Prevent leaving the US</h4>
+  <pre><span class="c">// "Nobody in this account can do anything outside us-east-1 and us-west-2"</span>
+{
+  <span class="s">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="s">"Statement"</span>: [{
+    <span class="s">"Effect"</span>:   <span class="s">"Deny"</span>,
+    <span class="s">"Action"</span>:   <span class="s">"*"</span>,
+    <span class="s">"Resource"</span>: <span class="s">"*"</span>,
+    <span class="s">"Condition"</span>: {
+      <span class="s">"StringNotEquals"</span>: {
+        <span class="s">"aws:RequestedRegion"</span>: [<span class="s">"us-east-1"</span>, <span class="s">"us-west-2"</span>]
+      }
+    }
+  }]
+}</pre>
+
+  <h4>Example 2 — Sandbox can only use cheap regions and small instances</h4>
+  <p>Imagine a sandbox OU where developers can experiment. You attach an SCP that prevents launching instances larger than <code>t3.medium</code>, and blocks expensive services like Redshift entirely. Even if a developer's IAM role grants <code>ec2:RunInstances</code>, the SCP can still block specific instance sizes via a condition.</p>
+
+  <h4>Example 3 — Block disabling CloudTrail</h4>
+  <pre>{
+  <span class="s">"Effect"</span>:   <span class="s">"Deny"</span>,
+  <span class="s">"Action"</span>:   [<span class="s">"cloudtrail:StopLogging"</span>, <span class="s">"cloudtrail:DeleteTrail"</span>],
+  <span class="s">"Resource"</span>: <span class="s">"*"</span>
+}</pre>
+  <p>This prevents anyone — including admins, including the account's root user — from disabling audit logging. A favourite for security and compliance teams.</p>
+
+  <div class="callout trap">
+    <span class="callout-label">Big Trap — SCPs Don't Grant</span>
+    A surprising number of people miss the rule that SCPs only restrict, never grant. If you attach an SCP that allows <code>s3:*</code> to an account where the IAM users have no S3 permissions, nobody gets S3 access. The user/role still needs an identity policy granting it. SCP is a <strong>ceiling</strong>, not a <strong>floor</strong>.
+  </div>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    The classic SCP exam scenarios: <br>
+    <strong>•</strong> "Prevent any user — including root — in member accounts from deleting CloudTrail" → SCP <br>
+    <strong>•</strong> "Restrict which regions developers can use" → SCP <br>
+    <strong>•</strong> "Enforce that all EC2 instances must be tagged with a project name" → SCP <br>
+    <strong>•</strong> "Block specific services across the entire organisation" → SCP <br>
+    A common wrong answer is "create an IAM policy in every account" — that doesn't scale and a malicious user could still remove it. SCPs are administered centrally and member-account admins cannot bypass them.
+  </div>
+
+  <h3>Allow-list vs Deny-list SCP strategies</h3>
+  <p>By default, when you enable Organizations with SCPs, AWS attaches an SCP called <code>FullAWSAccess</code> at the root, which allows everything. Most companies then layer on additional <strong>deny</strong> SCPs ("deny-list" strategy) to forbid specific risky actions.</p>
+
+  <p>An alternative is the <strong>allow-list</strong> strategy — replace <code>FullAWSAccess</code> with an SCP that explicitly allows only the services you want, denying everything else by default. This is more secure but much higher operational overhead (every time you want a new service, you have to update the allow list). Most companies use deny-list; very security-sensitive companies (defence, finance) sometimes use allow-list.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 15 ═══════════════════════════════════════ -->
+<section class="chapter" id="c15">
+  <div class="chapter-num">CHAPTER 15</div>
+  <h2>Permission Boundaries — Delegated Admin Safely</h2>
+  <p class="lead">A boundary is like an SCP, but applied to a single user or role instead of a whole account. It exists for one specific reason: <strong>letting developers create IAM things without letting them grant themselves admin.</strong></p>
+
+  <h3>The delegation problem</h3>
+  <p>Developers often need to create IAM roles for their applications — a role for their Lambda function, a role for their ECS task, etc. But if you give a developer <code>iam:CreateRole</code>, they can create an admin role for their function, and then go assume it, and now they're admin. Oops.</p>
+
+  <p>You could refuse to delegate IAM at all and force every role creation through a ticket system. But that's slow. Permission boundaries are the better answer.</p>
+
+  <h3>How a permission boundary works</h3>
+  <p>You define a policy (looks like a normal IAM policy) and attach it as the <strong>permission boundary</strong> on a user or role. From that point on, the effective permissions of that identity are the <em>intersection</em> of their attached identity policies AND the boundary. Even if their identity policy says <code>s3:*</code>, the boundary can cap them to just <code>s3:GetObject</code>.</p>
+
+  <p>Crucially, you can also force the developer to attach a boundary to any role they create. The condition <code>iam:PermissionsBoundary</code> in the developer's identity policy means: "you can create roles, but only if you attach this exact boundary to them." Now anything the developer creates can never exceed the boundary's limits.</p>
+
+  <pre><span class="c">// On the developer's user: "You can create roles, but only if they have THIS boundary"</span>
+{
+  <span class="s">"Effect"</span>:   <span class="s">"Allow"</span>,
+  <span class="s">"Action"</span>:   [<span class="s">"iam:CreateRole"</span>, <span class="s">"iam:AttachRolePolicy"</span>],
+  <span class="s">"Resource"</span>: <span class="s">"*"</span>,
+  <span class="s">"Condition"</span>: {
+    <span class="s">"StringEquals"</span>: {
+      <span class="s">"iam:PermissionsBoundary"</span>:
+        <span class="s">"arn:aws:iam::123456789012:policy/DevRoleBoundary"</span>
+    }
+  }
+}</pre>
+
+  <h3>Permission Boundary vs SCP — common confusion</h3>
+  <div class="table-wrap">
+  <table>
+    <tr><th></th><th>SCP</th><th>Permission Boundary</th></tr>
+    <tr><td><strong>Scope</strong></td><td>Whole account / OU</td><td>Single user or role</td></tr>
+    <tr><td><strong>Affects</strong></td><td>Every principal in the account, incl. root</td><td>Only the user/role it's attached to</td></tr>
+    <tr><td><strong>Configured in</strong></td><td>AWS Organizations</td><td>IAM</td></tr>
+    <tr><td><strong>Use case</strong></td><td>Account-wide guardrails</td><td>Safe delegation of IAM admin to devs</td></tr>
+    <tr><td><strong>Grants permissions?</strong></td><td>No — restricts only</td><td>No — restricts only</td></tr>
+  </table>
+  </div>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    "Allow developers to create IAM roles without giving them the ability to escalate privileges." → Permission Boundary. <br>
+    "Set guardrails across all accounts in the organisation." → SCP. <br>
+    Both are restrictions, neither grants — distinguish by scope.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 16 ═══════════════════════════════════════ -->
+<section class="chapter" id="c16">
+  <div class="chapter-num">CHAPTER 16</div>
+  <h2>The Full Evaluation Pipeline (Put It All Together)</h2>
+  <p class="lead">Now we have all the pieces. Let's draw the complete picture of how AWS decides whether a request is allowed.</p>
+
+  <h3>The full algorithm</h3>
+  <p>For any given request from any principal, AWS checks (roughly in this conceptual order):</p>
+  <ol>
+    <li><strong>SCPs</strong> — does every SCP up the Organization tree allow this action?
+      <em>(If the principal is in the management account, skip this step — management is exempt.)</em></li>
+    <li><strong>Resource-based policy</strong> — if the resource has a resource-based policy and it explicitly allows the principal, that can grant access by itself (more on this nuance below).</li>
+    <li><strong>Identity-based policy</strong> on the principal (user / group / role)</li>
+    <li><strong>Permission boundary</strong> on the principal, if attached — caps the identity-based policy</li>
+    <li><strong>Session policies</strong> — when a role is assumed with extra inline policies passed at assume-time (rare; advanced)</li>
+  </ol>
+  <p>The simplified rule everywhere: <strong>an explicit Deny anywhere wins immediately</strong>. Beyond that, every layer must allow the request, except that for cross-account access via a resource-based policy, the resource policy alone can grant access without needing both sides to allow.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 460" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .layer { fill: #FFFCF5; stroke: #1B1B26; stroke-width: 1.5; rx: 4; }
+          .scp { fill: #FDF7E6; stroke: #B8860B; stroke-width: 2; rx: 4; }
+          .bnd { fill: #F0D6D9; stroke: #8B2635; stroke-width: 2; rx: 4; }
+          .idp { fill: #D6DFEA; stroke: #1E3A5F; stroke-width: 2; rx: 4; }
+          .res { fill: #D4E4D9; stroke: #2D5F3E; stroke-width: 2; rx: 4; }
+          .req { fill: #1B1B26; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 14px; fill: #1B1B26; font-weight: 600; }
+          .lblw { font-family: 'Inter', sans-serif; font-size: 14px; fill: #FFFCF5; font-weight: 600; }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6B6B7A; }
+          .arrow { stroke: #1B1B26; stroke-width: 1.5; fill: none; marker-end: url(#a4); }
+        </style>
+        <marker id="a4" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#1B1B26"/>
+        </marker>
+      </defs>
+
+      <rect x="340" y="20" width="200" height="44" class="req"/>
+      <text x="440" y="48" text-anchor="middle" class="lblw">API Request</text>
+      <line x1="440" y1="64" x2="440" y2="90" class="arrow"/>
+
+      <rect x="290" y="90" width="300" height="50" class="scp"/>
+      <text x="440" y="113" text-anchor="middle" class="lbl">① Service Control Policies (SCP)</text>
+      <text x="440" y="130" text-anchor="middle" class="sm">all SCPs up the Org tree must allow</text>
+      <line x1="440" y1="140" x2="440" y2="170" class="arrow"/>
+
+      <rect x="290" y="170" width="300" height="50" class="bnd"/>
+      <text x="440" y="193" text-anchor="middle" class="lbl">② Permission Boundary (if any)</text>
+      <text x="440" y="210" text-anchor="middle" class="sm">must allow if boundary is attached</text>
+      <line x1="440" y1="220" x2="440" y2="250" class="arrow"/>
+
+      <rect x="290" y="250" width="300" height="50" class="idp"/>
+      <text x="440" y="273" text-anchor="middle" class="lbl">③ Identity-Based Policy</text>
+      <text x="440" y="290" text-anchor="middle" class="sm">attached to user/group/role</text>
+      <line x1="440" y1="300" x2="440" y2="330" class="arrow"/>
+
+      <rect x="290" y="330" width="300" height="50" class="res"/>
+      <text x="440" y="353" text-anchor="middle" class="lbl">④ Resource-Based Policy</text>
+      <text x="440" y="370" text-anchor="middle" class="sm">on the target resource (S3 bucket, etc.)</text>
+      <line x1="440" y1="380" x2="440" y2="410" class="arrow"/>
+
+      <rect x="340" y="410" width="200" height="44" fill="#2D5F3E" rx="22"/>
+      <text x="440" y="438" text-anchor="middle" class="lblw">ALLOW</text>
+
+      <text x="70" y="120" class="sm">Any DENY in</text>
+      <text x="70" y="138" class="sm">any layer →</text>
+      <text x="70" y="156" class="sm">request killed</text>
+    </svg>
+    <div class="diagram-caption">All layers must allow — and any explicit deny anywhere kills the request.</div>
+  </div>
+
+  <h3>One thing worth saying clearly: cross-account is special</h3>
+  <p>Within a single account, AWS uses an "OR" between identity and resource policies — if either allows, it's allowed (assuming no deny). But for <strong>cross-account</strong> access, you must have BOTH sides permit it: identity policy in the source account <em>and</em> resource policy in the destination (or a role being assumed). One side alone isn't enough for cross-account.</p>
+
+  <p>This is sometimes summarised as: <em>"same account = OR. Cross account = AND."</em></p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 17 ═══════════════════════════════════════ -->
+<section class="chapter" id="c17">
+  <div class="chapter-num">CHAPTER 17</div>
+  <h2>Conditions — Where Real Power Lives</h2>
+  <p class="lead">A policy with just Effect, Action, Resource is blunt — it either allows the action or doesn't. The <strong>Condition</strong> block transforms IAM into a precision tool. Most clever, scalable IAM patterns rely on conditions.</p>
+
+  <h3>The condition structure</h3>
+  <pre>{
+  <span class="s">"Effect"</span>:    <span class="s">"Allow"</span>,
+  <span class="s">"Action"</span>:    <span class="s">"s3:GetObject"</span>,
+  <span class="s">"Resource"</span>:  <span class="s">"arn:aws:s3:::secure-bucket/*"</span>,
+  <span class="s">"Condition"</span>: {
+    <span class="s">"Bool"</span>:      { <span class="s">"aws:MultiFactorAuthPresent"</span>: <span class="s">"true"</span> },
+    <span class="s">"IpAddress"</span>: { <span class="s">"aws:SourceIp"</span>:               <span class="s">"203.0.113.0/24"</span> }
+  }
+}</pre>
+  <p>Conditions have three nesting levels: a <strong>comparison operator</strong> (StringEquals, IpAddress, NumericLessThan, Bool, DateGreaterThan, etc.), a <strong>condition key</strong> (the property to test), and one or more <strong>values</strong>. Multiple conditions in one block are AND'd — all must be true.</p>
+
+  <h3>The condition keys you must know</h3>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Condition Key</th><th>What it tests</th><th>Common use</th></tr>
+    <tr><td><code>aws:SourceIp</code></td><td>IP address of caller</td><td>Restrict to office IP ranges</td></tr>
+    <tr><td><code>aws:MultiFactorAuthPresent</code></td><td>Was MFA used to authenticate this session?</td><td>Require MFA for sensitive actions</td></tr>
+    <tr><td><code>aws:MultiFactorAuthAge</code></td><td>Seconds since MFA was used</td><td>Force re-MFA every N minutes</td></tr>
+    <tr><td><code>aws:RequestedRegion</code></td><td>Which region the API call is hitting</td><td>Lock down which regions are usable</td></tr>
+    <tr><td><code>aws:PrincipalTag/Key</code></td><td>A tag on the calling user/role</td><td>ABAC — attribute-based access control</td></tr>
+    <tr><td><code>aws:ResourceTag/Key</code></td><td>A tag on the target resource</td><td>ABAC — match principal tag to resource tag</td></tr>
+    <tr><td><code>aws:CurrentTime</code></td><td>Time of the request</td><td>Business-hours-only access</td></tr>
+    <tr><td><code>aws:SecureTransport</code></td><td>Was the request made over HTTPS?</td><td>Force TLS on S3 access</td></tr>
+    <tr><td><code>aws:PrincipalOrgID</code></td><td>The Organization ID of the caller</td><td>Allow only principals from your own org</td></tr>
+    <tr><td><code>aws:UserAgent</code></td><td>Caller's user-agent string</td><td>Detect SDK / CLI vs console (weak signal)</td></tr>
+    <tr><td><code>s3:prefix</code> / <code>s3:VersionId</code></td><td>Service-specific keys for S3</td><td>Restrict listing/access to specific prefixes</td></tr>
+  </table>
+  </div>
+
+  <h3>Two classic condition recipes</h3>
+
+  <h4>Recipe 1 — Force HTTPS-only on an S3 bucket</h4>
+  <pre>{
+  <span class="s">"Sid"</span>:       <span class="s">"DenyInsecureTransport"</span>,
+  <span class="s">"Effect"</span>:    <span class="s">"Deny"</span>,
+  <span class="s">"Principal"</span>: <span class="s">"*"</span>,
+  <span class="s">"Action"</span>:    <span class="s">"s3:*"</span>,
+  <span class="s">"Resource"</span>:  [<span class="s">"arn:aws:s3:::mybucket"</span>, <span class="s">"arn:aws:s3:::mybucket/*"</span>],
+  <span class="s">"Condition"</span>: { <span class="s">"Bool"</span>: { <span class="s">"aws:SecureTransport"</span>: <span class="s">"false"</span> } }
+}</pre>
+  <p>This is an S3 bucket policy that explicitly denies any request not made over HTTPS. The exam loves this one — it's a frequent answer to "how to enforce TLS for S3."</p>
+
+  <h4>Recipe 2 — Require MFA for any destructive action</h4>
+  <pre>{
+  <span class="s">"Effect"</span>:    <span class="s">"Deny"</span>,
+  <span class="s">"Action"</span>:    [<span class="s">"ec2:TerminateInstances"</span>, <span class="s">"s3:DeleteBucket"</span>, <span class="s">"rds:DeleteDBInstance"</span>],
+  <span class="s">"Resource"</span>:  <span class="s">"*"</span>,
+  <span class="s">"Condition"</span>: { <span class="s">"BoolIfExists"</span>: { <span class="s">"aws:MultiFactorAuthPresent"</span>: <span class="s">"false"</span> } }
+}</pre>
+  <p>Note <code>BoolIfExists</code> — this handles the case where the key isn't present at all. Without it, the policy might not behave the way you expect when the caller isn't using MFA-protected sessions.</p>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    Memorise the four condition patterns above — they cover roughly 80% of condition-related questions: <br>
+    <strong>•</strong> Restrict by IP → <code>aws:SourceIp</code> with <code>IpAddress</code> <br>
+    <strong>•</strong> Require MFA → <code>aws:MultiFactorAuthPresent</code> with <code>Bool</code> <br>
+    <strong>•</strong> Force HTTPS → <code>aws:SecureTransport</code> with <code>Bool</code> <br>
+    <strong>•</strong> Lock region → <code>aws:RequestedRegion</code> with <code>StringEquals</code> / <code>StringNotEquals</code>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 18 ═══════════════════════════════════════ -->
+<section class="chapter" id="c18">
+  <div class="chapter-num">CHAPTER 18</div>
+  <h2>ABAC vs RBAC — Tags Change Everything</h2>
+  <p class="lead">In a small AWS account, you write one policy per use case. In a big one, that approach explodes. The way modern AWS shops scale IAM is by giving up on per-resource policies and instead using <strong>tags</strong>.</p>
+
+  <h3>RBAC — Role-Based Access Control (the old way)</h3>
+  <p>You define a role for every job function or project: <code>ProjectAlphaDeveloper</code>, <code>ProjectBetaDeveloper</code>, <code>ProjectGammaDeveloper</code>... each granting access to that project's specific resources. New project? New role, new policy. 50 projects = 50 roles to maintain. This is RBAC.</p>
+
+  <h3>ABAC — Attribute-Based Access Control (the modern way)</h3>
+  <p>You tag your resources and your principals with attributes (<code>Project = Alpha</code>). You write <strong>one</strong> policy that says: <em>"You can access any resource whose Project tag matches your Project tag."</em></p>
+
+  <pre>{
+  <span class="s">"Effect"</span>:    <span class="s">"Allow"</span>,
+  <span class="s">"Action"</span>:    <span class="s">"ec2:*"</span>,
+  <span class="s">"Resource"</span>:  <span class="s">"*"</span>,
+  <span class="s">"Condition"</span>: {
+    <span class="s">"StringEquals"</span>: {
+      <span class="s">"aws:ResourceTag/Project"</span>: <span class="s">"${aws:PrincipalTag/Project}"</span>
+    }
+  }
+}</pre>
+  <p>Read that carefully. The condition compares the <strong>resource's</strong> Project tag to the <strong>caller's</strong> Project tag. The <code>${...}</code> syntax is a policy variable that's substituted at evaluation time. So Alice (tagged <code>Project = Alpha</code>) can manage only resources tagged <code>Project = Alpha</code>. Bob (tagged <code>Project = Beta</code>) is automatically scoped to Beta resources, using the same policy.</p>
+
+  <p>Now add a 51st project? Just tag the new resources with <code>Project = Delta</code> and tag the developers with the same. No policy changes. <em>This</em> is why ABAC scales and RBAC doesn't.</p>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    "Company has 100 projects and growing, each with its own developers. Minimise the number of IAM policies / roles." → <strong>ABAC</strong> with tags on principals and resources. The wrong answer says "create a role per project."
+  </div>
+
+  <h3>Where ABAC works and where it doesn't</h3>
+  <p>ABAC works beautifully for services that support resource tagging (EC2, S3 objects, RDS, Lambda, etc.). Some services don't support tags on all resource types, in which case you fall back to ABAC where you can and RBAC where you must. AWS has been expanding tag support across services aggressively for the last few years; in 2024 it's the dominant pattern for new architectures.</p>
+
+  <p>The trade-off: ABAC requires <strong>discipline around tagging</strong>. If resources get created without proper tags, the access model breaks. This is why you'll often see Organizations + SCPs used to <em>enforce tagging</em> — denying resource creation without required tags.</p>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 19 ═══════════════════════════════════════ -->
+<section class="chapter" id="c19">
+  <div class="chapter-num">CHAPTER 19</div>
+  <h2>IAM Best Practices (AWS's Modern Gospel)</h2>
+  <p class="lead">Internalise this list. The exam asks "what's the best practice?" constantly, and the right answer is almost always lifted directly from here.</p>
+
+  <ol>
+    <li><strong>Don't use the root user for daily work.</strong> Lock root credentials away. Enable MFA. Delete any root access keys.</li>
+    <li><strong>Use IAM Identity Center for humans.</strong> Don't create IAM users for employees if you have more than a couple of accounts. Federate from your corporate IdP.</li>
+    <li><strong>Use IAM roles for workloads.</strong> EC2, Lambda, ECS, EKS — always use a role, never embed access keys.</li>
+    <li><strong>Apply least privilege.</strong> Start from zero and add what's needed. Don't start from admin and try to subtract.</li>
+    <li><strong>Use groups (or Identity Center groups), not per-user policies.</strong> Easier to manage and audit.</li>
+    <li><strong>Enable MFA on every human identity.</strong> Phishing-resistant (hardware keys) for high-privilege accounts.</li>
+    <li><strong>Rotate credentials regularly.</strong> AWS recommends 90 days. For IAM users that must have access keys, automate the rotation.</li>
+    <li><strong>Use roles for cross-account access</strong>, not IAM users with copied keys.</li>
+    <li><strong>Use SCPs to set guardrails</strong> at the Organization level — region restrictions, service restrictions, anti-tampering rules.</li>
+    <li><strong>Use permission boundaries</strong> when delegating IAM creation rights to developers.</li>
+    <li><strong>Tag resources consistently</strong> and prefer ABAC for scaling.</li>
+    <li><strong>Audit with CloudTrail.</strong> Log every API call. Send logs to a separate, write-only account for tamper protection.</li>
+    <li><strong>Review with IAM Access Analyzer.</strong> Detect resources shared externally; refine over-permissive policies.</li>
+    <li><strong>Use temporary credentials over long-lived secrets</strong> wherever possible. STS is your friend.</li>
+    <li><strong>Don't share credentials between people.</strong> Every human gets their own identity.</li>
+  </ol>
+
+  <div class="pull">"Treat IAM like a garden — it grows weeds if you don't tend it. Every quarter, walk through your IAM with fresh eyes and prune."</div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 20 ═══════════════════════════════════════ -->
+<section class="chapter" id="c20">
+  <div class="chapter-num">CHAPTER 20</div>
+  <h2>The IAM Audit &amp; Diagnostic Toolkit</h2>
+  <p class="lead">AWS gives you several tools to <em>see</em> what's going on inside your IAM. The exam expects you to know which tool answers which question.</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Tool</th><th>What it tells you</th><th>Exam trigger</th></tr>
+    <tr>
+      <td><strong>IAM Access Analyzer</strong></td>
+      <td>Finds resources (S3 buckets, KMS keys, IAM roles, Lambda functions, etc.) that are accessible from <em>outside your account or organisation</em>. Also generates fine-grained policies based on observed CloudTrail activity.</td>
+      <td>"Detect resources unintentionally shared externally" / "generate least-privilege policy from real usage"</td>
+    </tr>
+    <tr>
+      <td><strong>Credentials Report</strong></td>
+      <td>A CSV of every IAM user in the account with password age, access-key age, last-used date, MFA status. A periodic must-read for any security team.</td>
+      <td>"Audit all IAM user credentials and find stale ones"</td>
+    </tr>
+    <tr>
+      <td><strong>Access Advisor / Last Accessed</strong></td>
+      <td>Shows the last time an identity actually used each service it has permission for. Foundation for "remove permissions nobody is using."</td>
+      <td>"Identify unused permissions on a role to trim"</td>
+    </tr>
+    <tr>
+      <td><strong>Policy Simulator</strong></td>
+      <td>Test what would happen if a principal tried to do an action before actually doing it. Useful for debugging "why can't I…?" issues.</td>
+      <td>"Test whether a policy change will break access before deploying"</td>
+    </tr>
+    <tr>
+      <td><strong>CloudTrail</strong></td>
+      <td>Logs every API call (and console action) in the account. The authoritative source for "who did what when." Send to S3 + CloudWatch.</td>
+      <td>"Find who deleted the bucket / launched that instance"</td>
+    </tr>
+    <tr>
+      <td><strong>IAM Roles Anywhere</strong></td>
+      <td>Lets servers <em>outside</em> AWS get temporary AWS credentials using X.509 certificates. Useful for hybrid / on-premises scenarios.</td>
+      <td>"On-prem workload needs AWS access without long-lived keys"</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="callout exam-tip">
+    <span class="callout-label">Exam Trigger</span>
+    The distinction between CloudTrail (who did what) and IAM Access Analyzer (what's exposed externally) is a common trap. CloudTrail is reactive — it tells you about events. Access Analyzer is proactive — it tells you about risky configurations <em>before</em> they're exploited.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 21 ═══════════════════════════════════════ -->
+<section class="chapter" id="c21">
+  <div class="chapter-num">CHAPTER 21</div>
+  <h2>How Real Companies Actually Use IAM</h2>
+  <p class="lead">Theory is one thing. Knowing how mature organisations actually structure IAM in 2024+ helps the exam scenarios click immediately. Here are five patterns from real environments.</p>
+
+  <h3>Pattern 1 — The early-stage startup (1 account, 5 people)</h3>
+  <p>One AWS account. Root locked away with a hardware MFA key in a safe. Each engineer has an IAM user with MFA. Maybe two groups: <code>Admins</code> and <code>Developers</code>. CI/CD uses an IAM role assumed by GitHub Actions via OIDC. Total IAM artefacts: maybe 10. Total time spent on IAM per week: 15 minutes.</p>
+
+  <h3>Pattern 2 — The growth-stage company (5–20 accounts)</h3>
+  <p>AWS Organizations enabled. Accounts split by environment: prod, staging, dev, security audit, log archive, network hub. IAM Identity Center hooked up to Okta or Google Workspace — engineers sign in once, see all accounts they can access. Per-account permission sets: <code>AdminAccess</code>, <code>DeveloperAccess</code>, <code>ReadOnlyAccess</code>, <code>BillingViewOnly</code>. SCPs at the root deny disabling CloudTrail / GuardDuty, restrict regions to two or three, deny use of expensive services like SageMaker in dev OUs.</p>
+
+  <h3>Pattern 3 — The DevOps / platform team pattern</h3>
+  <p>Application teams ship via CI/CD pipelines that assume <em>deployment roles</em> in each target account. The pipeline (in a CI account) has no permissions itself — it just has <code>sts:AssumeRole</code> to specific deployment roles in dev/staging/prod. Each deployment role in the target account has a permission boundary preventing it from creating IAM identities. Developers can't deploy directly; everything goes through pipeline.</p>
+
+  <h3>Pattern 4 — The multi-tenant SaaS</h3>
+  <p>You're a SaaS company; your customers each have their own AWS account. Your application needs to access resources in customer accounts (e.g., for backup, monitoring, integration). Each customer creates a cross-account role in their account, with a trust policy that allows your account's principal, gated by an <code>ExternalId</code>. Your service assumes that role to operate in their account. Each customer relationship is exactly one role; no shared credentials. Classic confused-deputy-resistant architecture.</p>
+
+  <h3>Pattern 5 — The compliance-heavy industry (banking, healthcare, defence)</h3>
+  <p>Allow-list SCPs instead of deny-list — only explicitly approved services can be used. All sensitive operations require MFA <em>and</em> source-IP restrictions to corporate networks. Every IAM action is logged to a separate audit account that the workload accounts can't touch. Quarterly access reviews where managers re-certify each direct report's access. Hardware MFA keys mandatory; phones not allowed in some areas.</p>
+
+  <div class="callout industry">
+    <span class="callout-label">Industry — Common Lesson Across All Patterns</span>
+    Notice that in every mature pattern, <strong>no humans have direct programmatic credentials in production</strong>. Humans get console access via Identity Center; deployments go through CI/CD which assumes roles; workloads use service roles. Long-lived access keys (IAM user keys) only exist for legacy third-party tools that genuinely can't do anything else — and they're rotated automatically and scoped tightly. If you encounter an AWS environment in real life where engineers are sharing access keys via Slack, you've found a security problem in progress.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CHAPTER 22 ═══════════════════════════════════════ -->
+<section class="chapter" id="c22">
+  <div class="chapter-num">CHAPTER 22</div>
+  <h2>Mental Models to Carry Into the Exam</h2>
+  <p class="lead">Forget memorising. Build these instincts and the exam answers itself.</p>
+
+  <h3>The five reflexes</h3>
+
+  <h4>1. "Service A needs to access service B" → IAM Role.</h4>
+  <p>Always. Never IAM user with access keys. The trust policy says "Service A can assume me," the permission policy says "what I can do in Service B."</p>
+
+  <h4>2. "Cross-account access" → role with cross-account trust policy.</h4>
+  <p>Both sides allow. External ID if it's a third party. Never share access keys across accounts.</p>
+
+  <h4>3. "Enterprise users need AWS access" → IAM Identity Center, federated with their IdP.</h4>
+  <p>Not IAM users in every account. Not SAML configured separately per account.</p>
+
+  <h4>4. "Prevent something across all accounts no matter what" → SCP.</h4>
+  <p>SCPs apply even to root in member accounts. Use a Deny SCP for guardrails.</p>
+
+  <h4>5. "Let developers create IAM roles safely" → Permission Boundary.</h4>
+  <p>Force them to attach the boundary on every role they create, via a condition on <code>iam:PermissionsBoundary</code>.</p>
+
+  <h3>The three traps that decide passes</h3>
+  <ol>
+    <li><strong>SCPs don't grant — they only restrict.</strong> If an SCP allows S3 but no IAM policy grants S3, nobody has S3.</li>
+    <li><strong>Explicit Deny always wins.</strong> Memorise the evaluation order: SCP → Boundary → Identity Policy → Resource Policy, but any Deny kills it.</li>
+    <li><strong>The management account is exempt from SCPs.</strong> Don't put workloads there.</li>
+  </ol>
+
+  <h3>The four things a SAA-C03 question almost always tests</h3>
+  <ul>
+    <li>"Which is the most secure way?" → Roles + MFA + temporary credentials. Never long-lived secrets.</li>
+    <li>"Which is the lowest operational overhead?" → Managed identities (Identity Center, IRSA, OIDC federation). Never per-account manual setup.</li>
+    <li>"Cross-account third party?" → Role + External ID condition.</li>
+    <li>"Cross-region or cross-account guardrails?" → SCPs.</li>
+  </ul>
+
+  <div class="pull">"You don't pass the IAM section of SAA-C03 by knowing every condition key. You pass by reflexively reaching for the same three answers — role, role, role — and knowing when role <em>isn't</em> the answer."</div>
+
+  <p>With that, you've finished the masterclass. Take a break, then move to the companion exam-focused document — it'll drill these concepts into muscle memory through targeted practice. Everything you've just learned will be there, condensed, cross-referenced, and tested.</p>
+
+  <div class="marginal">End of Topic 01 — Identity &amp; Access Management. The next companion file is your exam-cracker for IAM.</div>
+</section>
+
+<div class="divider">· · ·</div>
+
+</div>
+</body>
+</html>

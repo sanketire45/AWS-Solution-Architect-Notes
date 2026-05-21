@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IAM Exam Cracker — SAA-C03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14161C;
+    --bg-alt: #1C1F28;
+    --panel: #1F232E;
+    --panel-2: #262B38;
+    --ink: #ECE7DA;
+    --ink-soft: #C3BEB0;
+    --ink-mute: #8A8676;
+    --rule: #353B4A;
+    --accent: #E8533F;
+    --accent-soft: #2E1E1C;
+    --gold: #E0A93C;
+    --gold-soft: #2C2616;
+    --green: #5FB979;
+    --green-soft: #16241B;
+    --blue: #5B9DD6;
+    --blue-soft: #14202C;
+    --code-bg: #0E0F14;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; opacity: 0.025; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .container { max-width: 1320px; margin: 0 auto; padding: 56px 56px 120px; position: relative; z-index: 2; }
+
+  /* HERO */
+  .hero { border-bottom: 2px solid var(--accent); padding-bottom: 44px; margin-bottom: 56px; }
+  .hero-eyebrow {
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 22px; display: flex; align-items: center; gap: 16px;
+  }
+  .hero-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+  h1.hero-title {
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: clamp(46px, 6.5vw, 84px); line-height: 0.96;
+    letter-spacing: -0.02em; margin: 0 0 24px; color: var(--ink);
+  }
+  h1.hero-title em { font-style: italic; font-weight: 500; color: var(--accent); }
+  .hero-sub { font-size: 21px; line-height: 1.55; color: var(--ink-soft); max-width: 900px; font-style: italic; margin-bottom: 30px; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 40px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink-mute); }
+  .hero-meta strong { display: block; color: var(--ink); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; }
+
+  /* WIRE BANNER */
+  .wire {
+    background: var(--blue-soft); border: 1px solid var(--blue); border-left: 5px solid var(--blue);
+    padding: 22px 28px; margin-bottom: 56px; border-radius: 4px; font-size: 17px; color: var(--ink-soft);
+  }
+  .wire strong { color: var(--blue); }
+
+  /* TOC */
+  .toc { background: var(--panel); border: 1px solid var(--rule); padding: 36px 44px; margin-bottom: 72px; border-radius: 4px; }
+  .toc-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin: 0 0 22px; }
+  .toc ol { list-style: none; counter-reset: c; padding: 0; margin: 0; columns: 2; column-gap: 52px; }
+  .toc li { counter-increment: c; padding: 9px 0; border-bottom: 1px dashed var(--rule); break-inside: avoid; font-size: 16.5px; display: flex; gap: 14px; align-items: baseline; }
+  .toc li::before { content: counter(c, decimal-leading-zero); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); font-weight: 700; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+
+  section { margin-bottom: 84px; scroll-margin-top: 30px; }
+  .knum { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.16em; margin-bottom: 12px; }
+  h2 {
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: clamp(32px, 4vw, 50px); line-height: 1.05;
+    letter-spacing: -0.02em; margin: 0 0 28px; border-bottom: 1px solid var(--rule); padding-bottom: 18px;
+  }
+  h3 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 28px; margin: 48px 0 18px; letter-spacing: -0.01em; }
+  h4 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 21px; margin: 32px 0 12px; }
+  p { margin: 0 0 18px; max-width: 1080px; }
+  p.lead { font-size: 21px; line-height: 1.55; color: var(--ink-soft); font-style: italic; margin-bottom: 28px; }
+  strong { color: var(--ink); font-weight: 600; }
+  em { color: var(--gold); font-style: italic; }
+  ul, ol { padding-left: 26px; margin: 0 0 22px; max-width: 1080px; }
+  li { margin-bottom: 9px; }
+  a { color: var(--accent); }
+
+  .chapref {
+    display: inline-block; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); background: var(--gold-soft);
+    border: 1px solid var(--gold); padding: 3px 10px; border-radius: 3px; margin-left: 12px; vertical-align: middle;
+  }
+
+  /* CALLOUTS */
+  .callout { border: 1px solid; padding: 20px 26px 20px 56px; margin: 24px 0; position: relative; font-size: 17px; line-height: 1.6; border-radius: 3px; }
+  .callout::before { position: absolute; left: 18px; top: 20px; font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 700; }
+  .callout-label { display: block; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 7px; }
+  .tip { background: var(--green-soft); border-color: var(--green); color: #BFE3C8; }
+  .tip::before { content: "✓"; color: var(--green); } .tip .callout-label { color: var(--green); }
+  .trap { background: var(--accent-soft); border-color: var(--accent); color: #F3C4B9; }
+  .trap::before { content: "✕"; color: var(--accent); } .trap .callout-label { color: var(--accent); }
+  .mem { background: var(--gold-soft); border-color: var(--gold); color: #EBD5A2; }
+  .mem::before { content: "★"; color: var(--gold); } .mem .callout-label { color: var(--gold); }
+
+  /* CODE */
+  pre { background: var(--code-bg); color: #D6CBA8; padding: 20px 24px; border-radius: 4px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; margin: 20px 0; border-left: 4px solid var(--gold); }
+  pre .k { color: #E8A95C; } pre .s { color: #9FCB86; } pre .n { color: #6FAEE0; } pre .c { color: #6B6B7A; font-style: italic; }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 0.86em; background: var(--panel-2); padding: 2px 7px; border-radius: 3px; color: var(--gold); font-weight: 500; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 24px 0; border: 1px solid var(--rule); border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 16px; font-family: 'Inter', sans-serif; }
+  th { background: var(--accent); color: #14161C; text-align: left; padding: 14px 18px; font-weight: 700; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  td { padding: 14px 18px; border-top: 1px solid var(--rule); vertical-align: top; line-height: 1.5; color: var(--ink-soft); }
+  tr:nth-child(even) td { background: var(--bg-alt); }
+  td strong { color: var(--gold); }
+  table.compare th:first-child { background: var(--panel-2); color: var(--ink); }
+
+  /* TRIGGER MAP */
+  .trigmap { display: grid; grid-template-columns: 1fr; gap: 0; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; margin: 24px 0; }
+  .trigrow { display: grid; grid-template-columns: 1.4fr 1fr; }
+  .trigrow:nth-child(even) { background: var(--bg-alt); }
+  .trigrow > div { padding: 13px 20px; border-top: 1px solid var(--rule); }
+  .trigrow:first-child > div { border-top: none; }
+  .trigrow .clue { font-style: italic; color: var(--ink-soft); border-right: 1px solid var(--rule); }
+  .trigrow .ans { font-family: 'Inter', sans-serif; font-weight: 600; color: var(--green); font-size: 15.5px; }
+  .trighead { display: grid; grid-template-columns: 1.4fr 1fr; background: var(--accent); }
+  .trighead > div { padding: 12px 20px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #14161C; }
+
+  /* DIAGRAM */
+  .diagram { background: var(--panel); border: 1px solid var(--rule); padding: 28px 24px; margin: 30px 0; border-radius: 4px; text-align: center; }
+  .diagram svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--ink-mute); margin-top: 14px; font-style: italic; }
+
+  .pull { font-family: 'Fraunces', serif; font-size: 28px; font-style: italic; line-height: 1.25; color: var(--accent); border-left: 4px solid var(--accent); padding: 6px 0 6px 28px; margin: 40px 0; max-width: 950px; }
+
+  /* QUESTIONS */
+  .qmeta { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 24px 30px; margin: 28px 0 40px; }
+  .qmeta-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .qmeta p { margin: 0; font-size: 16.5px; color: var(--ink-soft); }
+
+  .q { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 28px 32px; margin: 24px 0; }
+  .q-num { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 6px; }
+  .q-type { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 14px; }
+  .q-type.multi { color: var(--gold); }
+  .q-stem { font-size: 18px; line-height: 1.6; color: var(--ink); margin-bottom: 18px; }
+  .q-opts { list-style: none; padding: 0; margin: 0 0 18px; counter-reset: opt; }
+  .q-opts li {
+    counter-increment: opt; padding: 12px 16px 12px 48px; margin-bottom: 8px; border: 1px solid var(--rule);
+    border-radius: 4px; position: relative; font-size: 16.5px; line-height: 1.5; cursor: pointer; transition: all 0.15s; background: var(--bg-alt); color: var(--ink-soft);
+  }
+  .q-opts li::before {
+    content: counter(opt, upper-alpha); position: absolute; left: 14px; top: 12px; font-family: 'Inter', sans-serif;
+    font-weight: 700; font-size: 14px; color: var(--accent); width: 22px; height: 22px; border: 1px solid var(--accent);
+    border-radius: 50%; text-align: center; line-height: 21px;
+  }
+  .q-opts li:hover { border-color: var(--accent); background: var(--panel-2); }
+  .q-opts li.correct { border-color: var(--green); background: var(--green-soft); color: #CBEAD2; }
+  .q-opts li.correct::before { color: var(--green); border-color: var(--green); content: "✓"; }
+  .q-opts li.wrong { opacity: 0.55; }
+
+  .reveal-btn {
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--accent); color: #14161C; border: none; padding: 10px 22px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+  }
+  .reveal-btn:hover { background: var(--gold); }
+  .explain { display: none; margin-top: 18px; padding: 20px 24px; background: var(--bg-alt); border-left: 4px solid var(--green); border-radius: 0 4px 4px 0; font-size: 16.5px; line-height: 1.6; color: var(--ink-soft); }
+  .explain.show { display: block; }
+  .explain .ans-line { font-family: 'Inter', sans-serif; font-weight: 700; color: var(--green); margin-bottom: 10px; display: block; }
+  .explain .why-wrong { margin-top: 12px; font-size: 15.5px; color: var(--ink-mute); }
+  .explain .why-wrong strong { color: var(--accent); }
+  .explain .chref { font-size: 13px; color: var(--gold); font-style: italic; margin-top: 12px; display: block; }
+
+  .divider { text-align: center; margin: 72px 0; color: var(--rule); font-size: 22px; letter-spacing: 1.4em; }
+  .marginal { font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink-mute); border-top: 1px solid var(--rule); padding-top: 12px; margin-top: 32px; font-style: italic; }
+
+  @media (max-width: 900px) {
+    .container { padding: 36px 22px 80px; }
+    .toc ol { columns: 1; }
+    .trigrow, .trighead { grid-template-columns: 1fr; }
+    .trigrow .clue { border-right: none; border-bottom: 1px solid var(--rule); }
+    body { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="container">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-eyebrow">SAA-C03 · Topic 01 · Exam Cracker</div>
+  <h1 class="hero-title">IAM,<br>Under <em>Exam</em><br>Conditions.</h1>
+  <p class="hero-sub">Everything from the masterclass — now compressed into trigger maps, comparison grids, and battle-tested question patterns. Read this after Document 1 and it should feel like déjà vu that hardens into reflex.</p>
+  <div class="hero-meta">
+    <div><strong>Format</strong>Cheat sheets + 36 questions</div>
+    <div><strong>Question Mix</strong>Single &amp; multiple response</div>
+    <div><strong>Use</strong>Active recall, click to reveal</div>
+    <div><strong>Target</strong>Instant pattern recognition</div>
+  </div>
+</header>
+
+<div class="wire">
+  <strong>How this file is wired to the masterclass.</strong> Every cheat section below carries a small chapter tag (e.g. <span class="chapref" style="margin:0">CH 09 · ROLES</span>) pointing back to where you learned it in Document 1. Each practice-question explanation ends with the same reference. The intent: you read the masterclass once for understanding, then this file re-fires those exact neurons under exam pressure — that repetition under a different framing is what builds durable memory.
+</div>
+
+<!-- TOC -->
+<nav class="toc">
+  <h2 class="toc-title" style="border:none;padding:0;">Inside this cracker</h2>
+  <ol>
+    <li><a href="#part1">The Exam-Day IAM Picture</a></li>
+    <li><a href="#part2">The Master Trigger → Answer Map</a></li>
+    <li><a href="#part3">Identity Types Cheat Sheet</a></li>
+    <li><a href="#part4">Policy Types Cheat Sheet</a></li>
+    <li><a href="#part5">The Evaluation Logic (Quick Ref)</a></li>
+    <li><a href="#part6">Roles, STS &amp; Cross-Account</a></li>
+    <li><a href="#part7">Federation &amp; Identity Center</a></li>
+    <li><a href="#part8">Organizations, SCPs &amp; Boundaries</a></li>
+    <li><a href="#part9">Conditions &amp; ABAC Quick Ref</a></li>
+    <li><a href="#part10">Audit Tools Cheat Sheet</a></li>
+    <li><a href="#part11">The Top 12 Traps That Fail People</a></li>
+    <li><a href="#part12">Practice Questions (×36)</a></li>
+  </ol>
+</nav>
+
+<!-- ════════════ PART 1 ════════════ -->
+<section id="part1">
+  <div class="knum">SECTION 01</div>
+  <h2>The Exam-Day IAM Picture</h2>
+  <p class="lead">Before any cheat sheet, lock in the framing the exam-writers actually use. IAM lives mostly inside the Security domain — the single largest at 30% — but it bleeds into every other domain too.</p>
+
+  <p>The Security domain is <strong>~30%</strong> of the exam, and IAM is its backbone. But almost every "service A talks to service B" question anywhere on the test is secretly an IAM-role question. Treat IAM not as one topic worth 30%, but as a lens you apply to half the exam.</p>
+
+  <div class="callout mem">
+    <span class="callout-label">The One-Sentence Summary of the Whole Topic</span>
+    On every request, AWS asks two things — <em>who are you</em> (authentication) and <em>what may you do</em> (authorization) — then runs a strict evaluation where <strong>an explicit Deny anywhere always wins</strong>, and where the right answer for any workload is almost always <strong>a role with temporary credentials</strong>, never a long-lived access key.
+  </div>
+
+  <h3>What the SAA-C03 keeps asking about IAM</h3>
+  <ul>
+    <li><strong>Service-to-service access</strong> → IAM role (the most common single pattern on the whole exam).</li>
+    <li><strong>Cross-account access</strong> → role with cross-account trust + (for 3rd parties) an External ID.</li>
+    <li><strong>Enterprise human access at scale</strong> → IAM Identity Center federated with the corporate IdP.</li>
+    <li><strong>Organization-wide guardrails</strong> → SCPs (which restrict, never grant).</li>
+    <li><strong>Safe delegation of IAM creation</strong> → permission boundaries.</li>
+    <li><strong>Fine-grained conditions</strong> → MFA, source IP, region lock, HTTPS-only, tag matching (ABAC).</li>
+    <li><strong>The "most secure / least overhead" qualifier</strong> → temporary credentials &amp; managed federation beat static keys &amp; manual setup every time.</li>
+  </ul>
+</section>
+
+<!-- ════════════ PART 2 ════════════ -->
+<section id="part2">
+  <div class="knum">SECTION 02</div>
+  <h2>The Master Trigger → Answer Map</h2>
+  <p class="lead">This is the single most valuable page in the file. Memorise the left column's phrasing; the exam reuses it almost verbatim. When you see the clue, the answer should already be in your mouth.</p>
+
+  <div class="trigmap">
+    <div class="trighead"><div>When the question says…</div><div>Reach for…</div></div>
+    <div class="trigrow"><div class="clue">"EC2 / Lambda / ECS needs to access S3 / DynamoDB / any AWS service"</div><div class="ans">IAM Role (service role) — never access keys</div></div>
+    <div class="trigrow"><div class="clue">"Don't store credentials on the instance / in code"</div><div class="ans">IAM Role + temporary creds via STS</div></div>
+    <div class="trigrow"><div class="clue">"Account A user needs to access Account B resources"</div><div class="ans">Cross-account IAM role (trust A, assume from A)</div></div>
+    <div class="trigrow"><div class="clue">"A third-party / external company needs access to your account"</div><div class="ans">Cross-account role + ExternalId condition</div></div>
+    <div class="trigrow"><div class="clue">"Corporate users with existing Active Directory / Okta want AWS access, no new IAM users"</div><div class="ans">Identity federation (SAML) / IAM Identity Center</div></div>
+    <div class="trigrow"><div class="clue">"10+ accounts, central SSO for employees using existing directory"</div><div class="ans">IAM Identity Center + IdP integration</div></div>
+    <div class="trigrow"><div class="clue">"App's end-users sign in with Google / Facebook / email"</div><div class="ans">Cognito (User Pool + Identity Pool)</div></div>
+    <div class="trigrow"><div class="clue">"GitHub Actions / EKS pod deploy to AWS without long-lived keys"</div><div class="ans">OIDC federation → AssumeRoleWithWebIdentity</div></div>
+    <div class="trigrow"><div class="clue">"Prevent any user — even root — in member accounts from doing X"</div><div class="ans">SCP (Service Control Policy)</div></div>
+    <div class="trigrow"><div class="clue">"Restrict which regions / services the whole org can use"</div><div class="ans">SCP with aws:RequestedRegion condition</div></div>
+    <div class="trigrow"><div class="clue">"Let developers create IAM roles without privilege escalation"</div><div class="ans">Permission Boundary</div></div>
+    <div class="trigrow"><div class="clue">"User must NEVER be able to do X regardless of other policies"</div><div class="ans">Explicit Deny statement</div></div>
+    <div class="trigrow"><div class="clue">"Require MFA for sensitive / destructive actions"</div><div class="ans">Condition: aws:MultiFactorAuthPresent = true</div></div>
+    <div class="trigrow"><div class="clue">"Only allow access from the office network"</div><div class="ans">Condition: aws:SourceIp (IpAddress)</div></div>
+    <div class="trigrow"><div class="clue">"Force all S3 traffic over HTTPS"</div><div class="ans">Bucket policy Deny on aws:SecureTransport=false</div></div>
+    <div class="trigrow"><div class="clue">"100s of projects, minimise number of policies/roles"</div><div class="ans">ABAC — match aws:PrincipalTag to aws:ResourceTag</div></div>
+    <div class="trigrow"><div class="clue">"Developer can launch EC2 but only attach a specific role"</div><div class="ans">iam:PassRole scoped to that role ARN</div></div>
+    <div class="trigrow"><div class="clue">"Find resources accidentally shared outside the account/org"</div><div class="ans">IAM Access Analyzer</div></div>
+    <div class="trigrow"><div class="clue">"Audit every IAM user's MFA / key age / last use"</div><div class="ans">IAM Credentials Report</div></div>
+    <div class="trigrow"><div class="clue">"Trim permissions nobody is actually using"</div><div class="ans">Access Advisor / Last Accessed data</div></div>
+    <div class="trigrow"><div class="clue">"Who deleted the bucket / launched that instance?"</div><div class="ans">CloudTrail</div></div>
+    <div class="trigrow"><div class="clue">"On-premises server needs AWS creds without static keys"</div><div class="ans">IAM Roles Anywhere (X.509 certs)</div></div>
+    <div class="trigrow"><div class="clue">"Strongest / phishing-resistant MFA"</div><div class="ans">FIDO2 hardware security key (e.g. YubiKey)</div></div>
+    <div class="trigrow"><div class="clue">"First thing to do on a new AWS account"</div><div class="ans">MFA on root + delete root keys + create admin user</div></div>
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-label">Drill This</span>
+    Cover the right column with your hand and read each clue aloud. If you can't answer instantly, that row is your study target. Most people can clear this whole table in two or three passes — and that table alone carries an enormous share of the IAM marks.
+  </div>
+</section>
+
+<!-- ════════════ PART 3 ════════════ -->
+<section id="part3">
+  <div class="knum">SECTION 03</div>
+  <h2>Identity Types Cheat Sheet <span class="chapref">CH 02–05, 09</span></h2>
+
+  <div class="table-wrap">
+  <table class="compare">
+    <tr><th></th><th>Root User</th><th>IAM User</th><th>IAM Group</th><th>IAM Role</th></tr>
+    <tr><td><strong>What</strong></td><td>The account owner identity</td><td>Permanent identity for a person/app</td><td>A bucket of users (admin tool)</td><td>Temporary, assumable identity</td></tr>
+    <tr><td><strong>Credentials</strong></td><td>Email + password (+MFA)</td><td>Password and/or access keys</td><td>None (not an identity)</td><td>None — temporary via STS</td></tr>
+    <tr><td><strong>Long-lived secret?</strong></td><td>Yes (lock it away)</td><td>Yes (the risk)</td><td>—</td><td>No (the win)</td></tr>
+    <tr><td><strong>Can assume roles?</strong></td><td>Yes</td><td>Yes</td><td>No</td><td>Yes (role chaining, 1h cap)</td></tr>
+    <tr><td><strong>Best for</strong></td><td>Emergency / break-glass only</td><td>Legacy 3rd-party tools, small accounts</td><td>Grouping permissions for users</td><td>Workloads, cross-account, federation</td></tr>
+    <tr><td><strong>Exam reflex</strong></td><td>"Lock + MFA + delete keys"</td><td>Rarely the right answer for workloads</td><td>"Attach policy to group not user"</td><td>The default right answer</td></tr>
+  </table>
+  </div>
+
+  <div class="callout trap">
+    <span class="callout-label">Quick-Hit Facts the Exam Tests</span>
+    Groups <strong>cannot be nested</strong>. A user can belong to <strong>10 groups</strong> max. Each user gets <strong>2 access keys</strong> max (for rotation). Up to <strong>5,000 IAM users</strong> per account. The root user <strong>cannot be restricted by IAM policies</strong> within its own account — only an SCP (from a parent org) can cap a member-account root.
+  </div>
+</section>
+
+<!-- ════════════ PART 4 ════════════ -->
+<section id="part4">
+  <div class="knum">SECTION 04</div>
+  <h2>Policy Types Cheat Sheet <span class="chapref">CH 06–07</span></h2>
+
+  <h3>Identity-based vs Resource-based</h3>
+  <div class="table-wrap">
+  <table class="compare">
+    <tr><th></th><th>Identity-Based</th><th>Resource-Based</th></tr>
+    <tr><td><strong>Attached to</strong></td><td>User, Group, or Role</td><td>A resource (S3, SQS, SNS, KMS, Lambda…)</td></tr>
+    <tr><td><strong>Has "Principal"?</strong></td><td>No (implicit)</td><td>Yes (explicit — you list who)</td></tr>
+    <tr><td><strong>Answers</strong></td><td>"What can this identity do?"</td><td>"Who can touch this resource?"</td></tr>
+    <tr><td><strong>Cross-account by itself?</strong></td><td>No</td><td>Yes (this is its superpower)</td></tr>
+  </table>
+  </div>
+
+  <h3>AWS-Managed vs Customer-Managed vs Inline</h3>
+  <div class="table-wrap">
+  <table class="compare">
+    <tr><th></th><th>AWS-Managed</th><th>Customer-Managed</th><th>Inline</th></tr>
+    <tr><td><strong>Author</strong></td><td>AWS</td><td>You</td><td>You</td></tr>
+    <tr><td><strong>Reusable</strong></td><td>Yes</td><td>Yes</td><td>No (1 identity only)</td></tr>
+    <tr><td><strong>Versioned</strong></td><td>By AWS</td><td>Yes</td><td>No</td></tr>
+    <tr><td><strong>Exam verdict</strong></td><td>Convenient, often too broad</td><td>Best practice for custom needs</td><td>Almost always the wrong answer</td></tr>
+  </table>
+  </div>
+
+  <div class="callout mem">
+    <span class="callout-label">Resources That Support Resource-Based Policies</span>
+    S3 buckets · SQS queues · SNS topics · <strong>KMS keys (required!)</strong> · Lambda functions · API Gateway · ECR repos · Secrets Manager secrets · EFS file systems. <br>
+    <strong>EC2 has none.</strong> DynamoDB historically had none (resource-based policies were added in 2024 — older exam material says "no").
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-label">Same Account vs Cross Account</span>
+    Same account = <strong>OR</strong> (identity policy OR resource policy allows → allowed, absent a deny). Cross account = <strong>AND</strong> (both the identity side AND the resource/role side must allow). Memorise: <em>"same = OR, cross = AND."</em>
+  </div>
+</section>
+
+<!-- ════════════ PART 5 ════════════ -->
+<section id="part5">
+  <div class="knum">SECTION 05</div>
+  <h2>The Evaluation Logic — Quick Ref <span class="chapref">CH 08, 16</span></h2>
+  <p class="lead">If you internalise one diagram for the exam, make it this one.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .box { fill: #1F232E; stroke: #ECE7DA; stroke-width: 1.5; }
+          .deny { fill: #2E1E1C; stroke: #E8533F; stroke-width: 2; }
+          .allow { fill: #16241B; stroke: #5FB979; stroke-width: 2; }
+          .lbl { font-family: 'Inter', sans-serif; font-size: 13px; fill: #ECE7DA; font-weight: 600; }
+          .sm { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #8A8676; }
+          .arrow { stroke: #ECE7DA; stroke-width: 1.5; fill: none; marker-end: url(#ae); }
+        </style>
+        <marker id="ae" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#ECE7DA"/></marker>
+      </defs>
+      <rect x="20" y="120" width="120" height="50" fill="#14161C" stroke="#ECE7DA" stroke-width="1.5" rx="6"/>
+      <text x="80" y="150" text-anchor="middle" class="lbl">Request</text>
+      <line x1="140" y1="145" x2="180" y2="145" class="arrow"/>
+      <polygon points="270,100 360,145 270,190 180,145" class="box"/>
+      <text x="270" y="142" text-anchor="middle" class="lbl">Explicit</text>
+      <text x="270" y="160" text-anchor="middle" class="lbl">DENY?</text>
+      <line x1="270" y1="100" x2="270" y2="60" class="arrow"/>
+      <text x="285" y="80" class="sm">YES</text>
+      <rect x="215" y="20" width="110" height="40" class="deny" rx="6"/>
+      <text x="270" y="45" text-anchor="middle" class="lbl">DENIED</text>
+      <line x1="360" y1="145" x2="400" y2="145" class="arrow"/>
+      <text x="372" y="138" class="sm">no</text>
+      <polygon points="490,100 580,145 490,190 400,145" class="box"/>
+      <text x="490" y="142" text-anchor="middle" class="lbl">Explicit</text>
+      <text x="490" y="160" text-anchor="middle" class="lbl">ALLOW?</text>
+      <line x1="490" y1="100" x2="490" y2="60" class="arrow"/>
+      <text x="505" y="80" class="sm">YES</text>
+      <rect x="435" y="20" width="110" height="40" class="allow" rx="6"/>
+      <text x="490" y="45" text-anchor="middle" class="lbl">ALLOWED</text>
+      <line x1="490" y1="190" x2="490" y2="240" class="arrow"/>
+      <text x="505" y="220" class="sm">no → default</text>
+      <rect x="435" y="240" width="110" height="40" class="deny" rx="6"/>
+      <text x="490" y="265" text-anchor="middle" class="lbl">DENIED</text>
+    </svg>
+    <div class="diagram-caption">Default deny → explicit Deny beats everything → otherwise need an explicit Allow.</div>
+  </div>
+
+  <h4>Full pipeline order (all layers must allow; any Deny kills it)</h4>
+  <ol>
+    <li><strong>SCPs</strong> — every SCP up the org tree must allow <em>(management account is exempt)</em></li>
+    <li><strong>Permission boundary</strong> — caps the identity if attached</li>
+    <li><strong>Identity-based policy</strong> — on the user/group/role</li>
+    <li><strong>Resource-based policy</strong> — on the target resource</li>
+    <li><strong>Session policies</strong> — passed at assume-time (advanced)</li>
+  </ol>
+
+  <div class="callout mem">
+    <span class="callout-label">The Three Rules That Win Marks</span>
+    1) <strong>Default = deny.</strong> No allow → denied. <br>
+    2) <strong>Explicit Deny always wins</strong> — over any number of Allows. <br>
+    3) <strong>SCPs only restrict, never grant.</strong> Even an "Allow s3:*" SCP grants nobody anything.
+  </div>
+</section>
+
+<!-- ════════════ PART 6 ════════════ -->
+<section id="part6">
+  <div class="knum">SECTION 06</div>
+  <h2>Roles, STS &amp; Cross-Account <span class="chapref">CH 09–11</span></h2>
+
+  <h3>Every role = two policies</h3>
+  <div class="table-wrap">
+  <table class="compare">
+    <tr><th>Policy on a Role</th><th>Type</th><th>Answers</th><th>Example</th></tr>
+    <tr><td><strong>Trust policy</strong></td><td>Resource-based</td><td>Who can assume me?</td><td><code>Principal: ec2.amazonaws.com</code></td></tr>
+    <tr><td><strong>Permission policy</strong></td><td>Identity-based</td><td>What can I do once assumed?</td><td><code>s3:GetObject on bucket/*</code></td></tr>
+  </table>
+  </div>
+
+  <h3>STS API quick reference</h3>
+  <div class="table-wrap">
+  <table>
+    <tr><th>API</th><th>For</th><th>Trigger phrase</th></tr>
+    <tr><td><code>AssumeRole</code></td><td>IAM identity → another IAM role</td><td>Cross-account, service-to-service</td></tr>
+    <tr><td><code>AssumeRoleWithSAML</code></td><td>SAML assertion → AWS creds</td><td>Active Directory / Okta enterprise SSO</td></tr>
+    <tr><td><code>AssumeRoleWithWebIdentity</code></td><td>OIDC/JWT → AWS creds</td><td>Google/Facebook login, EKS IRSA, GitHub Actions</td></tr>
+    <tr><td><code>GetSessionToken</code></td><td>Short-lived creds for self (often + MFA)</td><td>MFA-protected CLI calls</td></tr>
+    <tr><td><code>GetFederationToken</code></td><td>Custom identity broker</td><td>Legacy federation</td></tr>
+  </table>
+  </div>
+
+  <div class="callout mem">
+    <span class="callout-label">Number Facts to Memorise</span>
+    Temp creds default <strong>1 hour</strong>, configurable up to <strong>12 hours</strong> for direct assume. <strong>Role chaining is hard-capped at 1 hour</strong> regardless of max-session-duration. Temp access keys start with <code>ASIA</code> (vs <code>AKIA</code> for permanent). EC2 attaches a role via an <strong>instance profile</strong> wrapper (EC2-only quirk).
+  </div>
+
+  <div class="callout trap">
+    <span class="callout-label">PassRole — the sneaky one</span>
+    To <em>give</em> a role to a service (e.g. attach to an EC2 instance at launch) the caller needs <code>iam:PassRole</code> on that role — separate from assuming it. "Developer can't launch an instance with the app role attached" → missing <code>iam:PassRole</code>. Scope it tightly or a dev could attach an admin role and self-escalate.
+  </div>
+
+  <div class="callout trap">
+    <span class="callout-label">External ID — the confused-deputy fix</span>
+    Third-party assuming a role in your account → add <code>sts:ExternalId</code> in the trust policy. Without it, a malicious actor could trick the multi-tenant third party into assuming your role by impersonating one of its other customers. <strong>Third party = always External ID.</strong>
+  </div>
+
+  <h3>Cross-account S3 — three ways</h3>
+  <ul>
+    <li><strong>Bucket policy</strong> (resource-based) — most common, preferred.</li>
+    <li><strong>Cross-account IAM role</strong> — assume into the bucket's account.</li>
+    <li><strong>ACLs</strong> — legacy, now <em>disabled by default</em> on new buckets. Rarely the right exam answer anymore.</li>
+  </ul>
+</section>
+
+<!-- ════════════ PART 7 ════════════ -->
+<section id="part7">
+  <div class="knum">SECTION 07</div>
+  <h2>Federation &amp; Identity Center <span class="chapref">CH 12–13</span></h2>
+
+  <div class="table-wrap">
+  <table class="compare">
+    <tr><th></th><th>IAM Identity Center</th><th>Cognito</th><th>SAML/OIDC Federation</th></tr>
+    <tr><td><strong>Who</strong></td><td>Your employees</td><td>Your app's end-users</td><td>Workloads / single-account</td></tr>
+    <tr><td><strong>Scenario</strong></td><td>Staff sign into AWS across many accounts</td><td>Customers log into your mobile/web app</td><td>GitHub Actions, EKS IRSA, AD FS</td></tr>
+    <tr><td><strong>Trigger</strong></td><td>"central SSO", "multiple accounts", "corporate directory"</td><td>"social login", "user pool", "app users"</td><td>"web identity", "OIDC", "no long-lived keys"</td></tr>
+  </table>
+  </div>
+
+  <div class="callout mem">
+    <span class="callout-label">Cognito Sub-Parts (you'll need these later for Topic 21)</span>
+    <strong>User Pool</strong> = authentication (who you are; sign-up/sign-in; returns JWT). <strong>Identity Pool</strong> = authorization to AWS (exchanges a token for temporary AWS creds via STS so users can hit S3/DynamoDB directly).
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-label">Disambiguation Drill</span>
+    "Employees, many accounts, existing Okta" → <strong>Identity Center</strong>. "Customers of my app log in with Google" → <strong>Cognito</strong>. "Pipeline/pod needs AWS creds, no stored keys" → <strong>OIDC web-identity federation</strong>. The exam mixes these as distractors constantly.
+  </div>
+</section>
+
+<!-- ════════════ PART 8 ════════════ -->
+<section id="part8">
+  <div class="knum">SECTION 08</div>
+  <h2>Organizations, SCPs &amp; Boundaries <span class="chapref">CH 14–15</span></h2>
+
+  <div class="table-wrap">
+  <table class="compare">
+    <tr><th></th><th>SCP</th><th>Permission Boundary</th><th>IAM Policy</th></tr>
+    <tr><td><strong>Scope</strong></td><td>Account / OU (org-wide)</td><td>One user or role</td><td>One user/group/role</td></tr>
+    <tr><td><strong>Affects root?</strong></td><td>Yes (member-account root)</td><td>No</td><td>No (root unrestricted)</td></tr>
+    <tr><td><strong>Grants permissions?</strong></td><td><strong>No</strong> — restrict only</td><td><strong>No</strong> — restrict only</td><td>Yes — this is what grants</td></tr>
+    <tr><td><strong>Configured in</strong></td><td>AWS Organizations</td><td>IAM</td><td>IAM</td></tr>
+    <tr><td><strong>Use case</strong></td><td>Org guardrails</td><td>Safe IAM delegation to devs</td><td>Actual permission grants</td></tr>
+  </table>
+  </div>
+
+  <div class="callout trap">
+    <span class="callout-label">The Two SCP Traps That Fail People</span>
+    1) SCPs <strong>don't grant</strong> — a user still needs an IAM policy for the actual permission. <br>
+    2) SCPs <strong>don't apply to the management account</strong> — never run sensitive workloads there expecting SCP protection.
+  </div>
+
+  <div class="callout mem">
+    <span class="callout-label">Classic SCP Use Cases</span>
+    Deny disabling CloudTrail/GuardDuty · restrict allowed regions · block specific services org-wide · enforce mandatory resource tags · cap instance sizes in sandbox OUs. All apply even to a member-account's root user.
+  </div>
+
+  <p><strong>Allow-list vs Deny-list SCP strategy:</strong> default is deny-list (start from <code>FullAWSAccess</code>, add Deny rules) — lower overhead. Allow-list (only explicitly permitted services) is more secure but high maintenance — chosen by compliance-heavy industries.</p>
+</section>
+
+<!-- ════════════ PART 9 ════════════ -->
+<section id="part9">
+  <div class="knum">SECTION 09</div>
+  <h2>Conditions &amp; ABAC Quick Ref <span class="chapref">CH 17–18</span></h2>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Condition Key</th><th>Operator</th><th>Used for</th></tr>
+    <tr><td><code>aws:MultiFactorAuthPresent</code></td><td>Bool / BoolIfExists</td><td>Require MFA</td></tr>
+    <tr><td><code>aws:SourceIp</code></td><td>IpAddress</td><td>Restrict to IP ranges</td></tr>
+    <tr><td><code>aws:RequestedRegion</code></td><td>StringEquals / NotEquals</td><td>Lock down regions</td></tr>
+    <tr><td><code>aws:SecureTransport</code></td><td>Bool</td><td>Force HTTPS/TLS</td></tr>
+    <tr><td><code>aws:PrincipalTag/<em>Key</em></code></td><td>StringEquals</td><td>ABAC — caller's tag</td></tr>
+    <tr><td><code>aws:ResourceTag/<em>Key</em></code></td><td>StringEquals</td><td>ABAC — resource's tag</td></tr>
+    <tr><td><code>aws:PrincipalOrgID</code></td><td>StringEquals</td><td>Only principals from your org</td></tr>
+    <tr><td><code>aws:CurrentTime</code></td><td>DateGreaterThan…</td><td>Time-bounded access</td></tr>
+  </table>
+  </div>
+
+  <h4>ABAC vs RBAC</h4>
+  <div class="table-wrap">
+  <table class="compare">
+    <tr><th></th><th>RBAC (old)</th><th>ABAC (modern)</th></tr>
+    <tr><td><strong>How</strong></td><td>One role per job/project</td><td>Tags on principal + resource, matched in a condition</td></tr>
+    <tr><td><strong>New project</strong></td><td>New role + new policy</td><td>Just tag it — zero policy change</td></tr>
+    <tr><td><strong>Scales?</strong></td><td>Poorly (policy explosion)</td><td>Yes — one policy covers all</td></tr>
+    <tr><td><strong>Trigger</strong></td><td>—</td><td>"100s of projects, minimise policies"</td></tr>
+  </table>
+  </div>
+
+  <pre><span class="c">// The canonical ABAC condition — match caller tag to resource tag</span>
+<span class="s">"Condition"</span>: {
+  <span class="s">"StringEquals"</span>: {
+    <span class="s">"aws:ResourceTag/Project"</span>: <span class="s">"${aws:PrincipalTag/Project}"</span>
+  }
+}</pre>
+
+  <div class="callout mem">
+    <span class="callout-label">The Four Condition Recipes Worth Reflex-Memorising</span>
+    MFA → <code>Bool aws:MultiFactorAuthPresent true</code> · IP → <code>IpAddress aws:SourceIp</code> · HTTPS → <code>Bool aws:SecureTransport false</code> (as a Deny) · Region → <code>StringNotEquals aws:RequestedRegion</code> (as a Deny).
+  </div>
+</section>
+
+<!-- ════════════ PART 10 ════════════ -->
+<section id="part10">
+  <div class="knum">SECTION 10</div>
+  <h2>Audit Tools Cheat Sheet <span class="chapref">CH 20</span></h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Tool</th><th>Answers the question</th><th>Reactive / Proactive</th></tr>
+    <tr><td><strong>IAM Access Analyzer</strong></td><td>"What's reachable from outside my account/org?" + generate least-priv policy from usage</td><td>Proactive</td></tr>
+    <tr><td><strong>Credentials Report</strong></td><td>"MFA status, key age, last-use for every user" (CSV)</td><td>Periodic audit</td></tr>
+    <tr><td><strong>Access Advisor</strong></td><td>"Which granted services has this identity actually used?"</td><td>Trim unused perms</td></tr>
+    <tr><td><strong>Policy Simulator</strong></td><td>"Would this action be allowed if I tried it?"</td><td>Pre-flight test</td></tr>
+    <tr><td><strong>CloudTrail</strong></td><td>"Who did what, when, from where?"</td><td>Reactive forensics</td></tr>
+    <tr><td><strong>IAM Roles Anywhere</strong></td><td>"On-prem server gets AWS creds via X.509, no static keys"</td><td>Hybrid enablement</td></tr>
+  </table>
+  </div>
+  <div class="callout trap">
+    <span class="callout-label">The Classic Mix-Up</span>
+    <strong>CloudTrail</strong> = who did what (events, reactive). <strong>Access Analyzer</strong> = what's exposed externally (config, proactive). Don't swap them.
+  </div>
+</section>
+
+<!-- ════════════ PART 11 ════════════ -->
+<section id="part11">
+  <div class="knum">SECTION 11</div>
+  <h2>The Top 12 Traps That Fail People</h2>
+  <p class="lead">Read this list the morning of the exam. Each one is a wrong answer the exam dangles in front of you.</p>
+  <ol>
+    <li><strong>Access keys on EC2/Lambda.</strong> Service-to-service is <em>always</em> a role. Keys = wrong.</li>
+    <li><strong>SCPs grant permissions.</strong> They don't — they only cap. Identity policy still required.</li>
+    <li><strong>SCPs protect the management account.</strong> They don't apply there.</li>
+    <li><strong>Root is exempt from SCPs.</strong> No — a member-account root <em>is</em> capped by SCPs.</li>
+    <li><strong>Allow can override Deny.</strong> Never. Explicit Deny always wins.</li>
+    <li><strong>Nested groups.</strong> Not a thing in IAM.</li>
+    <li><strong>Forgetting iam:PassRole.</strong> Launching with a role attached needs PassRole, not just RunInstances.</li>
+    <li><strong>Skipping External ID for third parties.</strong> Confused-deputy risk; always include it.</li>
+    <li><strong>s3:GetObject ≠ s3:ListBucket.</strong> Different actions on different resources (object vs bucket).</li>
+    <li><strong>Role chaining keeps the 12h max.</strong> No — chaining is capped at 1 hour.</li>
+    <li><strong>S3 ACLs as the modern answer.</strong> Deprecated/disabled by default; prefer bucket policies.</li>
+    <li><strong>IAM users for enterprise staff across many accounts.</strong> Use Identity Center federation instead.</li>
+  </ol>
+</section>
+
+<!-- ════════════ PART 12 — QUESTIONS ════════════ -->
+<section id="part12">
+  <div class="knum">SECTION 12</div>
+  <h2>Practice Questions ×36</h2>
+
+  <div class="qmeta">
+    <div class="qmeta-title">How to use this bank</div>
+    <p>Answer each question <em>out loud or on paper first</em> — commit before you peek. Then click <strong>Reveal</strong>. The explanation tells you why the right answer is right <em>and</em> why each trap is wrong, then points back to the masterclass chapter so you can re-read if it's shaky. Questions are roughly ordered easy → hard and mirror real SAA-C03 phrasing: watch for <strong>MOST secure</strong>, <strong>LEAST operational overhead</strong>, and <strong>(Choose TWO)</strong> qualifiers. There are 30 single-response and 6 multiple-response questions.</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q">
+    <div class="q-num">QUESTION 01</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A solutions architect has just created a new AWS account. According to AWS best practices, what should be done <strong>first</strong> with the root user?</div>
+    <ul class="q-opts">
+      <li>Generate access keys for the root user so automation scripts can manage the account</li>
+      <li data-correct>Enable MFA on the root user, delete any root access keys, and create an IAM admin identity for daily work</li>
+      <li>Attach the AdministratorAccess policy to the root user</li>
+      <li>Use the root user for all administrative tasks since it is the most powerful identity</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      The root user is all-powerful and cannot be restricted within its own account, so it must be locked down immediately: strong password, MFA, no access keys, and daily work moves to a scoped IAM/Identity Center identity.
+      <div class="why-wrong"><strong>A &amp; D</strong> use root for routine work — the single most dangerous AWS habit. <strong>C</strong> is meaningless: root already has full power; attaching a policy adds nothing and signals misunderstanding.</div>
+      <span class="chref">↩ Masterclass Ch 02 — The Root User</span>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q">
+    <div class="q-num">QUESTION 02</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">An application running on an EC2 instance needs to read objects from an S3 bucket. What is the <strong>most secure</strong> way to grant this access?</div>
+    <ul class="q-opts">
+      <li>Create an IAM user, generate access keys, and store them in the application's config file</li>
+      <li>Embed the AWS account's root credentials in an environment variable on the instance</li>
+      <li data-correct>Create an IAM role with S3 read permissions and attach it to the EC2 instance</li>
+      <li>Make the S3 bucket public so the instance can read it without credentials</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      Service-to-service access is always an IAM role. The instance receives auto-rotating temporary credentials via the metadata service; no long-lived secret ever lands on disk.
+      <div class="why-wrong"><strong>A</strong> puts long-lived keys on disk (leak/AMI risk). <strong>B</strong> is catastrophic — root creds on an instance. <strong>D</strong> exposes data to the entire internet to avoid an auth setup.</div>
+      <span class="chref">↩ Masterclass Ch 09 — IAM Roles</span>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q">
+    <div class="q-num">QUESTION 03</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A user has two attached policies. Policy A allows <code>s3:*</code> on all resources. Policy B explicitly denies <code>s3:DeleteBucket</code>. The user attempts to delete a bucket. What happens?</div>
+    <ul class="q-opts">
+      <li>Allowed — Policy A's wildcard takes precedence over the specific deny</li>
+      <li data-correct>Denied — an explicit Deny always overrides any Allow</li>
+      <li>Allowed — the most recently attached policy wins</li>
+      <li>It depends on the alphabetical order of the policy names</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      The evaluation rule is absolute: if any applicable statement explicitly denies the action, the request is denied — regardless of how many allows exist.
+      <div class="why-wrong"><strong>A, C, D</strong> all invent precedence rules that don't exist. There is no "wildcard wins," "newest wins," or "alphabetical" logic — Deny simply beats Allow.</div>
+      <span class="chref">↩ Masterclass Ch 08 — Evaluation Logic</span>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q">
+    <div class="q-num">QUESTION 04</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A company has 14 AWS accounts under AWS Organizations and wants employees to sign in once using their existing Okta directory and access the accounts they're entitled to. What should they use?</div>
+    <ul class="q-opts">
+      <li>Create identical IAM users in all 14 accounts and sync passwords manually</li>
+      <li>Configure SAML federation separately in each of the 14 accounts</li>
+      <li data-correct>Use IAM Identity Center integrated with Okta as the external identity provider</li>
+      <li>Share a single set of admin access keys across all employees</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      Identity Center is purpose-built for centralised SSO across many accounts using an existing corporate IdP. Define permission sets once, assign users/groups to account combinations, one login portal.
+      <div class="why-wrong"><strong>A</strong> is enormous manual overhead and insecure. <strong>B</strong> works but means configuring federation 14 times — exactly what Identity Center eliminates. <strong>D</strong> is a severe security anti-pattern.</div>
+      <span class="chref">↩ Masterclass Ch 13 — IAM Identity Center</span>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q">
+    <div class="q-num">QUESTION 05</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A third-party monitoring SaaS company needs read access to resources in your AWS account. What is the recommended way to grant it?</div>
+    <ul class="q-opts">
+      <li>Create an IAM user for the vendor and email them the access keys</li>
+      <li data-correct>Create a cross-account IAM role with the vendor's account as principal and require an External ID in the trust policy</li>
+      <li>Make the relevant resources public and send the vendor the URLs</li>
+      <li>Add the vendor's employees as IAM users in your account</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      Third-party access uses a cross-account role, and the External ID condition defends against the confused-deputy problem (the vendor being tricked into assuming your role on behalf of an attacker).
+      <div class="why-wrong"><strong>A</strong> shares long-lived keys with an outside party — never. <strong>C</strong> exposes data publicly. <strong>D</strong> puts external people inside your account as users — wrong trust model.</div>
+      <span class="chref">↩ Masterclass Ch 11 — Cross-Account &amp; External ID</span>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q">
+    <div class="q-num">QUESTION 06</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Security requires that no IAM user or role in any member account — <strong>including the root user</strong> — can disable CloudTrail. What achieves this across the entire organisation?</div>
+    <ul class="q-opts">
+      <li>An IAM policy attached to every user in every account</li>
+      <li>A permission boundary on each account's admin role</li>
+      <li data-correct>A Service Control Policy (SCP) denying cloudtrail:StopLogging and cloudtrail:DeleteTrail</li>
+      <li>A resource-based policy on the CloudTrail trail</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      SCPs apply to every principal in member accounts — including their root user — and can't be removed by member-account admins. A Deny SCP is the standard anti-tampering guardrail.
+      <div class="why-wrong"><strong>A</strong> doesn't scale and member admins could remove it; also doesn't bind root. <strong>B</strong> only affects the specific role it's attached to, not root or everyone. <strong>D</strong> CloudTrail trails aren't governed this way org-wide.</div>
+      <span class="chref">↩ Masterclass Ch 14 — Organizations &amp; SCPs</span>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q">
+    <div class="q-num">QUESTION 07</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A platform team wants to let developers create IAM roles for their own applications, but must guarantee a developer can never create a role with more than read-only S3 permissions. What should they implement?</div>
+    <ul class="q-opts">
+      <li>An SCP on the developer's account</li>
+      <li data-correct>A permission boundary that developers are required to attach to every role they create</li>
+      <li>Remove all IAM permissions from developers</li>
+      <li>A resource-based policy on the IAM service</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      Permission boundaries cap the maximum permissions of an identity. By forcing developers (via a condition on <code>iam:PermissionsBoundary</code>) to attach the boundary to roles they create, nothing they create can exceed the boundary — safe delegation.
+      <div class="why-wrong"><strong>A</strong> SCP is account-wide and is the wrong granularity for "the roles devs create." <strong>C</strong> blocks the legitimate workflow entirely. <strong>D</strong> IAM has no such resource policy mechanism here.</div>
+      <span class="chref">↩ Masterclass Ch 15 — Permission Boundaries</span>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q">
+    <div class="q-num">QUESTION 08</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A developer can run <code>ec2:RunInstances</code> but gets an error when launching an instance with an IAM role attached. What permission is most likely missing?</div>
+    <ul class="q-opts">
+      <li><code>sts:AssumeRole</code> on the role</li>
+      <li><code>ec2:AssociateIamInstanceProfile</code> only</li>
+      <li data-correct><code>iam:PassRole</code> scoped to the role being attached</li>
+      <li><code>iam:CreateRole</code></li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      Attaching (passing) a role to a service requires <code>iam:PassRole</code> on that role — distinct from assuming or creating it. This is one of the most commonly missed permissions.
+      <div class="why-wrong"><strong>A</strong> AssumeRole lets you become the role yourself, not give it to EC2. <strong>B</strong> alone is insufficient without PassRole. <strong>D</strong> CreateRole is about making roles, not attaching existing ones.</div>
+      <span class="chref">↩ Masterclass Ch 10 — PassRole</span>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q">
+    <div class="q-num">QUESTION 09</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A company has hundreds of projects, each with its own developers and resources, and the number is growing weekly. They want to minimise the number of IAM policies they maintain. Which approach fits best?</div>
+    <ul class="q-opts">
+      <li>Create one IAM role per project (RBAC)</li>
+      <li data-correct>Use ABAC — tag principals and resources with a Project tag and write one policy that matches them</li>
+      <li>Give all developers AdministratorAccess and trust them</li>
+      <li>Create a separate AWS account per project</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      ABAC compares <code>aws:PrincipalTag/Project</code> to <code>aws:ResourceTag/Project</code> in a single policy. New projects need only tags — zero policy changes. This is exactly the "minimise policies at scale" trigger.
+      <div class="why-wrong"><strong>A</strong> RBAC causes policy explosion — the problem being solved. <strong>C</strong> violates least privilege grossly. <strong>D</strong> hundreds of accounts is huge overhead and doesn't address policy count.</div>
+      <span class="chref">↩ Masterclass Ch 18 — ABAC vs RBAC</span>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q">
+    <div class="q-num">QUESTION 10</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Which statement about Service Control Policies (SCPs) is <strong>true</strong>?</div>
+    <ul class="q-opts">
+      <li>SCPs grant permissions to users in member accounts</li>
+      <li>SCPs apply to the Organization's management account</li>
+      <li data-correct>SCPs define the maximum available permissions but never grant any permission by themselves</li>
+      <li>SCPs can be bypassed by a member account's root user</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      SCPs are a ceiling. An action is only permitted if the SCP allows it AND an IAM policy grants it. SCP alone grants nothing.
+      <div class="why-wrong"><strong>A</strong> is the #1 SCP misconception. <strong>B</strong> false — the management account is exempt. <strong>D</strong> false — member-account root is bound by SCPs.</div>
+      <span class="chref">↩ Masterclass Ch 14 — SCPs</span>
+    </div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q">
+    <div class="q-num">QUESTION 11</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">An S3 bucket must reject any request that is not made over HTTPS. What is the correct mechanism?</div>
+    <ul class="q-opts">
+      <li>Enable default encryption on the bucket</li>
+      <li data-correct>A bucket policy with an explicit Deny when <code>aws:SecureTransport</code> is <code>false</code></li>
+      <li>Enable S3 Block Public Access</li>
+      <li>Attach an SCP requiring TLS</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      The <code>aws:SecureTransport</code> condition tests whether the request used TLS. A Deny when it's false enforces HTTPS-only — a canonical bucket-policy recipe.
+      <div class="why-wrong"><strong>A</strong> encryption-at-rest is unrelated to transport security. <strong>C</strong> controls public access, not protocol. <strong>D</strong> SCPs operate at the account/principal level, not per-bucket transport rules; a bucket policy is correct here.</div>
+      <span class="chref">↩ Masterclass Ch 17 — Conditions (HTTPS recipe)</span>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q">
+    <div class="q-num">QUESTION 12</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Which credential type should an application use when it runs on AWS infrastructure and you want to avoid managing any long-lived secrets?</div>
+    <ul class="q-opts">
+      <li>IAM user access keys stored in Secrets Manager</li>
+      <li>Root user access keys</li>
+      <li data-correct>Temporary credentials obtained by assuming an IAM role via STS</li>
+      <li>A shared password rotated every 30 days</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      Temporary STS credentials (from an attached role) expire automatically and are rotated by AWS — no long-lived secret to leak or manage.
+      <div class="why-wrong"><strong>A</strong> still relies on long-lived keys (even if stored well). <strong>B</strong> never use root keys. <strong>D</strong> passwords aren't how apps authenticate to AWS APIs.</div>
+      <span class="chref">↩ Masterclass Ch 10 — STS</span>
+    </div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q">
+    <div class="q-num">QUESTION 13</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A GitHub Actions workflow needs to deploy to AWS. The security team forbids storing long-lived AWS access keys in GitHub. What is the recommended pattern?</div>
+    <ul class="q-opts">
+      <li>Store an IAM user's access key as an encrypted GitHub secret</li>
+      <li data-correct>Configure GitHub as an OIDC identity provider in IAM and let the workflow assume a role via AssumeRoleWithWebIdentity</li>
+      <li>Hard-code temporary credentials in the workflow file</li>
+      <li>Use the root user's access keys for the deployment</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      OIDC web-identity federation lets the workflow exchange a short-lived GitHub-issued token for AWS credentials — no static keys stored anywhere. This is the modern industry standard.
+      <div class="why-wrong"><strong>A</strong> stores a long-lived key — exactly what's forbidden. <strong>C</strong> temp creds expire and can't be hard-coded usefully. <strong>D</strong> root keys, never.</div>
+      <span class="chref">↩ Masterclass Ch 12 — OIDC Federation</span>
+    </div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="q">
+    <div class="q-num">QUESTION 14</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">An administrator wants a CSV listing every IAM user along with their MFA status, password age, and access-key last-used date. Which feature provides this?</div>
+    <ul class="q-opts">
+      <li>CloudTrail event history</li>
+      <li>IAM Access Analyzer</li>
+      <li data-correct>IAM Credentials Report</li>
+      <li>AWS Config</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      The Credentials Report is a downloadable CSV of all users' credential metadata — the go-to for credential hygiene audits.
+      <div class="why-wrong"><strong>A</strong> CloudTrail logs API calls, not a credential roster. <strong>B</strong> Access Analyzer finds external exposure. <strong>D</strong> Config tracks resource configuration, not IAM credential ages.</div>
+      <span class="chref">↩ Masterclass Ch 20 — Audit Toolkit</span>
+    </div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="q">
+    <div class="q-num">QUESTION 15</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Which tool proactively identifies S3 buckets, IAM roles, or KMS keys that are accessible from <strong>outside</strong> your account or organisation?</div>
+    <ul class="q-opts">
+      <li>CloudTrail</li>
+      <li data-correct>IAM Access Analyzer</li>
+      <li>Policy Simulator</li>
+      <li>Trusted Advisor cost checks</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      Access Analyzer continuously analyses resource policies to surface anything reachable by external principals — a proactive misconfiguration detector.
+      <div class="why-wrong"><strong>A</strong> is reactive event logging. <strong>C</strong> tests hypothetical permission outcomes, not external exposure. <strong>D</strong> is cost/perf advice, not access analysis.</div>
+      <span class="chref">↩ Masterclass Ch 20 — Access Analyzer</span>
+    </div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="q">
+    <div class="q-num">QUESTION 16</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A user complains that <code>aws s3 ls s3://reports</code> fails even though their policy grants <code>s3:GetObject</code> on <code>arn:aws:s3:::reports/*</code>. Why?</div>
+    <ul class="q-opts">
+      <li>GetObject is deprecated</li>
+      <li data-correct>Listing a bucket requires <code>s3:ListBucket</code> on the bucket ARN (without /*), which is a different permission</li>
+      <li>The bucket is in another region</li>
+      <li>The CLI needs root credentials to list buckets</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      <code>s3:GetObject</code> acts on objects (<code>bucket/*</code>); listing acts on the bucket itself (<code>arn:aws:s3:::reports</code>, no <code>/*</code>) and needs <code>s3:ListBucket</code>. Object-read and bucket-list are separate permissions.
+      <div class="why-wrong"><strong>A</strong> GetObject is not deprecated. <strong>C</strong> region wouldn't cause an auth failure like this. <strong>D</strong> root is never required for routine S3 listing.</div>
+      <span class="chref">↩ Masterclass Ch 06 — GetObject vs ListBucket trap</span>
+    </div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="q">
+    <div class="q-num">QUESTION 17</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A mobile game lets players sign in with their Google or Facebook accounts, and then upload screenshots directly to S3. Which AWS service handles the player identities and issues temporary AWS credentials?</div>
+    <ul class="q-opts">
+      <li>IAM Identity Center</li>
+      <li data-correct>Amazon Cognito (User Pool for sign-in, Identity Pool for AWS credentials)</li>
+      <li>AWS Directory Service</li>
+      <li>IAM users, one per player</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      Cognito is built for <em>your application's end-users</em>. The User Pool authenticates (incl. social login); the Identity Pool exchanges that for temporary AWS credentials so players can write to S3 directly.
+      <div class="why-wrong"><strong>A</strong> Identity Center is for your employees, not app customers. <strong>C</strong> Directory Service is managed AD for enterprise resources. <strong>D</strong> an IAM user per player would be absurd and hit the 5,000-user limit instantly.</div>
+      <span class="chref">↩ Masterclass Ch 13 — Identity Center vs Cognito</span>
+    </div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="q">
+    <div class="q-num">QUESTION 18</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Which of the following best describes the difference between an IAM role's trust policy and its permission policy?</div>
+    <ul class="q-opts">
+      <li>They are identical; the names are interchangeable</li>
+      <li data-correct>The trust policy defines who can assume the role; the permission policy defines what the role can do once assumed</li>
+      <li>The trust policy grants permissions; the permission policy restricts regions</li>
+      <li>Roles only have permission policies, not trust policies</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      Every role has two distinct policies answering two questions: trust = "who may wear this hat?" (resource-based, lists the Principal); permission = "what can the wearer do?" (identity-based).
+      <div class="why-wrong"><strong>A</strong> they serve completely different purposes. <strong>C</strong> reverses/confuses their roles. <strong>D</strong> false — the trust policy is mandatory on a role.</div>
+      <span class="chref">↩ Masterclass Ch 09 — Two policies on a role</span>
+    </div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="q">
+    <div class="q-num">QUESTION 19</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A company wants to prevent all member accounts in a specific OU from using any AWS region except <code>eu-west-1</code> and <code>eu-central-1</code>. What is the simplest way?</div>
+    <ul class="q-opts">
+      <li>Delete IAM permissions in other regions</li>
+      <li data-correct>Attach an SCP to the OU that denies all actions when <code>aws:RequestedRegion</code> is not one of the allowed regions</li>
+      <li>Use a NACL to block traffic to other regions</li>
+      <li>Set a permission boundary on every user</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      A Deny SCP with a <code>StringNotEquals aws:RequestedRegion</code> condition applies org-wide to every principal in the OU's accounts — the standard region-lock pattern.
+      <div class="why-wrong"><strong>A</strong> isn't how regional IAM works and doesn't scale. <strong>C</strong> NACLs are network-layer, not API-region controls. <strong>D</strong> boundaries are per-identity, far too granular and unmanageable here.</div>
+      <span class="chref">↩ Masterclass Ch 14 + Ch 17 — Region-lock SCP</span>
+    </div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="q">
+    <div class="q-num">QUESTION 20</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">An enterprise with on-premises Active Directory wants employees to access the AWS Console using their existing AD credentials, without creating IAM users. Which approach fits a <strong>single-account</strong> SAML setup?</div>
+    <ul class="q-opts">
+      <li>Cognito User Pools</li>
+      <li data-correct>Set up a SAML 2.0 identity provider in IAM and use AssumeRoleWithSAML to map AD groups to IAM roles</li>
+      <li>Create one IAM user per employee and sync passwords</li>
+      <li>Use IAM Roles Anywhere</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      SAML federation lets AD-authenticated users exchange a signed assertion for temporary AWS creds via <code>AssumeRoleWithSAML</code> — no IAM users needed. (At multi-account scale you'd layer Identity Center on top, but for a single account this SAML pattern is the classic answer.)
+      <div class="why-wrong"><strong>A</strong> Cognito is for app end-users. <strong>C</strong> defeats the "no IAM users" requirement. <strong>D</strong> Roles Anywhere is for non-AWS <em>servers</em> using certificates, not human AD sign-in.</div>
+      <span class="chref">↩ Masterclass Ch 12 — SAML Federation</span>
+    </div>
+  </div>
+
+  <!-- Q21 -->
+  <div class="q">
+    <div class="q-num">QUESTION 21</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Why might a session created through role chaining expire after only 1 hour even though the role's maximum session duration is set to 12 hours?</div>
+    <ul class="q-opts">
+      <li>The 12-hour setting only applies to the console</li>
+      <li data-correct>Role chaining (assuming a role from within an already-assumed role) is hard-capped at a 1-hour session</li>
+      <li>STS is rate-limited after 1 hour</li>
+      <li>MFA sessions always expire in 1 hour</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      When you assume a role <em>from</em> another assumed-role session, AWS caps the resulting session at 1 hour regardless of the configured max. To get the full duration you must assume directly from the original identity.
+      <div class="why-wrong"><strong>A</strong> max-session-duration applies to CLI/SDK too. <strong>C</strong> no such rate-limit behaviour. <strong>D</strong> MFA session lengths are configurable and unrelated to chaining.</div>
+      <span class="chref">↩ Masterclass Ch 10 — Role chaining limit</span>
+    </div>
+  </div>
+
+  <!-- Q22 -->
+  <div class="q">
+    <div class="q-num">QUESTION 22</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">For day-to-day administration, you should attach permission policies to an IAM ____ rather than to individual users, to simplify management.</div>
+    <ul class="q-opts">
+      <li>role's trust policy</li>
+      <li data-correct>group</li>
+      <li>access key</li>
+      <li>nested sub-group</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      Attaching policies to groups means changes propagate to all members and onboarding is "add user to group." Per-user policies create sprawl.
+      <div class="why-wrong"><strong>A</strong> trust policies control assumption, not group permission management. <strong>C</strong> access keys aren't policy targets. <strong>D</strong> nested groups don't exist in IAM.</div>
+      <span class="chref">↩ Masterclass Ch 05 — Groups</span>
+    </div>
+  </div>
+
+  <!-- Q23 -->
+  <div class="q">
+    <div class="q-num">QUESTION 23</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A regulated customer requires the <strong>strongest, phishing-resistant</strong> MFA for their AWS administrators. Which option should they choose?</div>
+    <ul class="q-opts">
+      <li>SMS text-message codes</li>
+      <li>Email one-time codes</li>
+      <li data-correct>FIDO2 hardware security keys (e.g., YubiKey)</li>
+      <li>Security questions</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      FIDO2 / U2F hardware keys are phishing-resistant because the cryptographic challenge is bound to the legitimate domain — a fake site can't relay it. The strongest MFA AWS supports.
+      <div class="why-wrong"><strong>A</strong> SMS is vulnerable to SIM-swap and phishing. <strong>B</strong> email codes are phishable. <strong>D</strong> security questions aren't MFA at all.</div>
+      <span class="chref">↩ Masterclass Ch 04 — MFA types</span>
+    </div>
+  </div>
+
+  <!-- Q24 -->
+  <div class="q">
+    <div class="q-num">QUESTION 24</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Which policy is <strong>required</strong> as the primary access-control mechanism for an AWS KMS key (you cannot rely on identity policies alone)?</div>
+    <ul class="q-opts">
+      <li>An SCP</li>
+      <li>A permission boundary</li>
+      <li data-correct>The KMS key policy (a resource-based policy)</li>
+      <li>An S3 bucket policy</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      KMS is unusual: the key policy is the root of trust for the key. Without the key policy granting access, IAM identity policies alone cannot grant use of the key.
+      <div class="why-wrong"><strong>A &amp; B</strong> only restrict, never grant, and operate at different scopes. <strong>D</strong> is for S3 buckets, not KMS keys.</div>
+      <span class="chref">↩ Masterclass Ch 07 — Resource-based policies (KMS)</span>
+    </div>
+  </div>
+
+  <!-- Q25 -->
+  <div class="q">
+    <div class="q-num">QUESTION 25</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">For cross-account access via a resource-based policy, which statement about policy evaluation is correct?</div>
+    <ul class="q-opts">
+      <li>Only the resource policy needs to allow it</li>
+      <li>Only the identity policy needs to allow it</li>
+      <li data-correct>Both the identity policy in the source account AND the resource/role policy in the destination must allow it</li>
+      <li>Cross-account access is impossible without sharing access keys</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      Same-account = OR (either policy can allow). Cross-account = AND (both sides must allow). This "same = OR, cross = AND" rule is a frequent exam discriminator.
+      <div class="why-wrong"><strong>A &amp; B</strong> describe the same-account behaviour, not cross-account. <strong>D</strong> cross-account works fine via roles/resource policies without sharing keys.</div>
+      <span class="chref">↩ Masterclass Ch 16 — Full evaluation pipeline</span>
+    </div>
+  </div>
+
+  <!-- Q26 -->
+  <div class="q">
+    <div class="q-num">QUESTION 26</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">An on-premises server (not in AWS) needs to obtain temporary AWS credentials without storing long-lived access keys. Which AWS feature is designed for this?</div>
+    <ul class="q-opts">
+      <li>EC2 instance profiles</li>
+      <li data-correct>IAM Roles Anywhere (using X.509 certificates)</li>
+      <li>Cognito Identity Pools</li>
+      <li>S3 presigned URLs</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      IAM Roles Anywhere lets workloads <em>outside</em> AWS exchange a trusted X.509 certificate for temporary credentials via STS — ideal for hybrid/on-prem servers.
+      <div class="why-wrong"><strong>A</strong> instance profiles are EC2-only. <strong>C</strong> Cognito is for app end-users. <strong>D</strong> presigned URLs grant time-limited access to one S3 object, not general AWS creds.</div>
+      <span class="chref">↩ Masterclass Ch 20 — IAM Roles Anywhere</span>
+    </div>
+  </div>
+
+  <!-- Q27 -->
+  <div class="q">
+    <div class="q-num">QUESTION 27</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Which condition key would you use to ensure a sensitive action is only allowed when the request originates from the corporate office IP range?</div>
+    <ul class="q-opts">
+      <li><code>aws:PrincipalOrgID</code></li>
+      <li data-correct><code>aws:SourceIp</code> with the <code>IpAddress</code> operator</li>
+      <li><code>aws:SecureTransport</code></li>
+      <li><code>aws:RequestedRegion</code></li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      <code>aws:SourceIp</code> tested with the <code>IpAddress</code> operator against a CIDR range is the standard way to restrict access to known networks.
+      <div class="why-wrong"><strong>A</strong> restricts by org membership, not IP. <strong>C</strong> enforces TLS, not source IP. <strong>D</strong> locks regions, not IPs.</div>
+      <span class="chref">↩ Masterclass Ch 17 — Conditions</span>
+    </div>
+  </div>
+
+  <!-- Q28 -->
+  <div class="q">
+    <div class="q-num">QUESTION 28</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">Which of the following is the recommended way to apply the same set of custom permissions to many users and be able to update them in one place?</div>
+    <ul class="q-opts">
+      <li>An inline policy on each user</li>
+      <li data-correct>A customer-managed policy attached to a group (or the relevant identities)</li>
+      <li>Copying the JSON into each user manually</li>
+      <li>An SCP</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: B</span>
+      Customer-managed policies are reusable, versioned, and updated centrally; attaching to a group propagates instantly to all members.
+      <div class="why-wrong"><strong>A</strong> inline policies aren't reusable — one identity each. <strong>C</strong> manual copying is error-prone and unmaintainable. <strong>D</strong> SCPs restrict, they don't grant the actual permissions.</div>
+      <span class="chref">↩ Masterclass Ch 07 — Managed vs Inline</span>
+    </div>
+  </div>
+
+  <!-- Q29 -->
+  <div class="q">
+    <div class="q-num">QUESTION 29</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">A security team needs to determine exactly who deleted a critical S3 bucket and when. Which service provides this?</div>
+    <ul class="q-opts">
+      <li>IAM Access Analyzer</li>
+      <li>AWS Config</li>
+      <li data-correct>AWS CloudTrail</li>
+      <li>IAM Credentials Report</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      CloudTrail records every API call with the identity, timestamp, and source — the authoritative "who did what, when" forensic source.
+      <div class="why-wrong"><strong>A</strong> finds external exposure, not historical actions. <strong>B</strong> Config tracks configuration state/compliance, not the actor of an API call. <strong>D</strong> the Credentials Report is a current credential snapshot, not an event log.</div>
+      <span class="chref">↩ Masterclass Ch 20 — CloudTrail</span>
+    </div>
+  </div>
+
+  <!-- Q30 -->
+  <div class="q">
+    <div class="q-num">QUESTION 30</div>
+    <div class="q-type">Single response</div>
+    <div class="q-stem">In the IAM evaluation pipeline, which layer is <strong>exempt</strong> from Service Control Policies?</div>
+    <ul class="q-opts">
+      <li>Member-account IAM roles</li>
+      <li>Member-account root users</li>
+      <li data-correct>The Organization's management account</li>
+      <li>EC2 instance roles</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: C</span>
+      SCPs do not apply to the management account — which is precisely why you should not run workloads there and should keep it minimal.
+      <div class="why-wrong"><strong>A, B, D</strong> are all member-account principals and ARE governed by SCPs (including root and service roles).</div>
+      <span class="chref">↩ Masterclass Ch 16 — Full pipeline</span>
+    </div>
+  </div>
+
+  <!-- Q31 MULTI -->
+  <div class="q">
+    <div class="q-num">QUESTION 31</div>
+    <div class="q-type multi">Multiple response — choose TWO</div>
+    <div class="q-stem">Which TWO actions are AWS best practices for securing the root user of a new account? <strong>(Choose TWO.)</strong></div>
+    <ul class="q-opts">
+      <li data-correct>Enable MFA on the root user</li>
+      <li>Create access keys for the root user for automation</li>
+      <li data-correct>Delete any existing root user access keys</li>
+      <li>Use the root user for all daily administration</li>
+      <li>Share the root password with the whole admin team</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: A and C</span>
+      Lock root down with MFA and ensure it has no access keys; do all real work through scoped IAM/Identity Center identities.
+      <div class="why-wrong"><strong>B</strong> root keys should never exist. <strong>D</strong> daily root use is the cardinal sin. <strong>E</strong> credential sharing destroys accountability and security.</div>
+      <span class="chref">↩ Masterclass Ch 02 + Ch 19 — Best practices</span>
+    </div>
+  </div>
+
+  <!-- Q32 MULTI -->
+  <div class="q">
+    <div class="q-num">QUESTION 32</div>
+    <div class="q-type multi">Multiple response — choose TWO</div>
+    <div class="q-stem">Which TWO statements correctly distinguish an SCP from a permission boundary? <strong>(Choose TWO.)</strong></div>
+    <ul class="q-opts">
+      <li data-correct>An SCP applies to all principals in an account/OU; a permission boundary applies to a single user or role</li>
+      <li>Both grant permissions to the identities they apply to</li>
+      <li data-correct>Neither grants permissions — both only set a maximum (ceiling)</li>
+      <li>A permission boundary applies to the management account; an SCP does not</li>
+      <li>SCPs are configured in IAM; permission boundaries in Organizations</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: A and C</span>
+      Scope differs (account/OU vs single identity), but both share the key property: they cap maximum permissions and grant nothing.
+      <div class="why-wrong"><strong>B</strong> neither grants. <strong>D</strong> garbled — SCPs are what skip the management account; boundaries are per-identity. <strong>E</strong> reversed — SCPs live in Organizations, boundaries in IAM.</div>
+      <span class="chref">↩ Masterclass Ch 14–15</span>
+    </div>
+  </div>
+
+  <!-- Q33 MULTI -->
+  <div class="q">
+    <div class="q-num">QUESTION 33</div>
+    <div class="q-type multi">Multiple response — choose TWO</div>
+    <div class="q-stem">A trust policy for a role that a third-party vendor will assume should include which TWO things? <strong>(Choose TWO.)</strong></div>
+    <ul class="q-opts">
+      <li data-correct>The vendor's AWS account as the Principal</li>
+      <li data-correct>An <code>sts:ExternalId</code> condition</li>
+      <li>The vendor's database password</li>
+      <li>A list of every S3 object the vendor may read</li>
+      <li>The vendor's personal email address as the Principal</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: A and B</span>
+      The trust policy names who may assume the role (the vendor's account) and adds an External ID to prevent the confused-deputy attack. What the role can <em>do</em> lives in the separate permission policy.
+      <div class="why-wrong"><strong>C</strong> passwords never belong in policies. <strong>D</strong> resource lists belong in the permission policy, not the trust policy. <strong>E</strong> principals are AWS identities/accounts, not email addresses.</div>
+      <span class="chref">↩ Masterclass Ch 11 — Cross-account + External ID</span>
+    </div>
+  </div>
+
+  <!-- Q34 MULTI -->
+  <div class="q">
+    <div class="q-num">QUESTION 34</div>
+    <div class="q-type multi">Multiple response — choose TWO</div>
+    <div class="q-stem">Which TWO are valid reasons to choose IAM roles over IAM users with access keys for workloads? <strong>(Choose TWO.)</strong></div>
+    <ul class="q-opts">
+      <li data-correct>Credentials are temporary and rotated automatically by AWS</li>
+      <li>Roles can be shared via email more easily than keys</li>
+      <li data-correct>No long-lived secret is stored on the instance, AMI, or in code</li>
+      <li>Roles make API calls run faster</li>
+      <li>Roles bypass the IAM evaluation logic</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: A and C</span>
+      Roles deliver auto-rotating temporary credentials and eliminate stored secrets — the two core security advantages.
+      <div class="why-wrong"><strong>B</strong> you don't email roles. <strong>D</strong> roles don't change request latency. <strong>E</strong> roles are fully subject to the evaluation logic.</div>
+      <span class="chref">↩ Masterclass Ch 09–10</span>
+    </div>
+  </div>
+
+  <!-- Q35 MULTI -->
+  <div class="q">
+    <div class="q-num">QUESTION 35</div>
+    <div class="q-type multi">Multiple response — choose TWO</div>
+    <div class="q-stem">Which TWO conditions are commonly used to harden a cross-account role's trust policy? <strong>(Choose TWO.)</strong></div>
+    <ul class="q-opts">
+      <li data-correct><code>aws:MultiFactorAuthPresent = true</code> to require MFA on the assumer</li>
+      <li data-correct><code>sts:ExternalId</code> to prevent confused-deputy when a third party is involved</li>
+      <li><code>s3:VersionId</code> to control object versions</li>
+      <li><code>aws:SecureTransport</code> to force TLS on database queries</li>
+      <li><code>ec2:InstanceType</code> to limit instance sizes</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: A and B</span>
+      Requiring MFA and (for third parties) an External ID are the two classic hardening conditions on a cross-account trust policy.
+      <div class="why-wrong"><strong>C</strong> is an S3 object-version key, irrelevant to assuming a role. <strong>D</strong> SecureTransport is for service requests like S3, not a trust policy here. <strong>E</strong> instance-type limits belong in EC2/SCP contexts, not a role's trust.</div>
+      <span class="chref">↩ Masterclass Ch 11 + Ch 17</span>
+    </div>
+  </div>
+
+  <!-- Q36 MULTI -->
+  <div class="q">
+    <div class="q-num">QUESTION 36</div>
+    <div class="q-type multi">Multiple response — choose TWO</div>
+    <div class="q-stem">Which TWO are true about IAM policy evaluation? <strong>(Choose TWO.)</strong></div>
+    <ul class="q-opts">
+      <li data-correct>By default, all requests are implicitly denied unless explicitly allowed</li>
+      <li>An explicit Allow can override an explicit Deny if it appears later</li>
+      <li data-correct>A single explicit Deny anywhere in the applicable policies blocks the request</li>
+      <li>Conditions are ignored during evaluation</li>
+      <li>Resource-based policies are never considered for same-account access</li>
+    </ul>
+    <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
+    <div class="explain">
+      <span class="ans-line">Correct: A and C</span>
+      Implicit deny is the default state, and any explicit Deny is final. These two rules underpin almost every IAM trick question.
+      <div class="why-wrong"><strong>B</strong> Deny is never overridden by Allow. <strong>D</strong> conditions are fully evaluated and can make a statement match or not. <strong>E</strong> resource-based policies ARE considered same-account (the OR behaviour).</div>
+      <span class="chref">↩ Masterclass Ch 08 + Ch 16</span>
+    </div>
+  </div>
+
+  <div class="callout mem">
+    <span class="callout-label">After You Finish</span>
+    Re-run any question you missed two days later — spaced repetition is what converts "I recognise this" into "I know this cold." Pair this bank with Tutorials Dojo's IAM/Security questions, and aim to clear every trigger in Section 02 from memory before exam day.
+  </div>
+
+  <div class="marginal">End of Topic 01 Exam Cracker — Identity &amp; Access Management. Read Document 1 for context, this for reflexes; together they build the muscle memory.</div>
+</section>
+
+<div class="divider">· · ·</div>
+
+</div>
+<script>
+  function rev(btn){
+    var q = btn.closest('.q');
+    var exp = q.querySelector('.explain');
+    var opts = q.querySelectorAll('.q-opts li');
+    exp.classList.add('show');
+    opts.forEach(function(li){
+      if(li.hasAttribute('data-correct')){ li.classList.add('correct'); }
+      else { li.classList.add('wrong'); }
+    });
+    btn.textContent = 'Answer shown';
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'default';
+  }
+  // allow clicking an option to mark a guess (visual only)
+  document.querySelectorAll('.q-opts li').forEach(function(li){
+    li.addEventListener('click', function(){
+      if(li.closest('.q').querySelector('.explain').classList.contains('show')) return;
+      li.parentElement.querySelectorAll('li').forEach(function(s){ s.style.outline=''; });
+      li.style.outline = '2px solid var(--gold)';
+    });
+  });
+</script>
+</body>
+</html>
