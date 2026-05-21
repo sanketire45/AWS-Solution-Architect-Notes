@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Hands-On Debrief — VPC, Subnets & ALB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f4ec;
+    --bg-soft: #efe9d9;
+    --bg-card: #fffdf5;
+    --ink: #1f1d18;
+    --ink-soft: #4a4438;
+    --rule: #d8cfb8;
+    --teal: #0f4c5c;
+    --teal-soft: #2a6f7e;
+    --teal-light: #5fb3c4;
+    --amber: #c8501a;
+    --amber-soft: #e36414;
+    --green: #4a7c3a;
+    --red: #9d2933;
+    --gold: #b8860b;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 28px rgba(15,76,92,0.08);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 20px;
+    line-height: 1.7;
+    font-feature-settings: 'kern', 'liga', 'onum';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 50px 50px 120px;
+  }
+
+  /* ============== HERO ============== */
+  .hero {
+    text-align: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 44px;
+    margin-bottom: 60px;
+  }
+  .hero .label {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 72px;
+    line-height: 1.05;
+    margin: 0 0 20px;
+    letter-spacing: -0.02em;
+    color: var(--teal);
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--amber);
+  }
+  .hero .sub {
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    color: var(--ink-soft);
+    font-style: italic;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .hero .frame {
+    margin-top: 32px;
+    padding: 20px 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    display: inline-block;
+    text-align: left;
+    box-shadow: var(--shadow);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: var(--teal);
+  }
+
+  /* ============== HEADINGS ============== */
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 46px;
+    line-height: 1.1;
+    color: var(--teal);
+    margin: 90px 0 8px;
+    letter-spacing: -0.02em;
+    border-top: 1px solid var(--rule);
+    padding-top: 44px;
+  }
+  h2 .num {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: var(--ink);
+    margin: 48px 0 16px;
+    line-height: 1.25;
+  }
+  h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 23px;
+    color: var(--teal);
+    margin: 32px 0 12px;
+  }
+  p { margin: 0 0 18px; }
+  strong { color: var(--teal); font-weight: 700; }
+  em { color: var(--amber); font-style: italic; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    background: var(--bg-soft);
+    padding: 2px 8px;
+    border-radius: 3px;
+    color: var(--teal);
+  }
+
+  /* ============== CORRECTION BOX (you said / actually) ============== */
+  .correction {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 0;
+    margin: 32px 0;
+    background: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--rule);
+  }
+  .correction .said {
+    padding: 24px 28px;
+    background: rgba(229, 115, 115, 0.07);
+    border-right: 1px solid var(--rule);
+  }
+  .correction .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--amber);
+    color: #fffdf5;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 28px;
+  }
+  .correction .actually {
+    padding: 24px 28px;
+    background: rgba(74, 124, 58, 0.07);
+    border-left: 1px solid var(--rule);
+  }
+  .correction .label {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .correction .said .label { color: var(--red); }
+  .correction .actually .label { color: var(--green); }
+  .correction p { margin: 0; font-size: 18px; }
+  .correction p + p { margin-top: 10px; }
+
+  @media (max-width: 800px) {
+    .correction { grid-template-columns: 1fr; }
+    .correction .said { border-right: none; border-bottom: 1px solid var(--rule); }
+    .correction .actually { border-left: none; }
+    .correction .arrow { padding: 12px; }
+  }
+
+  /* ============== CALLOUTS ============== */
+  .analogy, .insight, .trap, .aha {
+    padding: 26px 32px;
+    margin: 28px 0;
+    border-radius: 4px;
+    border-left: 5px solid;
+  }
+  .analogy {
+    background: linear-gradient(135deg, #fff8e8 0%, #fcefd1 100%);
+    border-color: var(--gold);
+  }
+  .insight {
+    background: var(--teal);
+    color: #fcefd1;
+    border-color: var(--gold);
+  }
+  .insight strong, .insight em { color: #fcefd1; }
+  .insight code { background: rgba(252,239,209,0.15); color: #fcefd1; }
+  .trap {
+    background: rgba(157, 41, 51, 0.05);
+    border-color: var(--red);
+  }
+  .trap strong, .trap .tag { color: var(--red); }
+  .aha {
+    background: rgba(74, 124, 58, 0.07);
+    border-color: var(--green);
+  }
+  .aha strong, .aha .tag { color: var(--green); }
+  .analogy .tag, .insight .tag {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .analogy .tag { color: var(--gold); }
+  .insight .tag { color: #fcefd1; }
+  .trap .tag, .aha .tag {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .analogy p:last-child, .insight p:last-child, .trap p:last-child, .aha p:last-child { margin-bottom: 0; }
+
+  /* ============== DIAGRAMS ============== */
+  .diagram {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 32px 28px;
+    margin: 36px 0;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .diagram .caption {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+  }
+  .diagram svg { max-width: 100%; height: auto; }
+
+  /* ============== TABLES ============== */
+  .tbl-wrap { overflow-x: auto; margin: 28px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+    font-size: 18px;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  th {
+    background: var(--teal);
+    color: #fffdf5;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    text-align: left;
+    padding: 14px 18px;
+    font-size: 16px;
+  }
+  td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+  td strong { color: var(--amber); }
+
+  /* ============== LISTS ============== */
+  ul, ol { padding-left: 28px; margin: 18px 0; }
+  li { margin-bottom: 10px; }
+  ul li::marker { color: var(--amber); }
+  ol li::marker { color: var(--amber); font-family: 'Fraunces', serif; font-weight: 700; }
+
+  /* ============== TOC ============== */
+  .toc {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    padding: 36px 48px;
+    margin: 50px 0 90px;
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    columns: 2;
+    column-gap: 60px;
+  }
+  .toc h3 {
+    column-span: all;
+    margin: 0 0 20px;
+    font-size: 24px;
+    color: var(--teal);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 12px;
+  }
+  .toc ol { margin: 0; padding-left: 0; list-style: none; counter-reset: toc; }
+  .toc li {
+    counter-increment: toc;
+    padding: 7px 0;
+    border-bottom: 1px dotted var(--rule);
+    break-inside: avoid;
+  }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: var(--amber);
+    margin-right: 14px;
+    font-size: 15px;
+  }
+  .toc a { color: var(--ink); text-decoration: none; font-size: 18px; }
+  .toc a:hover { color: var(--amber); }
+
+  /* ============== TWO-COL ============== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 28px 0;
+  }
+  .col-card {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 24px 28px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--teal);
+  }
+  .col-card.amber { border-top-color: var(--amber); }
+  .col-card h4 { margin-top: 0; }
+
+  @media (max-width: 800px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* ============== STEP TIMELINE ============== */
+  .timeline {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 32px 40px;
+    margin: 32px 0;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--rule);
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .step:last-child { border-bottom: none; }
+  .step .num {
+    background: var(--amber);
+    color: #fffdf5;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .step h4 {
+    margin: 0 0 6px;
+    font-size: 19px;
+    color: var(--teal);
+  }
+  .step p { font-size: 17px; margin: 0; }
+  .step p + p { margin-top: 8px; }
+
+  /* ============== DIVIDER ============== */
+  .divider {
+    text-align: center;
+    margin: 70px 0;
+    color: var(--amber);
+    letter-spacing: 0.5em;
+    font-size: 14px;
+  }
+
+  /* ============== FINAL NOTE ============== */
+  .end-note {
+    margin-top: 100px;
+    padding: 50px 60px;
+    background: var(--teal);
+    color: #fcefd1;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .end-note h3 {
+    color: #fcefd1;
+    margin: 0 0 16px;
+    font-size: 32px;
+  }
+  .end-note p {
+    font-size: 19px;
+    line-height: 1.7;
+    max-width: 820px;
+    margin: 0 auto 14px;
+  }
+  .end-note strong, .end-note em { color: #fcefd1; }
+
+  /* ============== KV BOX ============== */
+  .kv {
+    margin: 24px 0;
+    padding: 22px 28px;
+    background: var(--bg-soft);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 4px 4px 0;
+  }
+  .kv .k {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: var(--teal);
+    font-size: 19px;
+    margin-bottom: 6px;
+  }
+  .kv p { margin: 0; }
+
+  /* ============== BIG NUMBER GRID ============== */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin: 32px 0;
+  }
+  .sum-card {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 22px 26px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--teal);
+  }
+  .sum-card.amber { border-top-color: var(--amber); }
+  .sum-card.green { border-top-color: var(--green); }
+  .sum-card.red { border-top-color: var(--red); }
+  .sum-card h4 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .sum-card p { font-size: 16px; margin: 0; }
+
+  @media (max-width: 900px) {
+    .wrap { padding: 40px 24px 80px; }
+    .toc { columns: 1; }
+    .hero h1 { font-size: 48px; }
+    h2 { font-size: 32px; }
+    h3 { font-size: 24px; }
+    .timeline { padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============== HERO ============== -->
+<header class="hero">
+  <div class="label">The Hands-On Debrief</div>
+  <h1>What <em>actually happened</em><br>when you clicked Create</h1>
+  <p class="sub">A walkthrough of your VPC + Subnet + ALB hands-on, with every confusion cleared, every misconception corrected, and the whole picture finally connected.</p>
+  <div class="frame">
+    Internet  →  HTTPS  →  ALB (public subnet)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓  HTTP<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EC2 (private subnet)
+  </div>
+</header>
+
+<!-- ============== TOC ============== -->
+<div class="toc">
+  <h3>What we'll untangle</h3>
+  <ol>
+    <li><a href="#s1">The first big correction — AZ vs Subnet</a></li>
+    <li><a href="#s2">The AWS hierarchy you should hold in your head</a></li>
+    <li><a href="#s3">What a VPC actually is</a></li>
+    <li><a href="#s4">What a subnet actually is</a></li>
+    <li><a href="#s5">The Default VPC mystery — why "public" isn't labeled</a></li>
+    <li><a href="#s6">Public vs Private — it's the route table, not the name</a></li>
+    <li><a href="#s7">Internet Gateway — the only legitimate door</a></li>
+    <li><a href="#s8">Replay of your ALB hands-on, with what was really happening</a></li>
+    <li><a href="#s9">How ALB spans multiple AZs for HA</a></li>
+    <li><a href="#s10">The packet's full journey</a></li>
+    <li><a href="#s11">SG vs Route Table — two completely different layers</a></li>
+    <li><a href="#s12">Your insight: same subnet for ALB &amp; EC2 — does it work?</a></li>
+    <li><a href="#s13">What a TRUE private setup looks like</a></li>
+    <li><a href="#s14">Your other question: app + DB in same subnet?</a></li>
+    <li><a href="#s15">Different subnets in the SAME AZ — what they actually buy you</a></li>
+    <li><a href="#s16">Different subnets in DIFFERENT AZs — what gives real fault tolerance</a></li>
+    <li><a href="#s17">RDS &amp; the DB Subnet Group model</a></li>
+    <li><a href="#s18">Cross-zone load balancing — why ALB doesn't care about AZ matching</a></li>
+    <li><a href="#s19">The 3 mystery options at ALB creation</a></li>
+    <li><a href="#s20">Real industry architecture — bringing it all together</a></li>
+    <li><a href="#s21">Corrections recap — every misconception cleared</a></li>
+  </ol>
+</div>
+
+<!-- ============== SECTION 1 ============== -->
+<h2 id="s1"><span class="num">Chapter One</span>The first big correction</h2>
+
+<p>Before anything else makes sense, we have to fix one mental model. You wrote:</p>
+
+<div class="correction">
+  <div class="said">
+    <span class="label">You said</span>
+    <p>"1a and 1b are different subnets of the same AZ."</p>
+  </div>
+  <div class="arrow">→</div>
+  <div class="actually">
+    <span class="label">Actually</span>
+    <p><strong>1a and 1b are different AZs, not different subnets.</strong></p>
+    <p><code>us-east-1a</code> and <code>us-east-1b</code> are two different physical data-center zones. Subnets live <em>inside</em> AZs — never the other way around.</p>
+  </div>
+</div>
+
+<p>This single mix-up was making everything downstream confusing. Once we lock in the correct hierarchy, everything else clicks.</p>
+
+<!-- ============== SECTION 2 ============== -->
+<h2 id="s2"><span class="num">Chapter Two</span>The AWS hierarchy</h2>
+
+<p>Hold this picture in your head before you click anything in AWS. It's a strict tree — bigger things contain smaller things, and never the reverse.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- Region -->
+  <rect x="60" y="20" width="640" height="360" fill="none" stroke="#0f4c5c" stroke-width="2" rx="6"/>
+  <text x="80" y="44" font-size="16" font-weight="700" fill="#0f4c5c">REGION — us-east-1</text>
+  <text x="80" y="62" font-size="12" font-style="italic" fill="#4a4438">a large geographic area (Northern Virginia)</text>
+
+  <!-- AZ-1a -->
+  <rect x="90" y="85" width="290" height="275" fill="#fffdf5" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="105" y="106" font-size="14" font-weight="700" fill="#c8501a">AZ — us-east-1a</text>
+  <text x="105" y="122" font-size="11" font-style="italic" fill="#4a4438">a physical data-center zone</text>
+
+  <!-- Subnets in 1a -->
+  <rect x="110" y="140" width="250" height="80" fill="#efe9d9" stroke="#0f4c5c" stroke-width="1" rx="3"/>
+  <text x="125" y="158" font-size="12" font-weight="700" fill="#0f4c5c">Subnet — 10.0.1.0/24</text>
+  <rect x="130" y="170" width="80" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="170" y="194" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+  <rect x="220" y="170" width="80" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="260" y="194" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+
+  <rect x="110" y="240" width="250" height="80" fill="#efe9d9" stroke="#0f4c5c" stroke-width="1" rx="3"/>
+  <text x="125" y="258" font-size="12" font-weight="700" fill="#0f4c5c">Subnet — 10.0.2.0/24</text>
+  <rect x="130" y="270" width="80" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="170" y="294" text-anchor="middle" font-size="11" fill="#0f4c5c">RDS</text>
+
+  <!-- AZ-1b -->
+  <rect x="395" y="85" width="290" height="275" fill="#fffdf5" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="410" y="106" font-size="14" font-weight="700" fill="#c8501a">AZ — us-east-1b</text>
+  <text x="410" y="122" font-size="11" font-style="italic" fill="#4a4438">another physical data-center zone</text>
+
+  <rect x="415" y="140" width="250" height="80" fill="#efe9d9" stroke="#0f4c5c" stroke-width="1" rx="3"/>
+  <text x="430" y="158" font-size="12" font-weight="700" fill="#0f4c5c">Subnet — 10.0.3.0/24</text>
+  <rect x="435" y="170" width="80" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="475" y="194" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+  <rect x="525" y="170" width="80" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="565" y="194" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+
+  <rect x="415" y="240" width="250" height="80" fill="#efe9d9" stroke="#0f4c5c" stroke-width="1" rx="3"/>
+  <text x="430" y="258" font-size="12" font-weight="700" fill="#0f4c5c">Subnet — 10.0.4.0/24</text>
+  <rect x="435" y="270" width="80" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="475" y="294" text-anchor="middle" font-size="11" fill="#0f4c5c">RDS</text>
+</svg>
+<div class="caption">Region contains AZs. AZs contain Subnets. Subnets contain Instances. Strict tree.</div>
+</div>
+
+<div class="kv">
+  <div class="k">Region</div>
+  <p>A large geographic area like <code>us-east-1</code> (Virginia), <code>eu-west-1</code> (Ireland), <code>ap-south-1</code> (Mumbai). Choose one per workload.</p>
+</div>
+<div class="kv">
+  <div class="k">Availability Zone (AZ)</div>
+  <p>A physically separate data-center cluster inside a Region. Each Region has typically 3–6 AZs. They have independent power, cooling, networking. <code>us-east-1a</code>, <code>us-east-1b</code>, <code>us-east-1c</code> are different AZs in the same Region.</p>
+</div>
+<div class="kv">
+  <div class="k">Subnet</div>
+  <p>A slice of your network <strong>inside one specific AZ</strong>. A subnet belongs to exactly one AZ — never spans across AZs. One AZ can contain many subnets.</p>
+</div>
+<div class="kv">
+  <div class="k">Instance</div>
+  <p>An EC2 (or RDS, or ALB node) launched <em>inside</em> a subnet. Inherits everything about that subnet — which AZ it's in, what route table applies, etc.</p>
+</div>
+
+<!-- ============== SECTION 3 ============== -->
+<h2 id="s3"><span class="num">Chapter Three</span>What a VPC actually is</h2>
+
+<p>A <strong>VPC (Virtual Private Cloud)</strong> is your own private, isolated network inside AWS. Think of it as your company's private wing inside AWS's gigantic data centers — nobody outside your VPC can reach inside it unless you explicitly open a door.</p>
+
+<p>A VPC <strong>spans an entire Region</strong>. That means one VPC can stretch across all the AZs in that Region — that's how the same network can have resources in <code>us-east-1a</code>, <code>1b</code>, <code>1c</code> simultaneously.</p>
+
+<p>When you create a VPC, you give it a CIDR block — a range of IP addresses you control, like <code>10.0.0.0/16</code>. That's the address space all your resources will live in.</p>
+
+<div class="analogy">
+  <span class="tag">Real-world parallel</span>
+  <p>Imagine AWS is a city. Your VPC is a private gated society inside that city. You own the entire society. Inside, you can lay out streets (subnets), put houses (EC2s), decide who can come in through which gate (route tables + security groups). The world outside can only enter if you explicitly open a gate.</p>
+</div>
+
+<!-- ============== SECTION 4 ============== -->
+<h2 id="s4"><span class="num">Chapter Four</span>What a subnet actually is</h2>
+
+<p>A subnet is a <strong>portion of the VPC's IP range, pinned to one specific AZ</strong>. You carve up <code>10.0.0.0/16</code> into smaller chunks like <code>10.0.1.0/24</code> and <code>10.0.2.0/24</code>, and assign each chunk to an AZ.</p>
+
+<p>When you create an EC2 instance, you don't pick an AZ directly — you pick a subnet, and the subnet's AZ becomes the instance's AZ automatically. This is why your hands-on screen showed VPC + subnet, not VPC + AZ + subnet.</p>
+
+<div class="aha">
+  <span class="tag">Important</span>
+  <p>A subnet <strong>cannot span two AZs</strong>. If you want resources spread across AZs, you need multiple subnets, one per AZ. This is why ALB and RDS require subnets in at least 2 AZs — the design forces you to think about multi-AZ from day one.</p>
+</div>
+
+<!-- ============== SECTION 5 ============== -->
+<h2 id="s5"><span class="num">Chapter Five</span>The Default VPC mystery</h2>
+
+<p>You noticed something important:</p>
+
+<div class="correction">
+  <div class="said">
+    <span class="label">You said</span>
+    <p>"There is no mention of 'public' anywhere when I selected the default subnet for 1b."</p>
+  </div>
+  <div class="arrow">→</div>
+  <div class="actually">
+    <span class="label">Actually</span>
+    <p>That's because <strong>"public" and "private" are not labels AWS sticks on a subnet</strong>. They're a <em>consequence</em> of the subnet's route table. AWS doesn't show the word "public" because, internally, no such property exists.</p>
+  </div>
+</div>
+
+<p>Every AWS account gets a <strong>Default VPC</strong> per Region, with one <strong>Default Subnet</strong> per AZ. These default subnets have an interesting property: they all have a route to an Internet Gateway in their route table. That makes them <em>de facto</em> public subnets, even though the console doesn't say "public" anywhere obvious.</p>
+
+<p>That's why the EC2s you launched in default subnets could get public IPs, and the ALB you created in default subnets could face the internet. Not because AWS labeled them public — but because their <strong>route tables</strong> contain the magic line that makes them public.</p>
+
+<!-- ============== SECTION 6 ============== -->
+<h2 id="s6"><span class="num">Chapter Six</span>Public vs Private — it's the route table</h2>
+
+<p>This is the single most important concept in AWS networking. Internalize this and you'll never be confused again.</p>
+
+<div class="two-col">
+  <div class="col-card">
+    <h4>Public Subnet</h4>
+    <p>Its route table contains an entry like:</p>
+    <code style="display:block;padding:12px;margin:10px 0;background:var(--bg-soft);">0.0.0.0/0 → igw-xxxxx</code>
+    <p>This route says: "any packet going to a destination not in this VPC should be forwarded to the Internet Gateway." That's what makes the subnet reachable from the internet (when combined with an EC2 having a public IP).</p>
+  </div>
+  <div class="col-card amber">
+    <h4>Private Subnet</h4>
+    <p>Its route table has <strong>no route to the Internet Gateway</strong>. It might have:</p>
+    <code style="display:block;padding:12px;margin:10px 0;background:var(--bg-soft);">0.0.0.0/0 → nat-xxxxx</code>
+    <p>That sends outbound traffic through a NAT Gateway (so instances can reach the internet outbound for updates), but inbound from the internet has no way in.</p>
+  </div>
+</div>
+
+<div class="insight">
+  <span class="tag">The truth nobody tells beginners</span>
+  <p>An EC2 instance is <strong>not</strong> "public" or "private" by its own nature. The <em>subnet's route table</em> decides whether the subnet can reach the internet. The <em>EC2's public IP</em> decides whether the internet can reach the EC2. Both must align.</p>
+  <p>Even if you put an EC2 in a "public" subnet but don't give it a public IP, it's effectively private — the internet has no way to address it.</p>
+</div>
+
+<!-- ============== SECTION 7 ============== -->
+<h2 id="s7"><span class="num">Chapter Seven</span>Internet Gateway — the only legitimate door</h2>
+
+<p>The <strong>Internet Gateway (IGW)</strong> is the single physical door between your VPC and the public internet. One per VPC. Without it, your VPC is hermetically sealed from the internet.</p>
+
+<p>Two conditions must both be true for internet traffic to reach an EC2:</p>
+<ol>
+  <li>The subnet's route table has <code>0.0.0.0/0 → igw-xxx</code></li>
+  <li>The EC2 has a public IP address (auto-assigned or Elastic IP)</li>
+</ol>
+
+<p>Either one missing? No internet reachability. This is the network-level isolation that makes "private" actually private — independent of any security group rules.</p>
+
+<!-- ============== SECTION 8 ============== -->
+<h2 id="s8"><span class="num">Chapter Eight</span>Replay of your ALB hands-on</h2>
+
+<p>Now let's walk through what you actually did, step by step, with what was really happening behind the screen.</p>
+
+<div class="timeline">
+  <div class="step">
+    <div class="num">1</div>
+    <div>
+      <h4>You launched 2 EC2 instances, one in "1a" and one in "1b"</h4>
+      <p>What you saw: pick a subnet → AWS shows default subnets for each AZ → you picked one in 1a, one in 1b.</p>
+      <p>What was actually happening: each subnet you picked was a default subnet in its respective AZ. Both have IGW routes. Both EC2s got public IPs. That's why you could SSH/HTTP to them directly.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">2</div>
+    <div>
+      <h4>You created a target group and added both EC2s</h4>
+      <p>The target group is just a list — "here are the backends ALB can forward traffic to." It also defines the health check and the protocol/port used to reach the backends.</p>
+      <p>The target group isn't bound to a subnet or AZ — it can hold targets from any AZ in the VPC.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">3</div>
+    <div>
+      <h4>You created the ALB and selected subnets in 1a, 1b, 1c</h4>
+      <p>What you thought: "did AWS create new public subnets for me?"</p>
+      <p>What actually happened: <strong>AWS did not create any subnets</strong>. You picked from existing default subnets in each AZ. AWS then deployed an <em>ALB node</em> (an ENI — Elastic Network Interface) inside each of the selected subnets. So you ended up with one ALB node in <code>us-east-1a</code>, one in <code>1b</code>, one in <code>1c</code> — all sitting in those default-public subnets.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">4</div>
+    <div>
+      <h4>You configured the listener — HTTP/HTTPS</h4>
+      <p>The listener is "the door the ALB opens to the world." Port 80 or 443. The ALB starts accepting connections on that port at each of its nodes.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">5</div>
+    <div>
+      <h4>AWS gave you an ALB DNS name</h4>
+      <p>Something like <code>my-alb-1234.us-east-1.elb.amazonaws.com</code>. When the world resolves this DNS name, AWS returns the public IPs of the ALB nodes — usually multiple IPs, one per AZ where the ALB has a node. That's how DNS-level load balancing across AZs happens.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">6</div>
+    <div>
+      <h4>You hit the ALB URL — traffic flowed</h4>
+      <p>Your browser resolved the ALB DNS, picked one of the returned IPs, sent the request. The ALB node received it, picked a healthy EC2 from the target group (could be in any AZ — cross-zone load balancing is on by default for ALB), and forwarded the request.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">7</div>
+    <div>
+      <h4>You changed EC2 SG to allow only from ALB-SG</h4>
+      <p>The clever move. Now your EC2 security group says "only allow port 80 if the source is the ALB's security group." This means even if someone discovered your EC2's public IP, they couldn't reach it directly. Only traffic that came through the ALB is allowed.</p>
+      <p>BUT — and this is the subtle part — the EC2 is still <em>in a public subnet with a public IP</em>. The SG is what's making it private-in-practice. In a real production setup, you'd also move the EC2 to a private subnet so the network itself blocks direct access.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============== SECTION 9 ============== -->
+<h2 id="s9"><span class="num">Chapter Nine</span>How ALB spans multiple AZs for HA</h2>
+
+<p>Your intuition was exactly right:</p>
+
+<div class="correction">
+  <div class="said">
+    <span class="label">You said</span>
+    <p>"It must have made a copy of this ALB to each AZ (1a, 1b, 1c..) so that if ALB goes down in one AZ, others will work."</p>
+  </div>
+  <div class="arrow">✓</div>
+  <div class="actually">
+    <span class="label">Confirmed</span>
+    <p><strong>Yes — that's exactly what AWS does.</strong> ALB is a managed service. When you select 3 subnets in 3 AZs, AWS deploys an ALB node (effectively a network interface + load-balancing logic) in each AZ. The DNS name resolves to multiple IPs, one per AZ.</p>
+  </div>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 780 380" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- Internet -->
+  <text x="390" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#0f4c5c">Internet</text>
+  <text x="390" y="50" text-anchor="middle" font-size="11" font-style="italic" fill="#4a4438">DNS resolves my-alb-1234.elb.amazonaws.com → [IP1, IP2, IP3]</text>
+
+  <!-- Arrows -->
+  <line x1="180" y1="65" x2="140" y2="100" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="390" y1="65" x2="390" y2="100" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="600" y1="65" x2="640" y2="100" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- AZ-1a -->
+  <rect x="40" y="110" width="200" height="240" fill="#fffdf5" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="55" y="130" font-size="13" font-weight="700" fill="#c8501a">us-east-1a</text>
+
+  <rect x="60" y="145" width="160" height="50" fill="#0f4c5c" rx="3"/>
+  <text x="140" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#fcefd1">ALB node</text>
+  <text x="140" y="188" text-anchor="middle" font-size="10" fill="#fcefd1">(public subnet)</text>
+
+  <line x1="140" y1="195" x2="140" y2="245" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+
+  <rect x="60" y="250" width="160" height="80" fill="#efe9d9" stroke="#0f4c5c" rx="3"/>
+  <text x="140" y="270" text-anchor="middle" font-size="12" font-weight="700" fill="#0f4c5c">Private Subnet</text>
+  <rect x="100" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="140" y="307" text-anchor="middle" font-size="12" fill="#0f4c5c">EC2</text>
+
+  <!-- AZ-1b -->
+  <rect x="290" y="110" width="200" height="240" fill="#fffdf5" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="305" y="130" font-size="13" font-weight="700" fill="#c8501a">us-east-1b</text>
+
+  <rect x="310" y="145" width="160" height="50" fill="#0f4c5c" rx="3"/>
+  <text x="390" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#fcefd1">ALB node</text>
+  <text x="390" y="188" text-anchor="middle" font-size="10" fill="#fcefd1">(public subnet)</text>
+
+  <line x1="390" y1="195" x2="390" y2="245" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+
+  <rect x="310" y="250" width="160" height="80" fill="#efe9d9" stroke="#0f4c5c" rx="3"/>
+  <text x="390" y="270" text-anchor="middle" font-size="12" font-weight="700" fill="#0f4c5c">Private Subnet</text>
+  <rect x="350" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="390" y="307" text-anchor="middle" font-size="12" fill="#0f4c5c">EC2</text>
+
+  <!-- AZ-1c -->
+  <rect x="540" y="110" width="200" height="240" fill="#fffdf5" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="555" y="130" font-size="13" font-weight="700" fill="#c8501a">us-east-1c</text>
+
+  <rect x="560" y="145" width="160" height="50" fill="#0f4c5c" rx="3"/>
+  <text x="640" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#fcefd1">ALB node</text>
+  <text x="640" y="188" text-anchor="middle" font-size="10" fill="#fcefd1">(public subnet)</text>
+
+  <line x1="640" y1="195" x2="640" y2="245" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+
+  <rect x="560" y="250" width="160" height="80" fill="#efe9d9" stroke="#0f4c5c" rx="3"/>
+  <text x="640" y="270" text-anchor="middle" font-size="12" font-weight="700" fill="#0f4c5c">Private Subnet</text>
+  <rect x="600" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="640" y="307" text-anchor="middle" font-size="12" fill="#0f4c5c">EC2</text>
+
+  <!-- Cross-zone dashed -->
+  <line x1="140" y1="195" x2="390" y2="285" stroke="#5fb3c4" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="390" y1="195" x2="640" y2="285" stroke="#5fb3c4" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="640" y1="195" x2="140" y2="285" stroke="#5fb3c4" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <text x="390" y="372" text-anchor="middle" font-size="11" font-style="italic" fill="#2a6f7e">dashed = cross-zone load balancing (any ALB node can reach any healthy EC2)</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8501a"/>
+    </marker>
+  </defs>
+</svg>
+<div class="caption">One ALB = many nodes, one per selected AZ. Each node can route to any healthy target in any AZ.</div>
+</div>
+
+<p>Now if AZ <code>1a</code> has an outage:</p>
+<ul>
+  <li>DNS stops returning the 1a node's IP (it's failing health checks).</li>
+  <li>Users get redirected to the 1b and 1c nodes.</li>
+  <li>Those nodes forward traffic to surviving EC2s in 1b and 1c.</li>
+  <li>End users see no outage — they just transparently moved to healthy AZs.</li>
+</ul>
+
+<p>This is why <strong>ALB requires you to select subnets in at least 2 AZs</strong>. AWS will not let you create an ALB with only one AZ — they're forcing the HA pattern on you.</p>
+
+<!-- ============== SECTION 10 ============== -->
+<h2 id="s10"><span class="num">Chapter Ten</span>The packet's full journey</h2>
+
+<p>Let's trace one HTTP request end-to-end through your architecture. Every hop, every gate, every check.</p>
+
+<div class="timeline">
+  <div class="step">
+    <div class="num">1</div>
+    <div>
+      <h4>Browser resolves DNS</h4>
+      <p>You type <code>my-alb-1234.us-east-1.elb.amazonaws.com/home</code>. Your browser asks DNS to resolve this name → DNS returns 2–3 IPs (one per AZ where the ALB has a node). Browser picks one (usually the closest).</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">2</div>
+    <div>
+      <h4>Packet enters AWS via the Internet Gateway</h4>
+      <p>The packet leaves your ISP, travels the internet, and enters your VPC through the Internet Gateway attached to that VPC. The IGW knows: "this destination IP belongs to an ALB node sitting in this public subnet."</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">3</div>
+    <div>
+      <h4>Route table forwards to the ALB node's subnet</h4>
+      <p>The IGW hands the packet to the public subnet's route table, which routes it locally to the ALB node's network interface.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">4</div>
+    <div>
+      <h4>ALB security group check</h4>
+      <p>The ALB's security group says "allow inbound 443 from 0.0.0.0/0" (or 80 for HTTP). The packet passes.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">5</div>
+    <div>
+      <h4>ALB terminates TLS, reads the HTTP request</h4>
+      <p>If HTTPS, the ALB decrypts using its ACM certificate. It now sees the HTTP request — path, headers, host. It evaluates listener rules to pick the right target group.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">6</div>
+    <div>
+      <h4>ALB picks a healthy target from the target group</h4>
+      <p>From the registered targets, ALB picks one that's currently healthy. It may be in the same AZ as the ALB node, or in a different AZ — cross-zone load balancing doesn't care.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">7</div>
+    <div>
+      <h4>ALB sends a fresh HTTP request to the EC2's private IP</h4>
+      <p>This new request originates from the ALB node's IP (inside the VPC). Travels through VPC routing to the EC2's subnet.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">8</div>
+    <div>
+      <h4>EC2's security group check</h4>
+      <p>The EC2 SG says "allow inbound 80 from source = ALB's security group." The packet's source is the ALB node, which belongs to the ALB SG. ✓ Allowed.</p>
+      <p>If someone tried to hit the EC2's IP directly from the internet (not via ALB), the source wouldn't match the ALB SG — denied at the firewall.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">9</div>
+    <div>
+      <h4>EC2 application responds</h4>
+      <p>Web server renders the page, sends HTTP 200 back. Response retraces the path: EC2 → ALB → IGW → internet → browser. Done.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============== SECTION 11 ============== -->
+<h2 id="s11"><span class="num">Chapter Eleven</span>SG vs Route Table — two different layers</h2>
+
+<p>This is the part you were mixing up. They sound similar — both are "rules about traffic" — but they live in completely different places and do completely different things.</p>
+
+<div class="two-col">
+  <div class="col-card">
+    <h4>Route Table — Layer 3 (Network)</h4>
+    <p><strong>Question it answers:</strong> "Can the packet physically reach this destination?"</p>
+    <p>Attached to: <strong>a subnet</strong> (or VPC).</p>
+    <p>If there's no route, the packet has nowhere to go. It's dropped at the network level. Doesn't matter what SG rules say — the packet never arrives.</p>
+    <p><em>Example:</em> Private subnet has no <code>0.0.0.0/0 → IGW</code> route. Internet packets simply have no path to reach instances in this subnet.</p>
+  </div>
+  <div class="col-card amber">
+    <h4>Security Group — Layer 4 (Firewall)</h4>
+    <p><strong>Question it answers:</strong> "If a packet arrives, is it allowed?"</p>
+    <p>Attached to: <strong>an ENI</strong> (network interface on an instance).</p>
+    <p>SGs are stateful. They evaluate incoming packets. If a rule allows it → packet reaches the instance. If no rule allows it → dropped at the firewall.</p>
+    <p><em>Example:</em> EC2 SG allows port 80 only from the ALB's SG. Any other source is dropped, even if the packet successfully traveled to the EC2.</p>
+  </div>
+</div>
+
+<div class="insight">
+  <span class="tag">Both must approve</span>
+  <p>For traffic to reach your instance, <strong>both</strong> the route table AND the security group must allow it. They're independent gates in series. SG is not a substitute for route table design, and vice versa.</p>
+  <p>This is why "putting the EC2 in a private subnet" is genuinely different from "blocking everything in the SG." The private subnet stops the packet at the network layer — there's nothing to filter. The SG approach lets the packet arrive at your instance, then refuses it. Both work, but the network-layer approach is more robust and idiomatic.</p>
+</div>
+
+<!-- ============== SECTION 12 ============== -->
+<h2 id="s12"><span class="num">Chapter Twelve</span>Your insight: same subnet for ALB &amp; EC2</h2>
+
+<p>You wrote:</p>
+
+<div class="correction">
+  <div class="said">
+    <span class="label">You said</span>
+    <p>"In my hands-on, the ALB node and the EC2 were both in the same default subnet for 1b. It's not like the subnet has a property of public/private — it's what's inside it and how rules give it to it. So if I only allow traffic from ALB on this instance, it works even though the ALB is taking public requests."</p>
+  </div>
+  <div class="arrow">✓</div>
+  <div class="actually">
+    <span class="label">Mostly correct</span>
+    <p><strong>Yes — same-subnet works.</strong> ALB doesn't require its targets to be in a different subnet, or even a different AZ, than itself.</p>
+    <p>What you built is functionally OK and very common in beginner labs. It's just not the production-grade topology. Let's see why.</p>
+  </div>
+</div>
+
+<h3>Why same-subnet works</h3>
+<ul>
+  <li>The subnet is "public" (has IGW route).</li>
+  <li>ALB node listens on the public side, accepts internet traffic.</li>
+  <li>ALB then sends a fresh request to the EC2's IP (still inside the subnet — local routing, no IGW involved for this hop).</li>
+  <li>EC2's SG allows traffic only from ALB-SG → the only requests that reach the EC2 are ALB-relayed ones.</li>
+  <li>Direct internet → EC2 attempts are dropped by the SG.</li>
+</ul>
+
+<h3>Why production doesn't do this</h3>
+<ul>
+  <li><strong>Network-layer protection in addition to SG.</strong> If your EC2 sits in a public subnet with a public IP, the network <em>can</em> reach it. You're relying purely on the SG to keep it private. One SG misconfiguration and you're exposed. With the EC2 in a private subnet, the network itself blocks direct access — defense in depth.</li>
+  <li><strong>No public IPs on app servers.</strong> Production app servers should never have public IPs. The blast radius of any compromise is reduced.</li>
+  <li><strong>Clean operational boundaries.</strong> Public subnet routing rules are different from private subnet routing rules (NAT, VPC endpoints, etc.). Mixing makes operations harder.</li>
+  <li><strong>NACLs (subnet firewalls) can apply different rules at the subnet level.</strong> You can be stricter at the network layer for private subnets.</li>
+</ul>
+
+<!-- ============== SECTION 13 ============== -->
+<h2 id="s13"><span class="num">Chapter Thirteen</span>What a TRUE private setup looks like</h2>
+
+<p>Production setup uses a 2-subnet pattern per AZ:</p>
+
+<div class="diagram">
+<svg viewBox="0 0 740 360" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- VPC -->
+  <rect x="40" y="20" width="660" height="320" fill="none" stroke="#0f4c5c" stroke-width="2" stroke-dasharray="6,4" rx="6"/>
+  <text x="55" y="42" font-size="13" font-weight="700" fill="#0f4c5c">VPC — 10.0.0.0/16</text>
+
+  <!-- Internet -->
+  <text x="370" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#c8501a">Internet → IGW</text>
+
+  <!-- AZ-1a -->
+  <rect x="60" y="85" width="300" height="245" fill="#fffdf5" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="75" y="105" font-size="13" font-weight="700" fill="#c8501a">us-east-1a</text>
+
+  <!-- Public subnet 1a -->
+  <rect x="80" y="120" width="260" height="80" fill="#fff8e8" stroke="#0f4c5c" rx="3"/>
+  <text x="95" y="138" font-size="12" font-weight="700" fill="#0f4c5c">Public Subnet (10.0.1.0/24)</text>
+  <text x="95" y="153" font-size="10" font-style="italic" fill="#4a4438">route: 0.0.0.0/0 → IGW</text>
+  <rect x="100" y="160" width="100" height="32" fill="#0f4c5c" rx="2"/>
+  <text x="150" y="180" text-anchor="middle" font-size="11" fill="#fcefd1">ALB node</text>
+  <rect x="220" y="160" width="100" height="32" fill="#4a7c3a" rx="2"/>
+  <text x="270" y="180" text-anchor="middle" font-size="11" fill="#fcefd1">NAT GW</text>
+
+  <!-- Private subnet 1a -->
+  <rect x="80" y="215" width="260" height="100" fill="#efe9d9" stroke="#0f4c5c" rx="3"/>
+  <text x="95" y="233" font-size="12" font-weight="700" fill="#0f4c5c">Private Subnet (10.0.2.0/24)</text>
+  <text x="95" y="248" font-size="10" font-style="italic" fill="#4a4438">route: 0.0.0.0/0 → NAT</text>
+  <rect x="100" y="258" width="100" height="32" fill="#fff" stroke="#0f4c5c"/>
+  <text x="150" y="278" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 (app)</text>
+  <rect x="220" y="258" width="100" height="32" fill="#fff" stroke="#0f4c5c"/>
+  <text x="270" y="278" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 (app)</text>
+
+  <!-- AZ-1b -->
+  <rect x="380" y="85" width="300" height="245" fill="#fffdf5" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="395" y="105" font-size="13" font-weight="700" fill="#c8501a">us-east-1b</text>
+
+  <rect x="400" y="120" width="260" height="80" fill="#fff8e8" stroke="#0f4c5c" rx="3"/>
+  <text x="415" y="138" font-size="12" font-weight="700" fill="#0f4c5c">Public Subnet (10.0.3.0/24)</text>
+  <text x="415" y="153" font-size="10" font-style="italic" fill="#4a4438">route: 0.0.0.0/0 → IGW</text>
+  <rect x="420" y="160" width="100" height="32" fill="#0f4c5c" rx="2"/>
+  <text x="470" y="180" text-anchor="middle" font-size="11" fill="#fcefd1">ALB node</text>
+  <rect x="540" y="160" width="100" height="32" fill="#4a7c3a" rx="2"/>
+  <text x="590" y="180" text-anchor="middle" font-size="11" fill="#fcefd1">NAT GW</text>
+
+  <rect x="400" y="215" width="260" height="100" fill="#efe9d9" stroke="#0f4c5c" rx="3"/>
+  <text x="415" y="233" font-size="12" font-weight="700" fill="#0f4c5c">Private Subnet (10.0.4.0/24)</text>
+  <text x="415" y="248" font-size="10" font-style="italic" fill="#4a4438">route: 0.0.0.0/0 → NAT</text>
+  <rect x="420" y="258" width="100" height="32" fill="#fff" stroke="#0f4c5c"/>
+  <text x="470" y="278" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 (app)</text>
+  <rect x="540" y="258" width="100" height="32" fill="#fff" stroke="#0f4c5c"/>
+  <text x="590" y="278" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 (app)</text>
+</svg>
+<div class="caption">Per AZ: one public subnet (ALB + NAT) and one private subnet (app servers). The EC2s have no public IP and are network-isolated from the internet.</div>
+</div>
+
+<p>What changes vs your hands-on:</p>
+<ul>
+  <li>EC2s sit in a <strong>private subnet</strong> with no IGW route. Internet has no network path to them at all.</li>
+  <li>EC2s have <strong>no public IP</strong>. There's no public address to attack.</li>
+  <li>EC2s still need to reach the internet outbound (for OS updates, S3, etc.) — that's where the <strong>NAT Gateway</strong> in the public subnet comes in. NAT allows outbound but blocks inbound.</li>
+  <li>ALB stays in the public subnet — it's the only thing the internet can talk to.</li>
+  <li>EC2 SG still allows only from ALB-SG (defense in depth).</li>
+</ul>
+
+<p>Now you have <strong>two independent layers of isolation</strong>: the network (no route) and the firewall (SG rules). Either one alone would block direct access. Both together is what real architects mean by "private."</p>
+
+<!-- ============== SECTION 14 ============== -->
+<h2 id="s14"><span class="num">Chapter Fourteen</span>Your other question: app + DB in same subnet?</h2>
+
+<p>You asked:</p>
+
+<div class="correction">
+  <div class="said">
+    <span class="label">You said</span>
+    <p>"You mentioned Private App Subnet and Private DB Subnet as two different subnets. But I can create both in the same subnet, right? I can just divide them by target group — one for app servers, one for DB. The only disadvantage I see is the same hardware might fail and take both down."</p>
+  </div>
+  <div class="arrow">~</div>
+  <div class="actually">
+    <span class="label">Partially right, mostly wrong</span>
+    <p><strong>Yes, technically you can put app and DB in the same subnet</strong> — networking doesn't forbid it.</p>
+    <p>But the reason production splits them is <strong>not about hardware separation</strong>. That's actually a misconception. Subnets in the same AZ share the AZ's underlying hardware pool — splitting them into different subnets doesn't put them on physically different hardware.</p>
+    <p>The real reasons are about routing, policy, and managed-service requirements.</p>
+  </div>
+</div>
+
+<h3>The misconception about hardware</h3>
+<p>Two subnets in the same AZ are <strong>in the same physical data-center cluster</strong>. They share AZ-level infrastructure: power, cooling, network gear. If <code>us-east-1b</code> has a fire, both subnets in <code>1b</code> are gone together. Splitting into multiple subnets inside <em>one</em> AZ does <strong>not</strong> protect against AZ-level failure.</p>
+
+<p>If you want hardware-level fault tolerance, you need <strong>different AZs</strong>, not different subnets.</p>
+
+<!-- ============== SECTION 15 ============== -->
+<h2 id="s15"><span class="num">Chapter Fifteen</span>Different subnets in the SAME AZ — what they actually buy you</h2>
+
+<p>So if not hardware separation, why split app and DB into different subnets at all? Five real reasons.</p>
+
+<h3>1. Different route tables</h3>
+<p>Each subnet has its own route table. App servers might need a route through NAT for outbound internet (to download packages, hit external APIs). The DB subnet might have <strong>zero internet routes</strong> — outbound blocked at the network level. The DB literally has no way to reach the internet, even if compromised.</p>
+
+<h3>2. Different NACL boundaries</h3>
+<p>NACLs (Network ACLs) are stateless firewalls applied <em>per subnet</em>. You can have a stricter NACL on the DB subnet (e.g., only allow port 3306/5432 from the app subnet CIDR, deny everything else) than on the app subnet.</p>
+
+<h3>3. Cleaner IAM and tagging boundaries</h3>
+<p>You can write IAM policies like "developers can launch EC2 only in the app subnet, not the DB subnet." Tag-based access control. Auditing becomes simpler.</p>
+
+<h3>4. Managed service requirements</h3>
+<p>RDS won't let you put a database in a target group behind an ALB — RDS uses a <strong>DB Subnet Group</strong> instead (we'll cover this next). Even if you wanted to "put DB in same subnet as app," RDS forces you into a specific subnet model.</p>
+
+<h3>5. Conceptual clarity</h3>
+<p>Six months from now, when a new engineer joins your team and sees <code>private-app-subnet</code> and <code>private-db-subnet</code>, they immediately understand the architecture. If everything's in one big <code>misc-subnet</code>, nobody knows what should live where. Subnet naming is documentation.</p>
+
+<div class="aha">
+  <span class="tag">The big takeaway</span>
+  <p><strong>Different subnets in the same AZ = different routing, NACLs, and policy boundaries.</strong> NOT different hardware. Not different fault domains. If you need real fault tolerance, you need different AZs.</p>
+</div>
+
+<!-- ============== SECTION 16 ============== -->
+<h2 id="s16"><span class="num">Chapter Sixteen</span>Different subnets in DIFFERENT AZs — real fault tolerance</h2>
+
+<p>This is what gives you actual resilience against an AZ outage.</p>
+
+<div class="tbl-wrap">
+<table>
+  <tr><th>Setup</th><th>Survives AZ outage?</th><th>Why</th></tr>
+  <tr><td>Two subnets, both in <code>1b</code></td><td><strong>No</strong></td><td>Same AZ failure domain</td></tr>
+  <tr><td>Two subnets in different AZs (<code>1a</code> + <code>1b</code>)</td><td><strong>Yes</strong></td><td>Independent failure domains</td></tr>
+  <tr><td>ALB across <code>1a + 1b + 1c</code></td><td><strong>Yes</strong></td><td>ALB DNS skips the failed AZ</td></tr>
+  <tr><td>RDS Multi-AZ (primary in <code>1a</code>, standby in <code>1b</code>)</td><td><strong>Yes</strong></td><td>Automatic failover to <code>1b</code></td></tr>
+  <tr><td>RDS Single-AZ in <code>1a</code></td><td><strong>No</strong></td><td>Database is gone with the AZ</td></tr>
+</table>
+</div>
+
+<p>The rule of thumb: <strong>HA = at least 2 AZs.</strong> Anything less is a single point of failure dressed up to look fancy.</p>
+
+<!-- ============== SECTION 17 ============== -->
+<h2 id="s17"><span class="num">Chapter Seventeen</span>RDS &amp; the DB Subnet Group model</h2>
+
+<p>Databases on AWS use a different model from EC2 + ALB. You don't put RDS behind a target group. Instead:</p>
+
+<ol>
+  <li>You create a <strong>DB Subnet Group</strong> — a named collection of subnets that RDS is allowed to place itself in.</li>
+  <li>The DB Subnet Group must contain subnets in <strong>at least 2 AZs</strong>. AWS enforces this.</li>
+  <li>When you create an RDS instance, you point it at a DB Subnet Group. RDS picks which subnet (and AZ) to deploy in.</li>
+  <li>If you enable Multi-AZ, RDS automatically deploys a standby in a different AZ from the subnet group, and handles failover for you.</li>
+  <li>Your app server connects to the RDS endpoint (a DNS name). RDS handles the network routing.</li>
+</ol>
+
+<div class="insight">
+  <span class="tag">The clean mental model</span>
+  <p>ALB &amp; ASG = target groups (you control which instances are in there). RDS &amp; ElastiCache = subnet groups (you tell AWS the pool of subnets, AWS handles placement and failover).</p>
+  <p>Different services, different patterns. Don't try to force RDS into an ALB target group — it doesn't work that way.</p>
+</div>
+
+<!-- ============== SECTION 18 ============== -->
+<h2 id="s18"><span class="num">Chapter Eighteen</span>Cross-zone load balancing</h2>
+
+<p>You asked: "If I make a request, ALB will call the ALB node in default subnet c... and then it will call that instance in c which is in a different subnet."</p>
+
+<p>Close, but with an important addition. By default, <strong>ALB has cross-zone load balancing turned on</strong>. This means:</p>
+
+<div class="aha">
+  <span class="tag">Cross-zone means</span>
+  <p>An ALB node in AZ-1a can forward traffic to a target in AZ-1b or AZ-1c. The ALB doesn't try to keep traffic "local" to one AZ. It picks healthy targets across all AZs evenly.</p>
+</div>
+
+<p>So in your example: even if the ALB node receiving the request is in <code>1c</code>, it might forward to an EC2 in <code>1a</code> or <code>1b</code>. The traffic flow is:</p>
+<ol>
+  <li>User → DNS → IP of ALB node (say in 1c)</li>
+  <li>ALB node in 1c receives request</li>
+  <li>ALB picks a healthy target — could be any EC2 in any AZ in the target group</li>
+  <li>ALB forwards via VPC internal routing</li>
+</ol>
+
+<p>This is why ALB doesn't care whether your EC2 is in the same subnet/AZ as the ALB node. VPC routing handles cross-subnet, cross-AZ traffic seamlessly within one VPC.</p>
+
+<div class="trap">
+  <span class="tag">Watch out</span>
+  <p><strong>Cross-zone is free and always on for ALB</strong> — no choice, you can't turn it off, you don't pay extra. But for <strong>NLB</strong>, cross-zone is OFF by default and turning it on incurs inter-AZ data transfer charges. This is a real exam question and a real production gotcha.</p>
+</div>
+
+<!-- ============== SECTION 19 ============== -->
+<h2 id="s19"><span class="num">Chapter Nineteen</span>The 3 mystery options at ALB creation</h2>
+
+<p>You mentioned: <em>"then 3 other options which I didn't understand at all — CloudFront + WAF, WAF, Global Accelerator."</em></p>
+
+<p>These are not load balancers — they're services that sit <em>in front of</em> your ALB to add capabilities. AWS shows them at ALB creation because they're commonly added together. Let's unpack each.</p>
+
+<div class="summary-grid">
+  <div class="sum-card">
+    <h4>CloudFront — a CDN</h4>
+    <p>A global content delivery network. Caches your HTTP responses at 600+ edge locations worldwide. Users hit the nearest edge, get cached content fast, and only cache misses go to your ALB. Used for static assets, images, video, and API caching. Reduces ALB load and improves global latency.</p>
+  </div>
+  <div class="sum-card amber">
+    <h4>WAF — Web Application Firewall</h4>
+    <p>An L7 firewall that inspects HTTP requests and blocks attacks: SQL injection, XSS, bot traffic, suspicious patterns. Attaches to ALB, CloudFront, API Gateway. Comes with managed rule sets (AWS-curated, OWASP top 10) plus your own custom rules. Doesn't replace ALB — it sits in front of it.</p>
+  </div>
+  <div class="sum-card green">
+    <h4>Global Accelerator — static IPs + private backbone</h4>
+    <p>Gives you 2 static anycast IP addresses that work globally. Traffic enters AWS at the nearest edge, then travels over AWS's private backbone (faster, lower jitter than the public internet) to your ALB. Useful for: (1) when you need static IPs to whitelist, (2) when you want fast failover across regions without DNS, (3) when global users need consistent low latency.</p>
+  </div>
+</div>
+
+<h3>How they stack together in production</h3>
+
+<div class="diagram">
+<svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <text x="60" y="40" text-anchor="middle" font-size="13" fill="#0f4c5c">User</text>
+  <circle cx="60" cy="70" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+
+  <line x1="80" y1="70" x2="140" y2="70" stroke="#c8501a" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <rect x="140" y="40" width="120" height="60" fill="#b8860b" rx="4"/>
+  <text x="200" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">CloudFront</text>
+  <text x="200" y="82" text-anchor="middle" font-size="10" fill="#fff">edge cache</text>
+
+  <line x1="260" y1="70" x2="320" y2="70" stroke="#c8501a" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <rect x="320" y="40" width="120" height="60" fill="#9d2933" rx="4"/>
+  <text x="380" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">WAF</text>
+  <text x="380" y="82" text-anchor="middle" font-size="10" fill="#fff">attack filter</text>
+
+  <line x1="440" y1="70" x2="500" y2="70" stroke="#c8501a" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <rect x="500" y="40" width="120" height="60" fill="#0f4c5c" rx="4"/>
+  <text x="560" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#fcefd1">ALB</text>
+  <text x="560" y="82" text-anchor="middle" font-size="10" fill="#fcefd1">routing</text>
+
+  <line x1="620" y1="70" x2="680" y2="70" stroke="#c8501a" stroke-width="2" marker-end="url(#arr5)"/>
+
+  <rect x="680" y="40" width="60" height="60" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="710" y="75" text-anchor="middle" font-size="13" fill="#0f4c5c">EC2</text>
+
+  <text x="380" y="140" text-anchor="middle" font-size="13" font-style="italic" fill="#4a4438">Optional Global Accelerator for static IPs + AWS backbone routing:</text>
+
+  <rect x="200" y="160" width="380" height="50" fill="#4a7c3a" rx="4"/>
+  <text x="390" y="185" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Global Accelerator (2 static anycast IPs)</text>
+  <text x="390" y="201" text-anchor="middle" font-size="10" fill="#fff">sits between User and CloudFront/ALB when static IPs or backbone routing needed</text>
+
+  <defs>
+    <marker id="arr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8501a"/>
+    </marker>
+  </defs>
+</svg>
+<div class="caption">A typical production HTTP pipeline. Each layer adds one capability.</div>
+</div>
+
+<!-- ============== SECTION 20 ============== -->
+<h2 id="s20"><span class="num">Chapter Twenty</span>Real industry architecture</h2>
+
+<p>Let's put it all together with a "Netflix-style" pattern that real companies use.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 800 540" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- Internet -->
+  <text x="400" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#0f4c5c">Users worldwide → CloudFront → WAF → ALB → app fleet → RDS</text>
+
+  <!-- Region -->
+  <rect x="40" y="50" width="720" height="480" fill="none" stroke="#0f4c5c" stroke-width="2" stroke-dasharray="6,4" rx="6"/>
+  <text x="55" y="72" font-size="13" font-weight="700" fill="#0f4c5c">REGION us-east-1</text>
+
+  <!-- VPC -->
+  <rect x="60" y="85" width="680" height="430" fill="#fffdf5" stroke="#0f4c5c" rx="4"/>
+  <text x="75" y="105" font-size="12" font-weight="700" fill="#0f4c5c">VPC 10.0.0.0/16</text>
+
+  <text x="400" y="125" text-anchor="middle" font-size="12" font-style="italic" fill="#4a4438">Internet Gateway above; NAT Gateways in each public subnet</text>
+
+  <!-- AZ-1a -->
+  <rect x="80" y="140" width="320" height="365" fill="#f4efe2" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="95" y="160" font-size="13" font-weight="700" fill="#c8501a">us-east-1a</text>
+
+  <!-- Public 1a -->
+  <rect x="95" y="175" width="290" height="70" fill="#fff8e8" stroke="#0f4c5c" rx="3"/>
+  <text x="105" y="192" font-size="11" font-weight="700" fill="#0f4c5c">Public Subnet</text>
+  <rect x="110" y="200" width="115" height="32" fill="#0f4c5c" rx="2"/>
+  <text x="167" y="220" text-anchor="middle" font-size="11" fill="#fcefd1">ALB node</text>
+  <rect x="240" y="200" width="115" height="32" fill="#4a7c3a" rx="2"/>
+  <text x="297" y="220" text-anchor="middle" font-size="11" fill="#fcefd1">NAT GW</text>
+
+  <!-- Private App 1a -->
+  <rect x="95" y="255" width="290" height="80" fill="#efe9d9" stroke="#0f4c5c" rx="3"/>
+  <text x="105" y="272" font-size="11" font-weight="700" fill="#0f4c5c">Private App Subnet</text>
+  <rect x="115" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="155" y="307" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 app</text>
+  <rect x="205" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="245" y="307" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 app</text>
+  <rect x="295" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="335" y="307" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 app</text>
+
+  <!-- Private DB 1a -->
+  <rect x="95" y="345" width="290" height="70" fill="#e8d8d4" stroke="#0f4c5c" rx="3"/>
+  <text x="105" y="362" font-size="11" font-weight="700" fill="#0f4c5c">Private DB Subnet</text>
+  <rect x="120" y="370" width="100" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="170" y="392" text-anchor="middle" font-size="11" fill="#0f4c5c">RDS primary</text>
+  <rect x="240" y="370" width="100" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="290" y="392" text-anchor="middle" font-size="11" fill="#0f4c5c">Redis</text>
+
+  <!-- Private Cache subnet 1a -->
+  <rect x="95" y="425" width="290" height="70" fill="#e0e8e8" stroke="#0f4c5c" rx="3"/>
+  <text x="105" y="442" font-size="11" font-weight="700" fill="#0f4c5c">Isolated Internal Services</text>
+  <text x="240" y="468" text-anchor="middle" font-size="10" font-style="italic" fill="#4a4438">no internet route at all — for highly sensitive workloads</text>
+
+  <!-- AZ-1b -->
+  <rect x="420" y="140" width="320" height="365" fill="#f4efe2" stroke="#c8501a" stroke-width="1.5" rx="4"/>
+  <text x="435" y="160" font-size="13" font-weight="700" fill="#c8501a">us-east-1b</text>
+
+  <rect x="435" y="175" width="290" height="70" fill="#fff8e8" stroke="#0f4c5c" rx="3"/>
+  <text x="445" y="192" font-size="11" font-weight="700" fill="#0f4c5c">Public Subnet</text>
+  <rect x="450" y="200" width="115" height="32" fill="#0f4c5c" rx="2"/>
+  <text x="507" y="220" text-anchor="middle" font-size="11" fill="#fcefd1">ALB node</text>
+  <rect x="580" y="200" width="115" height="32" fill="#4a7c3a" rx="2"/>
+  <text x="637" y="220" text-anchor="middle" font-size="11" fill="#fcefd1">NAT GW</text>
+
+  <rect x="435" y="255" width="290" height="80" fill="#efe9d9" stroke="#0f4c5c" rx="3"/>
+  <text x="445" y="272" font-size="11" font-weight="700" fill="#0f4c5c">Private App Subnet</text>
+  <rect x="455" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="495" y="307" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 app</text>
+  <rect x="545" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="585" y="307" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 app</text>
+  <rect x="635" y="285" width="80" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="675" y="307" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2 app</text>
+
+  <rect x="435" y="345" width="290" height="70" fill="#e8d8d4" stroke="#0f4c5c" rx="3"/>
+  <text x="445" y="362" font-size="11" font-weight="700" fill="#0f4c5c">Private DB Subnet</text>
+  <rect x="460" y="370" width="100" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="510" y="392" text-anchor="middle" font-size="11" fill="#0f4c5c">RDS standby</text>
+  <rect x="580" y="370" width="100" height="35" fill="#fff" stroke="#0f4c5c"/>
+  <text x="630" y="392" text-anchor="middle" font-size="11" fill="#0f4c5c">Redis replica</text>
+
+  <rect x="435" y="425" width="290" height="70" fill="#e0e8e8" stroke="#0f4c5c" rx="3"/>
+  <text x="445" y="442" font-size="11" font-weight="700" fill="#0f4c5c">Isolated Internal Services</text>
+  <text x="580" y="468" text-anchor="middle" font-size="10" font-style="italic" fill="#4a4438">mirrored across both AZs for HA</text>
+</svg>
+<div class="caption">The actual shape of a production-grade web app on AWS. Notice the 3-tier subnet pattern per AZ.</div>
+</div>
+
+<h3>What each tier does and why it's separate</h3>
+
+<div class="summary-grid">
+  <div class="sum-card">
+    <h4>Public Subnet</h4>
+    <p>Contains ALB nodes and NAT Gateways. The only tier exposed to the internet. Has a route to IGW. Tightly secured at SG level (only ALB ports, only NAT outbound).</p>
+  </div>
+  <div class="sum-card amber">
+    <h4>Private App Subnet</h4>
+    <p>Application servers. No public IPs. Internet outbound via NAT (for updates, external APIs). Inbound only from ALB SG. Where business logic runs.</p>
+  </div>
+  <div class="sum-card green">
+    <h4>Private DB Subnet</h4>
+    <p>Databases, caches. Inbound only from app subnet SG. May have zero internet route — totally network-isolated. Used for RDS DB subnet groups, ElastiCache subnet groups.</p>
+  </div>
+  <div class="sum-card red">
+    <h4>Isolated Subnet (optional)</h4>
+    <p>For workloads that should never touch the internet at all — internal microservices, secrets stores, compliance-sensitive data. No route to IGW, no NAT. Only reachable from within the VPC.</p>
+  </div>
+</div>
+
+<!-- ============== SECTION 21 ============== -->
+<h2 id="s21"><span class="num">Chapter Twenty-One</span>Corrections recap</h2>
+
+<p>Every misconception cleared, in one place. If anything below still feels fuzzy, jump back to its chapter.</p>
+
+<div class="tbl-wrap">
+<table>
+  <tr><th style="width:42%">You said / thought</th><th>The accurate version</th></tr>
+  <tr>
+    <td>"1a, 1b are different subnets of same AZ"</td>
+    <td><strong>1a, 1b are different AZs.</strong> Subnets live inside AZs.</td>
+  </tr>
+  <tr>
+    <td>"AWS created public subnets for me when I selected 1a, 1b, 1c in ALB"</td>
+    <td>AWS <strong>did not create subnets</strong>. You selected existing default subnets. Default subnets happen to have IGW routes, making them de-facto public.</td>
+  </tr>
+  <tr>
+    <td>"There's no mention of 'public' anywhere"</td>
+    <td>Correct — "public" isn't a label AWS sticks on subnets. <strong>It's defined by the route table</strong> having <code>0.0.0.0/0 → IGW</code>.</td>
+  </tr>
+  <tr>
+    <td>"AWS made copies of ALB across AZs"</td>
+    <td>Yes — AWS deployed an <strong>ALB node (ENI)</strong> in each subnet you selected, in each AZ. The DNS resolves to multiple IPs.</td>
+  </tr>
+  <tr>
+    <td>"Security group manages everything"</td>
+    <td>SG is one layer (firewall on the ENI). <strong>Route table is another layer</strong> (can the packet even reach this subnet?). Both must allow for traffic to pass.</td>
+  </tr>
+  <tr>
+    <td>"It doesn't matter which subnet ALB and EC2 are in, as long as SG is configured"</td>
+    <td>Functionally true for connectivity — <strong>but you lose network-layer isolation</strong>. Production places EC2 in private subnets so even SG misconfiguration won't expose them.</td>
+  </tr>
+  <tr>
+    <td>"Different subnets = different hardware in same AZ"</td>
+    <td><strong>False.</strong> Subnets in the same AZ share the AZ's hardware pool. Different subnets give you different routing, NACLs, and policy — not hardware separation.</td>
+  </tr>
+  <tr>
+    <td>"Different subnets in same AZ would survive hardware failure of DB while app keeps running"</td>
+    <td><strong>No</strong> — if the AZ goes down, all subnets in that AZ go down. Real resilience requires <strong>different AZs</strong>, not different subnets.</td>
+  </tr>
+  <tr>
+    <td>"ALB needs target in same AZ"</td>
+    <td><strong>No.</strong> ALB has cross-zone load balancing on by default. Any ALB node can route to any healthy target in any AZ in the VPC.</td>
+  </tr>
+  <tr>
+    <td>"I can put DB behind a target group"</td>
+    <td><strong>No</strong> — RDS uses a <strong>DB Subnet Group</strong>, not target groups. Target groups are for compute targets (EC2, IPs, Lambda, containers).</td>
+  </tr>
+</table>
+</div>
+
+<div class="divider">· · ·</div>
+
+<div class="end-note">
+  <h3>You've moved from clicking buttons to thinking like an infrastructure engineer</h3>
+  <p>The gap between beginner and architect isn't more services — it's understanding the <em>layers</em>. Subnet routing, security groups, AZ boundaries, IGW vs NAT, public-by-route-table — these are the bones of every AWS architecture, from a learning lab to Netflix.</p>
+  <p>Next time you click "Create" in any AWS service, ask yourself the four questions: <strong>Which AZs? Which subnets? Which route tables? Which security groups?</strong> If you can answer those, you understand what you're really building.</p>
+  <p>The hands-on you did was the perfect foundation. Now you know what was happening underneath every checkbox.</p>
+</div>
+
+</div>
+</body>
+</html>

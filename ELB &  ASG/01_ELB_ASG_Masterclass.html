@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELB & Auto Scaling — The Complete Masterclass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f0;
+    --bg-soft: #f4efe2;
+    --ink: #1a1a1a;
+    --ink-soft: #3d3d3d;
+    --rule: #d8cfb8;
+    --teal: #0f4c5c;
+    --teal-soft: #2a6f7e;
+    --amber: #c8501a;
+    --amber-soft: #e36414;
+    --green: #386641;
+    --red: #9d2933;
+    --gold: #b8860b;
+    --paper: #fffdf5;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(15,76,92,0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 20px;
+    line-height: 1.7;
+    font-feature-settings: 'kern', 'liga', 'onum';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 60px 32px 120px;
+  }
+
+  /* ============== HERO ============== */
+  .hero {
+    text-align: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 40px;
+    margin-bottom: 60px;
+  }
+  .hero .label {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 68px;
+    line-height: 1.05;
+    margin: 0 0 20px;
+    letter-spacing: -0.02em;
+    color: var(--teal);
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--amber);
+  }
+  .hero .sub {
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    color: var(--ink-soft);
+    font-style: italic;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .hero .meta {
+    margin-top: 32px;
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .hero .meta span { margin: 0 12px; }
+
+  /* ============== TYPOGRAPHY ============== */
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 44px;
+    line-height: 1.1;
+    color: var(--teal);
+    margin: 90px 0 8px;
+    letter-spacing: -0.02em;
+    border-top: 1px solid var(--rule);
+    padding-top: 40px;
+  }
+  h2 .num {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: var(--ink);
+    margin: 50px 0 16px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--teal);
+    margin: 32px 0 12px;
+  }
+  p {
+    margin: 0 0 18px;
+  }
+  strong {
+    color: var(--teal);
+    font-weight: 700;
+  }
+  em {
+    color: var(--amber);
+    font-style: italic;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    background: var(--bg-soft);
+    padding: 2px 7px;
+    border-radius: 3px;
+    color: var(--teal);
+  }
+
+  /* ============== ANALOGY BOX ============== */
+  .analogy {
+    background: linear-gradient(135deg, #fff8e8 0%, #fcefd1 100%);
+    border-left: 6px solid var(--gold);
+    padding: 28px 32px;
+    margin: 32px 0;
+    border-radius: 0 8px 8px 0;
+    box-shadow: var(--shadow);
+  }
+  .analogy .tag {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .analogy p:last-child { margin-bottom: 0; }
+
+  /* ============== KEY INSIGHT ============== */
+  .insight {
+    background: var(--teal);
+    color: #fff8e8;
+    padding: 28px 36px;
+    margin: 36px 0;
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .insight strong, .insight em {
+    color: #fcefd1;
+  }
+  .insight .tag {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fcefd1;
+    margin-bottom: 10px;
+  }
+  .insight p:last-child { margin-bottom: 0; }
+
+  /* ============== TRAP BOX ============== */
+  .trap {
+    background: #fdf0ee;
+    border: 2px solid var(--red);
+    padding: 24px 28px;
+    margin: 28px 0;
+    border-radius: 4px;
+  }
+  .trap .tag {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .trap strong { color: var(--red); }
+  .trap p:last-child { margin-bottom: 0; }
+
+  /* ============== EXAM ANGLE ============== */
+  .exam {
+    background: #eef5e8;
+    border: 2px solid var(--green);
+    padding: 24px 28px;
+    margin: 28px 0;
+    border-radius: 4px;
+  }
+  .exam .tag {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  .exam strong { color: var(--green); }
+  .exam p:last-child { margin-bottom: 0; }
+
+  /* ============== TABLES ============== */
+  .tbl-wrap { overflow-x: auto; margin: 32px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper);
+    box-shadow: var(--shadow);
+    font-size: 18px;
+  }
+  th {
+    background: var(--teal);
+    color: var(--paper);
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+  }
+  td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+
+  /* ============== LISTS ============== */
+  ul, ol {
+    padding-left: 28px;
+    margin: 18px 0;
+  }
+  li { margin-bottom: 10px; }
+  ul li::marker { color: var(--amber); }
+  ol li::marker { color: var(--amber); font-family: 'Fraunces', serif; font-weight: 700; }
+
+  /* ============== DIAGRAMS ============== */
+  .diagram {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 32px 24px;
+    margin: 32px 0;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .diagram .caption {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-top: 16px;
+  }
+  .diagram svg { max-width: 100%; height: auto; }
+
+  /* ============== TOC ============== */
+  .toc {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 32px 40px;
+    margin: 50px 0 80px;
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+  }
+  .toc h3 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    color: var(--teal);
+  }
+  .toc ol { margin: 0; padding-left: 0; list-style: none; counter-reset: toc; }
+  .toc li { counter-increment: toc; padding: 8px 0; border-bottom: 1px dotted var(--rule); }
+  .toc li:last-child { border-bottom: none; }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: var(--amber);
+    margin-right: 16px;
+    font-size: 16px;
+  }
+  .toc a { color: var(--ink); text-decoration: none; font-size: 19px; }
+  .toc a:hover { color: var(--amber); }
+
+  /* ============== KEY-VALUE ============== */
+  .kv {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--bg-soft);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 4px 4px 0;
+  }
+  .kv .k {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: var(--teal);
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  /* ============== SECTION DIVIDER ============== */
+  .divider {
+    text-align: center;
+    margin: 60px 0;
+    color: var(--amber);
+    letter-spacing: 0.5em;
+    font-size: 14px;
+  }
+
+  /* ============== INLINE BADGE ============== */
+  .badge {
+    display: inline-block;
+    font-family: 'Fraunces', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .badge-l7 { background: #d4e7c5; color: #2d5016; }
+  .badge-l4 { background: #c5d8e7; color: #1a3a52; }
+  .badge-new { background: var(--amber); color: #fff; }
+
+  /* ============== PICK BOX ============== */
+  .pick {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .pick > div {
+    background: var(--paper);
+    border: 2px solid var(--teal);
+    padding: 20px 24px;
+    border-radius: 4px;
+  }
+  .pick > div + div {
+    border-color: var(--amber);
+  }
+  .pick .label {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .pick > div + div .label { color: var(--amber); }
+
+  /* ============== FOOTNOTE ============== */
+  .end-note {
+    margin-top: 100px;
+    padding: 40px;
+    background: var(--teal);
+    color: var(--paper);
+    border-radius: 6px;
+    text-align: center;
+  }
+  .end-note h3 {
+    color: #fcefd1;
+    margin-top: 0;
+  }
+  .end-note p {
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 700px) {
+    body { font-size: 18px; }
+    .hero h1 { font-size: 44px; }
+    h2 { font-size: 32px; }
+    h3 { font-size: 24px; }
+    .pick { grid-template-columns: 1fr; }
+    .wrap { padding: 40px 20px 80px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============== HERO ============== -->
+<header class="hero">
+  <div class="label">SAA-C03 · Masterclass · Volume I</div>
+  <h1>The Art of <em>Standing Tall</em><br>Under Any Load</h1>
+  <p class="sub">A complete journey through Elastic Load Balancing &amp; Auto Scaling Groups — from why they exist, to how they work, to how a Solutions Architect actually uses them.</p>
+  <div class="meta">
+    <span>Foundations</span>·<span>AWS Mastery</span>·<span>Industry Practice</span>
+  </div>
+</header>
+
+<!-- ============== TOC ============== -->
+<div class="toc">
+  <h3>What we'll cover</h3>
+  <ol>
+    <li><a href="#s1">The problem nobody told you about</a></li>
+    <li><a href="#s2">Four words you must understand: HA, Scalability, Elasticity, Fault Tolerance</a></li>
+    <li><a href="#s3">Vertical vs Horizontal scaling — the foundational choice</a></li>
+    <li><a href="#s4">What is a Load Balancer, really?</a></li>
+    <li><a href="#s5">The OSI detour: Layer 4 vs Layer 7 (so the rest makes sense)</a></li>
+    <li><a href="#s6">AWS Elastic Load Balancing — the family</a></li>
+    <li><a href="#s7">Application Load Balancer (ALB) — the smart router</a></li>
+    <li><a href="#s8">Network Load Balancer (NLB) — the speed demon</a></li>
+    <li><a href="#s9">Gateway Load Balancer (GWLB) — the security plumbing</a></li>
+    <li><a href="#s10">The bits inside every load balancer</a></li>
+    <li><a href="#s11">Health checks — the heartbeat</a></li>
+    <li><a href="#s12">Sticky sessions, cross-zone, deregistration delay</a></li>
+    <li><a href="#s13">SSL/TLS termination &amp; SNI</a></li>
+    <li><a href="#s14">Auto Scaling Groups — the smart manager</a></li>
+    <li><a href="#s15">Launch Templates and the moving parts</a></li>
+    <li><a href="#s16">Scaling policies — how ASG decides</a></li>
+    <li><a href="#s17">Lifecycle Hooks, Warm Pools, Instance Refresh</a></li>
+    <li><a href="#s18">Mixed instances &amp; Spot inside ASG</a></li>
+    <li><a href="#s19">ELB + ASG: the power couple in production</a></li>
+    <li><a href="#s20">Industry patterns &amp; war stories</a></li>
+    <li><a href="#s21">The mental model to take into the exam (and into Monday)</a></li>
+  </ol>
+</div>
+
+<!-- ============== SECTION 1 ============== -->
+<h2 id="s1"><span class="num">Chapter One</span>The problem nobody told you about</h2>
+
+<p>Imagine you build a website. You put it on one server. It works. You're happy.</p>
+
+<p>Then one of three things happens.</p>
+
+<p><strong>One:</strong> the server crashes at 3am. Your site is down. You wake up to angry emails.</p>
+
+<p><strong>Two:</strong> your website goes viral. A thousand people show up at the same time. Your one server, designed for ten people, melts. The site loads in 47 seconds — if it loads at all.</p>
+
+<p><strong>Three:</strong> you need to update the software. To install the update, you have to turn the server off. While it's off, the site is down. Customers see an error.</p>
+
+<p>Each of these is a different problem, but they share a root cause: <strong>you only have one of the thing</strong>. One of anything is fragile. One of anything is a bottleneck. One of anything is a single point of failure.</p>
+
+<div class="analogy">
+  <div class="tag">Real-world parallel</div>
+  <p>Picture a popular restaurant with one chef. If the chef gets sick — the restaurant closes. If 200 people show up for dinner — they wait two hours. If the chef wants a holiday — no dinner that week.</p>
+  <p>The fix isn't a faster chef. The fix is <strong>more chefs, a host at the door directing customers, and a manager who hires more chefs when the queue grows</strong>. That's exactly what we're going to build in AWS.</p>
+</div>
+
+<p>The host at the door is the <strong>Load Balancer</strong>. The manager who hires and fires chefs based on how busy it is — that's the <strong>Auto Scaling Group</strong>. Together they solve all three problems: failures, traffic spikes, and zero-downtime updates.</p>
+
+<p>This entire document is about understanding those two pieces deeply enough that you can sketch this architecture for any business problem someone throws at you — including problems on the SAA-C03 exam.</p>
+
+<!-- ============== SECTION 2 ============== -->
+<h2 id="s2"><span class="num">Chapter Two</span>Four words you must understand</h2>
+
+<p>Architects throw around four words that sound similar but mean different things. Mixing them up is one of the most common reasons people miss exam questions and design bad systems. Let's nail them down.</p>
+
+<h3>1. High Availability (HA)</h3>
+<p>The system <strong>keeps working when something breaks</strong>. We typically measure this in "nines" — 99.9% (three nines), 99.99% (four nines), and so on. Four nines = roughly 52 minutes of downtime per year.</p>
+<p>HA usually means: have <strong>more than one of each thing</strong>, in <strong>separate failure zones</strong>, with <strong>automatic failover</strong> when one breaks.</p>
+<div class="analogy">
+  <div class="tag">Restaurant analogy</div>
+  <p>Two chefs in two kitchens, in two different buildings. If a fire shuts down one kitchen, the other keeps cooking.</p>
+</div>
+
+<h3>2. Scalability</h3>
+<p>The system can <strong>handle more load</strong> when needed. Two flavours:</p>
+<ul>
+  <li><strong>Vertical scaling</strong> — make the existing server bigger (more CPU, more RAM). Like upgrading from a small van to a big truck.</li>
+  <li><strong>Horizontal scaling</strong> — add more servers running the same thing. Like adding more vans to your fleet.</li>
+</ul>
+
+<h3>3. Elasticity</h3>
+<p>The system <strong>scales up AND down automatically</strong> based on demand. Scalability says "we can grow." Elasticity says "we grow when needed and shrink when not — without anyone pressing a button."</p>
+<p>Elasticity is what saves you money. A non-elastic but scalable system can grow but stays big — you pay for the peak even at 3am when nobody's there.</p>
+
+<h3>4. Fault Tolerance</h3>
+<p>The system <strong>continues working with zero impact even when something fails</strong>. Stronger than HA — HA might have a 30-second blip during failover; fault tolerance has none. Achieved by running redundant active components, often across multiple regions.</p>
+
+<div class="insight">
+  <div class="tag">The cleanest one-liners</div>
+  <p><strong>HA</strong> = stays up when things break.<br>
+  <strong>Scalable</strong> = can handle more load.<br>
+  <strong>Elastic</strong> = grows AND shrinks automatically.<br>
+  <strong>Fault Tolerant</strong> = HA with zero downtime, even mid-failure.</p>
+</div>
+
+<!-- ============== SECTION 3 ============== -->
+<h2 id="s3"><span class="num">Chapter Three</span>Vertical vs Horizontal scaling</h2>
+
+<p>You'll see this distinction everywhere. Let's understand it before we touch anything AWS.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- Vertical -->
+  <text x="160" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#0f4c5c">Vertical Scaling</text>
+  <text x="160" y="50" text-anchor="middle" font-size="13" fill="#3d3d3d" font-style="italic">make it bigger</text>
+
+  <rect x="120" y="240" width="80" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="160" y="270" text-anchor="middle" font-size="13" fill="#0f4c5c">Small</text>
+
+  <text x="240" y="270" font-size="22" fill="#c8501a">→</text>
+
+  <rect x="280" y="200" width="80" height="90" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="320" y="250" text-anchor="middle" font-size="13" fill="#0f4c5c">Bigger</text>
+
+  <line x1="120" y1="320" x2="360" y2="320" stroke="#3d3d3d"/>
+
+  <!-- Horizontal -->
+  <text x="540" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#0f4c5c">Horizontal Scaling</text>
+  <text x="540" y="50" text-anchor="middle" font-size="13" fill="#3d3d3d" font-style="italic">make many of them</text>
+
+  <rect x="500" y="240" width="80" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="540" y="270" text-anchor="middle" font-size="13" fill="#0f4c5c">Server</text>
+
+  <text x="610" y="270" font-size="22" fill="#c8501a">→</text>
+
+  <rect x="430" y="240" width="50" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <rect x="490" y="240" width="50" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <rect x="550" y="240" width="50" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <rect x="610" y="240" width="50" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="455" y="270" text-anchor="middle" font-size="11" fill="#0f4c5c">S1</text>
+  <text x="515" y="270" text-anchor="middle" font-size="11" fill="#0f4c5c">S2</text>
+  <text x="575" y="270" text-anchor="middle" font-size="11" fill="#0f4c5c">S3</text>
+  <text x="635" y="270" text-anchor="middle" font-size="11" fill="#0f4c5c">S4</text>
+
+  <line x1="430" y1="320" x2="660" y2="320" stroke="#3d3d3d"/>
+</svg>
+<div class="caption">Two ways to "scale" — one stretches a single thing taller, the other adds more.</div>
+</div>
+
+<div class="tbl-wrap">
+<table>
+  <tr><th>Aspect</th><th>Vertical (scale up)</th><th>Horizontal (scale out)</th></tr>
+  <tr><td>What you do</td><td>Resize the EC2 instance bigger</td><td>Add more EC2 instances</td></tr>
+  <tr><td>Downtime</td><td>Yes (stop, change type, start)</td><td>No</td></tr>
+  <tr><td>Limit</td><td>Hits a ceiling (the biggest size AWS sells)</td><td>Practically unlimited</td></tr>
+  <tr><td>HA?</td><td>No — still one server</td><td>Yes — multiple servers</td></tr>
+  <tr><td>Good for</td><td>Databases (single-writer), legacy apps</td><td>Stateless web/app tiers</td></tr>
+  <tr><td>AWS tooling</td><td>Manual instance type change</td><td>Auto Scaling Group</td></tr>
+</table>
+</div>
+
+<div class="exam">
+  <div class="tag">Why this matters for the exam</div>
+  <p>When the question says <em>"the system needs to handle unpredictable spikes"</em> or <em>"scale automatically"</em> — it's telling you to <strong>scale horizontally with an Auto Scaling Group</strong>. Vertical scaling is rarely the right answer on SAA-C03 because it can't be done without downtime and doesn't give you HA.</p>
+</div>
+
+<!-- ============== SECTION 4 ============== -->
+<h2 id="s4"><span class="num">Chapter Four</span>What is a Load Balancer, really?</h2>
+
+<p>So we've decided to scale horizontally. We have ten web servers running our app. There's an immediate problem: <strong>which server does the user's request go to?</strong></p>
+
+<p>If we hand out IP addresses to users randomly, half the servers might be slammed and half might be idle. Worse, if one server dies, users who were "assigned" to it just see errors.</p>
+
+<p>We need something that sits in front of the servers, takes every incoming request, and intelligently picks a healthy server to handle it. That something is a <strong>load balancer</strong>.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- Users -->
+  <text x="60" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#0f4c5c">Users</text>
+  <circle cx="40" cy="80" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <circle cx="40" cy="130" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <circle cx="40" cy="180" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <circle cx="40" cy="230" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <circle cx="80" cy="105" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <circle cx="80" cy="155" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <circle cx="80" cy="205" r="14" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+
+  <!-- arrows to LB -->
+  <line x1="100" y1="155" x2="240" y2="155" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Load Balancer -->
+  <rect x="240" y="120" width="160" height="70" fill="#0f4c5c" rx="6"/>
+  <text x="320" y="150" text-anchor="middle" font-size="18" font-weight="700" fill="#fcefd1">Load Balancer</text>
+  <text x="320" y="172" text-anchor="middle" font-size="13" font-style="italic" fill="#fcefd1">single front door</text>
+
+  <!-- arrows out -->
+  <line x1="400" y1="140" x2="540" y2="80" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="400" y1="155" x2="540" y2="155" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="400" y1="170" x2="540" y2="230" stroke="#c8501a" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Servers -->
+  <rect x="540" y="60" width="120" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="600" y="90" text-anchor="middle" font-size="14" fill="#0f4c5c">Server 1</text>
+  <rect x="540" y="135" width="120" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="600" y="165" text-anchor="middle" font-size="14" fill="#0f4c5c">Server 2</text>
+  <rect x="540" y="210" width="120" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="600" y="240" text-anchor="middle" font-size="14" fill="#0f4c5c">Server 3</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8501a"/>
+    </marker>
+  </defs>
+</svg>
+<div class="caption">Users always hit one address — the load balancer — which spreads the work across many servers.</div>
+</div>
+
+<h3>What a load balancer actually does for you</h3>
+<ol>
+  <li><strong>Spreads the load</strong> across many servers so no one server gets crushed.</li>
+  <li><strong>Hides failed servers</strong> — if a server stops responding, the LB stops sending traffic to it. Users never notice.</li>
+  <li><strong>Gives you a single endpoint</strong> — one DNS name (or IP). You can add or remove servers behind it without changing anything users see.</li>
+  <li><strong>Handles SSL/TLS</strong> — decrypts HTTPS so your servers don't have to. Faster, cheaper, simpler.</li>
+  <li><strong>Enables zero-downtime deploys</strong> — drain traffic from old servers, route to new ones, swap.</li>
+</ol>
+
+<div class="analogy">
+  <div class="tag">Restaurant analogy</div>
+  <p>The host at the door of a busy restaurant. You don't pick a chef — you give your name to the host, and the host walks you to a chef who's free, whose station is clean, and who isn't on break. If a chef burns out mid-shift, the host stops sending tables to them. The customer never knows.</p>
+</div>
+
+<!-- ============== SECTION 5 ============== -->
+<h2 id="s5"><span class="num">Chapter Five</span>The OSI detour — Layer 4 vs Layer 7</h2>
+
+<p>You'll keep seeing "Layer 4" and "Layer 7" in AWS docs and exam questions. If you understand this in 90 seconds, the entire ELB family snaps into place.</p>
+
+<p>The OSI model is a 7-layer way of describing how computers talk to each other. We only need two layers:</p>
+
+<div class="kv">
+  <div class="k">Layer 4 — the Transport Layer</div>
+  <div>This is the level of <strong>TCP and UDP</strong>. It deals with raw connections — IP addresses, ports, packets. It does NOT understand what's inside the connection. It doesn't know if the data is HTTP, video, a game, or noise.</div>
+</div>
+
+<div class="kv">
+  <div class="k">Layer 7 — the Application Layer</div>
+  <div>This is the level of <strong>HTTP, HTTPS, gRPC, WebSocket</strong>. It understands the meaning of the data — URLs, headers, cookies, hostnames. It can read "GET /api/users" and decide based on it.</div>
+</div>
+
+<div class="analogy">
+  <div class="tag">Postal analogy</div>
+  <p>Layer 4 is like a postal worker who only reads the address on the envelope. They can deliver fast. They don't know or care what's inside.</p>
+  <p>Layer 7 is like a personal assistant who opens every letter and decides where to forward it based on the contents. Slower, but smarter — "this is a job application, send it to HR; this is an invoice, send it to Finance."</p>
+</div>
+
+<div class="insight">
+  <div class="tag">The headline</div>
+  <p>A <strong>Layer 4 load balancer</strong> is fast and protocol-agnostic, but dumb about content. A <strong>Layer 7 load balancer</strong> is slower and HTTP-only, but can route based on URL, host, headers, and cookies. AWS gives you one of each — plus a third for security inspection.</p>
+</div>
+
+<!-- ============== SECTION 6 ============== -->
+<h2 id="s6"><span class="num">Chapter Six</span>The Elastic Load Balancing family</h2>
+
+<p>AWS's load balancing service is called <strong>ELB — Elastic Load Balancing</strong>. It's not one product. It's a family of four:</p>
+
+<div class="tbl-wrap">
+<table>
+  <tr><th>Type</th><th>Layer</th><th>Use it for</th><th>Status</th></tr>
+  <tr><td><strong>Application Load Balancer (ALB)</strong></td><td>7</td><td>HTTP / HTTPS web traffic with smart routing</td><td>Modern</td></tr>
+  <tr><td><strong>Network Load Balancer (NLB)</strong></td><td>4</td><td>Ultra-fast TCP/UDP; static IPs needed</td><td>Modern</td></tr>
+  <tr><td><strong>Gateway Load Balancer (GWLB)</strong></td><td>3 / 4</td><td>Inserting third-party security appliances</td><td>Modern (newer)</td></tr>
+  <tr><td><strong>Classic Load Balancer (CLB)</strong></td><td>4 &amp; 7 (basic)</td><td>Legacy only — do not pick on the exam</td><td>Deprecated for new use</td></tr>
+</table>
+</div>
+
+<p>For the SAA-C03 exam and for real-world architecture today, you only care about the first three. Let's go through them one at a time.</p>
+
+<!-- ============== SECTION 7 ============== -->
+<h2 id="s7"><span class="num">Chapter Seven</span>Application Load Balancer (ALB) <span class="badge badge-l7">Layer 7</span></h2>
+
+<p>The ALB is the workhorse of AWS web architecture. If you're building a website, an API, a microservice, or anything HTTP — ALB is almost always the answer.</p>
+
+<h3>What makes ALB special: it understands HTTP</h3>
+
+<p>Because ALB operates at Layer 7, it can <strong>read every incoming request and route it differently based on what's inside</strong>. This unlocks patterns that no Layer 4 LB can do:</p>
+
+<ul>
+  <li><strong>Path-based routing.</strong> Send <code>/api/*</code> to one set of servers, <code>/images/*</code> to another, <code>/admin/*</code> to a third. One domain, many backends.</li>
+  <li><strong>Host-based routing.</strong> <code>shop.example.com</code> goes to one app, <code>blog.example.com</code> to another — same load balancer.</li>
+  <li><strong>Header-based routing.</strong> Route by user-agent, custom headers, or anything in the HTTP request.</li>
+  <li><strong>Query-string &amp; method routing.</strong> Treat <code>?version=v2</code> requests differently. Send POSTs to a different backend than GETs.</li>
+</ul>
+
+<div class="diagram">
+<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- Internet -->
+  <text x="60" y="160" text-anchor="middle" font-size="14" font-weight="700" fill="#0f4c5c">Internet</text>
+  <line x1="100" y1="160" x2="200" y2="160" stroke="#c8501a" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- ALB -->
+  <rect x="200" y="120" width="160" height="80" fill="#0f4c5c" rx="6"/>
+  <text x="280" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#fcefd1">ALB</text>
+  <text x="280" y="172" text-anchor="middle" font-size="11" fill="#fcefd1">reads HTTP</text>
+  <text x="280" y="188" text-anchor="middle" font-size="11" fill="#fcefd1">routes by rules</text>
+
+  <!-- branches -->
+  <line x1="360" y1="135" x2="480" y2="60" stroke="#c8501a" stroke-width="2" marker-end="url(#arr2)"/>
+  <text x="420" y="80" font-size="11" fill="#c8501a" font-style="italic">/api/*</text>
+
+  <line x1="360" y1="160" x2="480" y2="160" stroke="#c8501a" stroke-width="2" marker-end="url(#arr2)"/>
+  <text x="420" y="155" font-size="11" fill="#c8501a" font-style="italic">/images/*</text>
+
+  <line x1="360" y1="185" x2="480" y2="260" stroke="#c8501a" stroke-width="2" marker-end="url(#arr2)"/>
+  <text x="420" y="240" font-size="11" fill="#c8501a" font-style="italic">/admin/*</text>
+
+  <!-- target groups -->
+  <rect x="490" y="40" width="160" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="570" y="62" text-anchor="middle" font-size="13" fill="#0f4c5c">Target Group: API</text>
+  <text x="570" y="80" text-anchor="middle" font-size="11" fill="#3d3d3d">EC2 / ECS / Lambda</text>
+
+  <rect x="490" y="135" width="160" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="570" y="157" text-anchor="middle" font-size="13" fill="#0f4c5c">Target Group: Images</text>
+  <text x="570" y="175" text-anchor="middle" font-size="11" fill="#3d3d3d">EC2 with image cache</text>
+
+  <rect x="490" y="235" width="160" height="50" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="570" y="257" text-anchor="middle" font-size="13" fill="#0f4c5c">Target Group: Admin</text>
+  <text x="570" y="275" text-anchor="middle" font-size="11" fill="#3d3d3d">private EC2 fleet</text>
+
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8501a"/>
+    </marker>
+  </defs>
+</svg>
+<div class="caption">A single ALB serving three different backends based on the URL path.</div>
+</div>
+
+<h3>What ALB can route to (its "targets")</h3>
+<ul>
+  <li><strong>EC2 instances</strong> — the classic case.</li>
+  <li><strong>IP addresses</strong> — including on-premises servers reached via VPN/Direct Connect.</li>
+  <li><strong>Lambda functions</strong> — yes, ALB can invoke Lambda. Useful for serverless backends behind a corporate domain.</li>
+  <li><strong>Containers (ECS / EKS tasks)</strong> — automatically registers and deregisters as containers come and go.</li>
+</ul>
+
+<h3>Other ALB superpowers</h3>
+<ul>
+  <li><strong>HTTPS / SSL termination</strong> with certificates from ACM (free, auto-renewing).</li>
+  <li><strong>Authentication built in</strong> — integrates with Cognito User Pools, OIDC, SAML. Your servers don't have to handle login at all.</li>
+  <li><strong>WebSocket and HTTP/2</strong> support natively.</li>
+  <li><strong>Sticky sessions</strong> via cookies.</li>
+  <li><strong>WAF integration</strong> (Web Application Firewall — blocks SQL injection, XSS, etc.).</li>
+  <li><strong>Access logs</strong> to S3, request tracing.</li>
+</ul>
+
+<div class="trap">
+  <div class="tag">The classic ALB trap</div>
+  <p><strong>ALB does NOT have a static IP address.</strong> It has a stable DNS name (something like <code>my-alb-1234.us-east-1.elb.amazonaws.com</code>), and the IP behind it can change at any moment. If a question says <em>"the application requires whitelisting specific IP addresses"</em> or <em>"customers connect to a hardcoded IP"</em> — ALB is wrong. Use <strong>NLB</strong> (static IP per AZ) or front the ALB with <strong>Global Accelerator</strong> (gives you 2 static anycast IPs).</p>
+</div>
+
+<div class="exam">
+  <div class="tag">Exam decision rule</div>
+  <p>HTTP / HTTPS + path or host routing + microservices + containers + Cognito auth → <strong>ALB</strong>. Almost everything web-shaped goes here.</p>
+</div>
+
+<!-- ============== SECTION 8 ============== -->
+<h2 id="s8"><span class="num">Chapter Eight</span>Network Load Balancer (NLB) <span class="badge badge-l4">Layer 4</span></h2>
+
+<p>If ALB is the smart concierge, NLB is the toll booth. It does very little — and does it incredibly fast.</p>
+
+<h3>Why NLB exists</h3>
+
+<p>NLB operates at Layer 4. It looks at IP addresses and ports and forwards packets. It does NOT read your traffic. It cannot do path routing. It cannot terminate HTTPS in the same way ALB does (well, it can terminate TLS, but it doesn't read HTTP).</p>
+
+<p>What it gives you in exchange:</p>
+
+<ul>
+  <li><strong>Insane performance.</strong> Millions of requests per second. Microsecond latency. Built on AWS Hyperplane (the same tech behind PrivateLink).</li>
+  <li><strong>Static IP address per Availability Zone</strong> — you can also assign your own Elastic IPs. This is <em>the</em> reason most NLB questions exist.</li>
+  <li><strong>Any TCP / UDP / TLS workload.</strong> Game servers, IoT, financial trading, MQTT, video streaming, custom protocols — anything non-HTTP.</li>
+  <li><strong>Source IP preservation</strong> — by default, the backend sees the real client IP. ALB does not (it sets <code>X-Forwarded-For</code>).</li>
+</ul>
+
+<h3>The trade-offs</h3>
+<ul>
+  <li>No path routing. No host routing. No header inspection.</li>
+  <li>No native authentication.</li>
+  <li>No WAF integration directly (WAF is HTTP-aware; you'd put WAF on a CloudFront/ALB in front).</li>
+</ul>
+
+<div class="analogy">
+  <div class="tag">Real-world parallel</div>
+  <p>ALB is a sorting office. Every package gets opened, read, and routed.</p>
+  <p>NLB is a high-speed conveyor belt. Packages fly past at 100 km/h. Nobody opens anything. They go to the bay marked on the box and that's it.</p>
+</div>
+
+<div class="exam">
+  <div class="tag">Exam triggers for NLB</div>
+  <p><strong>"Static IP addresses"</strong> · <strong>"millions of requests per second"</strong> · <strong>"ultra-low latency"</strong> · <strong>"TCP / UDP traffic"</strong> · <strong>"preserve the client's source IP"</strong> · <strong>"non-HTTP protocol"</strong> → NLB.</p>
+</div>
+
+<!-- ============== SECTION 9 ============== -->
+<h2 id="s9"><span class="num">Chapter Nine</span>Gateway Load Balancer (GWLB)</h2>
+
+<p>GWLB is the strangest of the three because it's not really for load balancing your application. It's plumbing for security tools.</p>
+
+<h3>The problem GWLB solves</h3>
+
+<p>Big companies often want every packet entering their VPC to be inspected by a third-party firewall, intrusion detection system, or deep packet inspection appliance — products from Palo Alto, Fortinet, Check Point, Trend Micro and so on.</p>
+
+<p>Before GWLB, inserting these appliances into the traffic flow was painful. You'd have to redesign routing, deal with asymmetric flows, manage failover for the appliances yourself.</p>
+
+<p>GWLB makes it transparent: traffic enters the GWLB, gets bounced through a fleet of security appliances, comes back, and continues to its destination — and the appliances appear "in line" without complex routing changes.</p>
+
+<h3>Two GWLB-specific facts to remember</h3>
+<ul>
+  <li>It uses the <strong>GENEVE</strong> protocol on <strong>port 6081</strong> to encapsulate and forward traffic to appliances. Memorise this — exam loves it.</li>
+  <li>It pairs with a <strong>GWLB Endpoint (GWLBe)</strong> in your VPC, similar to a VPC endpoint, to route traffic through the appliances.</li>
+</ul>
+
+<div class="exam">
+  <div class="tag">Exam trigger phrases</div>
+  <p><strong>"third-party virtual appliances"</strong> · <strong>"transparent traffic inspection"</strong> · <strong>"firewalls in line"</strong> · <strong>"GENEVE / port 6081"</strong> → GWLB. If the question is about balancing your own application servers, GWLB is the wrong answer.</p>
+</div>
+
+<!-- ============== SECTION 10 ============== -->
+<h2 id="s10"><span class="num">Chapter Ten</span>The bits inside every load balancer</h2>
+
+<p>Whatever flavour of LB you pick, the internal anatomy is the same. Three components.</p>
+
+<h3>1. Listener</h3>
+<p>A listener is the <strong>door the LB opens to the world</strong>. It's a protocol + port combination — for example, "HTTPS on port 443" or "TCP on port 25". A listener has rules attached that decide where matching traffic goes.</p>
+
+<h3>2. Target Group</h3>
+<p>A target group is the <strong>pool of backends</strong> a listener forwards traffic to. Targets can be EC2 instances, IP addresses, Lambda functions, or containers. The target group also defines:</p>
+<ul>
+  <li>The <strong>protocol and port</strong> the LB uses to reach the targets (often different from what the user uses — e.g., users use HTTPS:443, LB talks to backends on HTTP:80).</li>
+  <li>The <strong>health check configuration</strong> (next chapter).</li>
+  <li>Stickiness, deregistration delay, slow start.</li>
+</ul>
+
+<h3>3. Rules (ALB only)</h3>
+<p>For ALB, listener rules do the smart routing — "if path is /api/* send to target group A; if host is shop.example.com send to target group B." Rules are evaluated in priority order, with a default rule for everything that doesn't match.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- LB box -->
+  <rect x="50" y="40" width="600" height="200" fill="none" stroke="#0f4c5c" stroke-width="2" stroke-dasharray="6,4" rx="6"/>
+  <text x="60" y="30" font-size="13" font-weight="700" fill="#0f4c5c">LOAD BALANCER</text>
+
+  <!-- listener -->
+  <rect x="80" y="70" width="180" height="60" fill="#0f4c5c"/>
+  <text x="170" y="95" text-anchor="middle" font-size="14" font-weight="700" fill="#fcefd1">Listener</text>
+  <text x="170" y="115" text-anchor="middle" font-size="12" fill="#fcefd1">HTTPS : 443</text>
+
+  <!-- rules -->
+  <rect x="80" y="160" width="180" height="60" fill="#c8501a"/>
+  <text x="170" y="185" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Rules</text>
+  <text x="170" y="205" text-anchor="middle" font-size="11" fill="#fff">if /api → TG-A; else TG-B</text>
+
+  <!-- target groups -->
+  <rect x="380" y="70" width="200" height="60" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="480" y="95" text-anchor="middle" font-size="14" font-weight="700" fill="#0f4c5c">Target Group A</text>
+  <text x="480" y="115" text-anchor="middle" font-size="11" fill="#3d3d3d">EC2 i-1, i-2 · health: /health</text>
+
+  <rect x="380" y="160" width="200" height="60" fill="#fff" stroke="#0f4c5c" stroke-width="2"/>
+  <text x="480" y="185" text-anchor="middle" font-size="14" font-weight="700" fill="#0f4c5c">Target Group B</text>
+  <text x="480" y="205" text-anchor="middle" font-size="11" fill="#3d3d3d">EC2 i-3, i-4 · health: /</text>
+
+  <!-- arrows -->
+  <line x1="260" y1="100" x2="380" y2="100" stroke="#c8501a" stroke-width="2" marker-end="url(#arr3)"/>
+  <line x1="260" y1="190" x2="380" y2="190" stroke="#c8501a" stroke-width="2" marker-end="url(#arr3)"/>
+
+  <defs>
+    <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8501a"/>
+    </marker>
+  </defs>
+</svg>
+<div class="caption">A listener catches traffic, rules decide where it goes, target groups receive it.</div>
+</div>
+
+<!-- ============== SECTION 11 ============== -->
+<h2 id="s11"><span class="num">Chapter Eleven</span>Health checks — the heartbeat</h2>
+
+<p>The whole reason a load balancer can hide failures is health checks. Every few seconds, the LB asks each target: <em>"are you OK?"</em> If the target keeps saying yes, traffic flows. If it stops saying yes, the LB stops sending traffic.</p>
+
+<h3>How health checks work (ALB)</h3>
+<p>You configure:</p>
+<ul>
+  <li><strong>Protocol &amp; path</strong> — typically <code>GET /health</code> over HTTP.</li>
+  <li><strong>Healthy threshold</strong> — e.g., 5 consecutive successes = healthy.</li>
+  <li><strong>Unhealthy threshold</strong> — e.g., 2 consecutive failures = unhealthy.</li>
+  <li><strong>Interval</strong> — how often to check (default 30s).</li>
+  <li><strong>Timeout</strong> — how long to wait for a response.</li>
+  <li><strong>Success codes</strong> — what HTTP status codes count as healthy (default 200).</li>
+</ul>
+
+<div class="insight">
+  <div class="tag">Pro tip — make health checks meaningful</div>
+  <p>A bad health check just returns "200 OK" without checking anything — a server with a broken database connection still passes. A good <code>/health</code> endpoint actually tries to reach the database, the cache, and any critical dependency. That's how you make sure the LB stops sending traffic to a server that's "up" but not actually working.</p>
+</div>
+
+<h3>ELB health checks vs EC2 health checks (a critical distinction for ASG)</h3>
+<p>An EC2 instance can be "running" (the OS booted) but the application might be broken. By default, ASG only checks EC2 status — so it'll happily keep a broken instance because Linux is up.</p>
+<p><strong>You should turn on ELB health checks in the ASG configuration.</strong> Then ASG will replace any instance the load balancer marks as unhealthy. We'll come back to this later.</p>
+
+<!-- ============== SECTION 12 ============== -->
+<h2 id="s12"><span class="num">Chapter Twelve</span>Sticky sessions, cross-zone, deregistration delay</h2>
+
+<h3>Sticky sessions (session affinity)</h3>
+<p>Normally, every request from a user might go to a different backend. That's fine if your app is <em>stateless</em> — the server doesn't remember anything between requests.</p>
+<p>But if the server stores the shopping cart in its own memory, sending the user's next request to a different server means the cart vanishes. To prevent this, ALB can use a cookie to <strong>"stick"</strong> a user to the same backend for a configurable duration.</p>
+
+<div class="trap">
+  <div class="tag">Why sticky sessions are usually a code smell</div>
+  <p>Sticky sessions are a workaround for state living in the wrong place. The right fix is to move session data to a shared store — <strong>ElastiCache for Redis</strong>, <strong>DynamoDB</strong>, or similar — so any server can serve any request. On the exam, if a question mentions <em>"requests must go to the same backend"</em>, sticky sessions might be a valid quick fix, but if the question asks for the <em>best long-term solution</em>, the answer is usually "store session state in ElastiCache/DynamoDB."</p>
+</div>
+
+<h3>Cross-zone load balancing</h3>
+<p>If you have 4 instances in AZ-A and 1 instance in AZ-B, what happens? Without cross-zone, the LB sends 50% of traffic to each AZ — meaning the 1 instance in AZ-B gets the same total load as the 4 in AZ-A combined. That single instance gets crushed.</p>
+<p><strong>With cross-zone load balancing on, the LB distributes evenly across all instances regardless of AZ.</strong> Each of the 5 instances gets 20%.</p>
+<ul>
+  <li><strong>ALB</strong> — cross-zone is <strong>always on</strong>, free.</li>
+  <li><strong>NLB</strong> — cross-zone is <strong>off by default</strong>, and turning it on may incur inter-AZ data charges.</li>
+</ul>
+
+<h3>Deregistration delay (connection draining)</h3>
+<p>When you remove a target from a target group (manual deregister, or ASG terminating it), there might be in-flight requests being processed. If the LB cuts the target off instantly, those users get errors.</p>
+<p>The <strong>deregistration delay</strong> tells the LB to stop sending new requests to the target but allow up to N seconds for in-flight ones to complete. Default is 300 seconds (5 minutes). Tune lower for stateless APIs, higher for long-running uploads.</p>
+
+<!-- ============== SECTION 13 ============== -->
+<h2 id="s13"><span class="num">Chapter Thirteen</span>SSL/TLS termination &amp; SNI</h2>
+
+<h3>SSL/TLS termination</h3>
+<p>When a user connects via HTTPS, the connection is encrypted. Decrypting on the load balancer (rather than on every backend) is called <strong>SSL termination</strong>. Benefits:</p>
+<ul>
+  <li>Backends don't waste CPU on decryption.</li>
+  <li>Certificates live in one place — easier to manage and rotate.</li>
+  <li>The LB can read HTTP headers and apply Layer 7 rules (impossible if it can't decrypt).</li>
+</ul>
+
+<p>You attach an <strong>ACM certificate</strong> (free, auto-renewing) to the listener. Done.</p>
+
+<h3>SNI — Server Name Indication</h3>
+<p>What if you host 5 different websites behind one ALB, each with its own HTTPS certificate? Old SSL only allowed one certificate per IP. SNI fixes that — the client tells the server which hostname it's after, and the LB picks the matching certificate.</p>
+<p><strong>ALB and NLB both support SNI.</strong> CLB does not — that's one reason CLB is dead.</p>
+
+<div class="exam">
+  <div class="tag">Exam trigger</div>
+  <p>"Host multiple HTTPS sites with different certificates on a single load balancer" → <strong>SNI</strong> on ALB or NLB.</p>
+</div>
+
+<!-- ============== SECTION 14 ============== -->
+<h2 id="s14"><span class="num">Chapter Fourteen</span>Auto Scaling Groups — the smart manager</h2>
+
+<p>The load balancer solves <em>distributing</em> traffic. But what about the supply side — having the right number of servers? That's the Auto Scaling Group's job.</p>
+
+<h3>What an ASG is, in one sentence</h3>
+<p>An Auto Scaling Group is <strong>a manager that maintains a target number of identical EC2 instances, replaces unhealthy ones automatically, and grows or shrinks the fleet based on demand</strong>.</p>
+
+<h3>The three numbers that define an ASG</h3>
+<div class="kv">
+  <div class="k">Minimum</div>
+  <div>The fewest instances ASG will ever run. If a failure drops you below this, ASG launches replacements until you're back at minimum.</div>
+</div>
+<div class="kv">
+  <div class="k">Desired</div>
+  <div>The current target. ASG will run exactly this many healthy instances. Scaling policies change this number up and down.</div>
+</div>
+<div class="kv">
+  <div class="k">Maximum</div>
+  <div>The cap. ASG will never run more than this, even if a scaling policy says to. Stops a runaway scale-out from bankrupting you.</div>
+</div>
+
+<div class="analogy">
+  <div class="tag">Restaurant analogy</div>
+  <p>Min = "we always have at least 2 chefs working, even at 4am." Desired = "right now, given how busy we are, the right number is 5 chefs." Max = "no matter how crazy the rush, we will not employ more than 20 chefs because we can't afford it."</p>
+</div>
+
+<h3>What the ASG actually does</h3>
+<ul>
+  <li><strong>Launches instances</strong> using a Launch Template (the recipe).</li>
+  <li><strong>Spreads them across Availability Zones</strong> for HA.</li>
+  <li><strong>Registers them with target groups</strong> automatically — they appear behind the LB without any action.</li>
+  <li><strong>Watches health</strong> (EC2 status + optionally ELB health checks).</li>
+  <li><strong>Replaces unhealthy ones</strong> by terminating and launching new.</li>
+  <li><strong>Adjusts desired</strong> based on scaling policies.</li>
+</ul>
+
+<!-- ============== SECTION 15 ============== -->
+<h2 id="s15"><span class="num">Chapter Fifteen</span>Launch Templates and the moving parts</h2>
+
+<h3>Launch Template — the recipe</h3>
+<p>A launch template is a <strong>blueprint for what an instance should look like</strong>: AMI, instance type, key pair, security groups, IAM instance profile, user data script, EBS volumes, network interfaces, and so on.</p>
+
+<p>You used to use <strong>Launch Configurations</strong> for this. They're being deprecated. Always pick <strong>Launch Template</strong> in exam answers and in real life. Reasons:</p>
+<ul>
+  <li>Launch Templates support <strong>versioning</strong> — you can edit and roll forward/back.</li>
+  <li>Mix On-Demand and Spot instances in the same ASG.</li>
+  <li>Use newer features like T2/T3 unlimited, multiple network interfaces, capacity reservations.</li>
+</ul>
+
+<h3>The other ASG settings worth knowing</h3>
+<ul>
+  <li><strong>VPC + subnets</strong> — choose subnets in multiple AZs for HA.</li>
+  <li><strong>Health check type</strong> — EC2 only (default) or EC2 + ELB. Almost always pick both.</li>
+  <li><strong>Health check grace period</strong> — how long to wait after launch before checking health (give the app time to start).</li>
+  <li><strong>Cooldown</strong> — after a scaling action, wait N seconds before doing another (avoids flapping).</li>
+  <li><strong>Termination policy</strong> — when scaling in, which instance to kill first (oldest launch config, oldest instance, closest to next billing hour, etc.).</li>
+</ul>
+
+<!-- ============== SECTION 16 ============== -->
+<h2 id="s16"><span class="num">Chapter Sixteen</span>Scaling policies — how ASG decides</h2>
+
+<p>How does the ASG know when to add or remove instances? Through <strong>scaling policies</strong>. There are five flavours.</p>
+
+<h3>1. Manual scaling</h3>
+<p>You change the desired capacity yourself. Useful for testing or one-off events. Not really "auto" scaling.</p>
+
+<h3>2. Dynamic — Target Tracking <em>(modern, recommended)</em></h3>
+<p>You say: <em>"keep average CPU at 50%"</em> or <em>"keep ALB request count per target at 1000"</em>. ASG figures out the rest. It creates the necessary CloudWatch alarms behind the scenes and adjusts capacity to hit the target.</p>
+<p>This is the simplest and the answer to most exam questions about scaling.</p>
+
+<h3>3. Dynamic — Step Scaling</h3>
+<p>You define alarms with thresholds and step adjustments. <em>"If CPU &gt; 60%, add 1 instance. If CPU &gt; 80%, add 3 instances. If CPU &gt; 90%, add 5 instances."</em> More control, more configuration.</p>
+
+<h3>4. Dynamic — Simple Scaling <em>(legacy)</em></h3>
+<p>One alarm, one action. Has to wait for cooldown before another action. Step Scaling does everything Simple does, better.</p>
+
+<h3>5. Scheduled scaling</h3>
+<p>Scale based on time, not metrics. <em>"Every Monday at 9am, set min=10. Every Friday at 6pm, set min=2."</em> Good for predictable patterns — business hours, batch jobs, weekly traffic peaks.</p>
+
+<h3>6. Predictive scaling</h3>
+<p>Machine-learning-based. AWS analyses up to 14 days of historical data and forecasts load up to 48 hours ahead, then pre-warms capacity before you need it. Useful when your load has clear patterns (most consumer apps do) but the lead time to launch instances is long.</p>
+
+<div class="tbl-wrap">
+<table>
+  <tr><th>Policy</th><th>Pick when</th></tr>
+  <tr><td>Target Tracking</td><td>Default. "Keep CPU at 50%" — simplest and best for most.</td></tr>
+  <tr><td>Step Scaling</td><td>You need granular control over how aggressively to scale at different load levels.</td></tr>
+  <tr><td>Scheduled</td><td>Load is predictable by clock — known peak times.</td></tr>
+  <tr><td>Predictive</td><td>Cyclical patterns, instances are slow to launch, you want them ready in advance.</td></tr>
+  <tr><td>Simple</td><td>Don't pick this on the exam. Step is the modern equivalent.</td></tr>
+</table>
+</div>
+
+<div class="exam">
+  <div class="tag">Exam trigger phrases</div>
+  <p><strong>"automatically maintain performance"</strong> → Target Tracking.<br>
+  <strong>"scale at known busy times"</strong> → Scheduled.<br>
+  <strong>"forecast future load"</strong> → Predictive.<br>
+  <strong>"different scaling magnitudes at different thresholds"</strong> → Step.</p>
+</div>
+
+<!-- ============== SECTION 17 ============== -->
+<h2 id="s17"><span class="num">Chapter Seventeen</span>Lifecycle Hooks, Warm Pools, Instance Refresh</h2>
+
+<h3>Lifecycle Hooks</h3>
+<p>An instance launched by ASG normally goes from <em>Pending</em> straight to <em>InService</em>. Sometimes you need to do something <strong>before</strong> it goes live — install software, register with a DNS, run database migrations, warm a cache.</p>
+<p>A <strong>Lifecycle Hook</strong> pauses the instance in a state called <em>Pending:Wait</em>, runs your custom logic, then continues. Same on the way out — <em>Terminating:Wait</em> lets you flush logs, drain connections, deregister from external systems before termination.</p>
+
+<div class="exam">
+  <div class="tag">Exam trigger</div>
+  <p><em>"Run a script before the instance starts serving traffic"</em> or <em>"clean up before termination"</em> → <strong>Lifecycle Hooks</strong>.</p>
+</div>
+
+<h3>Warm Pools</h3>
+<p>Instances take time to launch — sometimes 60+ seconds for big AMIs with bootstrapping. During a sudden traffic spike, that lag matters.</p>
+<p>A <strong>Warm Pool</strong> is a pre-initialised reserve of instances that are stopped (or hibernated) but ready to go. When ASG scales out, instances come from the warm pool first — they're up in seconds, not minutes.</p>
+<p>Keeps cost down (stopped instances don't bill compute) while cutting startup time dramatically.</p>
+
+<h3>Instance Refresh</h3>
+<p>You changed the launch template (new AMI, new instance type, new user data). Now you want to roll those changes out to existing instances. <strong>Instance Refresh</strong> automates this — gradually terminates old instances and replaces them with new ones following the latest template, with a configurable percentage healthy at all times.</p>
+<p>Replaces the old, manual process of detaching, draining, and re-launching by hand.</p>
+
+<!-- ============== SECTION 18 ============== -->
+<h2 id="s18"><span class="num">Chapter Eighteen</span>Mixed instances &amp; Spot inside ASG</h2>
+
+<p>One of the most powerful real-world ASG patterns is the <strong>mixed instances policy</strong>. You can configure an ASG to:</p>
+<ul>
+  <li>Run on multiple instance types (e.g., m5, m5a, m5n) for capacity flexibility.</li>
+  <li>Mix On-Demand and Spot in defined ratios (e.g., "always 30% On-Demand baseline; the rest Spot").</li>
+  <li>Define an On-Demand <em>base</em> that's never interrupted.</li>
+</ul>
+<p>This gives you ASG-level reliability with massive cost savings. Many production fleets run 70-90% Spot for stateless workloads — a ~70% cost reduction over pure On-Demand for the variable portion.</p>
+
+<div class="trap">
+  <div class="tag">Where Spot is wrong</div>
+  <p>Spot can be reclaimed with 2 minutes' notice. Don't use Spot for stateful workloads, databases, or anything where loss of an instance corrupts data. For stateless web/app servers behind an LB, Spot is excellent — losing one is fine because the LB stops sending traffic to it and the ASG launches a replacement.</p>
+</div>
+
+<!-- ============== SECTION 19 ============== -->
+<h2 id="s19"><span class="num">Chapter Nineteen</span>ELB + ASG: the power couple in production</h2>
+
+<p>Now we put it all together. This is <em>the</em> reference architecture for a highly available, scalable web application on AWS. If you can sketch this from memory, you understand the core of SAA-C03.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" font-family="Fraunces, serif">
+  <!-- Region -->
+  <rect x="20" y="20" width="720" height="380" fill="none" stroke="#0f4c5c" stroke-width="2" stroke-dasharray="6,4" rx="6"/>
+  <text x="32" y="42" font-size="13" font-weight="700" fill="#0f4c5c">REGION (e.g., eu-west-1)</text>
+
+  <!-- VPC -->
+  <rect x="40" y="60" width="680" height="320" fill="#fffdf5" stroke="#0f4c5c" rx="4"/>
+  <text x="52" y="80" font-size="12" font-weight="700" fill="#0f4c5c">VPC</text>
+
+  <!-- Internet -->
+  <text x="380" y="55" text-anchor="middle" font-size="13" fill="#0f4c5c">Internet → Route 53 → ALB DNS</text>
+
+  <!-- ALB -->
+  <rect x="280" y="105" width="200" height="50" fill="#0f4c5c" rx="4"/>
+  <text x="380" y="135" text-anchor="middle" font-size="14" font-weight="700" fill="#fcefd1">Application Load Balancer</text>
+
+  <!-- AZ-A box -->
+  <rect x="60" y="180" width="320" height="180" fill="#f4efe2" stroke="#0f4c5c" rx="3"/>
+  <text x="72" y="200" font-size="12" font-weight="700" fill="#0f4c5c">AZ-A</text>
+
+  <!-- AZ-B box -->
+  <rect x="400" y="180" width="300" height="180" fill="#f4efe2" stroke="#0f4c5c" rx="3"/>
+  <text x="412" y="200" font-size="12" font-weight="700" fill="#0f4c5c">AZ-B</text>
+
+  <!-- Public subnet labels -->
+  <text x="220" y="218" text-anchor="middle" font-size="11" font-style="italic" fill="#3d3d3d">Public Subnet</text>
+  <text x="550" y="218" text-anchor="middle" font-size="11" font-style="italic" fill="#3d3d3d">Public Subnet</text>
+
+  <!-- ALB nodes (one per AZ) -->
+  <rect x="180" y="225" width="80" height="30" fill="#0f4c5c" rx="3"/>
+  <text x="220" y="245" text-anchor="middle" font-size="11" fill="#fcefd1">ALB node</text>
+
+  <rect x="510" y="225" width="80" height="30" fill="#0f4c5c" rx="3"/>
+  <text x="550" y="245" text-anchor="middle" font-size="11" fill="#fcefd1">ALB node</text>
+
+  <!-- arrows from ALB to nodes -->
+  <line x1="340" y1="155" x2="220" y2="225" stroke="#c8501a" stroke-width="1.5" marker-end="url(#arr4)"/>
+  <line x1="420" y1="155" x2="550" y2="225" stroke="#c8501a" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+  <!-- Private subnet labels -->
+  <text x="220" y="285" text-anchor="middle" font-size="11" font-style="italic" fill="#3d3d3d">Private Subnet (ASG)</text>
+  <text x="550" y="285" text-anchor="middle" font-size="11" font-style="italic" fill="#3d3d3d">Private Subnet (ASG)</text>
+
+  <!-- EC2 instances -->
+  <rect x="100" y="295" width="60" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="130" y="320" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+  <rect x="170" y="295" width="60" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="200" y="320" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+  <rect x="240" y="295" width="60" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="270" y="320" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+
+  <rect x="430" y="295" width="60" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="460" y="320" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+  <rect x="500" y="295" width="60" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="530" y="320" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+  <rect x="570" y="295" width="60" height="40" fill="#fff" stroke="#0f4c5c"/>
+  <text x="600" y="320" text-anchor="middle" font-size="11" fill="#0f4c5c">EC2</text>
+
+  <!-- arrows from ALB nodes to instances -->
+  <line x1="220" y1="255" x2="200" y2="295" stroke="#c8501a" stroke-width="1" marker-end="url(#arr4)"/>
+  <line x1="550" y1="255" x2="530" y2="295" stroke="#c8501a" stroke-width="1" marker-end="url(#arr4)"/>
+
+  <!-- ASG label -->
+  <text x="380" y="375" text-anchor="middle" font-size="12" font-weight="700" fill="#c8501a">↑ ONE Auto Scaling Group spans BOTH AZs ↑</text>
+
+  <defs>
+    <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8501a"/>
+    </marker>
+  </defs>
+</svg>
+<div class="caption">The classic "3-tier web app" front end: Route 53 → ALB → ASG of EC2 across two AZs.</div>
+</div>
+
+<h3>How traffic flows</h3>
+<ol>
+  <li>The user types <code>shop.example.com</code>. Route 53 resolves it to the ALB's DNS name.</li>
+  <li>The ALB receives the request at one of its AZ-resident nodes.</li>
+  <li>The ALB picks a healthy EC2 instance from the target group (which is automatically populated by the ASG) and forwards the request.</li>
+  <li>If that instance is unhealthy, traffic skips to the next.</li>
+  <li>If load is high, ASG launches more instances; they automatically join the target group and start receiving traffic.</li>
+  <li>If load drops, ASG terminates instances; the LB drains connections gracefully via deregistration delay.</li>
+</ol>
+
+<h3>Why this is the gold standard architecture</h3>
+<ul>
+  <li><strong>HA</strong> — multiple AZs; one AZ failure = no outage.</li>
+  <li><strong>Scalable</strong> — ASG grows and shrinks horizontally.</li>
+  <li><strong>Elastic</strong> — Target Tracking + scheduled hits both predictable and unexpected demand.</li>
+  <li><strong>Self-healing</strong> — ELB health checks + ASG replacement = unhealthy instances auto-replaced.</li>
+  <li><strong>Zero-downtime deploys</strong> — Instance Refresh + deregistration delay = roll out new code with no user impact.</li>
+  <li><strong>Cost-efficient</strong> — Mixed instance / Spot policy can cut compute costs 50-70%.</li>
+</ul>
+
+<!-- ============== SECTION 20 ============== -->
+<h2 id="s20"><span class="num">Chapter Twenty</span>Industry patterns &amp; war stories</h2>
+
+<h3>Pattern 1: Blue/Green deployment</h3>
+<p>You have v1 running. You spin up a parallel ASG running v2 with its own target group. The ALB has weighted routing — start with 100% v1 / 0% v2, gradually shift to 90/10, 50/50, 0/100. Roll back instantly by shifting weight back if v2 misbehaves. Zero downtime, fast rollback.</p>
+
+<h3>Pattern 2: Canary releases</h3>
+<p>Similar but smaller — send 1-5% of traffic to a new version using ALB rules (e.g., based on a header), monitor errors, ramp up if healthy, kill if not. Often combined with feature flags.</p>
+
+<h3>Pattern 3: A/B testing</h3>
+<p>ALB weighted routing between two target groups running different versions of the app. Measure conversion rates between user populations. This is identical machinery to blue/green — just different intent.</p>
+
+<h3>Pattern 4: Multi-region active/active for global users</h3>
+<p>Run the ALB+ASG stack in multiple regions. Use <strong>Route 53 latency-based routing</strong> or <strong>Global Accelerator</strong> to send users to the nearest region. Failover is automatic if a whole region dies.</p>
+
+<h3>Pattern 5: Public ALB → Private app servers</h3>
+<p>The ALB sits in <strong>public subnets</strong>. The EC2 instances sit in <strong>private subnets</strong> with no public IPs. The ALB is the only thing exposed to the internet. Security group on the EC2 only allows inbound from the ALB's security group. This is the standard secure topology.</p>
+
+<h3>War story: the cross-zone bill shock</h3>
+<p>A team turned on cross-zone load balancing on an NLB without realising AWS charges for inter-AZ data on NLB. With heavy traffic and unbalanced AZs, their data transfer bill jumped 400%. Lesson: ALB cross-zone is free; NLB cross-zone is not — turn it on with eyes open.</p>
+
+<h3>War story: the "healthy" but broken servers</h3>
+<p>A startup had EC2-only health checks on their ASG. A bug in the app left the process running but unable to talk to the database. EC2 said "running"; users saw 500 errors for hours. Fix: use ELB health checks pointing at a meaningful <code>/health</code> endpoint that actually pings dependencies. This is so common it's basically a rite of passage.</p>
+
+<h3>War story: the slow startup</h3>
+<p>Auto-scaling fired during a flash sale. New instances took 4 minutes to launch and bootstrap. By the time they were ready, the spike was over and the original instances had crashed. Fix: pre-bake the AMI with everything installed, plus use Warm Pools to keep a buffer of pre-initialised instances ready to go in seconds.</p>
+
+<!-- ============== SECTION 21 ============== -->
+<h2 id="s21"><span class="num">Chapter Twenty-One</span>The mental model to take into the exam</h2>
+
+<p>Forget the long lists for a second. Here's the model you actually need.</p>
+
+<div class="insight">
+  <div class="tag">The 60-second mental model</div>
+  <p>Every web/app workload on AWS that needs HA + scalability has the same shape: <strong>Route 53 → ELB → ASG of EC2 (across multiple AZs) → backend (RDS/Aurora/DynamoDB)</strong>.</p>
+  <p>The only real questions are:</p>
+  <p>(1) Which ELB? Default to <strong>ALB</strong>. Switch to <strong>NLB</strong> when the question screams static IPs, TCP/UDP, or extreme performance. Switch to <strong>GWLB</strong> when it's about third-party security appliances.</p>
+  <p>(2) How does the ASG scale? Default to <strong>Target Tracking</strong>. Use Scheduled for known peaks, Predictive for forecast-able patterns, Step for fine-grained thresholds.</p>
+  <p>(3) Where do the instances live? <strong>Private subnets</strong>, behind the ELB which sits in public subnets. Always multiple AZs.</p>
+</div>
+
+<h3>The decision rules I'd want printed on my desk</h3>
+
+<div class="pick">
+  <div>
+    <div class="label">Pick ALB when…</div>
+    HTTP/HTTPS · path or host routing · microservices · containers · Cognito auth · WebSocket · default HTTP answer
+  </div>
+  <div>
+    <div class="label">Pick NLB when…</div>
+    Static IP needed · TCP/UDP · millions of req/sec · ultra-low latency · preserve source IP · non-HTTP protocol
+  </div>
+</div>
+
+<div class="pick">
+  <div>
+    <div class="label">Pick Launch Template when…</div>
+    Always. Modern. Versioned. Required for Spot mix and newer features.
+  </div>
+  <div>
+    <div class="label">Pick Launch Configuration when…</div>
+    Never on the exam (it's deprecated for new use).
+  </div>
+</div>
+
+<div class="pick">
+  <div>
+    <div class="label">Pick Target Tracking when…</div>
+    "Maintain a metric." 90% of scaling questions. Default answer.
+  </div>
+  <div>
+    <div class="label">Pick Scheduled / Predictive when…</div>
+    The question describes time-based or forecast-based patterns specifically.
+  </div>
+</div>
+
+<h3>Concepts that show up disguised in questions</h3>
+<ul>
+  <li>If they describe an instance "running but not responding to users" — answer involves enabling <strong>ELB health checks</strong> in ASG.</li>
+  <li>If they describe "I changed the AMI but old instances still run the old version" — answer is <strong>Instance Refresh</strong>.</li>
+  <li>If they describe "user shopping cart disappears when refreshing" — answer is <strong>store sessions in ElastiCache</strong> (or Sticky Sessions as a quick fix).</li>
+  <li>If they describe "need a script to run before traffic hits the new instance" — <strong>Lifecycle Hook</strong>.</li>
+  <li>If they describe "instances take too long to launch during spikes" — <strong>Warm Pool</strong> or pre-baked AMI.</li>
+  <li>If they say "guarantee 30% On-Demand baseline, rest cheapest" — <strong>Mixed instances policy</strong> with On-Demand base.</li>
+</ul>
+
+<div class="divider">· · ·</div>
+
+<div class="end-note">
+  <h3>You now understand the heart of AWS architecture</h3>
+  <p>Almost every real-world web workload on AWS is a variation of what you just learned: a load balancer in front, an Auto Scaling Group of stateless instances behind, spread across AZs, fed by managed data services.</p>
+  <p>Once this clicks, the rest of the SAA-C03 syllabus stops feeling like a vocabulary list and starts feeling like a series of design conversations.</p>
+  <p>Next volume will turn this knowledge into exam ammunition — cheat sheets, decision trees, and full SAA-C03-style practice questions tuned to every concept above.</p>
+</div>
+
+</div>
+</body>
+</html>

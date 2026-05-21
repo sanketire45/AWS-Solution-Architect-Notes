@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELB & ASG Masterclass — SAA-C03</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0e14;
+  --bg2: #12151e;
+  --bg3: #181c28;
+  --bg4: #1e2333;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text2: #9aa0b8;
+  --text3: #5a6080;
+  --amber: #f5a623;
+  --amber2: #ffc55a;
+  --amber-dim: rgba(245,166,35,0.12);
+  --amber-glow: rgba(245,166,35,0.06);
+  --blue: #4f9cf9;
+  --blue-dim: rgba(79,156,249,0.12);
+  --green: #52c97a;
+  --green-dim: rgba(82,201,122,0.1);
+  --red: #f06060;
+  --red-dim: rgba(240,96,96,0.1);
+  --teal: #38c9c9;
+  --teal-dim: rgba(56,201,201,0.1);
+  --purple: #a78bfa;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Fraunces', serif;
+  --sans: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.75;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 2rem 0;
+  flex-shrink: 0;
+}
+
+#sidebar::-webkit-scrollbar { width: 3px; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-logo .tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.sidebar-logo h1 {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.sidebar-logo h1 span { color: var(--amber); }
+
+.nav-section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 1rem 1.25rem 0.4rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 1.4rem;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text2);
+  border-left: 2px solid transparent;
+  transition: all 0.18s ease;
+  text-decoration: none;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+.nav-item.active { color: var(--amber); border-left-color: var(--amber); background: var(--amber-glow); }
+
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text3);
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+
+.nav-item.active .nav-dot,
+.nav-item:hover .nav-dot { background: var(--amber); }
+
+.nav-sub {
+  padding: 6px 1.4rem 6px 2.8rem;
+  font-size: 13px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: color 0.18s;
+  display: block;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.nav-sub:hover { color: var(--text2); }
+.nav-sub.active { color: var(--amber); }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* ── MAIN ── */
+#main {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 4rem 3.5rem 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(245,166,35,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero-tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-tag::before {
+  content: '';
+  display: block;
+  width: 28px; height: 1px;
+  background: var(--amber);
+}
+
+.hero h2 {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+}
+
+.hero h2 em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+.hero-desc {
+  font-size: 17px;
+  color: var(--text2);
+  max-width: 640px;
+  line-height: 1.75;
+  margin-bottom: 1.75rem;
+}
+
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: 0.03em;
+}
+
+.chip.amber { background: var(--amber-dim); border-color: rgba(245,166,35,0.25); color: var(--amber); }
+.chip.blue { background: var(--blue-dim); border-color: rgba(79,156,249,0.25); color: var(--blue); }
+
+/* ── CONTENT AREA ── */
+.content { padding: 0 3.5rem 5rem; width: 100%; }
+
+/* ── SECTION ── */
+.section {
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+
+.section:first-child { border-top: none; margin-top: 0; padding-top: 2.5rem; }
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--amber);
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,166,35,0.2);
+  border-radius: 4px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.section h2 {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.section h3 {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 2.5rem 0 1rem;
+}
+
+.section h3:first-child { margin-top: 0; }
+
+.section p { color: var(--text2); margin-bottom: 0.85rem; font-size: 16px; }
+
+.section ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.2rem;
+}
+
+.section ul li {
+  color: var(--text2);
+  padding: 5px 0 5px 1.4rem;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.section ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--text3);
+}
+
+.section ul li strong { color: var(--text); font-weight: 500; }
+
+/* ── ANALOGY BOX ── */
+.analogy {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.analogy::before {
+  content: '"';
+  position: absolute;
+  top: -10px; right: 16px;
+  font-family: var(--serif);
+  font-size: 80px;
+  color: rgba(245,166,35,0.08);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.analogy-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 0.6rem;
+}
+
+.analogy p { color: var(--text2); font-size: 14px; margin: 0; }
+.analogy p + p { margin-top: 0.6rem; }
+.analogy strong { color: var(--text); font-weight: 500; }
+
+/* ── RULE BOX ── */
+.rule {
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,166,35,0.2);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.4rem;
+  margin: 1.25rem 0;
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--amber2);
+  line-height: 1.6;
+}
+
+.rule::before {
+  content: '⚡ Rule: ';
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 400;
+}
+
+/* ── TRAP BOX ── */
+.trap {
+  background: var(--red-dim);
+  border: 1px solid rgba(240,96,96,0.2);
+  border-left: 3px solid var(--red);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.4rem;
+  margin: 1.25rem 0;
+  font-size: 15.5px;
+  color: #f5a0a0;
+  line-height: 1.6;
+}
+
+.trap::before {
+  content: '⚠ Trap: ';
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 400;
+  color: var(--red);
+}
+
+.trap strong { color: #f5a0a0; font-weight: 500; }
+
+/* ── TIP BOX ── */
+.tip {
+  background: var(--green-dim);
+  border: 1px solid rgba(82,201,122,0.2);
+  border-left: 3px solid var(--green);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.4rem;
+  margin: 1.25rem 0;
+  font-size: 15.5px;
+  color: #a0e6b8;
+  line-height: 1.6;
+}
+
+.tip::before {
+  content: '✓ Exam tip: ';
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 400;
+  color: var(--green);
+}
+
+.tip strong { color: #a0e6b8; font-weight: 500; }
+
+/* ── NEW C03 BOX ── */
+.new-c03 {
+  background: var(--teal-dim);
+  border: 1px solid rgba(56,201,201,0.2);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.4rem;
+  margin: 1.25rem 0;
+  font-size: 15.5px;
+  color: #a0e0e0;
+  line-height: 1.6;
+}
+
+.new-c03::before {
+  content: '★ New in C03: ';
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 400;
+  color: var(--teal);
+}
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.badge-high { background: rgba(240,96,96,0.15); color: #f5a0a0; border: 1px solid rgba(240,96,96,0.25); }
+.badge-med { background: rgba(245,166,35,0.12); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }
+.badge-new { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(56,201,201,0.25); }
+.badge-easy { background: rgba(82,201,122,0.12); color: #80d9a0; border: 1px solid rgba(82,201,122,0.2); }
+.badge-hard { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+
+/* ── SERVICE CARDS ── */
+.service-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.service-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.service-card:hover {
+  border-color: var(--border2);
+  background: var(--bg4);
+}
+
+.service-card.amber { border-top: 2px solid var(--amber); }
+.service-card.blue { border-top: 2px solid var(--blue); }
+.service-card.green { border-top: 2px solid var(--green); }
+.service-card.red { border-top: 2px solid var(--red); }
+
+.sc-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 0.4rem;
+}
+
+.sc-name {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+
+.sc-desc {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 0.85rem;
+}
+
+.sc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.sc-tag {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+}
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; margin: 1.25rem 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  background: var(--bg3);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+thead tr {
+  background: var(--bg4);
+}
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 400;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 12px 16px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+tr:last-child td { border-bottom: none; }
+td strong { color: var(--text); font-weight: 500; }
+
+.td-green { color: var(--green) !important; }
+.td-red { color: var(--red) !important; }
+.td-amber { color: var(--amber) !important; }
+.td-blue { color: var(--blue) !important; }
+
+/* ── CODE BLOCKS (architecture diagrams) ── */
+.arch {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 1.25rem 0;
+  overflow: hidden;
+}
+
+.arch-header {
+  background: var(--bg4);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.arch-dot { width: 8px; height: 8px; border-radius: 50%; }
+.arch-dot:nth-child(1) { background: #ff5f57; }
+.arch-dot:nth-child(2) { background: #febc2e; }
+.arch-dot:nth-child(3) { background: #28c840; }
+
+.arch-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  margin-left: 4px;
+  letter-spacing: 0.04em;
+}
+
+.arch pre {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 2;
+  color: var(--text2);
+  padding: 1.5rem 2rem;
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.arch pre .kw { color: var(--amber); }
+.arch pre .comment { color: var(--text3); font-style: italic; }
+.arch pre .service { color: var(--blue); }
+.arch pre .highlight { color: var(--green); }
+.arch pre .warn { color: var(--red); }
+
+/* ── SCALING POLICY CARDS ── */
+.policy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.policy-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  transition: border-color 0.2s;
+}
+
+.policy-card:hover { border-color: var(--border2); }
+
+.policy-card .pc-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 0.3rem;
+}
+
+.policy-card h4 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.policy-card p {
+  font-size: 15px;
+  color: var(--text2);
+  margin: 0;
+  line-height: 1.65;
+}
+
+.policy-card.recommended {
+  border-color: rgba(245,166,35,0.3);
+  background: var(--amber-glow);
+}
+
+.policy-card.recommended h4::after {
+  content: ' ← default';
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  font-weight: 400;
+}
+
+/* ── MISTAKE CARDS ── */
+.mistake {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  gap: 1rem;
+  transition: border-color 0.2s;
+}
+
+.mistake:hover { border-color: rgba(240,96,96,0.2); }
+
+.mistake-num {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--red);
+  opacity: 0.5;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+  min-width: 28px;
+}
+
+.mistake h4 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.mistake p {
+  font-size: 15px;
+  color: var(--text2);
+  margin: 0;
+  line-height: 1.65;
+}
+
+.mistake strong { color: var(--text); font-weight: 500; }
+
+/* ── QUICK REF TABLE ── */
+.qr-table {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1.25rem 0;
+}
+
+.qr-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  border-bottom: 1px solid var(--border);
+}
+
+.qr-row:last-child { border-bottom: none; }
+
+.qr-row:hover { background: rgba(255,255,255,0.02); }
+
+.qr-trigger {
+  padding: 12px 16px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--blue);
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.qr-answer {
+  padding: 12px 16px;
+  font-size: 15px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.qr-answer strong { color: var(--amber); font-weight: 500; }
+
+/* ── QUIZ SECTION ── */
+.quiz-header {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.quiz-score-wrap { display: flex; align-items: center; gap: 12px; }
+.quiz-score { font-family: var(--mono); font-size: 28px; font-weight: 300; color: var(--amber); }
+.quiz-score-label { font-size: 12px; color: var(--text3); }
+
+.progress-bar-wrap {
+  flex: 1;
+  min-width: 120px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--bg4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--amber);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.q-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  transition: border-color 0.3s;
+}
+
+.q-card.answered-correct { border-color: rgba(82,201,122,0.3); }
+.q-card.answered-wrong { border-color: rgba(240,96,96,0.2); }
+
+.q-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.9rem;
+}
+
+.q-num-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+
+.q-text {
+  font-size: 16.5px;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+
+.q-text strong { color: var(--amber2); font-weight: 500; }
+
+.q-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.1rem; }
+
+.q-opt {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  line-height: 1.55;
+  position: relative;
+}
+
+.q-opt:hover:not(.locked) {
+  background: var(--bg3);
+  border-color: var(--border2);
+  color: var(--text);
+  transform: translateX(4px);
+}
+
+.q-opt.correct {
+  background: var(--green-dim);
+  border-color: rgba(82,201,122,0.4);
+  color: #a0e6b8;
+}
+
+.q-opt.wrong {
+  background: var(--red-dim);
+  border-color: rgba(240,96,96,0.3);
+  color: #f5a0a0;
+  opacity: 0.7;
+}
+
+.q-opt.locked { cursor: default; pointer-events: none; }
+
+.reveal-section {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.reveal-section.show { display: block; }
+
+.reveal-qualifier {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+.reveal-qualifier span {
+  color: var(--amber);
+  font-style: italic;
+}
+
+.elim {
+  font-size: 14px;
+  color: var(--text3);
+  padding: 4px 0 4px 14px;
+  border-left: 2px solid var(--border2);
+  margin-bottom: 5px;
+  line-height: 1.55;
+}
+
+.elim strong { color: var(--text2); font-weight: 500; }
+
+.answer-rule-final {
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,166,35,0.2);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  margin-top: 0.85rem;
+  font-size: 15px;
+  color: var(--amber2);
+  line-height: 1.65;
+}
+
+.reveal-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.reveal-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ── TWO COL ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.info-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+}
+
+.info-card .ic-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 0.4rem;
+}
+
+.info-card .ic-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
+.info-card p { font-size: 15px; color: var(--text2); margin: 0; line-height: 1.65; }
+.info-card.amber { border-left: 3px solid var(--amber); }
+.info-card.blue { border-left: 3px solid var(--blue); }
+
+/* ── COMPARISON CARDS ── */
+.compare-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.compare-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.compare-card .cc-vs {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 0.3rem;
+}
+
+.compare-card h4 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 0.75rem; }
+.compare-card ul { margin-bottom: 0; }
+.compare-card ul li { font-size: 15px; }
+
+.compare-card.pick-x { border-top: 2px solid var(--amber); }
+.compare-card.pick-y { border-top: 2px solid var(--blue); }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2rem 0;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── MOBILE ── */
+@media (max-width: 960px) {
+  #sidebar { display: none; }
+  .content { padding: 0 1.75rem 3rem; }
+  .hero { padding: 2.5rem 1.75rem; }
+  .two-col, .compare-wrap, .policy-grid { grid-template-columns: 1fr; }
+  .qr-row { grid-template-columns: 1fr; }
+  .qr-trigger { border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section { animation: fadeSlide 0.5s cubic-bezier(0.4,0,0.2,1) both; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+
+/* ── ANSWER CORRECT/WRONG ANIMATION ── */
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(82,201,122,0.3); }
+  70% { box-shadow: 0 0 0 8px rgba(82,201,122,0); }
+  100% { box-shadow: 0 0 0 0 rgba(82,201,122,0); }
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(240,96,96,0.3); }
+  70% { box-shadow: 0 0 0 8px rgba(240,96,96,0); }
+  100% { box-shadow: 0 0 0 0 rgba(240,96,96,0); }
+}
+
+.q-opt.correct { animation: pulse-green 0.6s ease; }
+.q-opt.wrong { animation: pulse-red 0.6s ease; }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="tag">SAA-C03 Masterclass</div>
+    <h1><span>ELB</span> & ASG<br>Study Guide</h1>
+  </div>
+
+  <div class="nav-section-label">Sections</div>
+
+  <a class="nav-item active" href="#bigpicture"><span class="nav-dot"></span>Big Picture</a>
+  <a class="nav-item" href="#load-balancers"><span class="nav-dot"></span>Load Balancers (ELB)</a>
+  <a class="nav-sub" href="#alb">ALB — Layer 7</a>
+  <a class="nav-sub" href="#nlb">NLB — Layer 4</a>
+  <a class="nav-sub" href="#gwlb">GWLB — Layer 3</a>
+  <a class="nav-sub" href="#features">Advanced Features</a>
+  <a class="nav-item" href="#asg"><span class="nav-dot"></span>Auto Scaling Groups</a>
+  <a class="nav-sub" href="#launch">Launch Templates</a>
+  <a class="nav-sub" href="#policies">Scaling Policies</a>
+  <a class="nav-sub" href="#hooks">Lifecycle Hooks</a>
+  <a class="nav-item" href="#architecture"><span class="nav-dot"></span>Architecture Diagrams</a>
+  <a class="nav-item" href="#exam"><span class="nav-dot"></span>Exam-Critical Points</a>
+  <a class="nav-sub" href="#comparison">ALB vs NLB vs GWLB</a>
+  <a class="nav-sub" href="#mistakes">5 Common Mistakes</a>
+  <a class="nav-item" href="#quickref"><span class="nav-dot"></span>Quick Reference</a>
+  <a class="nav-item" href="#quiz"><span class="nav-dot"></span>Practice Questions</a>
+
+  <div class="sidebar-footer">
+    Pass mark: 720 / 1000<br>
+    Security: 30% · Resilient: 26%<br>
+    Perf: 24% · Cost: 20%
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main id="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">AWS Solutions Architect Associate</div>
+    <h2>High Availability<br>& <em>Scalability</em></h2>
+    <p class="hero-desc">A complete exam-focused study guide on Elastic Load Balancing and Auto Scaling Groups — from zero to exam-ready, with architecture diagrams, decision tables, and 10 practice MCQs.</p>
+    <div class="hero-chips">
+      <span class="chip amber">HIGH frequency topic</span>
+      <span class="chip blue">Topics 4 & 5</span>
+      <span class="chip">ALB · NLB · GWLB</span>
+      <span class="chip">ASG · Lifecycle Hooks</span>
+      <span class="chip">Scaling Policies</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1 — BIG PICTURE
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="bigpicture">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>The Big Picture — What Problem Does This Solve?</h2>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-label">Real-world analogy — the restaurant</div>
+      <p>Imagine a restaurant (your app) that gets 10 customers on a quiet Monday and 10,000 on a busy Saturday night. Without planning: one overworked server, long queues, customers leave angry.</p>
+      <p><strong>A Load Balancer</strong> = a head waiter who stands at the door and sends each new customer to whichever server (table/staff member) is currently least busy. No single person gets overwhelmed.</p>
+      <p><strong>An Auto Scaling Group</strong> = a smart manager who hires extra waiters before the Saturday rush arrives and sends them home after closing time. Staff count matches demand automatically.</p>
+    </div>
+
+    <h3>Why you need both together</h3>
+    <ul>
+      <li>A load balancer <strong>alone</strong> doesn't help if all your servers are still overwhelmed — it just spreads the pain evenly across them.</li>
+      <li>An ASG <strong>alone</strong> that adds new servers doesn't help if all traffic still hits only the original server — nobody told the other servers new ones exist.</li>
+      <li><strong>Together:</strong> the ALB distributes traffic, the ASG adjusts how many targets exist, and the ALB automatically registers or deregisters instances as they launch or terminate. This is the canonical HA pattern on AWS.</li>
+    </ul>
+
+    <div class="two-col">
+      <div class="info-card amber">
+        <div class="ic-label">Problem 1</div>
+        <div class="ic-title">High Availability</div>
+        <p>If one server, AZ, or instance dies — traffic automatically goes to a healthy one. Users never see downtime.</p>
+      </div>
+      <div class="info-card blue">
+        <div class="ic-label">Problem 2</div>
+        <div class="ic-title">Scalability</div>
+        <p>As load increases, add capacity automatically. As load drops, remove it. Pay only for what you use.</p>
+      </div>
+    </div>
+
+    <div class="rule">The exam HA pattern: "highly available + cost-effective web application" almost always = ALB + ASG deployed across minimum 2 Availability Zones.</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2 — LOAD BALANCERS
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="load-balancers">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Elastic Load Balancing (ELB)</h2>
+    </div>
+
+    <p style="color:var(--text2)">There are 4 types of AWS load balancer. Three are current; one is legacy. The exam heavily tests which type fits which scenario. Here's your mental model before diving in:</p>
+
+    <div class="analogy">
+      <div class="analogy-label">The OSI Model in 30 seconds — why "Layer 4 vs Layer 7" matters</div>
+      <p>Think of network traffic like a parcel. <strong>Layer 4 (Transport)</strong> only sees the address written on the outside of the box — the IP address and port number. <strong>Layer 7 (Application)</strong> opens the box and reads what's inside — the HTTP method, the URL path, the headers, the cookies.</p>
+      <p>A Layer 7 load balancer can make <strong>much smarter routing decisions</strong> because it understands what's actually being requested. A Layer 4 LB is faster but "blind" to the content.</p>
+    </div>
+
+    <!-- ALB -->
+    <h3 id="alb">ALB — Application Load Balancer</h3>
+    <span class="badge badge-high">High Frequency</span>
+
+    <div class="service-cards" style="margin-top:0.75rem">
+      <div class="service-card amber">
+        <div class="sc-label">Type</div>
+        <div class="sc-name">ALB</div>
+        <div class="sc-desc">Layer 7 load balancer. Understands HTTP, HTTPS, WebSockets, and gRPC. The smart router that can read every detail of an HTTP request before deciding where to send it.</div>
+        <div class="sc-tags">
+          <span class="sc-tag">Layer 7</span>
+          <span class="sc-tag">HTTP/HTTPS</span>
+          <span class="sc-tag">WebSocket</span>
+          <span class="sc-tag">gRPC</span>
+          <span class="sc-tag">Cognito</span>
+          <span class="sc-tag">WAF</span>
+        </div>
+      </div>
+    </div>
+
+    <ul>
+      <li>Routes by: <strong>URL path</strong>, hostname, HTTP headers, query strings, source IP</li>
+      <li>Integrates natively with <strong>Cognito</strong> (add user auth without app code changes), <strong>WAF</strong>, Lambda, ECS/Fargate</li>
+      <li>One ALB serves many apps via <strong>target groups</strong> — each listener rule points to a different group</li>
+      <li>Supports <strong>sticky sessions</strong> (cookie-based — routes same user to same instance)</li>
+      <li>Supports <strong>connection draining</strong> — waits for in-flight requests to complete before deregistering an instance</li>
+      <li>Supports <strong>Server Name Indication (SNI)</strong> — multiple SSL certificates on one listener for multiple domain names</li>
+      <li>Can target: <strong>EC2 instances</strong>, IP addresses, <strong>Lambda functions</strong>, and even another ALB</li>
+    </ul>
+
+    <h3>ALB routing rules</h3>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Condition</th><th>Example</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Path-based</strong></td><td><code style="font-family:var(--mono);font-size:12px;color:var(--blue)">/api/*</code> → API servers</td><td>Forward to target group</td></tr>
+        <tr><td><strong>Host-based</strong></td><td>api.example.com vs app.example.com</td><td>Forward to different TG</td></tr>
+        <tr><td><strong>Header-based</strong></td><td>X-Platform: mobile</td><td>Forward to mobile TG</td></tr>
+        <tr><td><strong>Query string</strong></td><td><code style="font-family:var(--mono);font-size:12px;color:var(--blue)">?env=staging</code></td><td>Forward / redirect</td></tr>
+        <tr><td><strong>Redirect</strong></td><td>HTTP → HTTPS</td><td>301 redirect</td></tr>
+        <tr><td><strong>Fixed response</strong></td><td>Return 200 OK always</td><td>Health check endpoints</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="rule">ALB trigger phrases: "path-based routing," "/api/* vs /web/*," "microservices," "containers," "Cognito auth at LB," "WebSockets," "multiple domains on one LB."</div>
+    <div class="trap"><strong>Critical:</strong> ALB has NO static IP address. If the question says "whitelist our load balancer IP in a partner's firewall" or "need a fixed IP" → the answer is NLB or Global Accelerator in front of the ALB.</div>
+
+    <!-- NLB -->
+    <h3 id="nlb">NLB — Network Load Balancer</h3>
+    <span class="badge badge-high">High Frequency</span>
+
+    <div class="service-cards" style="margin-top:0.75rem">
+      <div class="service-card blue">
+        <div class="sc-label">Type</div>
+        <div class="sc-name">NLB</div>
+        <div class="sc-desc">Layer 4 load balancer. Raw speed at massive scale. Handles millions of requests/second with ultra-low latency. Provides static Elastic IPs per AZ.</div>
+        <div class="sc-tags">
+          <span class="sc-tag">Layer 4</span>
+          <span class="sc-tag">TCP/UDP</span>
+          <span class="sc-tag">TLS</span>
+          <span class="sc-tag">Static IP</span>
+          <span class="sc-tag">Source IP preserved</span>
+        </div>
+      </div>
+    </div>
+
+    <ul>
+      <li><strong>One static Elastic IP per AZ</strong> — these are fixed and whitelistable in external firewalls</li>
+      <li><strong>Preserves source IP</strong> natively — the backend EC2 instance sees the real client IP address</li>
+      <li>Handles <strong>millions of requests per second</strong> with ultra-low latency (compared to ALB's higher-level processing)</li>
+      <li>Can be exposed as an <strong>AWS PrivateLink</strong> endpoint</li>
+      <li>TLS passthrough supported — encrypted traffic can reach backend unchanged (end-to-end encryption)</li>
+      <li>Cross-zone load balancing is <strong>OFF by default</strong> (costs extra per-AZ when enabled)</li>
+    </ul>
+
+    <div class="rule">NLB trigger phrases: "static IP," "whitelist IP in firewall," "TCP/UDP traffic," "ultra-low latency," "millions of req/sec," "non-HTTP traffic," "source IP preservation."</div>
+    <div class="trap">NLB <strong>cannot route by URL path or headers</strong> — it doesn't open the packet. If you need path-based routing → ALB. If you need static IPs + path routing → NLB in front of ALB (chaining).</div>
+
+    <!-- GWLB -->
+    <h3 id="gwlb">GWLB — Gateway Load Balancer</h3>
+    <span class="badge badge-med">Medium Frequency</span>
+
+    <div class="service-cards" style="margin-top:0.75rem">
+      <div class="service-card green">
+        <div class="sc-label">Type</div>
+        <div class="sc-name">GWLB</div>
+        <div class="sc-desc">Layer 3 network-level load balancer. Designed exclusively to insert third-party virtual appliances (firewalls, IDS/IPS) transparently into traffic flow using GENEVE on port 6081.</div>
+        <div class="sc-tags">
+          <span class="sc-tag">Layer 3</span>
+          <span class="sc-tag">GENEVE port 6081</span>
+          <span class="sc-tag">3rd-party appliances</span>
+          <span class="sc-tag">IDS/IPS</span>
+        </div>
+      </div>
+    </div>
+
+    <ul>
+      <li>Traffic flow: <strong>Internet → GWLB → Appliance (inspect/allow/block) → GWLB → Application servers</strong></li>
+      <li>The appliance sees all traffic but is <strong>transparent</strong> to the source and destination</li>
+      <li>Uses <strong>GENEVE encapsulation on port 6081</strong> — this specific detail appears on the exam</li>
+      <li>Supports horizontal scaling of the appliance fleet</li>
+    </ul>
+
+    <div class="rule">GWLB trigger phrases: "inspection appliances," "third-party firewall," "IDS/IPS system," "transparent network inspection," "GENEVE," "virtual appliances from AWS Marketplace."</div>
+    <div class="trap">GWLB is <strong>NOT for balancing your own application servers</strong>. If you pick GWLB for a regular web app question, that is wrong. GWLB exists solely for inserting security appliances into the traffic path.</div>
+
+    <!-- ADVANCED FEATURES -->
+    <h3 id="features">Advanced Features to Know Cold</h3>
+
+    <h3 style="margin-top:1.25rem">Sticky Sessions</h3>
+    <ul>
+      <li>ALB inserts a <strong>cookie</strong> so the same user is always routed to the same instance</li>
+      <li>Two types: <strong>duration-based</strong> (LB-generated cookie, e.g. AWSALB) and <strong>application-based</strong> (your app sets its own cookie)</li>
+      <li>NLB uses <strong>source IP</strong> for stickiness (no cookie)</li>
+    </ul>
+    <div class="trap"><strong>Design trap:</strong> Sticky sessions cause uneven load distribution. One heavy user's session pins all their traffic to one instance. The better pattern: stateless app + store sessions in ElastiCache Redis. Sticky sessions are an anti-pattern for truly scalable systems.</div>
+
+    <h3>Connection Draining / Deregistration Delay</h3>
+    <ul>
+      <li>When an instance is deregistered (or fails health check), the LB stops sending <strong>new</strong> requests to it</li>
+      <li>In-flight requests are given time to complete before the instance is removed</li>
+      <li>Default: <strong>300 seconds</strong>. Range: 1–3600 seconds. Set to 0 for instant deregistration</li>
+    </ul>
+    <div class="tip">Set connection draining to 0 for fast rolling deployments. Keep it higher for long-lived connections or streaming.</div>
+
+    <h3>SSL/TLS Termination & SNI</h3>
+    <ul>
+      <li>ALB/NLB can terminate SSL at the load balancer and forward plain HTTP to backend instances</li>
+      <li>Certificates managed via <strong>AWS Certificate Manager (ACM)</strong> — free SSL certs</li>
+      <li><strong>SNI (Server Name Indication)</strong>: allows multiple SSL certificates on one ALB listener — one cert per domain name. No extra cost</li>
+      <li>NLB can do <strong>TLS passthrough</strong> — encrypted all the way to the backend (end-to-end TLS)</li>
+    </ul>
+    <div class="rule">Multiple SSL certs on one load balancer = ALB with SNI. One listener, many domains, many certificates.</div>
+
+    <h3>Cross-Zone Load Balancing</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Load Balancer</th><th>Default</th><th>Cost</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ALB</strong></td><td class="td-green">Always ON</td><td class="td-green">Free</td></tr>
+        <tr><td><strong>NLB</strong></td><td class="td-amber">OFF</td><td class="td-amber">Charged per AZ when enabled</td></tr>
+        <tr><td><strong>GWLB</strong></td><td class="td-amber">OFF</td><td class="td-amber">Charged per AZ when enabled</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="rule">With cross-zone LB on: traffic is distributed equally across ALL instances in ALL AZs. Without it: each AZ node distributes only to instances in its own AZ (unequal if AZ instance counts differ).</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3 — ASG
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="asg">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Auto Scaling Groups (ASG)</h2>
+    </div>
+
+    <p style="color:var(--text2)">An ASG maintains a fleet of EC2 instances and automatically adjusts the count based on demand, health checks, or a schedule. It always works alongside a load balancer for traffic distribution.</p>
+
+    <h3>Core Parameters</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Parameter</th><th>Controls</th><th>Exam note</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Minimum capacity</strong></td><td>Floor — never go below this</td><td>For HA: set min ≥ 2 across AZs</td></tr>
+        <tr><td><strong>Desired capacity</strong></td><td>What ASG tries to maintain right now</td><td>ASG starts here at creation</td></tr>
+        <tr><td><strong>Maximum capacity</strong></td><td>Ceiling — never exceed this</td><td>Caps your cost exposure</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- LAUNCH TEMPLATES -->
+    <h3 id="launch">Launch Template vs Launch Configuration</h3>
+    <span class="badge badge-high">High Frequency</span>
+
+    <div class="compare-wrap" style="margin-top:0.75rem">
+      <div class="compare-card pick-x">
+        <div class="cc-vs">Always pick this</div>
+        <h4>Launch Template</h4>
+        <ul>
+          <li>Supports <strong>multiple versions</strong> — can update without recreation</li>
+          <li>Supports <strong>Spot + On-Demand mix</strong> in one ASG</li>
+          <li>Supports T2/T3 unlimited burst mode</li>
+          <li>Supports placement groups</li>
+          <li>Full feature parity with latest EC2 options</li>
+        </ul>
+      </div>
+      <div class="compare-card pick-y">
+        <div class="cc-vs">Legacy — avoid unless forced</div>
+        <h4>Launch Configuration</h4>
+        <ul>
+          <li><strong>Immutable</strong> — cannot be modified after creation</li>
+          <li><strong>No Spot + On-Demand mix</strong></li>
+          <li>No T2/T3 unlimited support</li>
+          <li>AWS is deprecating this</li>
+          <li>Pick only if question says "legacy"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rule">If both appear in an answer choice — always pick Launch Template. No exceptions on the exam.</div>
+
+    <!-- SCALING POLICIES -->
+    <h3 id="policies">Scaling Policies</h3>
+    <span class="badge badge-high">High Frequency</span>
+
+    <div class="policy-grid" style="margin-top:0.75rem">
+      <div class="policy-card recommended">
+        <div class="pc-tag">Policy Type</div>
+        <h4>Target Tracking</h4>
+        <p>Define a target metric value. ASG automatically adds/removes instances to maintain it.<br><br>
+        Example: "Keep average CPU at 50%." Simplest to configure. Lowest operational overhead.<br><br>
+        <strong style="color:var(--amber2)">Trigger: "automatically maintain performance," "least operational overhead"</strong></p>
+      </div>
+
+      <div class="policy-card">
+        <div class="pc-tag">Policy Type</div>
+        <h4>Step Scaling</h4>
+        <p>Define CloudWatch alarms at multiple thresholds, each triggering a different step.<br><br>
+        Example: CPU 60–80% → add 1 instance. CPU >80% → add 3 instances.<br><br>
+        <strong style="color:var(--text)">Trigger: "graduated response based on alarm severity"</strong></p>
+      </div>
+
+      <div class="policy-card">
+        <div class="pc-tag">Policy Type</div>
+        <h4>Scheduled Scaling</h4>
+        <p>Scale up or down at a specific time using a cron schedule.<br><br>
+        Example: Add 10 instances every Friday at 5pm. Perfect for predictable load patterns.<br><br>
+        <strong style="color:var(--text)">Trigger: "known busy times," "Black Friday," "end-of-month reports"</strong></p>
+      </div>
+
+      <div class="policy-card">
+        <div class="pc-tag">New in C03 ★</div>
+        <h4>Predictive Scaling</h4>
+        <p>Uses ML to forecast load based on historical patterns and pre-scales <em>before</em> demand arrives. Removes the reactive lag of other policies.<br><br>
+        <strong style="color:var(--teal)">Trigger: "forecast-based," "scale before demand arrives," "ML scaling"</strong></p>
+      </div>
+    </div>
+
+    <div class="new-c03">Predictive Scaling was added to SAA-C03 and is specifically called out as a new topic. If you see "anticipate demand and pre-scale automatically" — this is the answer over Target Tracking.</div>
+
+    <!-- LIFECYCLE HOOKS -->
+    <h3 id="hooks">Lifecycle Hooks</h3>
+    <span class="badge badge-high">High Frequency</span>
+
+    <ul>
+      <li>Pause an instance at two key moments: <strong>during launch</strong> (before it serves any traffic) or <strong>during termination</strong> (before it is killed)</li>
+      <li>During the pause: run whatever script you need — install software, drain connections, push final logs to S3, notify monitoring systems</li>
+      <li>The instance stays in <strong>Pending:Wait</strong> (launch) or <strong>Terminating:Wait</strong> (terminate) state during the hook</li>
+      <li>Default timeout: 1 hour. At the end, hook either <strong>CONTINUE</strong> (normal flow) or <strong>ABANDON</strong> (terminate immediately)</li>
+    </ul>
+
+    <div class="rule">Lifecycle hook trigger: "run a custom script when an instance launches before it gets traffic" OR "gracefully drain connections before termination" OR "send instance logs to S3 before the instance is deleted."</div>
+
+    <h3>Health Checks — Critical Distinction</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Health Check Type</th><th>What it tests</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>EC2</strong> (default)</td><td>Is the EC2 instance running at OS level?</td><td>Not sufficient for production apps</td></tr>
+        <tr><td><strong>ELB</strong></td><td>Is the application responding correctly? (e.g. HTTP 200)</td><td><span class="td-green">Always enable in production</span></td></tr>
+        <tr><td><strong>Custom</strong></td><td>Your application marks instance healthy/unhealthy via API</td><td>Complex health logic</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="trap"><strong>This trap appears on the exam:</strong> An EC2 instance can be "running" at the OS level while serving HTTP 500 errors. The EC2 health check passes ✓, the ELB health check fails ✗. If you only use EC2 checks, the ASG will NOT replace the broken instance. Always enable ELB health checks on production ASGs.</div>
+
+    <h3>Scaling Cooldown</h3>
+    <ul>
+      <li>After a scaling event, ASG waits a <strong>cooldown period (default 300s)</strong> before acting again</li>
+      <li>Prevents "thrashing" — rapid scale-up/scale-down oscillation caused by metric spikes</li>
+      <li>Best fix for excessive scaling: <strong>bake software into a pre-configured AMI</strong> to reduce instance boot time</li>
+    </ul>
+
+    <div class="rule">If instances take 8 minutes to boot, the ASG sees elevated CPU for 8 minutes and over-scales. Fix: pre-baked AMI reduces boot to ~30 seconds. Also configure instance warm-up period so booting instances don't skew the aggregate metrics.</div>
+
+    <h3>Multi-AZ for True High Availability</h3>
+    <ul>
+      <li>Configure ASG across <strong>2+ AZs minimum</strong>. ASG automatically rebalances instances across AZs</li>
+      <li>If an entire AZ fails: ASG automatically launches replacement instances in remaining healthy AZs</li>
+      <li>ALB distributes traffic only to <strong>healthy registered targets</strong> in healthy AZs</li>
+      <li>ASG minimum of 2 ensures at least one instance survives any single AZ failure</li>
+    </ul>
+
+    <div class="rule">True HA pattern = ALB (multi-AZ) + ASG (min 2, spanning 2+ AZs) + ELB health checks enabled. This 3-part combination is the default answer for "highly available web application."</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4 — ARCHITECTURE
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="architecture">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Architecture Diagrams</h2>
+    </div>
+
+    <h3>1. The Canonical HA Web Architecture</h3>
+    <div class="arch">
+      <div class="arch-header">
+        <div class="arch-dot"></div><div class="arch-dot"></div><div class="arch-dot"></div>
+        <span class="arch-title">canonical-ha-web-architecture.txt</span>
+      </div>
+      <pre>
+<span class="comment">   ┌─────────────────────────────────────────────────────────┐</span>
+<span class="comment">   │              Internet Users (global)                     │</span>
+<span class="comment">   └──────────────────────────┬──────────────────────────────┘</span>
+                              │
+                              ▼
+<span class="service">   ┌─────────────────────────────────────────────────────────┐</span>
+<span class="service">   │        Route 53  (DNS + latency-based routing)          │</span>
+<span class="service">   └──────────────────────────┬──────────────────────────────┘</span>
+                              │
+                              ▼
+<span class="kw">   ┌─────────────────────────────────────────────────────────┐</span>
+<span class="kw">   │     Application Load Balancer  (multi-AZ, HTTPS)        │</span>
+<span class="kw">   │                                                         │</span>
+<span class="kw">   │   Listener :443  ──▶  Rule 1: /api/*  → Target Group A │</span>
+<span class="kw">   │   Cert via ACM   ──▶  Rule 2: /*      → Target Group B │</span>
+<span class="kw">   └───────────────┬─────────────────────────┬──────────────┘</span>
+                   │                         │
+                   ▼                         ▼
+<span class="highlight">   ┌──────────────────────┐   ┌──────────────────────────┐</span>
+<span class="highlight">   │  AZ-1 (us-east-1a)   │   │  AZ-2 (us-east-1b)       │</span>
+<span class="highlight">   │  ┌────────────────┐  │   │  ┌────────────────────┐  │</span>
+<span class="highlight">   │  │  EC2 instance  │  │   │  │  EC2 instance      │  │</span>
+<span class="highlight">   │  │  EC2 instance  │  │   │  │  EC2 instance      │  │</span>
+<span class="highlight">   │  └────────────────┘  │   │  └────────────────────┘  │</span>
+<span class="highlight">   └──────────────────────┘   └──────────────────────────┘</span>
+                   │                         │
+                   └────────────┬────────────┘
+                                │
+<span class="service">   ┌─────────────────────────────────────────────────────────┐</span>
+<span class="service">   │              Auto Scaling Group                         │</span>
+<span class="service">   │   min: 2  |  desired: 4  |  max: 10                    │</span>
+<span class="service">   │   Policy: Target Tracking (CPU 50%)                    │</span>
+<span class="service">   │   Health check: ELB  |  Multi-AZ: YES                  │</span>
+<span class="service">   └─────────────────────────────────────────────────────────┘</span></pre>
+    </div>
+
+    <h3>2. ALB Path-Based Routing to Microservices</h3>
+    <div class="arch">
+      <div class="arch-header">
+        <div class="arch-dot"></div><div class="arch-dot"></div><div class="arch-dot"></div>
+        <span class="arch-title">alb-path-routing-microservices.txt</span>
+      </div>
+      <pre>
+   Client Request:  <span class="kw">GET /api/users</span>   or   <span class="kw">GET /images/photo.jpg</span>
+                              │
+                              ▼
+<span class="service">   ALB Listener  (port 443)</span>
+<span class="service">   ├── Rule 1:  path  <span class="kw">/api/*</span></span>
+<span class="service">   │     └──▶  Target Group A:  API servers  (ECS Fargate tasks)</span>
+<span class="service">   ├── Rule 2:  path  <span class="kw">/images/*</span></span>
+<span class="service">   │     └──▶  Target Group B:  Image servers  (EC2 fleet)</span>
+<span class="service">   └── Default rule:  <span class="highlight">/*</span></span>
+<span class="service">         └──▶  Target Group C:  Frontend servers  (EC2 fleet)</span>
+
+   <span class="comment">Each target group has its own ASG with independent scaling.</span>
+   <span class="comment">The ALB health-checks each target independently.</span></pre>
+    </div>
+
+    <h3>3. NLB with Static IPs (for Firewall Whitelisting)</h3>
+    <div class="arch">
+      <div class="arch-header">
+        <div class="arch-dot"></div><div class="arch-dot"></div><div class="arch-dot"></div>
+        <span class="arch-title">nlb-static-ip-whitelisting.txt</span>
+      </div>
+      <pre>
+   External partner system  (needs to whitelist your LB IP)
+                    │
+                    ▼
+<span class="kw">   Network Load Balancer</span>
+<span class="kw">   ├── Elastic IP in AZ-1:  3.8.x.x   ◀── fixed, whitelistable</span>
+<span class="kw">   └── Elastic IP in AZ-2:  3.9.x.x   ◀── fixed, whitelistable</span>
+                    │
+                    ▼
+<span class="service">   EC2 Target Group</span>
+   <span class="highlight">└── Source IP is PRESERVED</span>  <span class="comment">← backend sees real client IP directly</span>
+
+   <span class="warn">ALB cannot do this — it has no static IP.</span>
+   <span class="comment">If you need static IPs + HTTP routing → NLB in front of ALB.</span></pre>
+    </div>
+
+    <h3>4. GWLB Traffic Inspection Architecture</h3>
+    <div class="arch">
+      <div class="arch-header">
+        <div class="arch-dot"></div><div class="arch-dot"></div><div class="arch-dot"></div>
+        <span class="arch-title">gwlb-security-appliance-flow.txt</span>
+      </div>
+      <pre>
+   Inbound Internet traffic
+            │
+            ▼
+<span class="kw">   Gateway Load Balancer  (GWLB)</span>
+<span class="kw">   └── GENEVE encapsulation  (port 6081)</span>
+            │
+            ▼
+<span class="service">   Virtual Appliance  (Palo Alto / Checkpoint / Fortinet)</span>
+<span class="service">   ├── Deep-packet inspection</span>
+<span class="service">   ├── Intrusion detection / prevention</span>
+<span class="service">   └── Allow ✓  or  Block ✗</span>
+            │
+            ▼ <span class="comment">(return path through GWLB)</span>
+<span class="highlight">   Application servers  ← only clean, inspected traffic arrives</span>
+
+   <span class="comment">The appliances are horizontally scaled by GWLB.</span>
+   <span class="comment">GWLB is transparent to source and destination.</span></pre>
+    </div>
+
+    <h3>5. ASG Lifecycle Hook Flow</h3>
+    <div class="arch">
+      <div class="arch-header">
+        <div class="arch-dot"></div><div class="arch-dot"></div><div class="arch-dot"></div>
+        <span class="arch-title">asg-lifecycle-hook-launch.txt</span>
+      </div>
+      <pre>
+   ASG decides to launch a new instance
+            │
+            ▼
+<span class="kw">   Instance enters  "Pending:Wait"  state</span>
+   <span class="comment">▸ NOT yet registered with ALB  ← no traffic hits it yet</span>
+   <span class="comment">▸ ASG lifecycle hook fires</span>
+            │
+            ▼
+   EventBridge rule catches the hook event
+            │
+            ▼
+<span class="service">   Lambda function runs:</span>
+<span class="service">   ├── Download config from S3</span>
+<span class="service">   ├── Register with configuration management tool</span>
+<span class="service">   └── Install monitoring agent</span>
+            │
+            ▼
+   Lambda calls  <span class="highlight">complete-lifecycle-action  → CONTINUE</span>
+            │
+            ▼
+<span class="highlight">   Instance enters  "InService"  state</span>
+<span class="highlight">   └── ALB registers it as a target  ← traffic starts flowing</span>
+
+   <span class="comment">ABANDON instead of CONTINUE → instance is terminated immediately.</span></pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 5 — EXAM CRITICAL
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="exam">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Exam-Critical Decision Points</h2>
+    </div>
+
+    <h3 id="comparison">Master Comparison: ALB vs NLB vs GWLB</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>ALB</th><th>NLB</th><th>GWLB</th></tr></thead>
+      <tbody>
+        <tr><td>OSI Layer</td><td>7 — Application</td><td>4 — Transport</td><td>3 — Network</td></tr>
+        <tr><td>Protocols</td><td>HTTP, HTTPS, gRPC, WebSocket</td><td>TCP, UDP, TLS</td><td>All IP traffic</td></tr>
+        <tr><td>Static IP per AZ</td><td class="td-red">No</td><td class="td-green">Yes (Elastic IP)</td><td class="td-red">No</td></tr>
+        <tr><td>Path-based routing</td><td class="td-green">Yes</td><td class="td-red">No</td><td class="td-red">No</td></tr>
+        <tr><td>Host-based routing</td><td class="td-green">Yes</td><td class="td-red">No</td><td class="td-red">No</td></tr>
+        <tr><td>Source IP preserved</td><td class="td-amber">No (X-Forwarded-For)</td><td class="td-green">Yes (native)</td><td class="td-green">Yes</td></tr>
+        <tr><td>Targets supported</td><td>EC2, IP, Lambda, ALB</td><td>EC2, IP, ALB</td><td>EC2, IP</td></tr>
+        <tr><td>Cognito / OIDC auth</td><td class="td-green">Yes</td><td class="td-red">No</td><td class="td-red">No</td></tr>
+        <tr><td>WAF integration</td><td class="td-green">Yes</td><td class="td-red">No</td><td class="td-red">No</td></tr>
+        <tr><td>SNI (multi-cert)</td><td class="td-green">Yes</td><td class="td-green">Yes</td><td class="td-red">No</td></tr>
+        <tr><td>Cross-zone LB default</td><td class="td-green">Always ON (free)</td><td class="td-amber">OFF (costs extra)</td><td class="td-amber">OFF (costs extra)</td></tr>
+        <tr><td>Primary use</td><td>Web apps, microservices, containers</td><td>Static IPs, TCP/UDP, ultra-low latency</td><td>Inline security appliances</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Scaling Policy Decision Table</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Trigger phrase in question</th><th>Answer</th></tr></thead>
+      <tbody>
+        <tr><td>"automatically maintain performance," "keep CPU at X%," "least operational overhead"</td><td class="td-amber"><strong>Target Tracking</strong></td></tr>
+        <tr><td>"scale at known times," "busy period every Friday," "batch job runs at 2am"</td><td class="td-amber"><strong>Scheduled Scaling</strong></td></tr>
+        <tr><td>"different scale amounts at different thresholds," "add 1 at 60%, add 3 at 80%"</td><td class="td-amber"><strong>Step Scaling</strong></td></tr>
+        <tr><td>"forecast demand," "pre-scale before load arrives," "historical pattern"</td><td class="td-teal"><strong>Predictive Scaling ★</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Qualifier → Answer Mapping</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Qualifier in question</th><th>Answer</th></tr></thead>
+      <tbody>
+        <tr><td>"static IP," "whitelist IP," "firewall whitelist"</td><td><strong>NLB</strong> (or Global Accelerator)</td></tr>
+        <tr><td>"path-based routing," "/api/* vs /web/*"</td><td><strong>ALB</strong></td></tr>
+        <tr><td>"Cognito authentication at the load balancer"</td><td><strong>ALB</strong></td></tr>
+        <tr><td>"TCP/UDP," "non-HTTP," "game server"</td><td><strong>NLB</strong></td></tr>
+        <tr><td>"third-party firewall," "inspection appliance," "IDS/IPS"</td><td><strong>GWLB</strong></td></tr>
+        <tr><td>"WebSockets," "bidirectional HTTP"</td><td><strong>ALB</strong></td></tr>
+        <tr><td>"real client IP on backend," "source IP preservation"</td><td><strong>NLB</strong> native / ALB via X-Forwarded-For header</td></tr>
+        <tr><td>"multiple SSL certs on one LB," "multiple domains"</td><td><strong>ALB with SNI</strong></td></tr>
+        <tr><td>"run script before instance serves traffic"</td><td><strong>ASG Lifecycle Hook</strong></td></tr>
+        <tr><td>"over-scaling, slow boot"</td><td><strong>Pre-baked AMI + Instance Warm-up</strong></td></tr>
+        <tr><td>"instances fail app-level but pass health check"</td><td><strong>Enable ELB health checks on ASG</strong></td></tr>
+        <tr><td>"canary deployment, send 10% to new version"</td><td><strong>ALB weighted target groups</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- MISTAKES -->
+    <h3 id="mistakes">The 5 Most Common Candidate Mistakes</h3>
+
+    <div class="mistake">
+      <div class="mistake-num">01</div>
+      <div>
+        <h4>Choosing ALB when a static IP is required</h4>
+        <p>ALB does NOT have a static IP address. The question says "whitelist our load balancer IP in a partner firewall" → you pick ALB thinking "it's the main one" → <strong>wrong.</strong> The answer is NLB (which has one Elastic IP per AZ) or put Global Accelerator in front of the ALB to get 2 static anycast IPs.</p>
+      </div>
+    </div>
+
+    <div class="mistake">
+      <div class="mistake-num">02</div>
+      <div>
+        <h4>Only using EC2 health checks on production ASGs</h4>
+        <p>An instance can be "running" at the OS level while serving HTTP 500 errors. <strong>EC2 health check = OS alive.</strong> ELB health check = app is healthy. If you only use EC2 checks and your app crashes, the ASG never replaces it. Always enable ELB health checks on ASGs behind a load balancer.</p>
+      </div>
+    </div>
+
+    <div class="mistake">
+      <div class="mistake-num">03</div>
+      <div>
+        <h4>Choosing GWLB for application load distribution</h4>
+        <p>GWLB is specifically and exclusively for inserting 3rd-party security appliances. It is not a replacement for ALB or NLB. If you see "Palo Alto," "IDS/IPS," or "transparent inspection" → GWLB. Any other web app traffic routing → ALB or NLB.</p>
+      </div>
+    </div>
+
+    <div class="mistake">
+      <div class="mistake-num">04</div>
+      <div>
+        <h4>Forgetting ALB replaces source IP with its own</h4>
+        <p>When ALB forwards a request to a backend instance, it replaces the client's source IP with its own IP. The backend must read the <strong>X-Forwarded-For HTTP header</strong> to get the real client IP. With NLB, source IP is preserved natively — no header needed.</p>
+      </div>
+    </div>
+
+    <div class="mistake">
+      <div class="mistake-num">05</div>
+      <div>
+        <h4>Picking Launch Configuration instead of Launch Template</h4>
+        <p>Launch Configuration is immutable (can't edit after creation), doesn't support Spot + On-Demand mix, and AWS is deprecating it. Launch Template is always the right answer unless the question specifically uses the word "legacy." If you see both in the options, pick Launch Template every time.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 6 — QUICK REFERENCE
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="quickref">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Quick Reference — One-Liner Rules</h2>
+    </div>
+    <p style="color:var(--text2);margin-bottom:1.25rem">Scan these before your exam. Each one maps a concept to a decision you can make in under 3 seconds.</p>
+
+    <div class="qr-table">
+      <div class="qr-row"><div class="qr-trigger">ALB</div><div class="qr-answer">Layer 7 HTTP routing — microservices, /path routing, Cognito, WAF, WebSockets</div></div>
+      <div class="qr-row"><div class="qr-trigger">NLB</div><div class="qr-answer">Layer 4 speed + <strong>static IPs</strong> — TCP/UDP, millions req/s, source IP preserved</div></div>
+      <div class="qr-row"><div class="qr-trigger">GWLB</div><div class="qr-answer"><strong>Inline security appliances only</strong> — GENEVE port 6081, 3rd-party firewalls</div></div>
+      <div class="qr-row"><div class="qr-trigger">ALB static IP?</div><div class="qr-answer">ALB has NO static IP → use <strong>NLB</strong> or <strong>Global Accelerator</strong> in front</div></div>
+      <div class="qr-row"><div class="qr-trigger">Source IP on ALB</div><div class="qr-answer">ALB hides it — read <strong>X-Forwarded-For</strong> header. NLB preserves natively</div></div>
+      <div class="qr-row"><div class="qr-trigger">SNI</div><div class="qr-answer">Multiple SSL certs on one ALB listener for multiple domain names</div></div>
+      <div class="qr-row"><div class="qr-trigger">Cross-zone LB</div><div class="qr-answer">ALB: always on, free. NLB/GWLB: off by default, <strong>costs extra</strong> per AZ</div></div>
+      <div class="qr-row"><div class="qr-trigger">Target Tracking</div><div class="qr-answer">Default scaling policy — keep metric at target, <strong>lowest operational overhead</strong></div></div>
+      <div class="qr-row"><div class="qr-trigger">Scheduled Scaling</div><div class="qr-answer">Pre-scale at <strong>known times</strong> — cron-based, e.g. Friday 5pm rush</div></div>
+      <div class="qr-row"><div class="qr-trigger">Predictive Scaling ★</div><div class="qr-answer">ML forecasts demand from history — <strong>pre-scales before load arrives</strong></div></div>
+      <div class="qr-row"><div class="qr-trigger">Lifecycle Hook</div><div class="qr-answer">Pause launch/terminate to run scripts — instance in Wait state, <strong>no traffic yet</strong></div></div>
+      <div class="qr-row"><div class="qr-trigger">Launch Template</div><div class="qr-answer"><strong>Always preferred</strong> — versioned, Spot+OD mix, full features</div></div>
+      <div class="qr-row"><div class="qr-trigger">Launch Configuration</div><div class="qr-answer">Legacy, immutable, no Spot+OD — only pick if question says "legacy"</div></div>
+      <div class="qr-row"><div class="qr-trigger">ELB health check on ASG</div><div class="qr-answer"><strong>Always enable in production</strong> — catches app failures, not just OS running</div></div>
+      <div class="qr-row"><div class="qr-trigger">Slow boot → over-scaling</div><div class="qr-answer">Pre-bake AMI + configure <strong>instance warm-up period</strong></div></div>
+      <div class="qr-row"><div class="qr-trigger">Sticky sessions trap</div><div class="qr-answer">Causes uneven load — better: <strong>stateless app + ElastiCache Redis</strong> sessions</div></div>
+      <div class="qr-row"><div class="qr-trigger">Connection draining</div><div class="qr-answer">LB lets in-flight requests finish before deregistering — default <strong>300s</strong></div></div>
+      <div class="qr-row"><div class="qr-trigger">Canary deploy at LB</div><div class="qr-answer">ALB <strong>weighted target groups</strong> — e.g. 90% TG-v1 / 10% TG-v2</div></div>
+      <div class="qr-row"><div class="qr-trigger">HA canonical pattern</div><div class="qr-answer">ALB + ASG (min 2) + ELB health checks + 2+ AZs = <strong>exam default HA</strong></div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 7 — QUIZ
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="quiz">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Practice Questions — 10 MCQs</h2>
+    </div>
+    <p style="color:var(--text2);margin-bottom:1.5rem">Exam-style scenarios. Click an option to answer. After answering, use "Show breakdown" for full elimination analysis and the one-line rule to remember.</p>
+
+    <div class="quiz-header">
+      <div class="quiz-score-wrap">
+        <div>
+          <div class="quiz-score-label">Score</div>
+          <div class="quiz-score" id="scoreDisplay">0 / 10</div>
+        </div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:5px;display:flex;justify-content:space-between">
+          <span>Progress</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div>
+        <button onclick="resetQuiz()" style="background:transparent;border:1px solid var(--border2);border-radius:6px;padding:6px 14px;font-family:var(--mono);font-size:11px;color:var(--text3);cursor:pointer">Reset</button>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="q-card" id="q1">
+      <div class="q-meta">
+        <span class="q-num-label">Question 1 of 10</span>
+        <span class="badge badge-easy">Easy</span>
+      </div>
+      <div class="q-text">A company runs a web application on multiple EC2 instances. They need to route <strong>/api/*</strong> requests to a set of backend API servers, and all other requests to their frontend servers. Which load balancer should they use?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q1',this,'wrong','q1-reveal')">A. Network Load Balancer</button>
+        <button class="q-opt" onclick="answer('q1',this,'correct','q1-reveal')">B. Application Load Balancer</button>
+        <button class="q-opt" onclick="answer('q1',this,'wrong','q1-reveal')">C. Gateway Load Balancer</button>
+        <button class="q-opt" onclick="answer('q1',this,'wrong','q1-reveal')">D. Classic Load Balancer</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q1-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q1-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"route /api/* requests" → path-based routing signal</span></div>
+        <div class="elim"><strong>A — NLB:</strong> Layer 4 only — has no concept of URL paths. Cannot route by /api/*. Wrong.</div>
+        <div class="elim"><strong>C — GWLB:</strong> For 3rd-party security appliances only. Not for app traffic routing. Wrong.</div>
+        <div class="elim"><strong>D — CLB:</strong> Legacy with very limited routing. Wrong.</div>
+        <div class="answer-rule-final">B is correct. ALB is the only load balancer that understands HTTP URL paths and can route to different target groups based on /api/* vs /* rules. Path-based routing is an ALB-exclusive feature.</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:0.6rem"><strong>Trap tested:</strong> NLB is a load balancer but Layer 4 only — it can't read HTTP paths.</p>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-card" id="q2">
+      <div class="q-meta">
+        <span class="q-num-label">Question 2 of 10</span>
+        <span class="badge badge-easy">Easy</span>
+      </div>
+      <div class="q-text">A financial services company needs their AWS load balancer to have a <strong>fixed, static IP address</strong> so they can whitelist it in their partner company's firewall. Which load balancer supports this requirement?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q2',this,'wrong','q2-reveal')">A. Application Load Balancer</button>
+        <button class="q-opt" onclick="answer('q2',this,'correct','q2-reveal')">B. Network Load Balancer</button>
+        <button class="q-opt" onclick="answer('q2',this,'wrong','q2-reveal')">C. Gateway Load Balancer</button>
+        <button class="q-opt" onclick="answer('q2',this,'wrong','q2-reveal')">D. Classic Load Balancer</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q2-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q2-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"static IP address," "whitelist in firewall"</span></div>
+        <div class="elim"><strong>A — ALB:</strong> Has NO static IP. This is the #1 most common mistake on this topic. Wrong.</div>
+        <div class="elim"><strong>C — GWLB:</strong> For security appliances, not for general app traffic. Wrong.</div>
+        <div class="elim"><strong>D — CLB:</strong> Legacy, no static IPs. Wrong.</div>
+        <div class="answer-rule-final">B is correct. NLB provides one Elastic IP per Availability Zone — these are fixed, static IP addresses that can be whitelisted in external firewalls.</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:0.6rem"><strong>Trap tested:</strong> Most candidates assume ALB has a static IP because it's the "main" load balancer. It does not.</p>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-card" id="q3">
+      <div class="q-meta">
+        <span class="q-num-label">Question 3 of 10</span>
+        <span class="badge badge-easy">Easy</span>
+      </div>
+      <div class="q-text">A company wants their Auto Scaling Group to automatically add EC2 instances when average CPU exceeds a target, and remove them when it drops. They want the <strong>simplest configuration with the least operational overhead</strong>. Which scaling policy should they use?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q3',this,'wrong','q3-reveal')">A. Scheduled Scaling</button>
+        <button class="q-opt" onclick="answer('q3',this,'wrong','q3-reveal')">B. Step Scaling</button>
+        <button class="q-opt" onclick="answer('q3',this,'correct','q3-reveal')">C. Target Tracking Scaling</button>
+        <button class="q-opt" onclick="answer('q3',this,'wrong','q3-reveal')">D. Simple Scaling</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q3-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q3-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"least operational overhead" + "automatically maintain performance"</span></div>
+        <div class="elim"><strong>A — Scheduled:</strong> For known time-based patterns, not dynamic metric response. Wrong.</div>
+        <div class="elim"><strong>B — Step Scaling:</strong> Works but requires defining multiple alarm thresholds manually — more complex. Wrong.</div>
+        <div class="elim"><strong>D — Simple Scaling:</strong> Older basic type requiring individual CloudWatch alarm config — not the simplest. Wrong.</div>
+        <div class="answer-rule-final">C is correct. Target Tracking is AWS's recommended default — you set a target metric value (e.g. CPU 50%) and AWS handles all the alarm creation and scaling logic automatically. Lowest operational overhead of all policies.</div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-card" id="q4">
+      <div class="q-meta">
+        <span class="q-num-label">Question 4 of 10</span>
+        <span class="badge badge-med">Medium</span>
+      </div>
+      <div class="q-text">A company uses an Auto Scaling Group. Each new EC2 instance must <strong>download a configuration file from S3 and register with a monitoring tool before it receives any production traffic</strong>. How should they implement this requirement?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q4',this,'wrong','q4-reveal')">A. Add a User Data script that runs at instance launch</button>
+        <button class="q-opt" onclick="answer('q4',this,'wrong','q4-reveal')">B. Use a CloudWatch Events rule to trigger Lambda when a new instance launches</button>
+        <button class="q-opt" onclick="answer('q4',this,'correct','q4-reveal')">C. Configure an ASG lifecycle hook to pause the instance in Pending:Wait before it serves traffic</button>
+        <button class="q-opt" onclick="answer('q4',this,'wrong','q4-reveal')">D. Bake the configuration into the AMI and use a Launch Template</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q4-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q4-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"before it receives any traffic" — must guarantee the instance is NOT yet registered when scripts run</span></div>
+        <div class="elim"><strong>A — User Data:</strong> Runs at launch but the instance may be registered with the ALB before the script finishes. No guarantee of "before traffic." Wrong.</div>
+        <div class="elim"><strong>B — CloudWatch Events + Lambda:</strong> Doesn't pause the instance. It could receive traffic immediately after launch. Wrong.</div>
+        <div class="elim"><strong>D — Baked AMI:</strong> Good for static config but can't handle dynamic config (download current file) or external tool registration. Wrong.</div>
+        <div class="answer-rule-final">C is correct. An ASG lifecycle hook holds the instance in "Pending:Wait" state — it is NOT registered with the ALB and receives zero traffic until the hook sends a CONTINUE signal. This is the only mechanism that guarantees "before traffic."</div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-card" id="q5">
+      <div class="q-meta">
+        <span class="q-num-label">Question 5 of 10</span>
+        <span class="badge badge-med">Medium</span>
+      </div>
+      <div class="q-text">An ASG has EC2 instances behind an ALB. Occasionally, instances are shown as <strong>healthy by the ASG but are actually serving HTTP 500 errors</strong> to users. The application process has crashed but the OS is still running. What change will fix this?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q5',this,'wrong','q5-reveal')">A. Increase the ASG maximum instance count</button>
+        <button class="q-opt" onclick="answer('q5',this,'wrong','q5-reveal')">B. Enable CloudWatch detailed monitoring on EC2 instances</button>
+        <button class="q-opt" onclick="answer('q5',this,'correct','q5-reveal')">C. Configure the ASG to use ELB health checks instead of EC2 health checks</button>
+        <button class="q-opt" onclick="answer('q5',this,'wrong','q5-reveal')">D. Add an ALB listener rule that redirects 500 responses to a healthy instance</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q5-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q5-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"healthy by ASG but serving HTTP 500 errors" → EC2 alive, app dead</span></div>
+        <div class="elim"><strong>A:</strong> More instances doesn't fix the unhealthy ones. Wrong.</div>
+        <div class="elim"><strong>B:</strong> Detailed monitoring increases metric frequency but doesn't trigger instance replacement. Wrong.</div>
+        <div class="elim"><strong>D:</strong> ALB doesn't have a native "retry on 500" rule. Wrong.</div>
+        <div class="answer-rule-final">C is correct. EC2 health checks only verify the instance is running at OS level. ELB health checks verify the application is responding correctly (e.g. HTTP 200 on /health). Switching to ELB checks means the ASG terminates and replaces instances whose apps have crashed.</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:0.6rem"><strong>Trap tested:</strong> EC2 health check ≠ application health check. The default is EC2 — always change it.</p>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-card" id="q6">
+      <div class="q-meta">
+        <span class="q-num-label">Question 6 of 10</span>
+        <span class="badge badge-med">Medium</span>
+      </div>
+      <div class="q-text">A company wants to perform a <strong>canary deployment</strong> — sending exactly <strong>10% of production traffic to a new application version</strong> while 90% continues to the current version. They want to use their existing ALB with the least possible operational overhead.</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q6',this,'wrong','q6-reveal')">A. Deploy a second ALB for the new version and update Route 53 weighted routing</button>
+        <button class="q-opt" onclick="answer('q6',this,'correct','q6-reveal')">B. Create a second target group for the new version and configure weighted target groups on the existing ALB listener rule</button>
+        <button class="q-opt" onclick="answer('q6',this,'wrong','q6-reveal')">C. Use Route 53 geolocation routing to send 10% of geographic regions to the new version</button>
+        <button class="q-opt" onclick="answer('q6',this,'wrong','q6-reveal')">D. Manually add new version instances to the existing target group and enable sticky sessions</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q6-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q6-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"10% to new version," "existing ALB," "least operational overhead"</span></div>
+        <div class="elim"><strong>A:</strong> Creates a second ALB and Route 53 complexity. Not least overhead. Wrong.</div>
+        <div class="elim"><strong>C:</strong> Geolocation routes by geography, not by traffic percentage. Wrong concept. Wrong.</div>
+        <div class="elim"><strong>D:</strong> Mixing versions in one target group loses precise 10/90 control. Sticky sessions add unrelated complexity. Wrong.</div>
+        <div class="answer-rule-final">B is correct. ALB natively supports weighted target groups — you set TG-v1 weight to 90 and TG-v2 weight to 10 on a single listener rule. No extra infrastructure. This is the canary deployment pattern at the load balancer layer.</div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="q-card" id="q7">
+      <div class="q-meta">
+        <span class="q-num-label">Question 7 of 10</span>
+        <span class="badge badge-med">Medium</span>
+      </div>
+      <div class="q-text">An application behind an Application Load Balancer needs its backend EC2 instances to <strong>log the real IP address of each client request</strong> for security auditing. The instances are receiving all requests from the ALB's IP address. What is the correct solution?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q7',this,'correct','q7-reveal')">A. Configure the application to read the X-Forwarded-For HTTP header on each request</button>
+        <button class="q-opt" onclick="answer('q7',this,'wrong','q7-reveal')">B. Enable source IP preservation on the ALB</button>
+        <button class="q-opt" onclick="answer('q7',this,'wrong','q7-reveal')">C. Switch to a Network Load Balancer which preserves source IP natively</button>
+        <button class="q-opt" onclick="answer('q7',this,'wrong','q7-reveal')">D. Enable VPC Flow Logs and have the application query them at runtime</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q7-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q7-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"ALB in use," "need real client IP on backend"</span></div>
+        <div class="elim"><strong>B:</strong> ALB has no "source IP preservation" toggle. It always replaces the source IP. Wrong.</div>
+        <div class="elim"><strong>C:</strong> Switching to NLB would work technically but is a major infrastructure change — the question asks for a solution, not a rebuild. Wrong in context.</div>
+        <div class="elim"><strong>D:</strong> Flow logs are for network analysis, not real-time per-request logging in an application. Wrong.</div>
+        <div class="answer-rule-final">A is correct. ALB always replaces the source IP with its own when forwarding requests. The original client IP is appended to the X-Forwarded-For HTTP header. The backend application must be configured to read this header for logging.</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:0.6rem"><strong>Trap tested:</strong> ALB does NOT preserve source IP natively — only NLB does. With ALB you must use X-Forwarded-For.</p>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="q-card" id="q8">
+      <div class="q-meta">
+        <span class="q-num-label">Question 8 of 10</span>
+        <span class="badge badge-med">Medium</span>
+      </div>
+      <div class="q-text">A company is deploying a network security solution using <strong>third-party virtual firewall appliances from AWS Marketplace</strong>. All traffic entering their VPC must pass through these appliances for deep-packet inspection before reaching application servers. Which AWS service enables this architecture with the least operational overhead?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q8',this,'wrong','q8-reveal')">A. Application Load Balancer with AWS WAF integration</button>
+        <button class="q-opt" onclick="answer('q8',this,'wrong','q8-reveal')">B. Network Load Balancer with VPC Traffic Mirroring</button>
+        <button class="q-opt" onclick="answer('q8',this,'correct','q8-reveal')">C. Gateway Load Balancer</button>
+        <button class="q-opt" onclick="answer('q8',this,'wrong','q8-reveal')">D. AWS Network Firewall with custom rule groups</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q8-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q8-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"third-party virtual firewall appliances," "deep-packet inspection," "transparently inserted"</span></div>
+        <div class="elim"><strong>A — WAF:</strong> AWS-native, rules-based — not for routing through 3rd-party EC2 appliances. Wrong.</div>
+        <div class="elim"><strong>B — Traffic Mirroring:</strong> Copies traffic for monitoring/analysis — does NOT route traffic through appliances for inline inspection. Wrong.</div>
+        <div class="elim"><strong>D — Network Firewall:</strong> AWS-managed, native service — not for routing traffic through your own 3rd-party EC2 appliances. Wrong.</div>
+        <div class="answer-rule-final">C is correct. GWLB is specifically designed to insert 3rd-party virtual appliances transparently into the traffic path using GENEVE encapsulation (port 6081). It balances traffic across your appliance fleet and handles the return path automatically.</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:0.6rem"><strong>Trap tested:</strong> WAF is the instinctive wrong answer for "security at the load balancer." GWLB is the answer specifically for 3rd-party EC2 appliances.</p>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="q-card" id="q9">
+      <div class="q-meta">
+        <span class="q-num-label">Question 9 of 10</span>
+        <span class="badge badge-hard">Hard</span>
+      </div>
+      <div class="q-text">A company's Auto Scaling Group is over-scaling. New instances take <strong>8 minutes to initialise</strong>, during which their CPU metrics appear elevated and trigger further scale-out events. What are the TWO most effective solutions? <em>(Select TWO)</em></div>
+      <div class="q-options" id="q9-opts">
+        <button class="q-opt" onclick="multiAnswer('q9',this,true)">A. Create a pre-configured AMI with the application installed to reduce boot time</button>
+        <button class="q-opt" onclick="multiAnswer('q9',this,false)">B. Increase the scaling cooldown period to 15 minutes</button>
+        <button class="q-opt" onclick="multiAnswer('q9',this,true)">C. Configure an instance warm-up period so new instances don't contribute to aggregate metrics until ready</button>
+        <button class="q-opt" onclick="multiAnswer('q9',this,false)">D. Switch from Target Tracking to Step Scaling</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q9-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q9-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"slow boot causing over-scaling" — need to shorten boot time AND exclude warming instances from metrics</span></div>
+        <div class="elim"><strong>B — Longer cooldown:</strong> Just delays all scaling activity — a blunt instrument that also delays legitimate scale-outs. Not a best practice. Wrong.</div>
+        <div class="elim"><strong>D — Switch to Step:</strong> Changing the policy type doesn't fix the root cause — booting instances still cause elevated CPU that triggers more launches. Wrong.</div>
+        <div class="answer-rule-final">A + C are correct. A (pre-baked AMI) reduces boot time from 8 minutes to ~30 seconds — massively less exposure to the problem. C (instance warm-up) tells ASG to exclude new instances from aggregate metric calculations until they're ready — prevents booting instances from appearing as "high CPU" and triggering more launches.</div>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="q-card" id="q10">
+      <div class="q-meta">
+        <span class="q-num-label">Question 10 of 10</span>
+        <span class="badge badge-hard">Hard</span>
+      </div>
+      <div class="q-text">An ALB has cross-zone load balancing enabled. It has an ASG with <strong>3 instances in AZ-1 and 1 instance in AZ-2</strong>. All 4 instances are healthy. Approximately what percentage of traffic will each instance receive?</div>
+      <div class="q-options">
+        <button class="q-opt" onclick="answer('q10',this,'wrong','q10-reveal')">A. AZ-1 instances get 16.7% each; AZ-2 instance gets 50%</button>
+        <button class="q-opt" onclick="answer('q10',this,'correct','q10-reveal')">B. All 4 instances get approximately 25% each</button>
+        <button class="q-opt" onclick="answer('q10',this,'wrong','q10-reveal')">C. AZ-1 instances get 33.3% total share (11.1% each); AZ-2 gets 66.7%</button>
+        <button class="q-opt" onclick="answer('q10',this,'wrong','q10-reveal')">D. AZ-1 instances get 16.7% each; AZ-2 instance gets 16.7%</button>
+      </div>
+      <button class="reveal-btn" onclick="toggleReveal('q10-reveal',this)">Show breakdown ↓</button>
+      <div class="reveal-section" id="q10-reveal">
+        <div class="reveal-qualifier">Qualifier: <span>"cross-zone load balancing ENABLED" — the key word that changes everything</span></div>
+        <div class="elim"><strong>A:</strong> This is the behaviour WITHOUT cross-zone LB. Each AZ node distributes its 50% share: AZ-1 node gets 50% split 3 ways = 16.7% each; AZ-2 gets 50%. Wrong in this scenario.</div>
+        <div class="elim"><strong>C & D:</strong> Incorrect math for either scenario. Wrong.</div>
+        <div class="answer-rule-final">B is correct. With cross-zone LB ON, the ALB distributes traffic evenly across ALL registered healthy instances regardless of AZ. 4 healthy instances → each gets 25%. The AZ boundary is irrelevant when cross-zone is enabled.</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:0.6rem"><strong>Trap tested:</strong> Without cross-zone: each AZ node distributes its own 50% only within its AZ → uneven distribution. With cross-zone: global even distribution across all instances.</p>
+      </div>
+    </div>
+
+  </div><!-- end quiz section -->
+  </div><!-- end content -->
+</main>
+
+<script>
+// ── QUIZ STATE ──
+var quizState = { score: 0, answered: 0, multiSelections: {} };
+
+function answer(qid, el, result, revealId) {
+  var card = document.getElementById(qid);
+  if (card.dataset.answered) return;
+  card.dataset.answered = 'true';
+
+  var opts = card.querySelectorAll('.q-opt');
+  opts.forEach(function(o) {
+    o.classList.add('locked');
+  });
+
+  el.classList.add(result);
+
+  if (result === 'correct') {
+    quizState.score++;
+    card.classList.add('answered-correct');
+  } else {
+    card.classList.add('answered-wrong');
+  }
+
+  quizState.answered++;
+  updateScore();
+
+  var revBtn = card.querySelector('.reveal-btn');
+  var revSection = document.getElementById(revealId);
+  if (revSection && !revSection.classList.contains('show')) {
+    revSection.classList.add('show');
+    if (revBtn) revBtn.textContent = 'Hide breakdown ↑';
+  }
+}
+
+function multiAnswer(qid, el, isCorrect) {
+  var card = document.getElementById(qid);
+  if (card.dataset.answered) return;
+
+  if (!quizState.multiSelections[qid]) {
+    quizState.multiSelections[qid] = { selections: [], correctCount: 2 };
+  }
+
+  var state = quizState.multiSelections[qid];
+
+  if (el.classList.contains('selected-multi')) {
+    el.classList.remove('selected-multi');
+    state.selections = state.selections.filter(function(s) { return s.el !== el; });
+    el.style.borderColor = '';
+    el.style.background = '';
+    return;
+  }
+
+  state.selections.push({ el: el, correct: isCorrect });
+  el.classList.add('selected-multi');
+  el.style.borderColor = 'rgba(245,166,35,0.4)';
+  el.style.background = 'rgba(245,166,35,0.06)';
+
+  if (state.selections.length === 2) {
+    card.dataset.answered = 'true';
+    var allCorrect = state.selections.every(function(s) { return s.correct; });
+
+    var opts = card.querySelectorAll('.q-opt');
+    opts.forEach(function(o) { o.classList.add('locked'); o.style.borderColor = ''; o.style.background = ''; });
+
+    state.selections.forEach(function(s) {
+      s.el.classList.add(s.correct ? 'correct' : 'wrong');
+    });
+
+    if (allCorrect) {
+      quizState.score++;
+      card.classList.add('answered-correct');
+    } else {
+      card.classList.add('answered-wrong');
+    }
+
+    quizState.answered++;
+    updateScore();
+
+    var revSection = document.getElementById('q9-reveal');
+    var revBtn = card.querySelector('.reveal-btn');
+    if (revSection) {
+      revSection.classList.add('show');
+      if (revBtn) revBtn.textContent = 'Hide breakdown ↑';
+    }
+  }
+}
+
+function updateScore() {
+  document.getElementById('scoreDisplay').textContent = quizState.score + ' / ' + quizState.answered;
+  var pct = Math.round((quizState.score / 10) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+function toggleReveal(id, btn) {
+  var d = document.getElementById(id);
+  if (d.classList.contains('show')) {
+    d.classList.remove('show');
+    btn.textContent = 'Show breakdown ↓';
+  } else {
+    d.classList.add('show');
+    btn.textContent = 'Hide breakdown ↑';
+  }
+}
+
+function resetQuiz() {
+  quizState = { score: 0, answered: 0, multiSelections: {} };
+  updateScore();
+
+  for (var i = 1; i <= 10; i++) {
+    var card = document.getElementById('q' + i);
+    if (card) {
+      delete card.dataset.answered;
+      card.classList.remove('answered-correct', 'answered-wrong');
+      var opts = card.querySelectorAll('.q-opt');
+      opts.forEach(function(o) {
+        o.classList.remove('correct', 'wrong', 'locked', 'selected-multi');
+        o.style.borderColor = '';
+        o.style.background = '';
+      });
+      var reveal = document.getElementById('q' + i + '-reveal');
+      if (reveal) reveal.classList.remove('show');
+      var btn = card.querySelector('.reveal-btn');
+      if (btn) btn.textContent = 'Show breakdown ↓';
+    }
+  }
+}
+
+// ── SIDEBAR NAV ACTIVE STATE ON SCROLL ──
+var sections = document.querySelectorAll('.section[id]');
+var navLinks = document.querySelectorAll('.nav-item, .nav-sub');
+
+function updateNav() {
+  var scrollY = window.scrollY + 120;
+  var current = '';
+
+  sections.forEach(function(sec) {
+    if (sec.offsetTop <= scrollY) {
+      current = sec.id;
+    }
+  });
+
+  navLinks.forEach(function(link) {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+}
+
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+</script>
+
+</body>
+</html>

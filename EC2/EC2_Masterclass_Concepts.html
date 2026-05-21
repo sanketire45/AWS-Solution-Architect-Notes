@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EC2 Masterclass — From Zero to Solution Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #3a3a3a;
+    --ink-muted: #6b6b6b;
+    --paper: #FAF8F3;
+    --paper-warm: #F5F1E8;
+    --aws-orange: #FF9900;
+    --aws-orange-soft: #FFE3B8;
+    --aws-navy: #232F3E;
+    --aws-navy-deep: #161E2D;
+    --accent-blue: #0073BB;
+    --accent-green: #1E8449;
+    --accent-red: #C0392B;
+    --accent-purple: #7D3C98;
+    --rule: #1a1a1a;
+    --rule-soft: #d4cfc2;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 19px;
+    line-height: 1.75;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+
+  @media (max-width: 900px) {
+    .wrap { padding: 0 1.5rem; }
+    body { font-size: 17px; }
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    border-bottom: 4px solid var(--ink);
+    padding: 5rem 0 4rem;
+    background: var(--paper-warm);
+  }
+  .hero-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .hero-meta span::before {
+    content: "—  ";
+    color: var(--aws-orange);
+  }
+  h1.hero-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0 0 1.5rem;
+    color: var(--ink);
+  }
+  h1.hero-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--aws-orange);
+  }
+  .hero-sub {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    line-height: 1.4;
+    color: var(--ink-soft);
+    max-width: 1100px;
+    margin: 0 0 2rem;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: var(--aws-navy);
+    color: white;
+    padding: 0.5rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ─── TOC ─── */
+  .toc {
+    margin: 3rem 0;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .toc-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 1.5rem;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.5rem 2rem;
+  }
+  .toc-grid a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    color: var(--ink);
+    text-decoration: none;
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    border-bottom: 1px dotted transparent;
+    transition: border-color 0.2s;
+  }
+  .toc-grid a:hover { border-bottom-color: var(--aws-orange); }
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--aws-orange);
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 2.5rem;
+  }
+
+  /* ─── SECTIONS ─── */
+  section.chapter {
+    padding: 5rem 0 3rem;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .chapter-header {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 3rem;
+  }
+  .chapter-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    color: var(--aws-orange);
+    padding-top: 1rem;
+    border-top: 3px solid var(--aws-orange);
+  }
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+    color: var(--ink);
+  }
+  h2 em {
+    font-style: italic;
+    color: var(--aws-orange);
+  }
+  .chapter-tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink-muted);
+    margin: 0;
+  }
+
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.9rem;
+    line-height: 1.2;
+    margin: 3rem 0 1rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  h3::before {
+    content: "§ ";
+    color: var(--aws-orange);
+    font-weight: 400;
+  }
+
+  h4 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 2rem 0 0.75rem;
+    color: var(--aws-navy);
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0 0 1.25rem;
+    max-width: 75ch;
+  }
+  p.lead {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    font-weight: 400;
+    margin-bottom: 2rem;
+    max-width: 80ch;
+  }
+  p.lead::first-letter {
+    font-size: 3.5rem;
+    font-weight: 600;
+    float: left;
+    line-height: 0.85;
+    margin: 0.4rem 0.7rem 0 0;
+    color: var(--aws-orange);
+    font-family: 'Fraunces', serif;
+  }
+
+  strong { font-weight: 600; color: var(--ink); }
+  em { font-style: italic; }
+
+  ul, ol { padding-left: 1.5rem; margin: 0 0 1.5rem; max-width: 75ch; }
+  li { margin-bottom: 0.5rem; }
+  li::marker { color: var(--aws-orange); }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    background: var(--paper-warm);
+    padding: 0.15em 0.45em;
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    color: var(--aws-navy);
+  }
+
+  pre {
+    background: var(--aws-navy-deep);
+    color: #f0f0f0;
+    padding: 1.5rem 1.75rem;
+    overflow-x: auto;
+    border-radius: 6px;
+    margin: 1.5rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    border-left: 4px solid var(--aws-orange);
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  /* ─── CALLOUT BOXES ─── */
+  .callout {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    border-left: 4px solid;
+    border-radius: 0 6px 6px 0;
+    max-width: 90ch;
+  }
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p { max-width: none; }
+
+  .callout.beginner {
+    background: #FFF8E8;
+    border-color: var(--aws-orange);
+  }
+  .callout.beginner .callout-label { color: #B36F00; }
+
+  .callout.industry {
+    background: #E8F4FB;
+    border-color: var(--accent-blue);
+  }
+  .callout.industry .callout-label { color: var(--accent-blue); }
+
+  .callout.exam {
+    background: #F0EAFB;
+    border-color: var(--accent-purple);
+  }
+  .callout.exam .callout-label { color: var(--accent-purple); }
+
+  .callout.trap {
+    background: #FBEBE8;
+    border-color: var(--accent-red);
+  }
+  .callout.trap .callout-label { color: var(--accent-red); }
+
+  .callout.tip {
+    background: #E8F5EE;
+    border-color: var(--accent-green);
+  }
+  .callout.tip .callout-label { color: var(--accent-green); }
+
+  /* ─── TABLES ─── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 2rem 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    background: white;
+    border: 1px solid var(--rule-soft);
+  }
+  th {
+    background: var(--aws-navy);
+    color: white;
+    text-align: left;
+    padding: 0.9rem 1.1rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  td {
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--paper-warm); }
+  tr:last-child td { border-bottom: none; }
+  td strong { color: var(--aws-navy); }
+
+  /* ─── DIAGRAM CONTAINERS ─── */
+  .diagram {
+    margin: 2.5rem 0;
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+  .diagram-caption {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    text-align: center;
+    color: var(--ink-muted);
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+  .diagram svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+
+  /* ─── COMPARE GRID ─── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .compare-card {
+    background: white;
+    border: 1px solid var(--rule-soft);
+    border-top: 4px solid var(--aws-orange);
+    padding: 1.5rem;
+    border-radius: 0 0 6px 6px;
+  }
+  .compare-card h4 {
+    margin-top: 0;
+    color: var(--aws-navy);
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+  }
+  .compare-card.alt { border-top-color: var(--accent-blue); }
+  .compare-card.alt2 { border-top-color: var(--accent-green); }
+  .compare-card.alt3 { border-top-color: var(--accent-purple); }
+
+  /* ─── PULL QUOTE ─── */
+  .pullquote {
+    margin: 3rem 0;
+    padding: 2rem 0;
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    line-height: 1.3;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink);
+    text-align: center;
+  }
+  .pullquote::before { content: "“ "; color: var(--aws-orange); }
+  .pullquote::after { content: " ”"; color: var(--aws-orange); }
+
+  /* ─── ANALOGY BOX ─── */
+  .analogy {
+    background: linear-gradient(135deg, #FFF4E0 0%, #FFE8C2 100%);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    margin: 2rem 0;
+    position: relative;
+    max-width: 90ch;
+  }
+  .analogy::before {
+    content: "🍕";
+    position: absolute;
+    top: -1rem;
+    left: 2rem;
+    background: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-size: 1.2rem;
+    border: 2px solid var(--aws-orange);
+  }
+  .analogy-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--aws-navy);
+    margin: 0 0 0.75rem;
+  }
+  .analogy p { max-width: none; margin-bottom: 0.75rem; }
+  .analogy p:last-child { margin-bottom: 0; }
+
+  /* ─── KEY-VALUE LIST ─── */
+  .kv {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0.75rem 2rem;
+    margin: 1.5rem 0;
+    max-width: 90ch;
+  }
+  .kv dt {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--aws-navy);
+    font-size: 0.95rem;
+    padding-top: 0.1rem;
+  }
+  .kv dd { margin: 0; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    margin-top: 6rem;
+    padding: 3rem 0;
+    border-top: 4px solid var(--ink);
+    background: var(--aws-navy);
+    color: rgba(255,255,255,0.85);
+  }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  footer p { margin: 0; max-width: none; }
+  footer .brand {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    color: white;
+  }
+  footer .brand em { color: var(--aws-orange); font-style: italic; }
+
+  /* responsive grid breakdown */
+  @media (max-width: 700px) {
+    .chapter-header { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr; gap: 0.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ HERO ═══════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-meta">
+      <span>AWS Solutions Architect Associate</span>
+      <span>SAA-C03</span>
+      <span>Document 01 of 02</span>
+      <span>Topic: EC2</span>
+    </div>
+    <h1 class="hero-title">The EC2<br><em>Masterclass.</em></h1>
+    <p class="hero-sub">From "what is a server?" to architecting workloads like Netflix.<br>Every concept, every gotcha, every real-world pattern — in one place.</p>
+    <div>
+      <span class="hero-tag">Fundamentals</span>
+      <span class="hero-tag">Architect-level</span>
+      <span class="hero-tag">Instance Storage</span>
+      <span class="hero-tag">Industry Patterns</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ═══════════════════════════════════════════════════ TOC ═══════════════════════════════════════════════════ -->
+<nav class="toc">
+  <div class="toc-label">Table of Contents</div>
+  <div class="toc-grid">
+    <a href="#ch1"><span class="toc-num">01</span><span>What Even Is a Server?</span></a>
+    <a href="#ch2"><span class="toc-num">02</span><span>Enter EC2 — The Big Idea</span></a>
+    <a href="#ch3"><span class="toc-num">03</span><span>Where Your EC2 Lives: Regions &amp; AZs</span></a>
+    <a href="#ch4"><span class="toc-num">04</span><span>The AMI — Your Instance Template</span></a>
+    <a href="#ch5"><span class="toc-num">05</span><span>Instance Types — Decoding the Names</span></a>
+    <a href="#ch6"><span class="toc-num">06</span><span>The EC2 Lifecycle</span></a>
+    <a href="#ch7"><span class="toc-num">07</span><span>Pricing Models — How to Pay Less</span></a>
+    <a href="#ch8"><span class="toc-num">08</span><span>EC2 Storage Deep-Dive</span></a>
+    <a href="#ch9"><span class="toc-num">09</span><span>EC2 Networking Essentials</span></a>
+    <a href="#ch10"><span class="toc-num">10</span><span>Placement Groups</span></a>
+    <a href="#ch11"><span class="toc-num">11</span><span>Bootstrap, Metadata &amp; Access</span></a>
+    <a href="#ch12"><span class="toc-num">12</span><span>Nitro, ENA, EFA &amp; Performance</span></a>
+    <a href="#ch13"><span class="toc-num">13</span><span>Industry Patterns &amp; Best Practices</span></a>
+    <a href="#ch14"><span class="toc-num">14</span><span>How Real Companies Use EC2</span></a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 1 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch1">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 01</div>
+    <div>
+      <h2>What even <em>is</em> a server?</h2>
+      <p class="chapter-tagline">Before we talk EC2, let's make sure the floor is solid.</p>
+    </div>
+  </div>
+
+  <p class="lead">A server is just a computer. That's it. The thing that makes it a "server" is its <em>job</em>: instead of one human typing on its keyboard, a server sits there 24/7 listening for requests over a network and serving them back. Your laptop could be a server. A Raspberry Pi can be a server. A massive machine in a data center is a server.</p>
+
+  <div class="analogy">
+    <div class="analogy-title">The restaurant analogy</div>
+    <p>Think of a busy restaurant. The <strong>kitchen</strong> is the server — it cooks food when orders come in. The <strong>customers</strong> are clients sending requests ("I'd like a pizza!"). The <strong>waiter</strong> is the network carrying the request from customer to kitchen and back.</p>
+    <p>One kitchen can serve hundreds of customers. If the kitchen catches fire, the restaurant closes. If you want to handle more customers, you need a bigger kitchen — or several kitchens working together.</p>
+  </div>
+
+  <h3>Why this matters</h3>
+
+  <p>Before cloud, if you wanted to launch a website, here's what you did:</p>
+
+  <ul>
+    <li><strong>Buy a physical computer</strong> — anywhere from $5,000 to $50,000+</li>
+    <li><strong>Find a place to put it</strong> — usually rented rack space in a data center, or a closet in your office</li>
+    <li><strong>Install an operating system</strong> — Linux or Windows</li>
+    <li><strong>Install your software</strong> — a web server, a database, your application</li>
+    <li><strong>Pay for electricity, cooling, internet, IT staff</strong> — every month, forever</li>
+    <li><strong>Hope nothing breaks</strong> — and when it does, drive over to fix it</li>
+  </ul>
+
+  <p>The whole process took weeks or months. And if your website got popular and needed more capacity? Buy another machine. Wait weeks. Set it up. Pray.</p>
+
+  <div class="callout industry">
+    <div class="callout-label">Why it matters in industry</div>
+    <p>Companies used to maintain entire teams of engineers whose only job was buying, installing, racking, and replacing servers. Hardware costs were measured in millions. Provisioning took 6–12 weeks. <strong>This was a ceiling on how fast a business could grow.</strong></p>
+  </div>
+
+  <p>Then came cloud computing. And EC2 was the moment the world fundamentally changed.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 2 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch2">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 02</div>
+    <div>
+      <h2>Enter <em>EC2</em> — the big idea.</h2>
+      <p class="chapter-tagline">A computer in the cloud, ready in 60 seconds, paid by the second.</p>
+    </div>
+  </div>
+
+  <p class="lead">EC2 stands for <strong>Elastic Compute Cloud</strong>. Three words that capture the whole story. <em>Elastic</em> — it can grow and shrink. <em>Compute</em> — it gives you CPU and RAM, the raw stuff of computation. <em>Cloud</em> — it lives on AWS's planet-spanning infrastructure, accessible from anywhere.</p>
+
+  <div class="analogy">
+    <div class="analogy-title">EC2 is renting, not buying</div>
+    <p>Owning a server is like owning a car. Big upfront cost. Yours forever. You handle maintenance. If you stop using it, you still pay.</p>
+    <p>EC2 is like <strong>renting a car by the second</strong>. You walk up, pick the model (a small economy car, an SUV, a sports car, a moving truck), drive it for as long as you want, and return it. You only pay for the time you used. Need a different car next time? Easy.</p>
+    <p>And the rental lot has every car ever made, available instantly, at any moment. That's EC2.</p>
+  </div>
+
+  <h3>What you get when you launch an EC2 instance</h3>
+
+  <dl class="kv">
+    <dt>A virtual computer</dt>
+    <dd>Not physical hardware — a slice of a large server, isolated from other slices. Behaves exactly like a real machine.</dd>
+    <dt>An operating system</dt>
+    <dd>Linux (Amazon Linux, Ubuntu, Red Hat, etc.) or Windows. You pick.</dd>
+    <dt>CPU + RAM</dt>
+    <dd>From tiny (1 vCPU, 0.5 GB RAM) to massive (448 vCPU, 24 TB RAM).</dd>
+    <dt>Storage</dt>
+    <dd>A disk attached to it (we'll deep-dive on this in Chapter 8).</dd>
+    <dt>Network</dt>
+    <dd>An IP address and the ability to talk to the internet (or stay private).</dd>
+    <dt>Per-second billing</dt>
+    <dd>Run it for 30 seconds, pay for 30 seconds. Run it for a year, pay for a year.</dd>
+  </dl>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="serverGrad" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#FF9900"/>
+          <stop offset="1" stop-color="#E08600"/>
+        </linearGradient>
+      </defs>
+      <!-- AWS Cloud boundary -->
+      <rect x="20" y="20" width="860" height="280" rx="12" fill="none" stroke="#232F3E" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="40" y="45" font-family="JetBrains Mono, monospace" font-size="13" fill="#232F3E" font-weight="600">AWS CLOUD</text>
+
+      <!-- Region -->
+      <rect x="50" y="65" width="800" height="220" rx="8" fill="#F5F1E8" stroke="#6b6b6b" stroke-width="1"/>
+      <text x="70" y="88" font-family="JetBrains Mono, monospace" font-size="11" fill="#6b6b6b">REGION: us-east-1</text>
+
+      <!-- AZ 1 -->
+      <rect x="80" y="105" width="350" height="160" rx="6" fill="white" stroke="#0073BB" stroke-width="1.5"/>
+      <text x="100" y="128" font-family="JetBrains Mono, monospace" font-size="11" fill="#0073BB" font-weight="600">AVAILABILITY ZONE us-east-1a</text>
+
+      <!-- EC2 instance -->
+      <rect x="120" y="150" width="120" height="90" rx="6" fill="url(#serverGrad)" stroke="#232F3E" stroke-width="1.5"/>
+      <text x="180" y="180" text-anchor="middle" font-family="Inter" font-size="14" fill="white" font-weight="700">EC2</text>
+      <text x="180" y="200" text-anchor="middle" font-family="Inter" font-size="11" fill="white">m5.large</text>
+      <text x="180" y="218" text-anchor="middle" font-family="Inter" font-size="10" fill="white" opacity="0.9">2 vCPU · 8 GB</text>
+
+      <!-- EBS volume -->
+      <rect x="280" y="160" width="110" height="70" rx="6" fill="#0073BB" stroke="#232F3E" stroke-width="1.5"/>
+      <text x="335" y="190" text-anchor="middle" font-family="Inter" font-size="13" fill="white" font-weight="700">EBS</text>
+      <text x="335" y="207" text-anchor="middle" font-family="Inter" font-size="10" fill="white">100 GB SSD</text>
+
+      <!-- arrow -->
+      <line x1="240" y1="195" x2="280" y2="195" stroke="#232F3E" stroke-width="2"/>
+      <polygon points="280,195 273,191 273,199" fill="#232F3E"/>
+
+      <!-- AZ 2 -->
+      <rect x="470" y="105" width="350" height="160" rx="6" fill="white" stroke="#1E8449" stroke-width="1.5"/>
+      <text x="490" y="128" font-family="JetBrains Mono, monospace" font-size="11" fill="#1E8449" font-weight="600">AVAILABILITY ZONE us-east-1b</text>
+
+      <rect x="510" y="150" width="120" height="90" rx="6" fill="url(#serverGrad)" stroke="#232F3E" stroke-width="1.5"/>
+      <text x="570" y="180" text-anchor="middle" font-family="Inter" font-size="14" fill="white" font-weight="700">EC2</text>
+      <text x="570" y="200" text-anchor="middle" font-family="Inter" font-size="11" fill="white">m5.large</text>
+      <text x="570" y="218" text-anchor="middle" font-family="Inter" font-size="10" fill="white" opacity="0.9">2 vCPU · 8 GB</text>
+
+      <rect x="670" y="160" width="110" height="70" rx="6" fill="#0073BB" stroke="#232F3E" stroke-width="1.5"/>
+      <text x="725" y="190" text-anchor="middle" font-family="Inter" font-size="13" fill="white" font-weight="700">EBS</text>
+      <text x="725" y="207" text-anchor="middle" font-family="Inter" font-size="10" fill="white">100 GB SSD</text>
+
+      <line x1="630" y1="195" x2="670" y2="195" stroke="#232F3E" stroke-width="2"/>
+      <polygon points="670,195 663,191 663,199" fill="#232F3E"/>
+    </svg>
+    <p class="diagram-caption">Two EC2 instances in different Availability Zones, each with attached EBS storage. This is the canonical highly-available baseline.</p>
+  </div>
+
+  <div class="callout beginner">
+    <div class="callout-label">For absolute beginners</div>
+    <p>An "instance" is just AWS's word for a running EC2 virtual machine. When you "launch an instance" you're saying "AWS, please boot up a server for me right now." Sixty seconds later, you can SSH into it like any Linux box.</p>
+  </div>
+
+  <p>EC2 was launched in 2006. Before EC2, "the cloud" wasn't really a thing yet. Spinning up a server in minutes — instead of months — was so transformative that it created entire new categories of companies. Netflix, Airbnb, Pinterest, Reddit, Stripe, Slack — none of them could have existed at the speed they grew without something like EC2.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 3 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch3">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 03</div>
+    <div>
+      <h2>Where your EC2 actually <em>lives</em>.</h2>
+      <p class="chapter-tagline">Regions, Availability Zones, and why geography matters.</p>
+    </div>
+  </div>
+
+  <p class="lead">When you launch an EC2 instance, it has to live <em>somewhere</em>. AWS owns hundreds of data centers around the world, organized in a hierarchy: <strong>Regions</strong> contain <strong>Availability Zones</strong>, and AZs contain physical data centers. You always pick where your instance goes.</p>
+
+  <h3>Regions</h3>
+
+  <p>A Region is a geographic area, like a country or sub-continent. Each Region has a code name:</p>
+
+  <ul>
+    <li><code>us-east-1</code> — Northern Virginia (the biggest, oldest, cheapest)</li>
+    <li><code>us-west-2</code> — Oregon</li>
+    <li><code>eu-west-1</code> — Ireland</li>
+    <li><code>eu-central-1</code> — Frankfurt</li>
+    <li><code>ap-south-1</code> — Mumbai</li>
+    <li><code>ap-northeast-1</code> — Tokyo</li>
+  </ul>
+
+  <p>There are 30+ Regions worldwide as of 2026. You pick a Region for three reasons:</p>
+
+  <ol>
+    <li><strong>Latency</strong> — Closer to your users = faster response. A user in London hitting <code>eu-west-1</code> sees ~10ms latency. Hitting <code>us-east-1</code>, they see ~80ms. Big difference.</li>
+    <li><strong>Cost</strong> — Prices vary slightly between regions. <code>us-east-1</code> tends to be cheapest. São Paulo is one of the most expensive.</li>
+    <li><strong>Compliance / data residency</strong> — Some laws (GDPR in Europe, data localization in India) require you keep customer data in-country. Pick a Region that satisfies those rules.</li>
+  </ol>
+
+  <h3>Availability Zones (AZs)</h3>
+
+  <p>Each Region is divided into 3 or more <strong>Availability Zones</strong> — labelled <code>us-east-1a</code>, <code>us-east-1b</code>, <code>us-east-1c</code>, and so on.</p>
+
+  <p>An AZ is one or more physical data centers, located miles apart from other AZs in the same region. They have separate power, cooling, and network connections — but they're connected to each other by ultra-fast, low-latency private fiber (single-digit milliseconds).</p>
+
+  <div class="callout beginner">
+    <div class="callout-label">Why this design exists</div>
+    <p>If a single data center has a problem — a fire, a power outage, a flood, even a backhoe cutting a fiber line — only that one AZ goes down. Your application running in two AZs at once will keep serving users from the surviving AZ. <strong>This is the foundation of "high availability" on AWS.</strong></p>
+  </div>
+
+  <div class="callout industry">
+    <div class="callout-label">Real industry pattern</div>
+    <p>Production workloads always span <strong>at least 2 AZs</strong>. Critical systems often span 3. A single-AZ deployment is fine for development and testing but is considered an architectural sin in production — your boss will not be happy when the AZ goes down and the app is offline.</p>
+  </div>
+
+  <p>Quick mental model:</p>
+
+  <div class="kv">
+    <dt>1 AZ goes down</dt>
+    <dd>Your other AZs handle the load. App keeps running. (HA — High Availability)</dd>
+    <dt>1 entire Region goes down</dt>
+    <dd>If you only deployed to one Region, you're offline. To survive this, you need multi-Region setup. (DR — Disaster Recovery)</dd>
+  </div>
+
+  <h3>Edge Locations &amp; Local Zones (briefly)</h3>
+
+  <p>Beyond Regions and AZs, AWS also has:</p>
+
+  <ul>
+    <li><strong>Edge Locations</strong> (400+) — small POPs near users, used by CloudFront and Global Accelerator for caching and routing. Not for EC2.</li>
+    <li><strong>Local Zones</strong> — extensions of a Region in specific cities for ultra-low-latency workloads (like LA, Boston). EC2 can run here.</li>
+    <li><strong>Wavelength Zones</strong> — embedded inside 5G carrier networks for mobile-edge applications.</li>
+    <li><strong>Outposts</strong> — actual AWS hardware racks installed in your own data center.</li>
+  </ul>
+
+  <p>For 95% of cases, you'll work with Regions and AZs only.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 4 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch4">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 04</div>
+    <div>
+      <h2>The AMI — your <em>instance template</em>.</h2>
+      <p class="chapter-tagline">A "save game" of a fully configured computer.</p>
+    </div>
+  </div>
+
+  <p class="lead">Every EC2 instance starts from an <strong>AMI</strong> (Amazon Machine Image, pronounced "ay-em-eye"). An AMI is a snapshot of an entire system: the operating system, system files, pre-installed software, and configuration — frozen in time, ready to be cloned into new instances.</p>
+
+  <div class="analogy">
+    <div class="analogy-title">Like a "save state" for your computer</div>
+    <p>Imagine you spent hours setting up your laptop perfectly: the OS configured, your apps installed, your dev tools ready. Now imagine you could press a button and clone that <em>entire setup</em> into a brand new laptop in 60 seconds. That's an AMI.</p>
+  </div>
+
+  <h3>Where AMIs come from</h3>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>AWS-provided</h4>
+      <p>Bare-bones official images: <strong>Amazon Linux 2023</strong>, <strong>Ubuntu</strong>, <strong>Red Hat</strong>, <strong>Windows Server</strong>, <strong>SUSE</strong>, <strong>Debian</strong>. Free (you only pay for the EC2). Your default starting point.</p>
+    </div>
+    <div class="compare-card alt">
+      <h4>AWS Marketplace</h4>
+      <p>Pre-built AMIs from vendors — a fully-configured WordPress, a hardened Linux, a security appliance. You pay an extra hourly software fee on top of EC2. Saves setup time.</p>
+    </div>
+    <div class="compare-card alt2">
+      <h4>Community AMIs</h4>
+      <p>Free, made by other AWS users. Use with caution — security audit them first. Mostly for niche use cases.</p>
+    </div>
+    <div class="compare-card alt3">
+      <h4>Your own custom AMIs</h4>
+      <p>You take a configured EC2 instance and "bake" it into an AMI. Now any new instance launched from this AMI starts <em>already configured</em>. This is the industry pattern.</p>
+    </div>
+  </div>
+
+  <div class="callout industry">
+    <div class="callout-label">The "Golden AMI" pattern</div>
+    <p>Mature engineering teams build a "golden AMI" CI/CD pipeline. Every week, a tool like <strong>Packer</strong> (by HashiCorp) starts a fresh Amazon Linux instance, installs all the company's standard software, applies security patches, runs tests, then bakes the result into a new AMI version. Auto Scaling Groups and Launch Templates point to this AMI. <strong>Result: launching a new server takes 30 seconds and the server is production-ready immediately</strong> — no slow boot scripts.</p>
+  </div>
+
+  <h3>AMIs are region-specific</h3>
+
+  <p>An AMI you create in <code>us-east-1</code> only exists in <code>us-east-1</code>. To use it elsewhere, you have to <strong>copy</strong> it to other regions. AWS makes this easy, but it's a one-time copy operation.</p>
+
+  <div class="callout exam">
+    <div class="callout-label">Exam-style scenario</div>
+    <p>"A company wants to launch identical EC2 instances in multiple regions for disaster recovery." → Build the AMI once, then copy the AMI to each target region. Use Launch Templates pointing to the regional AMI ID.</p>
+  </div>
+
+  <h3>What's actually inside an AMI</h3>
+
+  <ul>
+    <li><strong>One or more EBS snapshots</strong> (the disk contents)</li>
+    <li><strong>Launch permissions</strong> — who is allowed to use this AMI</li>
+    <li><strong>Block device mapping</strong> — what disks attach where on launch</li>
+    <li><strong>Architecture</strong> — x86_64, ARM64 (Graviton), etc.</li>
+    <li><strong>Virtualization type</strong> — HVM (modern) or PV (legacy, dying out)</li>
+  </ul>
+
+  <p>You'll see AMIs identified by IDs like <code>ami-0abcdef1234567890</code>. These IDs are unique per region — the same image, copied to a different region, gets a new ID.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 5 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch5">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 05</div>
+    <div>
+      <h2>Instance types — <em>decoding the names</em>.</h2>
+      <p class="chapter-tagline">Once you crack the naming code, picking the right one is easy.</p>
+    </div>
+  </div>
+
+  <p class="lead">EC2 offers <strong>over 750 different instance types</strong>. Names like <code>t3.micro</code>, <code>m5.large</code>, <code>c6i.4xlarge</code>, <code>r7g.16xlarge</code>, <code>p4d.24xlarge</code>. It looks like alphabet soup. But there's a clean, consistent naming convention that makes it easy.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
+      <text x="450" y="40" text-anchor="middle" font-family="Fraunces, serif" font-size="18" fill="#6b6b6b" font-style="italic">Anatomy of an instance type name</text>
+
+      <!-- The big name -->
+      <text x="450" y="120" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="64" fill="#232F3E" font-weight="700">m5d.xlarge</text>
+
+      <!-- m -->
+      <line x1="285" y1="135" x2="285" y2="170" stroke="#FF9900" stroke-width="2"/>
+      <rect x="195" y="175" width="180" height="70" rx="6" fill="#FFF8E8" stroke="#FF9900" stroke-width="1.5"/>
+      <text x="285" y="198" text-anchor="middle" font-family="Inter" font-size="13" fill="#B36F00" font-weight="700">FAMILY</text>
+      <text x="285" y="218" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">m = General Purpose</text>
+      <text x="285" y="234" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">(c, r, t, p, i, ...)</text>
+
+      <!-- 5 -->
+      <line x1="365" y1="135" x2="430" y2="170" stroke="#0073BB" stroke-width="2"/>
+      <rect x="390" y="175" width="120" height="70" rx="6" fill="#E8F4FB" stroke="#0073BB" stroke-width="1.5"/>
+      <text x="450" y="198" text-anchor="middle" font-family="Inter" font-size="13" fill="#0073BB" font-weight="700">GENERATION</text>
+      <text x="450" y="218" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">5 = 5th gen</text>
+      <text x="450" y="234" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">(higher = newer)</text>
+
+      <!-- d -->
+      <line x1="410" y1="135" x2="555" y2="170" stroke="#1E8449" stroke-width="2"/>
+      <rect x="525" y="175" width="120" height="70" rx="6" fill="#E8F5EE" stroke="#1E8449" stroke-width="1.5"/>
+      <text x="585" y="198" text-anchor="middle" font-family="Inter" font-size="13" fill="#1E8449" font-weight="700">ATTRIBUTES</text>
+      <text x="585" y="218" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">d = local NVMe</text>
+      <text x="585" y="234" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">(g/i/a/n optional)</text>
+
+      <!-- xlarge -->
+      <line x1="540" y1="135" x2="745" y2="170" stroke="#7D3C98" stroke-width="2"/>
+      <rect x="660" y="175" width="200" height="70" rx="6" fill="#F0EAFB" stroke="#7D3C98" stroke-width="1.5"/>
+      <text x="760" y="198" text-anchor="middle" font-family="Inter" font-size="13" fill="#7D3C98" font-weight="700">SIZE</text>
+      <text x="760" y="218" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">xlarge = 4 vCPU, 16 GB</text>
+      <text x="760" y="234" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">nano → 32xlarge</text>
+    </svg>
+    <p class="diagram-caption">Every EC2 instance name follows this pattern: <code>family</code><code>generation</code><code>attributes</code>.<code>size</code></p>
+  </div>
+
+  <h3>Instance Families — the most important table</h3>
+
+  <p>The first letter is the <strong>family</strong>, which tells you what the instance is optimized for. This is what you really need to know:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Family</th><th>Type</th><th>Optimized for</th><th>Real-world use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>T</strong> (t3, t4g)</td><td>Burstable</td><td>Cheap, low baseline CPU with burst capacity</td><td>Small websites, dev/test boxes, low-traffic apps</td></tr>
+        <tr><td><strong>M</strong> (m5, m6i, m7g)</td><td>General Purpose</td><td>Balanced CPU + RAM</td><td>Most web servers, small DBs, app tiers</td></tr>
+        <tr><td><strong>C</strong> (c5, c6i, c7g)</td><td>Compute Optimized</td><td>High CPU per dollar</td><td>Game servers, batch processing, scientific computing, CI/CD runners</td></tr>
+        <tr><td><strong>R</strong> (r5, r6i, r7g)</td><td>Memory Optimized</td><td>Lots of RAM</td><td>Caches (Redis), databases, real-time analytics</td></tr>
+        <tr><td><strong>X</strong> (x2idn, x2iezn)</td><td>High Memory</td><td>Massive RAM (up to 24 TB)</td><td>SAP HANA, huge in-memory databases</td></tr>
+        <tr><td><strong>I</strong> (i3, i4i)</td><td>Storage (IOPS)</td><td>Fast local NVMe SSD storage</td><td>NoSQL DBs, OLTP workloads, high-IOPS apps</td></tr>
+        <tr><td><strong>D</strong> (d2, d3)</td><td>Storage (Density)</td><td>Lots of cheap HDD</td><td>Hadoop, distributed file stores, data warehousing</td></tr>
+        <tr><td><strong>G</strong> / <strong>P</strong> (g4, p4)</td><td>GPU</td><td>NVIDIA graphics cards</td><td>ML training, video transcoding, 3D rendering, gaming</td></tr>
+        <tr><td><strong>F</strong> (f1)</td><td>FPGA</td><td>Programmable hardware</td><td>Genomics, financial analytics, custom acceleration</td></tr>
+        <tr><td><strong>Mac</strong> (mac1, mac2)</td><td>Apple Silicon</td><td>Real Mac Mini hardware</td><td>iOS/macOS app build &amp; test</td></tr>
+        <tr><td><strong>Hpc</strong> (hpc6a, hpc7a)</td><td>HPC Optimized</td><td>Tightly-coupled HPC</td><td>Computational fluid dynamics, weather modeling</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The optional letter suffix</h3>
+
+  <p>You'll see letters like <code>m6<strong>i</strong></code>, <code>m6<strong>a</strong></code>, <code>m6<strong>g</strong></code>, <code>m5<strong>d</strong></code>, <code>m5<strong>n</strong></code>:</p>
+
+  <ul>
+    <li><strong>i</strong> — Intel processor</li>
+    <li><strong>a</strong> — AMD processor (typically ~10% cheaper than Intel for similar perf)</li>
+    <li><strong>g</strong> — AWS <strong>Graviton</strong> ARM processor (cheapest, most power-efficient — but x86 software might need re-compilation)</li>
+    <li><strong>d</strong> — has local NVMe SSD <em>instance store</em> (more on this in Ch 8)</li>
+    <li><strong>n</strong> — enhanced networking (higher bandwidth)</li>
+    <li><strong>e</strong> — extended memory</li>
+  </ul>
+
+  <h3>Sizes — what "xlarge" actually means</h3>
+
+  <p>Each step doubles the resources (roughly):</p>
+
+  <pre><code>nano  → micro → small → medium → large → xlarge → 2xlarge → 4xlarge → 8xlarge → 16xlarge → 24xlarge → 32xlarge → metal</code></pre>
+
+  <p>An <code>m5.large</code> has 2 vCPU and 8 GB RAM. An <code>m5.xlarge</code> has 4 vCPU and 16 GB RAM. Each step roughly doubles cost and resources. <code>.metal</code> means you get the entire physical server (no virtualization).</p>
+
+  <div class="callout tip">
+    <div class="callout-label">Pro tip — picking instance size</div>
+    <p>Don't guess. Use AWS's <strong>Compute Optimizer</strong> service. It looks at your actual CPU, RAM, network, and disk metrics and recommends the right instance type. Most companies discover they're <strong>40–60% over-provisioned</strong> when they first run it. Translates to massive savings.</p>
+  </div>
+
+  <div class="callout exam">
+    <div class="callout-label">Exam pattern</div>
+    <p>The exam will give you a workload description and you pick the family. Memorize these triggers:</p>
+    <ul>
+      <li>"Cache" / "in-memory database" → <strong>R</strong> family</li>
+      <li>"High CPU" / "batch processing" → <strong>C</strong> family</li>
+      <li>"Web app, balanced load" → <strong>M</strong> family</li>
+      <li>"Low cost, sporadic traffic" → <strong>T</strong> family</li>
+      <li>"Machine learning training" → <strong>P</strong> family</li>
+      <li>"Video encoding / graphics" → <strong>G</strong> family</li>
+      <li>"NoSQL with massive IOPS" → <strong>I</strong> family</li>
+      <li>"SAP HANA" → <strong>X</strong> family</li>
+      <li>"Tightly-coupled HPC" → <strong>Hpc</strong> family</li>
+    </ul>
+  </div>
+
+  <h3>Burstable instances (T-series) — read carefully</h3>
+
+  <p>The T family is special. T instances have a low <strong>baseline CPU</strong> (e.g., 20% on a t3.medium). When idle, they accumulate <strong>CPU credits</strong>. When they need to burst above baseline, they spend credits.</p>
+
+  <p>Two modes:</p>
+
+  <ul>
+    <li><strong>Standard mode</strong> — Run out of credits = throttled to baseline. Free.</li>
+    <li><strong>Unlimited mode</strong> — Burst freely; if you exceed credits over a 24-hour rolling window, you pay extra per CPU-hour.</li>
+  </ul>
+
+  <div class="callout trap">
+    <div class="callout-label">The classic T-instance trap</div>
+    <p>A team puts a production web server on a t3.medium in <strong>Unlimited mode</strong>. Traffic spikes one weekend. Monday morning, the AWS bill shows hundreds of dollars in CPU credit overages. <strong>Lesson:</strong> for production with sustained CPU demand, use M, C, or R — not T.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 6 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch6">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 06</div>
+    <div>
+      <h2>The EC2 <em>lifecycle</em>.</h2>
+      <p class="chapter-tagline">Every state your instance can be in, and what you pay for each.</p>
+    </div>
+  </div>
+
+  <p class="lead">EC2 instances move through a small set of well-defined states. Knowing what each state means — what's preserved, what's lost, what you're billed for — is foundational. It also shows up on the exam constantly.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Boxes -->
+      <rect x="20" y="100" width="120" height="60" rx="8" fill="#FFF8E8" stroke="#FF9900" stroke-width="2"/>
+      <text x="80" y="125" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#B36F00">PENDING</text>
+      <text x="80" y="145" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">Booting up</text>
+
+      <rect x="180" y="100" width="120" height="60" rx="8" fill="#E8F5EE" stroke="#1E8449" stroke-width="2"/>
+      <text x="240" y="125" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#1E8449">RUNNING</text>
+      <text x="240" y="145" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">Serving</text>
+
+      <rect x="340" y="100" width="120" height="60" rx="8" fill="#E8F4FB" stroke="#0073BB" stroke-width="2"/>
+      <text x="400" y="125" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#0073BB">STOPPING</text>
+
+      <rect x="500" y="100" width="120" height="60" rx="8" fill="#F0EAFB" stroke="#7D3C98" stroke-width="2"/>
+      <text x="560" y="125" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#7D3C98">STOPPED</text>
+      <text x="560" y="145" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">No compute charge</text>
+
+      <rect x="660" y="20" width="120" height="60" rx="8" fill="#FBEBE8" stroke="#C0392B" stroke-width="2"/>
+      <text x="720" y="45" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#C0392B">TERMINATED</text>
+      <text x="720" y="65" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">Gone forever</text>
+
+      <rect x="660" y="180" width="120" height="60" rx="8" fill="#F5F1E8" stroke="#6b6b6b" stroke-width="2"/>
+      <text x="720" y="205" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#6b6b6b">HIBERNATED</text>
+      <text x="720" y="225" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">RAM saved</text>
+
+      <!-- arrows -->
+      <line x1="140" y1="130" x2="180" y2="130" stroke="#232F3E" stroke-width="2"/>
+      <polygon points="180,130 173,126 173,134" fill="#232F3E"/>
+
+      <line x1="300" y1="130" x2="340" y2="130" stroke="#232F3E" stroke-width="2"/>
+      <polygon points="340,130 333,126 333,134" fill="#232F3E"/>
+
+      <line x1="460" y1="130" x2="500" y2="130" stroke="#232F3E" stroke-width="2"/>
+      <polygon points="500,130 493,126 493,134" fill="#232F3E"/>
+
+      <!-- Stopped -> Terminated -->
+      <path d="M 580 100 Q 600 60 660 50" stroke="#C0392B" stroke-width="2" fill="none"/>
+      <polygon points="660,50 651,49 654,57" fill="#C0392B"/>
+
+      <!-- Stopped -> Hibernated (and back) -->
+      <path d="M 580 160 Q 620 200 660 210" stroke="#6b6b6b" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+
+      <!-- Stopped -> Running (start) -->
+      <path d="M 500 145 Q 360 200 240 165" stroke="#1E8449" stroke-width="2" fill="none"/>
+      <polygon points="240,165 247,162 244,170" fill="#1E8449"/>
+      <text x="370" y="195" font-family="Inter" font-size="11" font-style="italic" fill="#1E8449">start</text>
+
+      <!-- Running -> Terminated direct -->
+      <path d="M 280 100 Q 380 30 660 50" stroke="#C0392B" stroke-width="2" fill="none"/>
+      <polygon points="660,50 651,49 654,57" fill="#C0392B"/>
+      <text x="450" y="40" font-family="Inter" font-size="11" font-style="italic" fill="#C0392B">terminate (direct)</text>
+    </svg>
+    <p class="diagram-caption">EC2 instance lifecycle. Stopping → Stopped → Running is your normal "pause" loop. Terminate is the one-way door.</p>
+  </div>
+
+  <h3>The states explained</h3>
+
+  <div class="kv">
+    <dt>Pending</dt>
+    <dd>The instance is starting up. AWS is provisioning hardware, attaching storage, booting the OS. Takes ~30–90 seconds. <strong>Not billed yet.</strong></dd>
+    <dt>Running</dt>
+    <dd>Live and serving traffic. <strong>Billed per second</strong> (Linux) or per hour (some Windows). EBS volumes attached are also billed.</dd>
+    <dt>Stopping → Stopped</dt>
+    <dd>You issued "Stop." OS shuts down cleanly. <strong>Not billed for compute</strong>, but EBS volumes still cost you. Public IP is released (unless you have an Elastic IP). You can start it again later.</dd>
+    <dt>Hibernated</dt>
+    <dd>RAM contents are saved to the encrypted EBS root volume, then instance stops. When you start again, RAM is restored — applications resume exactly where they were. Boot in seconds.</dd>
+    <dt>Terminating → Terminated</dt>
+    <dd>The instance is permanently deleted. By default, root EBS volume is also deleted (configurable). <strong>You cannot recover a terminated instance.</strong></dd>
+  </div>
+
+  <h3>Stop vs Terminate vs Reboot — the critical distinctions</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Action</th><th>What happens</th><th>EBS data?</th><th>Instance store data?</th><th>Public IP?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Reboot</strong></td><td>OS restart, same instance</td><td>Preserved</td><td>Preserved</td><td>Preserved</td></tr>
+        <tr><td><strong>Stop</strong></td><td>Instance powered off</td><td>Preserved</td><td><strong>LOST</strong></td><td>Lost (unless Elastic IP)</td></tr>
+        <tr><td><strong>Hibernate</strong></td><td>RAM dumped to EBS, then stopped</td><td>Preserved</td><td><strong>LOST</strong></td><td>Lost (unless EIP)</td></tr>
+        <tr><td><strong>Terminate</strong></td><td>Instance deleted forever</td><td>Deleted (default)</td><td><strong>LOST</strong></td><td>Released</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout trap">
+    <div class="callout-label">The most common student mistake</div>
+    <p>Confusing <strong>stop</strong> with <strong>reboot</strong>. A reboot is a quick OS restart — same hardware, same IP, no data loss. A stop powers off the VM, may move it to different hardware on next start, releases the public IP, and wipes any instance store data. Both feel like "turning off and on" but they're very different.</p>
+  </div>
+
+  <div class="callout exam">
+    <div class="callout-label">Exam scenario</div>
+    <p>"A user reports that their instance store data disappears every Monday morning." → Someone is stopping/starting the instance over the weekend. Tell them to use EBS for persistent data, or to stop the stop/start cycle.</p>
+  </div>
+
+  <h3>Termination Protection</h3>
+
+  <p>You can enable <strong>termination protection</strong> on critical instances. With it on, you can't terminate the instance via the API or console without first disabling protection. Cheap insurance against an oops.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 7 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch7">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 07</div>
+    <div>
+      <h2>Pricing models — <em>how to pay less</em>.</h2>
+      <p class="chapter-tagline">Master this and you save your company millions. Seriously.</p>
+    </div>
+  </div>
+
+  <p class="lead">EC2's biggest weapon is its pricing flexibility. You can pay full price (On-Demand) or take massive discounts in exchange for commitment (Reserved, Savings Plans) or interruptibility (Spot). Real cloud architects don't pick one — they orchestrate a portfolio. This is also one of the heaviest exam topics.</p>
+
+  <div class="pullquote">If you put 100% of your EC2 fleet on On-Demand, you're a beginner. If you put 100% on Spot, you're reckless. Real architects mix.</div>
+
+  <h3>1. On-Demand</h3>
+
+  <p>The default. Pay per second (Linux) or per hour (Windows). No commitment, no upfront. Most expensive — but most flexible.</p>
+
+  <ul>
+    <li>Use for: Unpredictable workloads, short-term experiments, dev environments that turn off at night, infrastructure with traffic spikes</li>
+    <li>You can launch and terminate any time without penalty</li>
+    <li>Industry rule: Anything running &lt; 25% of the time is cheaper on On-Demand than on Reserved</li>
+  </ul>
+
+  <h3>2. Reserved Instances (RI)</h3>
+
+  <p>Commit to a specific instance type for <strong>1 or 3 years</strong>. In exchange, get up to <strong>72% off</strong> the On-Demand price. The longer the commitment and the more you pay upfront, the bigger the discount.</p>
+
+  <h4>RI flavors</h4>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Locked to</th><th>Discount</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Standard RI</td><td>Specific instance type</td><td>Up to 72%</td><td>Cheapest. Can't change instance family.</td></tr>
+        <tr><td>Convertible RI</td><td>Specific instance, but exchangeable</td><td>Up to 66%</td><td>Can swap to bigger/different family later.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Payment options: <strong>All Upfront</strong> (biggest discount) → <strong>Partial Upfront</strong> → <strong>No Upfront</strong> (smallest discount).</p>
+
+  <p>Bonus: there's a <strong>Reserved Instance Marketplace</strong> where you can sell unused RIs to other AWS customers if your needs change.</p>
+
+  <h3>3. Savings Plans — the modern Reserved</h3>
+
+  <p>Released in 2019. Same idea as RIs but more flexible: instead of committing to a specific instance type, you commit to a <strong>dollar amount per hour</strong> for 1 or 3 years.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>Compute Savings Plan</h4>
+      <p>Most flexible. <strong>Up to 66% off.</strong> Applies to <strong>EC2, Fargate, AND Lambda</strong> across <em>any</em> region, instance family, OS, or tenancy. Switch from m5 to c6g and the discount follows. Industry favorite.</p>
+    </div>
+    <div class="compare-card alt">
+      <h4>EC2 Instance Savings Plan</h4>
+      <p>Less flexible, deeper discount. <strong>Up to 72% off.</strong> Locked to a specific instance family (e.g., M5) in a specific region. You can change size and OS within the family.</p>
+    </div>
+  </div>
+
+  <div class="callout industry">
+    <div class="callout-label">Industry reality</div>
+    <p>Most modern engineering teams use <strong>Compute Savings Plans</strong>, not Reserved Instances. The 6% smaller discount is worth the dramatically improved flexibility — you don't have to predict your exact instance types 3 years in advance, which nobody can really do anyway.</p>
+  </div>
+
+  <h3>4. Spot Instances — up to 90% off, with a catch</h3>
+
+  <p>AWS sells unused EC2 capacity at a steep discount — up to <strong>90% off</strong>. Catch: AWS can take it back at any time with a <strong>2-minute warning</strong>.</p>
+
+  <p>This sounds scary. It isn't, if you architect for it.</p>
+
+  <h4>Good fits for Spot</h4>
+
+  <ul>
+    <li>Batch processing jobs that can resume from a checkpoint</li>
+    <li>Big data crunching (Spark, Hadoop)</li>
+    <li>Machine learning training (save model checkpoints, resume on new instance)</li>
+    <li>CI/CD build farms</li>
+    <li>Stateless web servers behind a load balancer (lose one, ASG launches another)</li>
+    <li>Video transcoding</li>
+  </ul>
+
+  <h4>Bad fits for Spot</h4>
+
+  <ul>
+    <li>Databases (data corruption risk on sudden termination)</li>
+    <li>Stateful services holding important user sessions</li>
+    <li>Anything with hard real-time deadlines</li>
+  </ul>
+
+  <h4>Spot Fleet &amp; Spot pools</h4>
+
+  <p>You define a <strong>Spot Fleet</strong>: "give me 100 vCPUs across these instance types and AZs." AWS picks whichever pool is cheapest. If your AZ-a m5.large gets reclaimed, the fleet automatically shifts to AZ-b c6i.xlarge. Resilient, cheap.</p>
+
+  <div class="callout industry">
+    <div class="callout-label">A real Spot story</div>
+    <p>Lyft runs much of its ML and batch workloads on Spot, saving an estimated <strong>$10M+ per year</strong>. Pinterest uses Spot for image processing pipelines. Netflix uses Spot heavily for its video encoding pipeline — when an interruption happens, the job just resumes on a new instance from the last checkpoint.</p>
+  </div>
+
+  <h3>5. Dedicated Hosts &amp; Dedicated Instances</h3>
+
+  <p>Most EC2 instances run on shared hardware (you have your own VM, but the physical server is shared with other AWS customers). Two ways to <em>not</em> share:</p>
+
+  <div class="compare-grid">
+    <div class="compare-card alt2">
+      <h4>Dedicated Instance</h4>
+      <p>Your VM runs on hardware dedicated to your AWS account. You don't see or control the hardware. Cheaper than Dedicated Host. Use: regulatory isolation requirements.</p>
+    </div>
+    <div class="compare-card alt3">
+      <h4>Dedicated Host</h4>
+      <p>You rent the <strong>entire physical server</strong>. You see CPU sockets, can place instances on specific cores. Use: <strong>Bring-Your-Own-License</strong> (Oracle, SQL Server, Windows) where licenses are tied to physical CPU sockets. Most expensive.</p>
+    </div>
+  </div>
+
+  <h3>6. Capacity Reservations</h3>
+
+  <p>Reserve capacity in a specific AZ at On-Demand pricing. You're not getting a discount — you're guaranteeing the capacity is <em>available</em> when you need it. Combine with a Savings Plan to also get the discount.</p>
+
+  <p>Use case: Disaster recovery. You want to know that during a regional crisis when everyone is rushing to scale up, your DR fleet is guaranteed available.</p>
+
+  <h3>The portfolio approach</h3>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg">
+      <text x="450" y="35" text-anchor="middle" font-family="Fraunces, serif" font-size="20" font-weight="600" fill="#232F3E">A real production EC2 cost portfolio</text>
+
+      <!-- Stacked bars -->
+      <rect x="100" y="80" width="700" height="60" fill="#1E8449" stroke="#232F3E" stroke-width="1"/>
+      <text x="450" y="118" text-anchor="middle" font-family="Inter" font-size="16" font-weight="700" fill="white">Savings Plans (steady baseline) — ~70%</text>
+
+      <rect x="100" y="140" width="500" height="40" fill="#0073BB" stroke="#232F3E" stroke-width="1"/>
+      <text x="350" y="166" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="white">On-Demand (variable) — ~20%</text>
+
+      <rect x="100" y="180" width="250" height="30" fill="#FF9900" stroke="#232F3E" stroke-width="1"/>
+      <text x="225" y="201" text-anchor="middle" font-family="Inter" font-size="12" font-weight="700" fill="white">Spot — ~10%</text>
+
+      <text x="100" y="235" font-family="Inter" font-size="12" fill="#6b6b6b">low cost, locked in</text>
+      <text x="800" y="235" text-anchor="end" font-family="Inter" font-size="12" fill="#6b6b6b">flexible, expensive</text>
+    </svg>
+    <p class="diagram-caption">Typical mature company mix: a Savings Plan baseline, On-Demand for variable, Spot for elastic batch.</p>
+  </div>
+
+  <div class="callout exam">
+    <div class="callout-label">Exam decision tree</div>
+    <ul>
+      <li>"Steady, predictable workload, 24/7" → <strong>Reserved or Savings Plan</strong></li>
+      <li>"Need maximum flexibility, applies to Lambda &amp; Fargate too" → <strong>Compute Savings Plan</strong></li>
+      <li>"Cheapest possible, batch job, fault-tolerant" → <strong>Spot</strong></li>
+      <li>"Unpredictable, can't commit, occasional use" → <strong>On-Demand</strong></li>
+      <li>"BYOL Oracle/Windows licenses tied to hardware" → <strong>Dedicated Host</strong></li>
+      <li>"Need to guarantee capacity is available, no discount needed" → <strong>Capacity Reservation</strong></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 8 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch8">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 08</div>
+    <div>
+      <h2>EC2 storage <em>deep-dive</em>.</h2>
+      <p class="chapter-tagline">EBS, Instance Store, EFS — and which to pick when.</p>
+    </div>
+  </div>
+
+  <p class="lead">An EC2 instance without storage is useless. AWS gives you three fundamentally different storage models for EC2 — and one of the most common architectural mistakes is picking the wrong one. By the end of this chapter, you'll always know which to use.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+      <!-- Host -->
+      <rect x="50" y="50" width="800" height="280" rx="10" fill="#F5F1E8" stroke="#232F3E" stroke-width="2"/>
+      <text x="70" y="78" font-family="JetBrains Mono, monospace" font-size="12" fill="#232F3E" font-weight="700">PHYSICAL EC2 HOST (in an AZ)</text>
+
+      <!-- EC2 Instance -->
+      <rect x="100" y="110" width="200" height="180" rx="8" fill="#FF9900" stroke="#232F3E" stroke-width="2"/>
+      <text x="200" y="140" text-anchor="middle" font-family="Inter" font-size="16" font-weight="700" fill="white">EC2 Instance</text>
+
+      <!-- Instance Store inside -->
+      <rect x="120" y="155" width="160" height="60" rx="4" fill="#C0392B" stroke="white" stroke-width="1"/>
+      <text x="200" y="180" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="white">Instance Store</text>
+      <text x="200" y="200" text-anchor="middle" font-family="Inter" font-size="10" fill="white" opacity="0.9">PHYSICALLY ATTACHED</text>
+
+      <text x="200" y="240" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">Lost if instance stops!</text>
+      <text x="200" y="258" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">Ultra-fast, no extra cost</text>
+
+      <!-- EBS -->
+      <rect x="380" y="130" width="180" height="140" rx="8" fill="#0073BB" stroke="#232F3E" stroke-width="2"/>
+      <text x="470" y="160" text-anchor="middle" font-family="Inter" font-size="16" font-weight="700" fill="white">EBS Volume</text>
+      <text x="470" y="180" text-anchor="middle" font-family="Inter" font-size="10" fill="white" opacity="0.9">network-attached</text>
+      <text x="470" y="220" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">Survives stop/terminate</text>
+      <text x="470" y="238" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">Snapshots → S3</text>
+      <text x="470" y="256" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">One AZ only</text>
+
+      <!-- network connection -->
+      <line x1="300" y1="200" x2="380" y2="200" stroke="#232F3E" stroke-width="2" stroke-dasharray="3 2"/>
+      <text x="340" y="195" text-anchor="middle" font-family="Inter" font-size="9" fill="#6b6b6b" font-style="italic">network</text>
+
+      <!-- EFS -->
+      <rect x="640" y="130" width="180" height="140" rx="8" fill="#1E8449" stroke="#232F3E" stroke-width="2"/>
+      <text x="730" y="160" text-anchor="middle" font-family="Inter" font-size="16" font-weight="700" fill="white">EFS</text>
+      <text x="730" y="180" text-anchor="middle" font-family="Inter" font-size="10" fill="white" opacity="0.9">shared file system (NFS)</text>
+      <text x="730" y="220" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">Multiple EC2s mount it</text>
+      <text x="730" y="238" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">Multi-AZ, regional</text>
+      <text x="730" y="256" text-anchor="middle" font-family="Inter" font-size="11" fill="white" opacity="0.9">Linux only</text>
+
+      <line x1="560" y1="200" x2="640" y2="200" stroke="#232F3E" stroke-width="2" stroke-dasharray="3 2"/>
+      <text x="600" y="195" text-anchor="middle" font-family="Inter" font-size="9" fill="#6b6b6b" font-style="italic">network</text>
+    </svg>
+    <p class="diagram-caption">Three storage worlds. Instance Store lives <em>inside</em> the host. EBS and EFS are network-attached.</p>
+  </div>
+
+  <h3>EBS — Elastic Block Store</h3>
+
+  <p>The default, most-used EC2 storage. EBS gives you a virtual hard drive (a "volume") that's network-attached to your instance. You can format it, partition it, mount it — it behaves exactly like a physical disk.</p>
+
+  <div class="kv">
+    <dt>Persistence</dt>
+    <dd>Survives independently of the EC2 instance. Stop your instance, the EBS volume keeps your data. Terminate the instance, the volume is deleted by default — but you can flip a setting to keep it.</dd>
+    <dt>AZ-bound</dt>
+    <dd>An EBS volume lives in <strong>one specific AZ</strong>. You can only attach it to instances in the same AZ. To move across AZs, take a snapshot, then create a new volume from snapshot in the new AZ.</dd>
+    <dt>One instance at a time</dt>
+    <dd>Normally, an EBS volume is attached to one instance. <strong>Exception:</strong> io1 and io2 volumes support <strong>Multi-Attach</strong> — up to 16 instances in the same AZ can share one volume (but you need a cluster-aware filesystem).</dd>
+    <dt>Resizable</dt>
+    <dd>You can grow an EBS volume on the fly with no downtime. Shrinking? Not possible — you'd take a snapshot, create a smaller new volume, copy data over.</dd>
+  </div>
+
+  <h4>EBS volume types — a critical exam table</h4>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Tech</th><th>Max IOPS</th><th>Max throughput</th><th>Use case</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>gp3</strong></td><td>SSD (general)</td><td>16,000</td><td>1,000 MB/s</td><td><strong>Default modern choice.</strong> IOPS &amp; throughput configured independently of size. Cheaper than gp2.</td></tr>
+        <tr><td><strong>gp2</strong></td><td>SSD (general, older)</td><td>16,000</td><td>250 MB/s</td><td>Older general purpose. IOPS scales with size (3 IOPS per GB). Being phased out.</td></tr>
+        <tr><td><strong>io1</strong></td><td>SSD (provisioned)</td><td>64,000</td><td>1,000 MB/s</td><td>Mission-critical low-latency apps, large databases. Multi-Attach capable.</td></tr>
+        <tr><td><strong>io2 / io2 Block Express</strong></td><td>SSD (provisioned, newer)</td><td>256,000</td><td>4,000 MB/s</td><td>Top tier. Higher durability than io1 (99.999%). Multi-Attach capable. SAP HANA, Oracle, MS SQL.</td></tr>
+        <tr><td><strong>st1</strong></td><td>HDD (throughput)</td><td>500</td><td>500 MB/s</td><td>Big sequential reads. Big data, log processing, data warehousing. <strong>Cannot be boot volume.</strong></td></tr>
+        <tr><td><strong>sc1</strong></td><td>HDD (cold)</td><td>250</td><td>250 MB/s</td><td>Cheapest. Infrequently accessed cold data. <strong>Cannot be boot volume.</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout exam">
+    <div class="callout-label">Exam triggers for EBS types</div>
+    <ul>
+      <li>"General-purpose, cost-effective" → <strong>gp3</strong></li>
+      <li>"High-performance database, &gt; 16,000 IOPS" → <strong>io1 / io2</strong></li>
+      <li>"Big data, sequential reads, cheap" → <strong>st1</strong></li>
+      <li>"Cheapest, rarely accessed" → <strong>sc1</strong></li>
+      <li>"Multi-instance shared block storage in same AZ" → <strong>io1/io2 Multi-Attach</strong></li>
+    </ul>
+  </div>
+
+  <h4>EBS Snapshots</h4>
+
+  <p>A snapshot is a point-in-time backup of an EBS volume, stored in S3 (you don't see the bucket — AWS manages it). Snapshots are <strong>incremental</strong>: only blocks changed since the last snapshot are stored, but every snapshot logically represents the full volume.</p>
+
+  <ul>
+    <li>You can copy snapshots across regions (for DR)</li>
+    <li>You can copy snapshots across AWS accounts</li>
+    <li>You can restore a snapshot into a new EBS volume in any AZ in that region</li>
+    <li>You can create an AMI from a snapshot</li>
+    <li><strong>Snapshot Archive</strong> — 75% cheaper, 24–72-hour restore time. For long-term backups you rarely touch.</li>
+    <li><strong>Recycle Bin</strong> — protects against accidental deletion (configurable retention period)</li>
+  </ul>
+
+  <h4>EBS Encryption</h4>
+
+  <p>Free, easy, KMS-backed. When enabled:</p>
+  <ul>
+    <li>Data at rest on the volume is encrypted</li>
+    <li>Data in flight between EC2 host and EBS is encrypted</li>
+    <li>Snapshots are encrypted</li>
+    <li>AMIs created from encrypted volumes are encrypted</li>
+  </ul>
+
+  <p>Quirk: a snapshot of an unencrypted volume is unencrypted. To encrypt it, copy the snapshot with the encrypt flag — that creates an encrypted copy.</p>
+
+  <p>Best practice: enable <strong>EBS encryption by default</strong> at the account level. Set it once, every new volume is encrypted automatically.</p>
+
+  <h3>Instance Store — the wild fast one</h3>
+
+  <p>Some EC2 instance types have local NVMe SSDs <strong>physically attached</strong> to the host server (instance types ending in <code>d</code>: <code>m5d</code>, <code>r5d</code>, <code>i3</code>, <code>i4i</code>, etc.). This is called <strong>Instance Store</strong> or <strong>ephemeral storage</strong>.</p>
+
+  <div class="kv">
+    <dt>Speed</dt>
+    <dd><strong>Insanely fast.</strong> Millions of IOPS, multi-GB/s throughput. Faster than any EBS option.</dd>
+    <dt>Cost</dt>
+    <dd>Included in the instance price. No extra charge.</dd>
+    <dt>Persistence</dt>
+    <dd><strong>NONE.</strong> Data is wiped when you stop, hibernate, terminate, or if the host hardware fails. The disk is physically tied to one piece of hardware.</dd>
+    <dt>Detach?</dt>
+    <dd>You cannot. The disk is welded to the host.</dd>
+  </div>
+
+  <div class="callout trap">
+    <div class="callout-label">The Instance Store trap</div>
+    <p>A junior engineer mounts the instance store, copies their database files there for "speed," doesn't realize that next time anyone stops the instance, all the data is gone. <strong>Instance store is for ephemeral data only:</strong> caches, temporary buffers, scratch space, distributed databases that handle their own replication.</p>
+  </div>
+
+  <h4>Good fits for Instance Store</h4>
+  <ul>
+    <li>Local cache layers</li>
+    <li>Temporary processing space (video editing, batch crunching)</li>
+    <li>Distributed databases that replicate across nodes themselves: <strong>Cassandra, Elasticsearch, MongoDB shards, Kafka brokers</strong>. They lose one node and seamlessly use another.</li>
+    <li>Scratch disk for ML training</li>
+  </ul>
+
+  <h3>EBS vs Instance Store side-by-side</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>EBS</th><th>Instance Store</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Attached how</strong></td><td>Network</td><td>Physically wired to host</td></tr>
+        <tr><td><strong>Survives stop?</strong></td><td>Yes</td><td>NO</td></tr>
+        <tr><td><strong>Survives terminate?</strong></td><td>Configurable (default no)</td><td>NO</td></tr>
+        <tr><td><strong>Detachable?</strong></td><td>Yes</td><td>No</td></tr>
+        <tr><td><strong>Speed</strong></td><td>Very high</td><td>Highest possible</td></tr>
+        <tr><td><strong>Snapshots?</strong></td><td>Yes</td><td>No</td></tr>
+        <tr><td><strong>Encrypted by default?</strong></td><td>Yes (account-level setting)</td><td>Yes (since Nitro)</td></tr>
+        <tr><td><strong>Cost</strong></td><td>Per GB-month</td><td>Free (in instance price)</td></tr>
+        <tr><td><strong>Best for</strong></td><td>Persistent data, root volumes</td><td>Cache, temp, replicated DBs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>EFS — quick mention (covered in its own topic)</h3>
+
+  <p>EFS is a managed NFS file share. Many EC2s — even across multiple AZs — can mount and share the same EFS file system. Linux only. Pay for what you use.</p>
+
+  <p>If a question says "shared file storage for multiple EC2s" → EFS. We'll go deep when we cover the storage topic.</p>
+
+  <div class="callout industry">
+    <div class="callout-label">A real industry layout</div>
+    <p>A typical 3-tier web app on EC2:</p>
+    <ul>
+      <li><strong>Root volume</strong> — gp3 EBS, 30 GB, encrypted (the OS)</li>
+      <li><strong>App data</strong> — gp3 EBS, 100 GB, snapshotted nightly</li>
+      <li><strong>Database</strong> — io2 Block Express EBS for hot OLTP</li>
+      <li><strong>Cache layer (Redis on EC2)</strong> — memory + instance store backing</li>
+      <li><strong>Static assets shared across web tier</strong> — EFS</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 9 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch9">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 09</div>
+    <div>
+      <h2>EC2 networking <em>essentials</em>.</h2>
+      <p class="chapter-tagline">Just the EC2-specific bits — the full VPC topic gets its own chapter.</p>
+    </div>
+  </div>
+
+  <p class="lead">VPC, subnets, route tables, IGWs — those belong to the Networking topic. But there are a few networking concepts <em>specific to EC2</em> that you absolutely need: Security Groups, Elastic Network Interfaces, Elastic IPs, and the public-vs-private IP behavior.</p>
+
+  <h3>Security Groups (SG)</h3>
+
+  <p>A <strong>Security Group</strong> is a virtual firewall <em>at the instance level</em>. Each EC2 instance has at least one (and up to 5).</p>
+
+  <ul>
+    <li><strong>Allow rules only.</strong> No "deny" — if something isn't explicitly allowed, it's blocked. (For deny rules, you use a Network ACL at the subnet level.)</li>
+    <li><strong>Stateful.</strong> If you allow inbound on port 80, the response traffic is automatically allowed back out. You don't write outbound rules for return traffic.</li>
+    <li>Rules can reference <strong>IP ranges (CIDR)</strong> like <code>0.0.0.0/0</code> (anywhere) or <strong>other Security Groups</strong> ("allow traffic from any instance in this other SG").</li>
+    <li>Default: <strong>deny all inbound, allow all outbound.</strong></li>
+  </ul>
+
+  <div class="callout beginner">
+    <div class="callout-label">Concrete example</div>
+    <p>A web server SG might say:</p>
+    <ul>
+      <li>Inbound: TCP 443 from <code>0.0.0.0/0</code> (HTTPS from anywhere)</li>
+      <li>Inbound: TCP 22 from <code>203.0.113.0/24</code> (SSH only from your office's IP range)</li>
+      <li>Outbound: all (default — server can call out wherever)</li>
+    </ul>
+  </div>
+
+  <div class="callout industry">
+    <div class="callout-label">SG-to-SG references — the pro move</div>
+    <p>Best practice: don't whitelist IPs of your other servers. Reference the other server's SG instead. "Allow port 3306 (MySQL) from <strong>web-tier-sg</strong>." Now any new web server you add automatically gets database access — no firewall rule edits needed.</p>
+  </div>
+
+  <h3>Elastic Network Interface (ENI)</h3>
+
+  <p>An ENI is a virtual network card. It has:</p>
+  <ul>
+    <li>A primary private IP</li>
+    <li>One or more secondary private IPs</li>
+    <li>An Elastic IP per private IP (optional)</li>
+    <li>A MAC address</li>
+    <li>One or more security groups</li>
+    <li>A source/destination check flag</li>
+  </ul>
+
+  <p>ENIs can be created independently and attached to instances later. They can also be <strong>detached from one instance and reattached to another</strong>. This is sometimes used as a low-tech HA trick: keep an ENI's IP/MAC stable while moving it to a standby instance during failover.</p>
+
+  <h3>Public IP vs Private IP vs Elastic IP</h3>
+
+  <div class="kv">
+    <dt>Private IP</dt>
+    <dd>Internal IP within your VPC. Always present, never changes for the life of the instance. Used for instance-to-instance traffic.</dd>
+    <dt>Public IP</dt>
+    <dd>Optional. Auto-assigned to instances launched in public subnets (configurable). <strong>Changes every time you stop and start the instance.</strong> Free.</dd>
+    <dt>Elastic IP</dt>
+    <dd>A static public IPv4 you reserve. Tied to your account. You assign it to an instance, and it stays the same across stop/start. <strong>Free while attached to a running instance, charged when idle</strong> (~$3.60/month) — AWS encourages you to release them when not used.</dd>
+  </div>
+
+  <p>Default limit: <strong>5 Elastic IPs per region</strong> (request a higher limit if needed).</p>
+
+  <div class="callout tip">
+    <div class="callout-label">Best practice</div>
+    <p>Avoid Elastic IPs when possible. Instead, put your servers behind a <strong>load balancer</strong> and give users the load balancer's DNS name. The LB handles instance failures gracefully — no IP juggling required.</p>
+  </div>
+
+  <h3>Hyperplane &amp; Source/Dest Check</h3>
+
+  <p>For NAT instances, transparent firewalls, and routing appliances, you need to disable the "Source/Destination check" on the ENI. Otherwise, AWS drops packets that don't have the instance's own IP as source or dest. This is a niche but exam-relevant detail.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 10 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch10">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 10</div>
+    <div>
+      <h2>Placement <em>Groups</em>.</h2>
+      <p class="chapter-tagline">Tell AWS exactly how to physically arrange your instances.</p>
+    </div>
+  </div>
+
+  <p class="lead">Normally, AWS decides where on its hardware to place your instances — randomly across racks, hosts, etc. For most workloads, that's fine. But sometimes you want <em>specific control</em>: pack them tight for speed, or spread them out for resilience. That's a Placement Group.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+      <text x="450" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="20" font-weight="600" fill="#232F3E">The three placement strategies</text>
+
+      <!-- Cluster -->
+      <rect x="30" y="60" width="270" height="280" rx="8" fill="#FFF8E8" stroke="#FF9900" stroke-width="2"/>
+      <text x="165" y="90" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#B36F00">CLUSTER</text>
+      <text x="165" y="110" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b" font-style="italic">Pack tight, single rack, single AZ</text>
+      <!-- one rack -->
+      <rect x="80" y="135" width="170" height="160" rx="4" fill="#FFE3B8" stroke="#B36F00" stroke-width="1.5"/>
+      <text x="165" y="155" text-anchor="middle" font-family="Inter" font-size="10" fill="#6b6b6b">One rack</text>
+      <rect x="100" y="170" width="50" height="40" rx="3" fill="#FF9900"/>
+      <rect x="180" y="170" width="50" height="40" rx="3" fill="#FF9900"/>
+      <rect x="100" y="220" width="50" height="40" rx="3" fill="#FF9900"/>
+      <rect x="180" y="220" width="50" height="40" rx="3" fill="#FF9900"/>
+      <text x="165" y="318" text-anchor="middle" font-family="Inter" font-size="11" fill="#B36F00" font-weight="600">Lowest latency · highest BW</text>
+
+      <!-- Spread -->
+      <rect x="315" y="60" width="270" height="280" rx="8" fill="#E8F5EE" stroke="#1E8449" stroke-width="2"/>
+      <text x="450" y="90" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#1E8449">SPREAD</text>
+      <text x="450" y="110" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b" font-style="italic">Each on different hardware</text>
+      <!-- separated boxes -->
+      <rect x="335" y="135" width="60" height="50" rx="4" fill="#1E8449"/>
+      <text x="365" y="166" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Rack 1</text>
+      <rect x="410" y="135" width="60" height="50" rx="4" fill="#1E8449"/>
+      <text x="440" y="166" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Rack 2</text>
+      <rect x="485" y="135" width="60" height="50" rx="4" fill="#1E8449"/>
+      <text x="515" y="166" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Rack 3</text>
+      <rect x="335" y="200" width="60" height="50" rx="4" fill="#1E8449"/>
+      <text x="365" y="231" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Rack 4</text>
+      <rect x="410" y="200" width="60" height="50" rx="4" fill="#1E8449"/>
+      <text x="440" y="231" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Rack 5</text>
+      <rect x="485" y="200" width="60" height="50" rx="4" fill="#1E8449"/>
+      <text x="515" y="231" text-anchor="middle" font-family="Inter" font-size="9" fill="white">Rack 6</text>
+      <text x="450" y="295" text-anchor="middle" font-family="Inter" font-size="11" fill="#1E8449" font-weight="600">Max 7 instances/AZ</text>
+      <text x="450" y="318" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b">No correlated failure</text>
+
+      <!-- Partition -->
+      <rect x="600" y="60" width="270" height="280" rx="8" fill="#F0EAFB" stroke="#7D3C98" stroke-width="2"/>
+      <text x="735" y="90" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#7D3C98">PARTITION</text>
+      <text x="735" y="110" text-anchor="middle" font-family="Inter" font-size="11" fill="#6b6b6b" font-style="italic">Groups, isolated from each other</text>
+      <!-- partitions -->
+      <rect x="620" y="135" width="110" height="80" rx="4" fill="#E5D4F0" stroke="#7D3C98" stroke-width="1.5"/>
+      <text x="675" y="153" text-anchor="middle" font-family="Inter" font-size="10" fill="#7D3C98" font-weight="600">Partition 1</text>
+      <rect x="635" y="165" width="20" height="20" fill="#7D3C98"/>
+      <rect x="665" y="165" width="20" height="20" fill="#7D3C98"/>
+      <rect x="695" y="165" width="20" height="20" fill="#7D3C98"/>
+      <rect x="635" y="190" width="20" height="20" fill="#7D3C98"/>
+      <rect x="665" y="190" width="20" height="20" fill="#7D3C98"/>
+
+      <rect x="740" y="135" width="110" height="80" rx="4" fill="#E5D4F0" stroke="#7D3C98" stroke-width="1.5"/>
+      <text x="795" y="153" text-anchor="middle" font-family="Inter" font-size="10" fill="#7D3C98" font-weight="600">Partition 2</text>
+      <rect x="755" y="165" width="20" height="20" fill="#7D3C98"/>
+      <rect x="785" y="165" width="20" height="20" fill="#7D3C98"/>
+      <rect x="815" y="165" width="20" height="20" fill="#7D3C98"/>
+
+      <rect x="620" y="225" width="230" height="60" rx="4" fill="#E5D4F0" stroke="#7D3C98" stroke-width="1.5"/>
+      <text x="735" y="245" text-anchor="middle" font-family="Inter" font-size="10" fill="#7D3C98" font-weight="600">Partition 3</text>
+      <rect x="640" y="255" width="20" height="20" fill="#7D3C98"/>
+      <rect x="670" y="255" width="20" height="20" fill="#7D3C98"/>
+      <rect x="700" y="255" width="20" height="20" fill="#7D3C98"/>
+      <rect x="730" y="255" width="20" height="20" fill="#7D3C98"/>
+
+      <text x="735" y="318" text-anchor="middle" font-family="Inter" font-size="11" fill="#7D3C98" font-weight="600">Up to 7 partitions/AZ</text>
+    </svg>
+    <p class="diagram-caption">Three strategies: Cluster (pack), Spread (isolate), Partition (group + isolate).</p>
+  </div>
+
+  <h3>Cluster</h3>
+  <p>Pack instances close together — same rack, same AZ. Lowest network latency between instances (single-digit microseconds), highest bandwidth (up to 10 Gbps single-flow, 100 Gbps aggregate).</p>
+  <ul>
+    <li><strong>Use:</strong> HPC, scientific simulations, financial trading systems, ML training nodes that must talk to each other constantly.</li>
+    <li><strong>Risk:</strong> If the rack fails, all instances fail together. No HA inside a Cluster group.</li>
+  </ul>
+
+  <h3>Spread</h3>
+  <p>Each instance on completely different physical hardware. Maximum hardware-failure isolation.</p>
+  <ul>
+    <li><strong>Limit:</strong> Max <strong>7 instances per AZ per Spread group</strong>.</li>
+    <li><strong>Use:</strong> Critical instances that must <em>never</em> fail together — e.g., 3 controllers of a system, primary/standby DB pairs, distinct master nodes of a small cluster.</li>
+    <li><strong>Span AZs?</strong> Yes — use multi-AZ Spread groups for ultimate isolation.</li>
+  </ul>
+
+  <h3>Partition</h3>
+  <p>The hybrid. You define up to <strong>7 partitions per AZ</strong>. Instances within a partition can share hardware, but partitions don't share with each other. Hadoop-style systems love this.</p>
+  <ul>
+    <li><strong>Use:</strong> Distributed workloads that are aware of partition topology — <strong>Hadoop, Cassandra, Kafka, HBase</strong>. They're designed so a single partition failure doesn't take out a quorum.</li>
+    <li>Hundreds of instances can be in a single Partition group.</li>
+  </ul>
+
+  <div class="callout exam">
+    <div class="callout-label">Exam triggers</div>
+    <ul>
+      <li>"Lowest latency between instances" / "HPC" → <strong>Cluster</strong></li>
+      <li>"Maximum availability, can't have correlated failure" → <strong>Spread</strong></li>
+      <li>"Hadoop / Cassandra / Kafka / partition-aware system" → <strong>Partition</strong></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 11 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch11">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 11</div>
+    <div>
+      <h2>Bootstrap, metadata &amp; <em>access</em>.</h2>
+      <p class="chapter-tagline">User Data, IMDS, IAM Roles, Session Manager — the daily-driver toolkit.</p>
+    </div>
+  </div>
+
+  <p class="lead">Once an instance is launched, how do you set it up automatically? How does it learn about itself? How does it get permission to call AWS APIs without storing passwords? These are everyday operational concerns — and they're heavily tested.</p>
+
+  <h3>User Data — the boot script</h3>
+
+  <p>When you launch an EC2, you can paste in a script (Bash for Linux, PowerShell for Windows) that runs <strong>once on first boot</strong>, as the root user. Use it to install packages, fetch config, register with monitoring, etc.</p>
+
+  <pre><code>#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl enable httpd
+systemctl start httpd
+echo "&lt;h1&gt;Hello from $(hostname)&lt;/h1&gt;" &gt; /var/www/html/index.html</code></pre>
+
+  <p>Limits: max 16 KB of User Data. Runs once unless you reset it. Logs to <code>/var/log/cloud-init-output.log</code>.</p>
+
+  <div class="callout industry">
+    <div class="callout-label">Industry pattern: don't do too much in User Data</div>
+    <p>For complex setups, User Data should be <em>minimal</em>: maybe pull a configuration from an S3 bucket, or run an Ansible/Chef script. The bulk of the configuration should live in a baked AMI (golden image). Boot scripts are slow, fragile, and hard to debug.</p>
+  </div>
+
+  <h3>Instance Metadata Service (IMDS)</h3>
+
+  <p>From inside any EC2 instance, there's a magic URL: <code>http://169.254.169.254/latest/meta-data/</code>. Hit it from the instance and it tells you about itself:</p>
+
+  <pre><code>curl http://169.254.169.254/latest/meta-data/instance-id
+# → i-0abc123def456789
+
+curl http://169.254.169.254/latest/meta-data/instance-type
+# → m5.large
+
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
+# → temporary AWS credentials (JSON)</code></pre>
+
+  <h4>IMDSv1 vs IMDSv2 — pay attention</h4>
+
+  <ul>
+    <li><strong>IMDSv1</strong> — simple HTTP GET. Vulnerable to SSRF attacks (a flaw in your web app could let an attacker fetch credentials). <strong>Deprecated.</strong></li>
+    <li><strong>IMDSv2</strong> — requires you first PUT to get a session token, then send the token as a header on subsequent GETs. Defeats SSRF. <strong>Use this. Make it required at the account level.</strong></li>
+  </ul>
+
+  <h3>IAM Roles for EC2 — never store credentials on the instance</h3>
+
+  <p>Your EC2 instance often needs to call AWS APIs: read from S3, write to DynamoDB, publish to SQS. The <strong>wrong way:</strong> store an access key + secret key in a config file on the instance. (If the instance gets compromised, your keys leak. If you rotate the keys, every instance breaks.)</p>
+
+  <p>The right way: attach an <strong>IAM Role</strong> to the instance. The role has policies. The instance gets <strong>temporary credentials</strong> from IMDS that auto-rotate. AWS SDKs pick them up automatically.</p>
+
+  <div class="callout exam">
+    <div class="callout-label">A core SAA exam concept</div>
+    <p>Any time the question is about how an EC2 instance authenticates to AWS, the answer is <strong>IAM Role</strong> attached to the instance — never IAM User access keys. Hardcoded credentials on EC2 = automatically wrong answer.</p>
+  </div>
+
+  <h3>How to actually log into your instance</h3>
+
+  <h4>1. SSH (the old classic)</h4>
+  <p>Generate a key pair when you launch the instance. AWS keeps the public key, you keep the private key (a <code>.pem</code> file). Then:</p>
+  <pre><code>ssh -i my-key.pem ec2-user@&lt;instance-public-ip&gt;</code></pre>
+
+  <h4>2. EC2 Instance Connect (browser-based)</h4>
+  <p>From the AWS console, click "Connect." A web SSH session opens. AWS injects a temporary key for 60 seconds. No need to manage <code>.pem</code> files. Works on instances with the EC2 Instance Connect agent installed (default on recent Amazon Linux).</p>
+
+  <h4>3. AWS Systems Manager Session Manager — the modern way</h4>
+
+  <div class="callout industry">
+    <div class="callout-label">The industry standard</div>
+    <p>Mature teams have stopped using SSH entirely in production. They use <strong>SSM Session Manager</strong>:</p>
+    <ul>
+      <li>No SSH port (22) open — your servers are completely closed off from the internet</li>
+      <li>No bastion host needed</li>
+      <li>No SSH keys to manage</li>
+      <li>Authenticated via <strong>IAM</strong> — same identity as everything else</li>
+      <li>Every session is audit-logged to S3 / CloudWatch</li>
+      <li>Works in private subnets via VPC Endpoints</li>
+    </ul>
+    <p>This pattern is dramatically more secure and is now the default expectation for production AWS environments.</p>
+  </div>
+
+  <h3>Hibernate</h3>
+
+  <p>Hibernate is a special variant of stop. Instead of just turning the OS off, AWS dumps the contents of RAM to the encrypted root EBS volume. When you resume, RAM is restored and your processes pick up exactly where they left off (like closing a laptop lid).</p>
+
+  <p>Constraints:</p>
+  <ul>
+    <li>Specific instance types only (Nitro-based, RAM &lt; 150 GB)</li>
+    <li>EBS root volume must be encrypted</li>
+    <li>Maximum 60 days hibernated</li>
+    <li>Linux and some Windows</li>
+  </ul>
+
+  <p>Use case: long-running interactive workloads where boot/setup is expensive (data scientist's GPU instance, dev workstation).</p>
+
+  <h3>EC2 Auto Recovery</h3>
+
+  <p>If the underlying physical hardware fails, AWS can automatically <strong>recover</strong> your instance: launch a new instance on different hardware, attach the same EBS volumes, keep the same private/public IPs, and resume. Free, just enable it via a CloudWatch alarm.</p>
+
+  <p>Note: this recovers from hardware failure, not OS-level issues. For OS-level resilience you still want ASG + Load Balancer.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 12 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch12">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 12</div>
+    <div>
+      <h2>Nitro, ENA, EFA &amp; <em>performance</em>.</h2>
+      <p class="chapter-tagline">The modern hardware platform under EC2 — and why it matters.</p>
+    </div>
+  </div>
+
+  <p class="lead">EC2 is in its second major hardware generation. The first generation used a Xen-based hypervisor — solid, but with overhead. Around 2017 AWS started rolling out the <strong>Nitro System</strong>, a custom hypervisor + custom hardware cards that handle networking, storage, and security in dedicated silicon. By 2026, almost every modern instance type is Nitro-based.</p>
+
+  <h3>The Nitro System</h3>
+
+  <ul>
+    <li><strong>Higher performance</strong> — near-bare-metal speeds, lower latency, more throughput</li>
+    <li><strong>Better security</strong> — security functions moved to dedicated hardware, smaller hypervisor attack surface</li>
+    <li><strong>Faster networking</strong> — up to 100+ Gbps</li>
+    <li><strong>Faster EBS</strong> — Multi-Attach, EBS Block Express, no encryption performance penalty</li>
+    <li><strong>Required for newer features</strong> — ENA, EFA, Hibernate, EBS encryption performance</li>
+  </ul>
+
+  <h3>ENA — Elastic Network Adapter</h3>
+  <p>Nitro's modern network interface. Up to 100 Gbps on supported instance types. Default on all Nitro instances. You don't have to do anything special — just pick a Nitro instance.</p>
+
+  <h3>EFA — Elastic Fabric Adapter</h3>
+  <p>A specialized network interface for HPC and ML workloads. Bypasses the OS kernel for networking ("OS bypass" via Libfabric), achieving sub-microsecond latency between nodes. Used with cluster placement groups for tightly-coupled HPC.</p>
+
+  <ul>
+    <li>Use case: distributed ML training across many GPU nodes; CFD simulations; weather modeling</li>
+    <li>Linux only</li>
+    <li>Available on specific instance types (<code>c5n</code>, <code>c6i</code>, <code>p4d</code>, <code>hpc6a</code>, etc.)</li>
+  </ul>
+
+  <h3>Graviton — AWS's ARM processor</h3>
+
+  <p>The little <code>g</code> in instance names like <code>m6g</code>, <code>c7g</code>, <code>r7g</code>. Graviton is AWS's custom ARM processor. Compared to x86:</p>
+  <ul>
+    <li>~20% better price/performance</li>
+    <li>Lower power consumption</li>
+    <li>Competitive raw performance</li>
+    <li><strong>Catch:</strong> Your software has to be ARM-compatible. Most major languages and frameworks (Java, Python, Node, Go, Rust) just work. Some compiled C/C++ binaries need rebuilding. Most container images need an ARM build.</li>
+  </ul>
+
+  <div class="callout industry">
+    <div class="callout-label">The industry trend</div>
+    <p>By 2026, Graviton runs significant percentages of AWS's largest customers' fleets. AWS itself runs much of its own infrastructure on Graviton. If your workload is portable, switching to Graviton is one of the biggest cost wins available — often 20–40% off your bill with minimal code changes.</p>
+  </div>
+
+  <h3>Enhanced Networking &amp; SR-IOV</h3>
+
+  <p>"Enhanced networking" is an umbrella term for low-overhead, high-throughput networking. On older instances this was achieved via SR-IOV; on Nitro instances it's the default via ENA. The exam may mention "Enhanced Networking" — it just means high-bandwidth, low-CPU networking, on by default for modern instances.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 13 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch13">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 13</div>
+    <div>
+      <h2>Industry patterns &amp; <em>best practices</em>.</h2>
+      <p class="chapter-tagline">What separates a junior cloud engineer from a senior architect.</p>
+    </div>
+  </div>
+
+  <p class="lead">You can pass the SAA-C03 by memorizing services. You can do real-world architecture by understanding the patterns. Here are the unwritten rules that experienced architects live by.</p>
+
+  <h3>1. Tag everything</h3>
+  <p>Every resource — instance, EBS volume, snapshot, AMI, security group — gets tags. The standard tag set most companies enforce:</p>
+  <ul>
+    <li><code>Name</code> — human-readable</li>
+    <li><code>Environment</code> — prod / staging / dev</li>
+    <li><code>Owner</code> — team or person responsible</li>
+    <li><code>Project</code> or <code>Application</code></li>
+    <li><code>CostCenter</code> — for chargeback</li>
+  </ul>
+  <p>Without tags you cannot do cost allocation, cleanup, or compliance. Companies enforce tag policies via SCPs and AWS Config.</p>
+
+  <h3>2. Don't run standalone EC2 in production</h3>
+  <p>If a production-bound EC2 instance is not behind an Auto Scaling Group, you've probably designed it wrong. ASG gives you:</p>
+  <ul>
+    <li>Auto-replacement of failed instances</li>
+    <li>Multi-AZ deployment</li>
+    <li>Auto-scaling for traffic</li>
+    <li>Rolling deploys</li>
+  </ul>
+  <p>"ASG of one" is even an acceptable pattern: a single instance that auto-replaces itself if it dies.</p>
+
+  <h3>3. Infrastructure as Code, always</h3>
+  <p>Don't click around in the console for production resources. Use <strong>Terraform</strong> (the de-facto industry standard) or <strong>CloudFormation</strong> / <strong>CDK</strong> (AWS-native). Reasons:</p>
+  <ul>
+    <li>Reviewable in pull requests</li>
+    <li>Version-controlled history of every change</li>
+    <li>Reproducible across environments</li>
+    <li>No "snowflake" servers</li>
+  </ul>
+
+  <h3>4. The "cattle, not pets" mindset</h3>
+
+  <div class="pullquote">Servers are cattle, not pets. You don't name them. You don't nurse them when they're sick. You replace them.</div>
+
+  <p>Old-school operations: Each server has a name (Apollo, Athena, Zeus). When one acts up, you SSH in and fix it. You hand-tune its config over years.</p>
+
+  <p>Cloud-native operations: Servers are interchangeable. They're auto-launched from a baked AMI by ASG. If one is misbehaving, terminate it — ASG will spawn a fresh one in 30 seconds. You never SSH into them in production.</p>
+
+  <h3>5. Right-size with Compute Optimizer</h3>
+  <p>AWS Compute Optimizer analyzes 14 days of metrics and recommends optimal instance types. Companies running it for the first time typically find 20–50% over-provisioning. Run it quarterly.</p>
+
+  <h3>6. Mix your pricing models</h3>
+  <p>The portfolio approach (Ch 7): Savings Plans for the predictable baseline, On-Demand for elasticity, Spot for fault-tolerant batch. Most mature shops are 60–80% covered by Savings Plans / RIs.</p>
+
+  <h3>7. Patch via Systems Manager Patch Manager</h3>
+  <p>Don't manually run <code>yum update</code> across hundreds of servers. SSM Patch Manager applies OS patches on a schedule, with reporting, rollback, and maintenance windows. Or, better yet, bake new AMIs and roll them out via ASG instance refresh — "immutable infrastructure."</p>
+
+  <h3>8. Encrypt everything at rest, by default</h3>
+  <p>Account-level setting: <strong>EBS encryption by default — ON</strong>. Use customer-managed KMS keys for sensitive workloads (so you can audit who used the key). Snapshots inherit encryption.</p>
+
+  <h3>9. CloudWatch is your eyes</h3>
+  <p>CloudWatch metrics for CPU, network, disk are free and automatic. <strong>RAM and disk usage from inside the instance require the CloudWatch Agent</strong> — a common gap. Install the agent on every instance via User Data or AMI baking.</p>
+
+  <h3>10. Use Session Manager, not SSH</h3>
+  <p>Already covered, but worth repeating. The audit-log alone justifies it for any compliance-bound shop.</p>
+
+  <h3>The 12 anti-patterns to avoid</h3>
+
+  <ul>
+    <li>❌ Hardcoding AWS credentials in code on EC2</li>
+    <li>❌ Single-AZ production deployment</li>
+    <li>❌ Standalone EC2 not in an ASG (for prod)</li>
+    <li>❌ Persistent data on Instance Store</li>
+    <li>❌ T-instance in unlimited mode for sustained-load production</li>
+    <li>❌ SSH port 22 open to <code>0.0.0.0/0</code></li>
+    <li>❌ IMDSv1 still enabled</li>
+    <li>❌ Click-ops in prod (no IaC)</li>
+    <li>❌ "Pet" servers with hand-tuned config</li>
+    <li>❌ Missing tags</li>
+    <li>❌ All On-Demand pricing for steady workloads</li>
+    <li>❌ Unencrypted EBS volumes</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ CHAPTER 14 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch14">
+  <div class="chapter-header">
+    <div class="chapter-num">CH 14</div>
+    <div>
+      <h2>How real companies use <em>EC2</em>.</h2>
+      <p class="chapter-tagline">Pattern recognition from the giants.</p>
+    </div>
+  </div>
+
+  <p class="lead">EC2 was launched in 2006. Twenty years in, the patterns are well-understood. Here's how some of the largest companies on AWS architect their EC2 fleets — and what you can learn from each.</p>
+
+  <h3>Netflix</h3>
+  <p>The poster child of cloud-native. Netflix runs tens of thousands of EC2 instances across multiple regions, all serving 200M+ subscribers' streaming.</p>
+  <ul>
+    <li><strong>Custom AMIs</strong> baked via their open-source tool <strong>Spinnaker</strong>. Every code change → new AMI → ASG rolling deploy. Truly immutable infrastructure.</li>
+    <li><strong>Heavy Spot usage</strong> for video encoding. Encoding a movie in 100+ qualities is fault-tolerant by nature — losing a Spot instance just retries that segment.</li>
+    <li><strong>Reserved capacity</strong> for the streaming serving fleet, which has steady predictable load.</li>
+    <li><strong>Multi-region active-active</strong> for streaming services — full DR by design.</li>
+    <li><strong>Open-sourced Chaos Monkey</strong> — a tool that randomly terminates EC2 instances in production to validate resilience.</li>
+  </ul>
+
+  <h3>Airbnb</h3>
+  <p>Migrated from a Ruby monolith to microservices on AWS over many years.</p>
+  <ul>
+    <li>Mix of EC2 and ECS containers</li>
+    <li>Aggressive Reserved/Savings Plan coverage for steady workloads</li>
+    <li>Auto Scaling Groups for the booking-traffic-driven fleets (highly seasonal!)</li>
+  </ul>
+
+  <h3>Lyft</h3>
+  <p>Heavy Spot user — saves an estimated $10M+ annually on machine learning workloads.</p>
+  <ul>
+    <li>GPU instances (p3, p4) for ML model training</li>
+    <li>Spot Fleets for batch ML training jobs</li>
+    <li>Custom autoscaling logic for ride-demand prediction</li>
+  </ul>
+
+  <h3>Pinterest</h3>
+  <p>Image-heavy infrastructure.</p>
+  <ul>
+    <li>R-family for in-memory caches and Redis</li>
+    <li>I-family with instance store for high-IOPS image search indexes</li>
+    <li>Spot for batch image processing pipelines</li>
+  </ul>
+
+  <h3>The general production layout</h3>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+      <text x="450" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="18" font-weight="600" fill="#232F3E">Canonical 3-tier production architecture on EC2</text>
+
+      <!-- Internet -->
+      <ellipse cx="450" cy="65" rx="50" ry="20" fill="#6b6b6b"/>
+      <text x="450" y="70" text-anchor="middle" font-family="Inter" font-size="12" fill="white" font-weight="600">Internet</text>
+
+      <!-- ALB -->
+      <rect x="350" y="105" width="200" height="40" rx="6" fill="#7D3C98" stroke="#232F3E" stroke-width="1.5"/>
+      <text x="450" y="130" text-anchor="middle" font-family="Inter" font-size="14" fill="white" font-weight="700">Application Load Balancer</text>
+      <line x1="450" y1="85" x2="450" y2="105" stroke="#232F3E" stroke-width="2"/>
+
+      <!-- Web tier -->
+      <rect x="100" y="175" width="700" height="65" rx="6" fill="#FFE3B8" stroke="#FF9900" stroke-width="1.5"/>
+      <text x="120" y="200" font-family="Inter" font-size="12" fill="#B36F00" font-weight="700">WEB TIER · m6i.large × N (ASG, Multi-AZ)</text>
+      <rect x="200" y="210" width="60" height="22" rx="3" fill="#FF9900"/>
+      <rect x="280" y="210" width="60" height="22" rx="3" fill="#FF9900"/>
+      <rect x="360" y="210" width="60" height="22" rx="3" fill="#FF9900"/>
+      <rect x="440" y="210" width="60" height="22" rx="3" fill="#FF9900"/>
+      <rect x="520" y="210" width="60" height="22" rx="3" fill="#FF9900"/>
+      <rect x="600" y="210" width="60" height="22" rx="3" fill="#FF9900"/>
+      <line x1="450" y1="145" x2="450" y2="175" stroke="#232F3E" stroke-width="2"/>
+
+      <!-- App tier -->
+      <rect x="100" y="260" width="700" height="55" rx="6" fill="#E8F4FB" stroke="#0073BB" stroke-width="1.5"/>
+      <text x="120" y="282" font-family="Inter" font-size="12" fill="#0073BB" font-weight="700">APP TIER · c6i.xlarge × N (ASG, Multi-AZ, Savings Plan)</text>
+      <rect x="240" y="290" width="50" height="20" rx="3" fill="#0073BB"/>
+      <rect x="320" y="290" width="50" height="20" rx="3" fill="#0073BB"/>
+      <rect x="400" y="290" width="50" height="20" rx="3" fill="#0073BB"/>
+      <rect x="480" y="290" width="50" height="20" rx="3" fill="#0073BB"/>
+      <rect x="560" y="290" width="50" height="20" rx="3" fill="#0073BB"/>
+      <line x1="450" y1="240" x2="450" y2="260" stroke="#232F3E" stroke-width="2"/>
+
+      <!-- Data tier -->
+      <rect x="100" y="335" width="340" height="35" rx="6" fill="#F0EAFB" stroke="#7D3C98" stroke-width="1.5"/>
+      <text x="270" y="358" text-anchor="middle" font-family="Inter" font-size="12" fill="#7D3C98" font-weight="700">RDS Multi-AZ (db.r6i.2xlarge)</text>
+
+      <rect x="460" y="335" width="340" height="35" rx="6" fill="#E8F5EE" stroke="#1E8449" stroke-width="1.5"/>
+      <text x="630" y="358" text-anchor="middle" font-family="Inter" font-size="12" fill="#1E8449" font-weight="700">ElastiCache Redis (cache.r6g.large)</text>
+
+      <line x1="350" y1="315" x2="270" y2="335" stroke="#232F3E" stroke-width="2"/>
+      <line x1="550" y1="315" x2="630" y2="335" stroke="#232F3E" stroke-width="2"/>
+    </svg>
+    <p class="diagram-caption">The "boring 3-tier app." Web (M-family) → App (C-family) → Data (R-family RDS + ElastiCache).</p>
+  </div>
+
+  <h3>The decision-making muscle</h3>
+
+  <p>What separates an architect from someone who memorized services? Pattern recognition. When you see a problem, you should be matching it to a pattern, not searching through a list of services.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Situation</th><th>Pattern</th></tr></thead>
+      <tbody>
+        <tr><td>"Web app handling unpredictable traffic"</td><td>ALB + ASG (M-family) across 2+ AZs, On-Demand or Compute Savings Plan</td></tr>
+        <tr><td>"Internal high-CPU batch processing"</td><td>Spot Fleet on C-family, fault-tolerant via SQS queue + retries</td></tr>
+        <tr><td>"In-memory cache layer"</td><td>R-family or ElastiCache (managed)</td></tr>
+        <tr><td>"Highly performant DB on EC2"</td><td>R-family with io2 EBS, in private subnet, Multi-AZ via DB-level replication</td></tr>
+        <tr><td>"GPU ML training"</td><td>P-family with EFA + Cluster Placement Group, Spot Fleet</td></tr>
+        <tr><td>"Distributed Hadoop/Cassandra"</td><td>I-family with instance store, Partition Placement Group</td></tr>
+        <tr><td>"Windows app with vendor licensing"</td><td>Dedicated Host (BYOL)</td></tr>
+        <tr><td>"Dev environment that turns off at night"</td><td>On-Demand, scheduled stop/start via EventBridge</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pullquote">EC2 doesn't reward memorization. It rewards judgment about trade-offs: speed vs cost, isolation vs density, managed vs self-managed.</div>
+
+  <h3>The takeaway</h3>
+
+  <p>Master EC2 and you've mastered the foundation of AWS. Almost every other AWS service is either built <em>on</em> EC2, talks <em>to</em> EC2, or is a managed alternative <em>to</em> EC2. RDS is managed databases on EC2. Lambda is serverless EC2. ECS is containers on EC2. Auto Scaling Groups orchestrate EC2. Load Balancers route to EC2. CloudWatch monitors EC2.</p>
+
+  <p>If you internalize the chapters above — instance families, pricing models, storage trade-offs, placement, lifecycle, and the network surroundings — you're already 60% of the way to the SAA-C03 because EC2 patterns echo through every other domain.</p>
+
+  <p>The next document in this series turns this knowledge into exam ammunition: cheat sheets, decision tables, and practice questions that match the SAA-C03 style. But conceptually, you're ready.</p>
+</section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">EC2 <em>Masterclass</em> · Document 01</div>
+    <p>Next: Document 02 — Exam Cheatsheets &amp; Practice Questions</p>
+  </div>
+</footer>
+
+</body>
+</html>

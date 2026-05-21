@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EC2 Exam Crusher — SAA-C03 Cheat Sheets, Triggers, &amp; Practice</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 19px;
+    line-height: 1.75;
+    color: #1a1a1a;
+    background: #fafafa;
+    padding: 0;
+    margin: 0;
+  }
+  .container {
+    width: 95%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 40px 30px;
+  }
+  header {
+    background: linear-gradient(135deg, #B86E00 0%, #FF9900 50%, #232F3E 150%);
+    color: white;
+    padding: 60px 30px;
+    text-align: center;
+  }
+  header h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+  }
+  header .subtitle {
+    font-size: 1.3em;
+    opacity: 0.95;
+    font-weight: 300;
+  }
+  header .meta {
+    margin-top: 20px;
+    font-size: 1em;
+    opacity: 0.85;
+  }
+  h1, h2, h3, h4 { font-weight: 700; }
+  h2 {
+    font-size: 2.4em;
+    color: #232F3E;
+    margin-top: 70px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 4px solid #FF9900;
+  }
+  h3 {
+    font-size: 1.7em;
+    color: #232F3E;
+    margin-top: 40px;
+    margin-bottom: 15px;
+  }
+  h4 {
+    font-size: 1.3em;
+    color: #146EB4;
+    margin-top: 25px;
+    margin-bottom: 10px;
+  }
+  p { margin-bottom: 16px; }
+  ul, ol { margin: 15px 0 20px 35px; }
+  li { margin-bottom: 8px; }
+  strong { color: #232F3E; font-weight: 700; }
+  em { color: #444; }
+  code {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.92em;
+  }
+  .toc {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 30px 40px;
+    margin: 30px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .toc h3 { margin-top: 0; color: #FF9900; }
+  .toc ol { margin-left: 30px; }
+  .toc a { color: #146EB4; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  
+  .callout {
+    border-radius: 10px;
+    padding: 22px 28px;
+    margin: 20px 0;
+    border-left: 6px solid;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .callout-title {
+    font-weight: 700;
+    font-size: 1.05em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .concept {
+    background: #E8F4FD;
+    border-color: #146EB4;
+  }
+  .concept .callout-title { color: #146EB4; }
+  .industry {
+    background: #E8F8F0;
+    border-color: #1B8E3E;
+  }
+  .industry .callout-title { color: #1B8E3E; }
+  .exam-tip {
+    background: #FFF7E6;
+    border-color: #FF9900;
+  }
+  .exam-tip .callout-title { color: #B86E00; }
+  .trap {
+    background: #FDECEC;
+    border-color: #D13438;
+  }
+  .trap .callout-title { color: #B02A2E; }
+  .key-fact {
+    background: #FFFBE6;
+    border-color: #D4A017;
+  }
+  .key-fact .callout-title { color: #8A6D0B; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 0.97em;
+  }
+  th {
+    background: #232F3E;
+    color: white;
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 700;
+  }
+  td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f8f8f8; }
+  tr:hover td { background: #f0f5fa; }
+  
+  .triggers-table th { background: #B86E00; }
+  .traps-table th { background: #B02A2E; }
+  .compare-table th { background: #146EB4; }
+  
+  /* Question card styling */
+  .qcard {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 30px 35px;
+    margin: 30px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  }
+  .qnum {
+    display: inline-block;
+    background: #FF9900;
+    color: white;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+  }
+  .qtype {
+    display: inline-block;
+    background: #232F3E;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    margin-left: 8px;
+  }
+  .qscenario {
+    font-size: 1.05em;
+    margin: 15px 0 25px;
+    color: #222;
+  }
+  .qoptions {
+    list-style: none;
+    margin-left: 0;
+    counter-reset: opt;
+  }
+  .qoptions li {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    padding: 12px 18px 12px 50px;
+    border-radius: 8px;
+    position: relative;
+    counter-increment: opt;
+  }
+  .qoptions li::before {
+    content: counter(opt, upper-alpha);
+    position: absolute;
+    left: 15px;
+    top: 12px;
+    background: #232F3E;
+    color: white;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 26px;
+    font-weight: 700;
+    font-size: 0.9em;
+  }
+  .answer-block {
+    margin-top: 25px;
+    background: #E8F8F0;
+    border-left: 5px solid #1B8E3E;
+    padding: 20px 25px;
+    border-radius: 0 8px 8px 0;
+  }
+  .answer-label {
+    font-weight: 700;
+    color: #1B8E3E;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .answer-letter {
+    display: inline-block;
+    background: #1B8E3E;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-weight: 700;
+    margin-right: 10px;
+  }
+  .why-wrong {
+    margin-top: 15px;
+    background: #FDF5F5;
+    padding: 15px 20px;
+    border-radius: 6px;
+    border-left: 4px solid #D13438;
+    font-size: 0.95em;
+  }
+  .why-wrong strong { color: #B02A2E; }
+  .trigger-recall {
+    margin-top: 12px;
+    padding: 10px 15px;
+    background: #FFF7E6;
+    border-radius: 6px;
+    font-size: 0.95em;
+    border-left: 4px solid #FF9900;
+  }
+  .trigger-recall strong { color: #B86E00; }
+
+  .quick-card {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 10px;
+    border-left: 5px solid #146EB4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin: 15px 0;
+  }
+  .quick-card h4 { margin-top: 0; }
+  
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin: 20px 0;
+  }
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+  
+  hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ccc, transparent);
+    margin: 50px 0;
+  }
+  
+  .keyword {
+    background: #FFE4B5;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: #7a4d00;
+  }
+  
+  footer {
+    background: #232F3E;
+    color: #ccc;
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 80px;
+    font-size: 1em;
+  }
+  footer strong { color: #FF9900; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>EC2 Exam Crusher</h1>
+  <div class="subtitle">Cheat Sheets · Comparison Tables · Triggers · Traps · SAA-Style Practice</div>
+  <div class="meta">SAA-C03 aligned · Document 2 of 2 (Exam Forge)</div>
+</header>
+
+<div class="container">
+
+<div class="callout exam-tip">
+  <div class="callout-title">How to Use This Document</div>
+  <p>You already read Doc 1 (the concepts master). Now we drill. This document is dense on purpose — every table, trigger, and trap is a mental hook to summon the concept fast. Read it actively: when you see a trigger, try to <em>predict</em> the answer before reading further. When you hit the practice questions, attempt each one on paper before reading the explanation.</p>
+  <p style="margin-bottom: 0;"><strong>Pacing:</strong> Cheat sheets first pass (~30 min). Then questions in batches of 5, fully scoring yourself. Aim for 80%+ before sitting the real exam.</p>
+</div>
+
+<div class="toc">
+<h3>Table of Contents</h3>
+<ol>
+  <li><a href="#sec1">EC2 on the Exam — What to Expect</a></li>
+  <li><a href="#sec2">Master Cheat Sheet — Everything in 2 Pages</a></li>
+  <li><a href="#sec3">The 6 Must-Know Comparisons</a></li>
+  <li><a href="#sec4">Exam Trigger Phrases → Answers</a></li>
+  <li><a href="#sec5">The 12 Most Common Traps</a></li>
+  <li><a href="#sec6">Decision Flow — Picking the Right Answer Fast</a></li>
+  <li><a href="#sec7">Practice Questions (25 SAA-style)</a></li>
+  <li><a href="#sec8">Day-of-Exam Tips for EC2 Questions</a></li>
+</ol>
+</div>
+
+<!-- ============================== SECTION 1 ============================== -->
+<h2 id="sec1">1. EC2 on the Exam — What to Expect</h2>
+
+<p>EC2 is woven through <em>every</em> domain of the SAA-C03. Out of 65 questions, expect roughly:</p>
+<ul>
+  <li><strong>10–15 questions</strong> where EC2 is the primary subject (pricing, storage, placement, lifecycle).</li>
+  <li><strong>20+ more</strong> where EC2 is part of a larger scenario (web tier behind ALB, ASG, multi-AZ, integration with S3/RDS).</li>
+</ul>
+
+<p>Questions usually <strong>aren't</strong> "what is the syntax for X?" They're <em>scenarios</em>: "Company has Y need with Z constraint — pick the best architecture." Two answers will usually be technically correct. The <strong>qualifier</strong> ("MOST cost-effective", "LEAST operational overhead", "HIGHEST availability") decides between them.</p>
+
+<div class="callout key-fact">
+  <div class="callout-title">The Two Qualifier-Reading Rules</div>
+  <ol style="margin-bottom: 0;">
+    <li><strong>"MOST cost-effective" or "LEAST cost"</strong> — push toward Spot, Reserved, Savings Plans, smaller instance sizes, gp3 over io2, st1/sc1 for cold data, Graviton.</li>
+    <li><strong>"LEAST operational overhead"</strong> — push toward managed services, Savings Plans (over Reserved which require capacity planning), Auto Scaling, AWS-managed AMIs, SSM Session Manager, IAM Roles.</li>
+  </ol>
+</div>
+
+<!-- ============================== SECTION 2 ============================== -->
+<h2 id="sec2">2. Master Cheat Sheet — Everything in 2 Pages</h2>
+
+<h3>Instance Families at a Glance</h3>
+
+<table>
+<thead>
+<tr><th>Family</th><th>Purpose</th><th>Pick for...</th><th>Common types</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>T</strong></td><td>Burstable</td><td>Low/spiky traffic, dev/test, micro-services</td><td>t3, t4g</td></tr>
+<tr><td><strong>M</strong></td><td>General purpose</td><td>Web servers, app servers, mid-size DB</td><td>m5, m6i, m6g, m7g</td></tr>
+<tr><td><strong>C</strong></td><td>Compute-optimized</td><td>Game servers, batch, video encode, HPC</td><td>c5, c6i, c7g</td></tr>
+<tr><td><strong>R</strong></td><td>Memory-optimized</td><td>In-memory caches, mid-size in-memory DB</td><td>r5, r6i, r7g</td></tr>
+<tr><td><strong>X</strong></td><td>Extreme memory</td><td>SAP HANA, large in-memory DB</td><td>x1, x2idn, x2iezn</td></tr>
+<tr><td><strong>I</strong></td><td>Storage (NVMe SSD)</td><td>NoSQL, Cassandra, log search</td><td>i3, i4i, i3en</td></tr>
+<tr><td><strong>D / H</strong></td><td>Dense storage (HDD)</td><td>Hadoop, MapReduce</td><td>d2, d3, h1</td></tr>
+<tr><td><strong>P / G</strong></td><td>GPU</td><td>ML training (P), inference + graphics (G)</td><td>p4d, p5, g5</td></tr>
+<tr><td><strong>Inf / Trn</strong></td><td>AWS ML chips</td><td>ML inference (Inf), training (Trn)</td><td>inf2, trn1</td></tr>
+<tr><td><strong>Hpc</strong></td><td>HPC-optimized</td><td>Tightly-coupled HPC workloads</td><td>hpc6a, hpc7g</td></tr>
+</tbody>
+</table>
+
+<h3>Pricing Models — When to Pick What</h3>
+
+<table>
+<thead>
+<tr><th>Model</th><th>Discount</th><th>Commitment</th><th>Use Case Trigger</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>On-Demand</strong></td><td>0%</td><td>None</td><td>Unpredictable, short-term, dev/test</td></tr>
+<tr><td><strong>Reserved (1yr)</strong></td><td>~40%</td><td>1 year, instance-specific</td><td>Steady workload, known instance type</td></tr>
+<tr><td><strong>Reserved (3yr)</strong></td><td>up to 72%</td><td>3 years, instance-specific</td><td>Long-term steady production</td></tr>
+<tr><td><strong>Standard RI</strong></td><td>Max discount</td><td>Locked family</td><td>Confident in instance family choice</td></tr>
+<tr><td><strong>Convertible RI</strong></td><td>~54%</td><td>Can change family/OS</td><td>Want some flexibility</td></tr>
+<tr><td><strong>Compute Savings Plan</strong></td><td>up to 66%</td><td>Flexible $/hr commit</td><td>Might shift to Fargate/Lambda</td></tr>
+<tr><td><strong>EC2 Instance SP</strong></td><td>up to 72%</td><td>Family-locked $/hr</td><td>RI-level savings, but per-region flex</td></tr>
+<tr><td><strong>Spot</strong></td><td>up to 90%</td><td>None — can be killed in 2 min</td><td>Fault-tolerant batch, big data, ML training</td></tr>
+<tr><td><strong>Dedicated Host</strong></td><td>Premium</td><td>Physical server</td><td>BYOL (Oracle, Windows, SQL Server), compliance</td></tr>
+<tr><td><strong>Dedicated Instance</strong></td><td>Premium</td><td>Dedicated hardware (no visibility)</td><td>Isolation without BYOL</td></tr>
+<tr><td><strong>Capacity Reservation</strong></td><td>On-Demand rates</td><td>None</td><td>Guarantee capacity for launch event</td></tr>
+</tbody>
+</table>
+
+<h3>EBS Volume Types</h3>
+
+<table>
+<thead>
+<tr><th>Type</th><th>Category</th><th>Max IOPS</th><th>Max Throughput</th><th>Size</th><th>Boot?</th><th>Pick When...</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>gp3</strong></td><td>SSD</td><td>16,000</td><td>1,000 MB/s</td><td>1 GB – 16 TB</td><td>✅</td><td><strong>Default.</strong> General purpose, set IOPS independently of size</td></tr>
+<tr><td><strong>gp2</strong></td><td>SSD (legacy)</td><td>16,000</td><td>250 MB/s</td><td>1 GB – 16 TB</td><td>✅</td><td>Old default; pick gp3 instead</td></tr>
+<tr><td><strong>io2 Block Express</strong></td><td>SSD</td><td>256,000</td><td>4,000 MB/s</td><td>4 GB – 64 TB</td><td>✅</td><td>Top-tier OLTP, SAP HANA, huge Oracle/SQL Server</td></tr>
+<tr><td><strong>io1 / io2</strong></td><td>SSD</td><td>64,000</td><td>1,000 MB/s</td><td>4 GB – 16 TB</td><td>✅</td><td>High-IOPS DBs, supports <strong>Multi-Attach</strong></td></tr>
+<tr><td><strong>st1</strong></td><td>HDD</td><td>500</td><td>500 MB/s</td><td>125 GB – 16 TB</td><td>❌</td><td>Throughput-oriented: logs, Hadoop, data warehouse</td></tr>
+<tr><td><strong>sc1</strong></td><td>HDD</td><td>250</td><td>250 MB/s</td><td>125 GB – 16 TB</td><td>❌</td><td>Cold, infrequent access, cheapest</td></tr>
+</tbody>
+</table>
+
+<div class="callout key-fact">
+  <div class="callout-title">EBS Memory Anchors</div>
+  <ul style="margin-bottom: 0;">
+    <li><strong>gp3 = "general 3"</strong> = default for nearly everything</li>
+    <li><strong>io2 = "I/O 2"</strong> = top performance; <strong>Block Express</strong> = even more</li>
+    <li><strong>st1 = "ST = streaming throughput"</strong> = sequential HDD</li>
+    <li><strong>sc1 = "SC = super cold"</strong> = cheapest HDD</li>
+    <li><strong>HDDs (st1, sc1) cannot be boot volumes</strong></li>
+    <li><strong>Only io1/io2 support Multi-Attach</strong></li>
+  </ul>
+</div>
+
+<h3>Placement Groups</h3>
+
+<table>
+<thead>
+<tr><th>Type</th><th>Layout</th><th>Use Case</th><th>Max Instances</th><th>Key Trigger Phrase</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Cluster</strong></td><td>Packed on one rack, one AZ</td><td>HPC, tight low-latency</td><td>No hard limit</td><td>"Lowest inter-node latency", "HPC", "10 Gbps between instances"</td></tr>
+<tr><td><strong>Spread</strong></td><td>Each on a different rack</td><td>Few critical instances</td><td><strong>7 per AZ</strong></td><td>"Small number of critical instances", "no shared failure"</td></tr>
+<tr><td><strong>Partition</strong></td><td>Groups on separate racks</td><td>Distributed systems</td><td><strong>7 partitions per AZ</strong>, each with many instances</td><td>"Hadoop", "Cassandra", "Kafka", "HBase", "rack-aware"</td></tr>
+</tbody>
+</table>
+
+<h3>EC2 Lifecycle Effects</h3>
+
+<table>
+<thead>
+<tr><th>Action</th><th>EBS Root</th><th>Public IP</th><th>Elastic IP</th><th>Instance Store</th><th>Same host?</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Reboot</strong></td><td>Kept</td><td>Kept</td><td>Kept</td><td><strong>Kept</strong></td><td>Yes</td></tr>
+<tr><td><strong>Stop</strong></td><td>Kept</td><td>Released</td><td>Kept</td><td><strong>LOST</strong></td><td>No (different host on start)</td></tr>
+<tr><td><strong>Start (after stop)</strong></td><td>—</td><td>New random IP</td><td>—</td><td>Empty</td><td>—</td></tr>
+<tr><td><strong>Hibernate</strong></td><td>Kept (+ RAM saved here)</td><td>Released</td><td>Kept</td><td>LOST</td><td>No</td></tr>
+<tr><td><strong>Terminate</strong></td><td>Deleted by default</td><td>Released forever</td><td>Detached (not deleted)</td><td>LOST</td><td>—</td></tr>
+</tbody>
+</table>
+
+<h3>Security Quick Reference</h3>
+
+<table>
+<thead>
+<tr><th>Need</th><th>Use</th></tr>
+</thead>
+<tbody>
+<tr><td>Give EC2 permission to access S3/DynamoDB/etc.</td><td><strong>IAM Role</strong> attached to instance</td></tr>
+<tr><td>SSH-less management</td><td><strong>SSM Session Manager</strong> (no inbound port 22 needed)</td></tr>
+<tr><td>Protect metadata from SSRF</td><td><strong>IMDSv2</strong> (token-required)</td></tr>
+<tr><td>Encrypt boot/data EBS volumes</td><td><strong>EBS Encryption</strong> via KMS</td></tr>
+<tr><td>Encrypt existing unencrypted volume</td><td>Snapshot → copy with encryption → restore</td></tr>
+<tr><td>Per-instance firewall</td><td><strong>Security Group</strong> (stateful, allow-only)</td></tr>
+<tr><td>Prevent accidental termination</td><td><strong>Termination Protection</strong></td></tr>
+<tr><td>Prevent accidental stop</td><td><strong>Stop Protection</strong></td></tr>
+</tbody>
+</table>
+
+<!-- ============================== SECTION 3 ============================== -->
+<h2 id="sec3">3. The 6 Must-Know Comparisons</h2>
+
+<h3>3.1 — Reserved Instances vs Savings Plans vs Spot</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th></th><th>Reserved Instance</th><th>Savings Plan</th><th>Spot</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Discount</strong></td><td>up to 72%</td><td>up to 72% (EC2 SP), 66% (Compute SP)</td><td>up to 90%</td></tr>
+<tr><td><strong>Commitment</strong></td><td>Instance-specific, 1 or 3 yr</td><td>$/hour, 1 or 3 yr</td><td>None</td></tr>
+<tr><td><strong>Flexibility</strong></td><td>Standard: low. Convertible: medium</td><td>High (Compute SP applies to EC2/Fargate/Lambda)</td><td>Max (no commit) but you can be killed</td></tr>
+<tr><td><strong>Best for</strong></td><td>Steady, known instance type</td><td>Steady but evolving architecture</td><td>Fault-tolerant batch jobs</td></tr>
+<tr><td><strong>Interruption</strong></td><td>Never</td><td>Never</td><td>2-min warning, then terminated</td></tr>
+</tbody>
+</table>
+
+<h3>3.2 — EBS vs Instance Store vs EFS</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th></th><th>EBS</th><th>Instance Store</th><th>EFS</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Type</strong></td><td>Network block storage</td><td>Local SSD on host</td><td>Network file system</td></tr>
+<tr><td><strong>Persistence</strong></td><td>Persistent (independent)</td><td>Ephemeral (dies w/ host)</td><td>Persistent, multi-AZ</td></tr>
+<tr><td><strong>Performance</strong></td><td>High</td><td>Extreme (microseconds)</td><td>Moderate to high</td></tr>
+<tr><td><strong>Attached to</strong></td><td>One EC2 (or 16 w/ Multi-Attach io2)</td><td>One host (the instance)</td><td>Many EC2s simultaneously</td></tr>
+<tr><td><strong>OS support</strong></td><td>Any</td><td>Any</td><td><strong>Linux only</strong> (NFS)</td></tr>
+<tr><td><strong>Survives stop?</strong></td><td>Yes</td><td><strong>No</strong></td><td>Yes</td></tr>
+<tr><td><strong>Snapshots?</strong></td><td>Yes</td><td>No</td><td>Yes (via Backup)</td></tr>
+<tr><td><strong>Move between AZs?</strong></td><td>Via snapshot</td><td>No</td><td>Built-in multi-AZ</td></tr>
+</tbody>
+</table>
+
+<h3>3.3 — Stop vs Terminate</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th></th><th>Stop</th><th>Terminate</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Reversible?</strong></td><td>Yes, you can start again</td><td>No, permanent</td></tr>
+<tr><td><strong>Billed for compute?</strong></td><td>No</td><td>No</td></tr>
+<tr><td><strong>EBS storage billed?</strong></td><td>Yes (still attached)</td><td>No (deleted by default)</td></tr>
+<tr><td><strong>EBS root volume</strong></td><td>Kept</td><td>Deleted (unless flag set)</td></tr>
+<tr><td><strong>Public IP</strong></td><td>Released; new one on start</td><td>Released forever</td></tr>
+<tr><td><strong>Elastic IP</strong></td><td>Stays attached</td><td>Detached (still yours)</td></tr>
+<tr><td><strong>Instance Store data</strong></td><td><strong>LOST</strong></td><td>LOST</td></tr>
+<tr><td><strong>Private IP</strong></td><td>Kept</td><td>Released</td></tr>
+</tbody>
+</table>
+
+<h3>3.4 — Cluster vs Spread vs Partition Placement Groups</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th></th><th>Cluster</th><th>Spread</th><th>Partition</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Goal</strong></td><td>Speed</td><td>Safety (few)</td><td>Safety (many)</td></tr>
+<tr><td><strong>Layout</strong></td><td>Same rack</td><td>Different racks</td><td>Groups of racks</td></tr>
+<tr><td><strong>AZs</strong></td><td>One only</td><td>Multiple OK</td><td>Multiple OK</td></tr>
+<tr><td><strong>Max instances</strong></td><td>Many</td><td>7 per AZ</td><td>7 partitions, many per partition</td></tr>
+<tr><td><strong>Latency</strong></td><td>Lowest (&lt;10µs)</td><td>Normal</td><td>Normal</td></tr>
+<tr><td><strong>Use case</strong></td><td>HPC</td><td>3 critical DB masters</td><td>Hadoop, Cassandra, Kafka</td></tr>
+</tbody>
+</table>
+
+<h3>3.5 — EBS Multi-Attach vs EFS</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th></th><th>EBS Multi-Attach (io1/io2)</th><th>EFS</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Type</strong></td><td>Block storage</td><td>File system (NFS)</td></tr>
+<tr><td><strong>Max instances</strong></td><td>16 in same AZ</td><td>Thousands across multiple AZs</td></tr>
+<tr><td><strong>Concurrency handling</strong></td><td>App must handle (no built-in coordination)</td><td>Built-in (POSIX file locks)</td></tr>
+<tr><td><strong>Across AZs?</strong></td><td>No (single AZ)</td><td>Yes (multi-AZ by design)</td></tr>
+<tr><td><strong>Use case</strong></td><td>Oracle RAC, clustered file systems (OCFS2, GFS2)</td><td>WordPress shared content, dev shared folders, generic shared storage</td></tr>
+</tbody>
+</table>
+
+<div class="callout trap">
+  <div class="callout-title">Critical Distinction</div>
+  <p style="margin-bottom: 0;">If a question says "multiple EC2 instances need to share files" without specifying clustered software, the answer is <strong>EFS</strong>, not EBS Multi-Attach. EBS Multi-Attach is only for specialized clustered apps that handle concurrent block writes themselves.</p>
+</div>
+
+<h3>3.6 — IMDSv1 vs IMDSv2</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th></th><th>IMDSv1</th><th>IMDSv2</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Auth</strong></td><td>Simple GET</td><td>Session token required (PUT first)</td></tr>
+<tr><td><strong>SSRF protection</strong></td><td>No (vulnerable)</td><td>Yes</td></tr>
+<tr><td><strong>Famous breach</strong></td><td>Capital One 2019 (IMDSv1)</td><td>—</td></tr>
+<tr><td><strong>AWS default</strong></td><td>Legacy</td><td>Default for new AMIs</td></tr>
+<tr><td><strong>Exam answer</strong></td><td>Pick when nothing else works (rare)</td><td><strong>Default preferred answer</strong></td></tr>
+</tbody>
+</table>
+
+<!-- ============================== SECTION 4 ============================== -->
+<h2 id="sec4">4. Exam Trigger Phrases → Answers</h2>
+
+<p>This is your fast pattern-matching reference. Memorize the right-column answer for each left-column phrase. When you see the phrase on the exam, the answer should be reflexive.</p>
+
+<table class="triggers-table">
+<thead>
+<tr><th>Trigger Phrase in Question</th><th>Answer</th></tr>
+</thead>
+<tbody>
+<tr><td>"Steady 24/7 workload, lowest cost"</td><td><strong>Reserved Instance</strong> (3-yr, all upfront) or <strong>EC2 Instance Savings Plan</strong></td></tr>
+<tr><td>"May change architecture later / shift to Fargate or Lambda"</td><td><strong>Compute Savings Plan</strong></td></tr>
+<tr><td>"Fault-tolerant batch processing, lowest cost"</td><td><strong>Spot Instances</strong></td></tr>
+<tr><td>"ML training that can checkpoint, cheapest"</td><td><strong>Spot Instances</strong> with checkpointing</td></tr>
+<tr><td>"Bring our existing Windows/SQL Server/Oracle license"</td><td><strong>Dedicated Host</strong></td></tr>
+<tr><td>"Guarantee EC2 capacity is available in this AZ"</td><td><strong>On-Demand Capacity Reservation</strong></td></tr>
+<tr><td>"General-purpose EBS, balance cost and performance"</td><td><strong>gp3</strong></td></tr>
+<tr><td>"Highest possible IOPS for SAP HANA / huge OLTP"</td><td><strong>io2 Block Express</strong></td></tr>
+<tr><td>"Throughput-heavy, sequential, big data, logs (HDD)"</td><td><strong>st1</strong></td></tr>
+<tr><td>"Cheapest HDD for archive / infrequent access"</td><td><strong>sc1</strong></td></tr>
+<tr><td>"Need shared EBS for clustered DB (Oracle RAC)"</td><td><strong>EBS Multi-Attach</strong> (io1/io2)</td></tr>
+<tr><td>"Multiple EC2 instances need to share files (Linux)"</td><td><strong>EFS</strong> (not EBS!)</td></tr>
+<tr><td>"Multiple EC2 share files via SMB (Windows)"</td><td><strong>FSx for Windows</strong></td></tr>
+<tr><td>"HPC needs highest IOPS shared file system"</td><td><strong>FSx for Lustre</strong></td></tr>
+<tr><td>"Move EBS volume to another AZ"</td><td>Snapshot → restore in target AZ</td></tr>
+<tr><td>"Move EBS volume / AMI to another Region"</td><td><strong>Copy snapshot/AMI</strong> to target region</td></tr>
+<tr><td>"Encrypt an existing unencrypted EBS volume"</td><td>Snapshot → copy snapshot with encryption → create new volume</td></tr>
+<tr><td>"Compliance keep snapshots for 7 years, rarely access"</td><td><strong>EBS Snapshot Archive</strong> tier</td></tr>
+<tr><td>"Restore a snapshot with full performance immediately"</td><td><strong>Fast Snapshot Restore (FSR)</strong></td></tr>
+<tr><td>"Automate backup of EBS volumes on schedule"</td><td><strong>Data Lifecycle Manager (DLM)</strong></td></tr>
+<tr><td>"Lowest latency between 50+ instances for HPC"</td><td><strong>Cluster placement group</strong> + EFA</td></tr>
+<tr><td>"3 critical instances must never fail together"</td><td><strong>Spread placement group</strong></td></tr>
+<tr><td>"Hadoop / Cassandra / Kafka cluster, rack-aware"</td><td><strong>Partition placement group</strong></td></tr>
+<tr><td>"EC2 needs to call AWS APIs (S3, DynamoDB, etc.)"</td><td><strong>IAM Role</strong> attached to instance (never access keys)</td></tr>
+<tr><td>"Protect metadata service from SSRF attacks"</td><td><strong>IMDSv2</strong></td></tr>
+<tr><td>"Access EC2 securely without opening port 22"</td><td><strong>SSM Session Manager</strong></td></tr>
+<tr><td>"Long-warmup app needs to keep RAM state when paused"</td><td><strong>Hibernate</strong></td></tr>
+<tr><td>"Monitor EC2 memory usage / disk space free"</td><td>Install <strong>CloudWatch Agent</strong></td></tr>
+<tr><td>"Automatically recover EC2 when host hardware fails"</td><td><strong>CloudWatch alarm with EC2 Recover action</strong> (Nitro)</td></tr>
+<tr><td>"Reduce cost of web tier, can lose individual instances"</td><td>Mix On-Demand + <strong>Spot in Auto Scaling Group</strong> / Spot Fleet</td></tr>
+<tr><td>"Run cheaper ARM-compatible workloads"</td><td><strong>Graviton (g-suffix)</strong> instances</td></tr>
+<tr><td>"Run a workload that bursts occasionally, mostly idle"</td><td><strong>T-family (t3, t4g)</strong> instance</td></tr>
+<tr><td>"Standardize OS image across regions"</td><td>Build AMI, <strong>copy AMI</strong> to each region</td></tr>
+<tr><td>"Run startup script on first launch (install agent)"</td><td><strong>User Data</strong></td></tr>
+</tbody>
+</table>
+
+<!-- ============================== SECTION 5 ============================== -->
+<h2 id="sec5">5. The 12 Most Common Traps</h2>
+
+<p>These are the wrong answers that <em>feel</em> right. The exam loves them. Learn to recognize and reject them.</p>
+
+<table class="traps-table">
+<thead>
+<tr><th>Trap (sounds right but wrong)</th><th>What you should pick instead</th></tr>
+</thead>
+<tbody>
+<tr><td>Spot Instances for production web servers / databases</td><td>On-Demand + Reserved baseline (Spot is fine for batch only)</td></tr>
+<tr><td>EBS Multi-Attach for "shared files between EC2s"</td><td><strong>EFS</strong> (Multi-Attach is for clustered DBs, not general file sharing)</td></tr>
+<tr><td>st1 or sc1 as boot volume</td><td>HDDs can't boot — use <strong>gp3</strong></td></tr>
+<tr><td>"Instance Store survives stop because it's a disk"</td><td><strong>Instance Store data is LOST on stop and terminate.</strong> Only survives reboot.</td></tr>
+<tr><td>"Reserved Instance for evolving / uncertain workload"</td><td>Use <strong>Compute Savings Plan</strong> for flexibility</td></tr>
+<tr><td>"Use access keys on EC2 for S3 access"</td><td>Always <strong>IAM Role</strong> — never hardcoded keys</td></tr>
+<tr><td>"Built-in CloudWatch shows memory and disk free"</td><td>It doesn't — install <strong>CloudWatch Agent</strong></td></tr>
+<tr><td>"Use a Cluster placement group for HA"</td><td>Cluster is for SPEED. For HA across AZs, use Auto Scaling Group across AZs. Cluster lives in one AZ on one rack — single failure domain.</td></tr>
+<tr><td>"Detach EBS in AZ-a, attach in AZ-b"</td><td>EBS is AZ-locked. <strong>Snapshot</strong> then restore in AZ-b.</td></tr>
+<tr><td>"T3 instance running 100% CPU 24/7 is cheapest"</td><td>T-family burns CPU credits or goes Unlimited (extra $$). For sustained CPU, use <strong>M or C</strong>.</td></tr>
+<tr><td>"Encrypt EBS by editing volume properties"</td><td>Can't toggle on existing volume. <strong>Snapshot → copy w/ encryption → new volume.</strong></td></tr>
+<tr><td>"Hibernate on any instance with RAM up to 256 GB"</td><td>Hibernate limit is <strong>150 GB RAM</strong>, encrypted root EBS, supported OS, enabled at launch.</td></tr>
+</tbody>
+</table>
+
+<!-- ============================== SECTION 6 ============================== -->
+<h2 id="sec6">6. Decision Flow — Picking the Right Answer Fast</h2>
+
+<h3>Flow 1: Which Pricing Model?</h3>
+
+<div class="quick-card">
+<ol>
+  <li><strong>Is the workload fault-tolerant and can it survive sudden termination?</strong> → Yes → <strong>Spot</strong>. Done.</li>
+  <li><strong>Is the workload steady and 24/7, and will the architecture not change?</strong> → Yes → <strong>Reserved Instance</strong> (3-yr all upfront for max discount) or <strong>EC2 Instance Savings Plan</strong>.</li>
+  <li><strong>Is it steady but architecture might evolve?</strong> → <strong>Compute Savings Plan</strong>.</li>
+  <li><strong>Need to bring my own software license?</strong> → <strong>Dedicated Host</strong>.</li>
+  <li><strong>Need guaranteed capacity in a specific AZ for a launch?</strong> → <strong>Capacity Reservation</strong> (combine with SP for discount).</li>
+  <li><strong>None of the above (short-term, unpredictable)?</strong> → <strong>On-Demand</strong>.</li>
+</ol>
+</div>
+
+<h3>Flow 2: Which EBS Volume Type?</h3>
+
+<div class="quick-card">
+<ol>
+  <li><strong>Is it a boot volume?</strong> → Must be SSD (gp3, gp2, io1, io2). Default: <strong>gp3</strong>.</li>
+  <li><strong>Database needing 200,000+ IOPS or low single-digit ms latency?</strong> → <strong>io2 Block Express</strong>.</li>
+  <li><strong>Database needing 32k–64k IOPS, Multi-Attach for cluster?</strong> → <strong>io1 / io2</strong>.</li>
+  <li><strong>Big sequential workload (logs, Hadoop, data warehouse)?</strong> → <strong>st1</strong>.</li>
+  <li><strong>Cold data, almost never accessed?</strong> → <strong>sc1</strong> (or consider S3 Glacier instead).</li>
+  <li><strong>Everything else?</strong> → <strong>gp3</strong>.</li>
+</ol>
+</div>
+
+<h3>Flow 3: Which Placement Group?</h3>
+
+<div class="quick-card">
+<ol>
+  <li><strong>Need lowest possible latency between instances (HPC)?</strong> → <strong>Cluster</strong> + EFA.</li>
+  <li><strong>Have a small number (≤7 per AZ) of critical instances?</strong> → <strong>Spread</strong>.</li>
+  <li><strong>Have a distributed system that understands "racks" (Hadoop, Cassandra, Kafka)?</strong> → <strong>Partition</strong>.</li>
+  <li><strong>Just a web tier?</strong> → <strong>No placement group</strong>. Use Auto Scaling Group across multiple AZs.</li>
+</ol>
+</div>
+
+<h3>Flow 4: How Do Multiple EC2 Share Storage?</h3>
+
+<div class="quick-card">
+<ol>
+  <li><strong>Linux, generic file sharing across AZs?</strong> → <strong>EFS</strong>.</li>
+  <li><strong>Windows / SMB / Active Directory integration?</strong> → <strong>FSx for Windows</strong>.</li>
+  <li><strong>HPC / ML with massive parallel throughput?</strong> → <strong>FSx for Lustre</strong> (linked to S3).</li>
+  <li><strong>Clustered DB (Oracle RAC) needing block-level shared volume?</strong> → <strong>EBS Multi-Attach (io1/io2)</strong>.</li>
+  <li><strong>Just shared object storage?</strong> → <strong>S3</strong> (often the right answer).</li>
+</ol>
+</div>
+
+<!-- ============================== SECTION 7 ============================== -->
+<h2 id="sec7">7. Practice Questions (25 SAA-style)</h2>
+
+<p>Try each on paper or in your head before reading the answer. The explanations tie back to Doc 1 concepts — they're designed to <em>reinforce</em>, not just inform.</p>
+
+<!-- Q1 -->
+<div class="qcard">
+<span class="qnum">Question 1</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A media company runs a fleet of 200 EC2 instances 24/7 to power its core video streaming service. The instances are <span class="keyword">m5.4xlarge</span> and the workload has been steady for 2 years. The architecture is mature and unlikely to change. The CFO wants to minimize cost. Which approach is MOST cost-effective?</div>
+<ol class="qoptions">
+  <li>Purchase 3-year No Upfront Convertible Reserved Instances.</li>
+  <li>Purchase 3-year All Upfront Standard Reserved Instances for the m5.4xlarge.</li>
+  <li>Use Spot Instances exclusively to maximize savings.</li>
+  <li>Stay on On-Demand with Auto Scaling to handle changes.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Purchase 3-year All Upfront Standard Reserved Instances.</strong> Steady predictable load + known instance type + 3+ year horizon + no architecture changes is the textbook case for Standard RIs. All Upfront gives the maximum discount (up to 72%).</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Convertible RIs trade some discount for flexibility you don't need. (C) Spot is wrong — production streaming can't tolerate 2-minute termination warnings. (D) On-Demand wastes money on steady workloads.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Steady 24/7, known instance type, never changing" → Standard RI 3-yr All Upfront. If the question hinted at flexibility, you'd switch to Compute Savings Plan.</div>
+</div>
+</div>
+
+<!-- Q2 -->
+<div class="qcard">
+<span class="qnum">Question 2</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A data science team runs nightly batch jobs that process click-stream data from S3. Each job takes ~3 hours, can be safely restarted from a checkpoint, and the team has built robust handling for sudden worker death. They want the LOWEST possible compute cost. Which EC2 option is best?</div>
+<ol class="qoptions">
+  <li>On-Demand instances scheduled to start at 1 AM nightly.</li>
+  <li>1-year Reserved Instances of the largest type they could fully utilize.</li>
+  <li>Spot Instances launched via a Spot Fleet diversified across instance types.</li>
+  <li>Dedicated Instances for compliance isolation.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>Spot Instances via Spot Fleet.</strong> The workload is fault-tolerant, has checkpointing, and survives interruption — the exact use case for Spot. Diversifying across instance types in a Spot Fleet raises availability (different pools), so if one type gets reclaimed, others fill the gap.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) On-Demand wastes ~80% of the savings Spot would give. (B) RI's commitment is overkill for batch — and RIs are billed even when idle. (D) Dedicated Instances are for compliance, not cost reduction.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Fault-tolerant batch + cheapest" = Spot. Doc 1 covered this with the ML training example — same pattern.</div>
+</div>
+</div>
+
+<!-- Q3 -->
+<div class="qcard">
+<span class="qnum">Question 3</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A company is planning to migrate their monolithic application to AWS. They expect to start on EC2, but within 18 months migrate most workloads to AWS Fargate, and some to Lambda. They want to commit to savings now but keep flexibility. Which option fits best?</div>
+<ol class="qoptions">
+  <li>3-year Standard Reserved Instances on m5 family.</li>
+  <li>1-year EC2 Instance Savings Plan.</li>
+  <li>3-year Compute Savings Plan.</li>
+  <li>Spot Fleet across multiple regions.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>3-year Compute Savings Plan.</strong> The Compute Savings Plan is the only option that automatically applies to <strong>EC2, Fargate, AND Lambda</strong>. The company can shift workloads freely without losing the discount. Up to 66% off — slightly less than RI but worth the flexibility.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) and (B) lock to EC2 — they wouldn't apply once workloads move to Fargate/Lambda. (D) Spot can't run their existing monolith reliably.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Might shift to Fargate or Lambda" — the dead giveaway for Compute Savings Plan.</div>
+</div>
+</div>
+
+<!-- Q4 -->
+<div class="qcard">
+<span class="qnum">Question 4</span> <span class="qtype">Single answer</span>
+<div class="qscenario">An enterprise must run Microsoft SQL Server on AWS while reusing its existing per-physical-core SQL Server licenses (BYOL). Compliance requires visibility into the physical hardware. Which EC2 option enables this?</div>
+<ol class="qoptions">
+  <li>On-Demand Instances with default shared tenancy.</li>
+  <li>Dedicated Instances.</li>
+  <li>Dedicated Host.</li>
+  <li>Spot Instances tagged for BYOL.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>Dedicated Host.</strong> Dedicated Host gives you visibility into the physical sockets and cores — required for BYOL per-physical-core licensing of SQL Server, Oracle, and Windows Server. Dedicated Instance doesn't expose hardware details.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Shared tenancy fails BYOL audit. (B) Dedicated Instance gives single-tenancy but no socket/core visibility. (D) Spot doesn't address BYOL at all.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "BYOL Oracle / SQL Server / Windows" = Dedicated Host.</div>
+</div>
+</div>
+
+<!-- Q5 -->
+<div class="qcard">
+<span class="qnum">Question 5</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A startup is building a SaaS platform. They expect traffic to be moderate but unpredictable — sudden viral spikes possible. They've heard about Reserved Instances but aren't sure their workload is stable enough. What should the architect recommend for the EC2 layer initially?</div>
+<ol class="qoptions">
+  <li>Buy 3-year Standard Reserved Instances immediately to lock in savings.</li>
+  <li>Run On-Demand instances behind an Auto Scaling Group; revisit pricing once load patterns stabilize.</li>
+  <li>Use 100% Spot Instances to minimize cost.</li>
+  <li>Purchase Dedicated Hosts for predictable cost.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>On-Demand with Auto Scaling, revisit later.</strong> Unpredictable / viral / unknown patterns = On-Demand is the safe starting point. Once you have 2-3 months of stable utilization data, you can convert the steady baseline to Reserved or Savings Plans.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Locking in 3 years before knowing your baseline is wasted commitment. (C) Pure Spot can drop your platform — bad for a customer-facing SaaS. (D) Dedicated Hosts are expensive and unrelated to traffic patterns.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Unpredictable" or "spiky traffic" → On-Demand baseline. Optimize later, not first.</div>
+</div>
+</div>
+
+<!-- Q6 -->
+<div class="qcard">
+<span class="qnum">Question 6</span> <span class="qtype">Single answer</span>
+<div class="qscenario">An EC2 instance hosts a critical Oracle database backed by a single EBS volume. The DBA reports the workload is hitting 80,000 IOPS and needs to scale to 200,000 IOPS with sub-millisecond latency. The volume is currently 6 TB and will grow to 40 TB. Which EBS volume type should be used?</div>
+<ol class="qoptions">
+  <li>gp3 — set IOPS to 200,000.</li>
+  <li>io1 with provisioned 64,000 IOPS.</li>
+  <li>io2 Block Express with provisioned 200,000 IOPS.</li>
+  <li>st1 throughput-optimized HDD.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>io2 Block Express.</strong> It's the only EBS volume type that supports up to 256,000 IOPS, sub-ms latency, and 64 TB size. Designed exactly for SAP HANA / large Oracle / huge SQL Server.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) gp3 caps at 16,000 IOPS. (B) io1 caps at 64,000 IOPS — not enough. (D) st1 is HDD with only 500 IOPS max — for sequential workloads, not random DB I/O.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "SAP HANA" or "&gt;64k IOPS" or "&gt;16 TB high-IOPS" = io2 Block Express.</div>
+</div>
+</div>
+
+<!-- Q7 -->
+<div class="qcard">
+<span class="qnum">Question 7</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A development team builds a CI/CD pipeline that processes thousands of small log files daily. The processing job streams logs sequentially, writes summary outputs back to S3, and runs on EC2 for 4 hours nightly. They want the LOWEST-COST EBS storage that can handle the throughput. The volume is 8 TB and is not the boot volume. Which volume type?</div>
+<ol class="qoptions">
+  <li>gp3 General Purpose SSD.</li>
+  <li>io2 Provisioned IOPS SSD.</li>
+  <li>st1 Throughput Optimized HDD.</li>
+  <li>sc1 Cold HDD.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>st1 Throughput Optimized HDD.</strong> The workload is large sequential reads/writes (log streaming) — exactly what st1 is built for. Up to 500 MB/s at HDD prices. It's cheaper than gp3 for this kind of throughput workload.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) gp3 would work but costs more. (B) io2 is massive overkill — random IOPS isn't the need. (D) sc1 is for infrequent / cold access — too slow for a nightly streaming job.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Log streaming, big data, sequential" → st1. "Almost never accessed" → sc1.</div>
+</div>
+</div>
+
+<!-- Q8 -->
+<div class="qcard">
+<span class="qnum">Question 8</span> <span class="qtype">Single answer</span>
+<div class="qscenario">An EC2 instance has an attached Instance Store volume with critical preprocessing data. The team needs to perform routine maintenance and asks if they should stop the instance to save costs during the maintenance window. What should the solutions architect tell them?</div>
+<ol class="qoptions">
+  <li>Stopping the instance is safe; Instance Store data persists like EBS.</li>
+  <li>Stopping the instance will permanently delete the Instance Store data; back it up to EBS or S3 first.</li>
+  <li>Rebooting is the same as stopping, so they can reboot to save costs.</li>
+  <li>Instance Store data is automatically backed up to S3 every hour.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Stop deletes Instance Store data; back up first.</strong> Instance Store lives on the host's local SSD. A stop moves the instance to potentially different hardware on restart — local SSD contents are gone. Only reboot keeps Instance Store data (same host).</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) is the textbook trap — Instance Store ≠ EBS. (C) Reboot doesn't save compute costs anyway. (D) AWS doesn't auto-back up Instance Store.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> Stop/Terminate kills Instance Store data. Only reboot preserves it.</div>
+</div>
+</div>
+
+<!-- Q9 -->
+<div class="qcard">
+<span class="qnum">Question 9</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A security review flags that several existing EC2 instances have unencrypted root EBS volumes. The team needs to bring them into encryption-at-rest compliance with the LEAST risk of data loss. What's the correct workflow?</div>
+<ol class="qoptions">
+  <li>SSH into each instance and run filesystem-level encryption tools.</li>
+  <li>Modify the existing volume settings to enable encryption in the console.</li>
+  <li>Take a snapshot, copy the snapshot with encryption enabled, create a new volume from the encrypted snapshot, attach in place of the old one.</li>
+  <li>Terminate the instances and re-launch with encryption enabled.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>Snapshot → copy with encryption → create new volume.</strong> This is the standard, AWS-documented workflow. The original volume stays untouched (low risk), and the new encrypted volume mirrors it.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Filesystem encryption is OS-level, not the AWS-encryption-at-rest the auditors expect. (B) You cannot toggle encryption on an existing EBS volume — that menu option doesn't exist. (D) Terminating risks data loss.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Encrypt existing unencrypted volume" = snapshot, copy with encryption, new volume. Memorize this 3-step path.</div>
+</div>
+</div>
+
+<!-- Q10 -->
+<div class="qcard">
+<span class="qnum">Question 10</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A WordPress deployment uses 4 EC2 instances behind an ALB. The instances need to share user-uploaded images (themes, photos) so that all instances can serve any user's request. Which shared-storage solution should be used?</div>
+<ol class="qoptions">
+  <li>EBS Multi-Attach volume (io2) shared across the 4 instances.</li>
+  <li>EFS file system mounted to all 4 instances.</li>
+  <li>An S3 bucket replicated to a local EBS volume on each instance.</li>
+  <li>FSx for Lustre file system.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>EFS.</strong> EFS is a Linux NFS file system that mounts to many EC2s simultaneously across AZs. Perfect for shared web content (WordPress uploads, themes). The classic textbook use case.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) <strong>The trap.</strong> EBS Multi-Attach is for clustered DBs (Oracle RAC), not general file sharing — apps would corrupt data without their own locking. (C) Awkward custom solution with sync challenges. (D) FSx for Lustre is HPC-specific, way overpowered for WordPress.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Multiple Linux EC2s share files" = EFS. Don't fall for the Multi-Attach trap.</div>
+</div>
+</div>
+
+<!-- Q11 -->
+<div class="qcard">
+<span class="qnum">Question 11</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A high-frequency trading firm runs 80 EC2 instances that need <strong>microsecond-level network latency between them</strong>, all in the same Availability Zone. Which solution provides the BEST network performance between these instances?</div>
+<ol class="qoptions">
+  <li>Spread placement group with EFA.</li>
+  <li>Partition placement group across 7 partitions.</li>
+  <li>Cluster placement group with ENA-enabled instances.</li>
+  <li>No placement group; rely on multi-AZ distribution.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>Cluster placement group with ENA-enabled instances.</strong> Cluster packs instances tightly on the same physical rack for the lowest possible latency (single-digit microseconds). ENA (Elastic Network Adapter) gives up to 100 Gbps throughput. For even lower latency on HPC workloads, you'd add EFA.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Spread is the OPPOSITE of what's needed — spreads across racks. (B) Partition is for distributed systems, not low-latency. (D) Multi-AZ adds latency.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Lowest latency between instances" = Cluster placement group. The trap: confusing Cluster (speed) with Spread (safety).</div>
+</div>
+</div>
+
+<!-- Q12 -->
+<div class="qcard">
+<span class="qnum">Question 12</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A team is deploying a 20-node Apache Cassandra cluster on EC2. Cassandra is rack-aware and replicates data across racks. The team wants to ensure that hardware failure on one rack doesn't take down multiple Cassandra replicas. Which placement strategy is best?</div>
+<ol class="qoptions">
+  <li>Cluster placement group with 20 instances.</li>
+  <li>Spread placement group with 20 instances.</li>
+  <li>Partition placement group with multiple partitions.</li>
+  <li>No placement group, all in the same AZ.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">C</span><strong>Partition placement group.</strong> Cassandra is the prototype use case for Partition. Each partition lives on a different rack. Cassandra's rack-awareness places replicas in different partitions, so a rack failure loses at most one replica per data row — cluster keeps serving.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Cluster puts all 20 on one rack — single point of failure. (B) Spread caps at 7 per AZ — 20 nodes won't fit. (D) No placement group provides no guarantees about physical layout.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Cassandra / Hadoop / Kafka" → Partition placement group. "&gt;7 critical instances per AZ" disqualifies Spread.</div>
+</div>
+</div>
+
+<!-- Q13 -->
+<div class="qcard">
+<span class="qnum">Question 13</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A company has 3 critical control-plane EC2 instances running a custom orchestration service. They cannot tolerate any 2 of these failing at the same time. They want maximum protection from correlated hardware failures within a single AZ. Which placement option fits?</div>
+<ol class="qoptions">
+  <li>Cluster placement group.</li>
+  <li>Spread placement group.</li>
+  <li>Partition placement group with 1 partition.</li>
+  <li>Auto Scaling Group with min 3 instances.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Spread placement group.</strong> Each of the 3 instances lands on a different physical rack. A single rack failure takes down at most 1 instance. Spread is built exactly for "few critical instances must not share failure domain." 3 is well under the 7-per-AZ limit.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Cluster does the opposite. (C) Partition with 1 partition gives no separation. (D) ASG ensures health but doesn't guarantee different physical racks.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Few critical instances, no shared failure" = Spread (max 7 per AZ).</div>
+</div>
+</div>
+
+<!-- Q14 -->
+<div class="qcard">
+<span class="qnum">Question 14</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A team has an EC2 instance that needs to read objects from a specific S3 bucket. A developer suggests creating an IAM user, generating access keys, and storing them in a config file on the instance. The architect rejects this. What should be done instead?</div>
+<ol class="qoptions">
+  <li>Store the access keys in EC2 user data so they're applied at launch.</li>
+  <li>Attach an IAM Role with S3 read permissions to the EC2 instance.</li>
+  <li>Make the S3 bucket public so no credentials are needed.</li>
+  <li>Use the EC2 root account's credentials.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Attach an IAM Role.</strong> The instance gets temporary credentials automatically via IMDS, rotated by AWS. No secrets on disk, no compromise risk. This is the security best practice.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) User data is visible in metadata — never put secrets there. (C) Making the bucket public is wildly insecure. (D) The "root" account is not an EC2 concept and is a terrible idea anyway.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "EC2 needs to call AWS API" = IAM Role. Always. Never access keys.</div>
+</div>
+</div>
+
+<!-- Q15 -->
+<div class="qcard">
+<span class="qnum">Question 15</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A security audit reveals that an EC2-hosted web app contains an SSRF vulnerability. An attacker could trick the app into requesting <code>http://169.254.169.254/latest/meta-data/iam/security-credentials/</code> and steal the role's temporary credentials. The team wants to harden against this attack. What's the BEST mitigation at the EC2 level?</div>
+<ol class="qoptions">
+  <li>Remove the IAM role from the instance.</li>
+  <li>Enforce IMDSv2 (session-token-required) on the instance.</li>
+  <li>Block port 169 on the security group.</li>
+  <li>Disable the instance metadata service entirely.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Enforce IMDSv2.</strong> IMDSv2 requires an initial PUT to get a session token before any GET is honored. SSRF attacks issue only GET, so they fail. AWS designed IMDSv2 specifically to neutralize SSRF (after the Capital One incident).</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Removing the role breaks the app's legitimate AWS access. (C) Security groups don't filter the special link-local 169.254.169.254 address. (D) Disabling metadata breaks credential delivery to the SDK.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "SSRF" or "protect metadata service" = IMDSv2. The Capital One 2019 breach story makes this stick.</div>
+</div>
+</div>
+
+<!-- Q16 -->
+<div class="qcard">
+<span class="qnum">Question 16</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A genomics researcher runs a Python analysis pipeline that takes 90 minutes to <em>load</em> reference data into memory, then runs interactively. The researcher uses it 2–3 times a week and would like to avoid the 90-minute warm-up each time. The instance has 64 GB RAM. What's the BEST way to skip warm-up while saving costs when idle?</div>
+<ol class="qoptions">
+  <li>Stop the instance when idle and start it when needed.</li>
+  <li>Enable Hibernate on the instance and hibernate when idle.</li>
+  <li>Run the instance 24/7 to avoid restarts.</li>
+  <li>Take an AMI of the running instance and launch from it each session.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Enable Hibernate.</strong> Hibernate saves the in-memory state to the encrypted root EBS volume. On start, RAM is restored — the loaded reference data is already there, no re-loading needed. The 64 GB RAM is under the 150 GB Hibernate limit.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Stop loses RAM contents — 90-min warmup returns every time. (C) 24/7 wastes money for 2–3 sessions/week. (D) An AMI captures disk, not RAM — same problem as Stop.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Long warm-up, intermittent use, preserve RAM state" = Hibernate. Remember the 150 GB RAM cap.</div>
+</div>
+</div>
+
+<!-- Q17 -->
+<div class="qcard">
+<span class="qnum">Question 17</span> <span class="qtype">Single answer</span>
+<div class="qscenario">An operations team has set up CloudWatch alarms on EC2 CPU utilization and network traffic, but they need to alert when an instance's <strong>memory usage exceeds 85%</strong>. They don't see a memory metric in CloudWatch. What's the correct way to enable this?</div>
+<ol class="qoptions">
+  <li>Enable detailed monitoring (1-minute) — memory metrics will appear.</li>
+  <li>Install the CloudWatch Agent on the instance and configure it to send memory metrics.</li>
+  <li>Memory metrics are only available for Nitro instances; switch to one.</li>
+  <li>Memory cannot be monitored in CloudWatch; use AWS Config.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Install the CloudWatch Agent.</strong> AWS can only see what the hypervisor exposes (CPU, network, disk I/O for instance store). Memory and disk-space-free are <em>inside</em> the OS, invisible to the hypervisor. The CloudWatch Agent runs inside the OS and reports those metrics.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Detailed monitoring is 1-min vs 5-min frequency — same metric set. (C) False — applies to all instance types. (D) AWS Config tracks configuration changes, not memory.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Memory" or "disk space free" on CloudWatch = install CloudWatch Agent. A classic.</div>
+</div>
+</div>
+
+<!-- Q18 -->
+<div class="qcard">
+<span class="qnum">Question 18</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A company runs a standardized Linux EC2 fleet across us-east-1 and eu-west-1 (Ireland). They want a single hardened "golden image" that's automatically available in both regions for new launches. What's the BEST approach?</div>
+<ol class="qoptions">
+  <li>Build the AMI in us-east-1 and reference it by AMI ID from eu-west-1 launches.</li>
+  <li>Build the AMI in us-east-1, then use the AWS CLI / console to copy the AMI to eu-west-1.</li>
+  <li>Mount the AMI from us-east-1 as a network drive in eu-west-1.</li>
+  <li>Configure the AMI as a "Global AMI" in the EC2 console.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Copy the AMI to eu-west-1.</strong> AMIs are region-resident. To use one in another region, you copy it — AWS replicates the underlying snapshots and assigns a new AMI ID in the target region.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) AMI IDs aren't valid across regions. (C) AMIs aren't mountable that way. (D) No such thing as a "Global AMI" in AWS.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Same image in multiple regions" = copy the AMI. EC2 Image Builder can automate this.</div>
+</div>
+</div>
+
+<!-- Q19 -->
+<div class="qcard">
+<span class="qnum">Question 19</span> <span class="qtype">Multi-response (Choose 2)</span>
+<div class="qscenario">An EC2 instance has a 500 GB gp3 EBS root volume containing critical regulatory data. The company's compliance officer requires backup snapshots to be retained for 7 years, but the data is accessed less than once a year. The team wants the MOST cost-effective long-term snapshot retention strategy. Which TWO actions together achieve this?</div>
+<ol class="qoptions">
+  <li>Manually delete snapshots after 30 days to save space.</li>
+  <li>Use AWS Data Lifecycle Manager (DLM) to automate the snapshot schedule and retention.</li>
+  <li>Move old snapshots to the EBS Snapshot Archive tier after they're no longer in active rotation.</li>
+  <li>Copy snapshots to S3 Standard for retention.</li>
+  <li>Convert old snapshots to AMIs to reduce storage cost.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span>+<span class="answer-letter">C</span><strong>DLM + Snapshot Archive tier.</strong> DLM automates the create/retain/delete lifecycle on a schedule. EBS Snapshot Archive is ~75% cheaper than standard snapshot storage — ideal for rarely-accessed compliance retention (acceptable to wait 24–72 hours to restore).</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Deleting violates the 7-year requirement. (D) Snapshots already live in S3-class durability under the hood — you can't directly copy them to S3 Standard. (E) AMIs use the same snapshot storage; no savings.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Long retention, rarely accessed" = Snapshot Archive. "Automate snapshot lifecycle" = Data Lifecycle Manager (DLM).</div>
+</div>
+</div>
+
+<!-- Q20 -->
+<div class="qcard">
+<span class="qnum">Question 20</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A development team accidentally terminated a production EC2 instance, losing the root EBS volume in the process. Management asks how to prevent this in the future for production instances. Which is the simplest, most direct safeguard?</div>
+<ol class="qoptions">
+  <li>Set the IAM policy to deny ec2:TerminateInstances for the entire account.</li>
+  <li>Enable Termination Protection on each production instance.</li>
+  <li>Move all production workloads to Reserved Instances which can't be terminated.</li>
+  <li>Use Stop Protection to prevent termination.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Enable Termination Protection.</strong> A simple per-instance toggle that blocks console/CLI termination until explicitly disabled. Cheap, easy, targeted.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Account-wide deny breaks legitimate ops. (C) RIs are a billing mechanism — instances are equally terminable. (D) <strong>Stop Protection prevents STOPS, not terminations.</strong> Common confusion.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> Two separate features — Termination Protection and Stop Protection. Don't confuse them.</div>
+</div>
+</div>
+
+<!-- Q21 -->
+<div class="qcard">
+<span class="qnum">Question 21</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A web application runs on small EC2 instances. Most of the time, CPU utilization sits at 5–10%, but spikes briefly to 70% during user actions. The team picked t3.small instances. Recently, during a marketing campaign, the app slowed dramatically because instances "ran out of CPU credits." What's the right architect response?</div>
+<ol class="qoptions">
+  <li>Switch to t3.large to get more credits.</li>
+  <li>Enable T3 Unlimited mode (or migrate to m5.small) — the workload is no longer truly burstable.</li>
+  <li>Add more t3.small instances to share load.</li>
+  <li>Switch to Spot Instances for lower cost.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Enable T3 Unlimited or move to m5.small.</strong> Running out of CPU credits means the workload is no longer a "burstable" fit. T3 Unlimited lets you exceed baseline by paying per CPU-hour above credits (often cheaper than upsizing). If sustained CPU is the new normal, M-family is a better match.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) t3.large still earns credits proportionally — bigger but same model. (C) Adding instances helps the load issue but doesn't fix per-instance credit exhaustion. (D) Spot is unrelated.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Ran out of CPU credits" = workload isn't burstable anymore. Either Unlimited mode or switch to M/C family.</div>
+</div>
+</div>
+
+<!-- Q22 -->
+<div class="qcard">
+<span class="qnum">Question 22</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A company runs an Oracle RAC clustered database that requires multiple EC2 instances to simultaneously read and write to the same block storage device. They're migrating from on-prem and want to preserve this architecture. Which storage configuration fits?</div>
+<ol class="qoptions">
+  <li>Mount EFS to all RAC nodes.</li>
+  <li>Use EBS Multi-Attach with an io2 volume across the RAC nodes (in the same AZ).</li>
+  <li>Use S3 with PutObject from each node.</li>
+  <li>Use FSx for Windows.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>EBS Multi-Attach with io2.</strong> Multi-Attach is specifically designed for clustered apps like Oracle RAC that manage their own block-level concurrency. Up to 16 instances in the same AZ can attach to one io1/io2 volume.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Oracle RAC needs block storage, not NFS file system. (C) S3 is object storage — not how a database engine reads/writes blocks. (D) FSx for Windows is SMB, doesn't match RAC's design.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Oracle RAC" or "clustered DB shared block volume" = EBS Multi-Attach. The flip side of Q10 — context matters.</div>
+</div>
+</div>
+
+<!-- Q23 -->
+<div class="qcard">
+<span class="qnum">Question 23</span> <span class="qtype">Single answer</span>
+<div class="qscenario">An EC2 instance failed its System Status Check repeatedly — AWS reports the underlying physical host is experiencing degraded hardware. The instance is Nitro-based. What's the SIMPLEST way to restore the instance to a healthy host with minimal downtime?</div>
+<ol class="qoptions">
+  <li>Terminate the instance and re-launch from the AMI.</li>
+  <li>Stop the instance and start it again (this moves it to a different host).</li>
+  <li>SSH in and reboot the OS.</li>
+  <li>Wait for AWS to migrate the instance automatically.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>Stop and start.</strong> When you stop an EBS-backed EC2 instance, it releases the underlying host. On start, AWS places it on different healthy hardware. The instance keeps its instance ID, EBS volumes, and Elastic IP (if attached). This is the standard fix for failed System Status Checks.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Terminate + relaunch loses the instance ID and is more work than needed. (C) Reboot stays on the same broken host — doesn't help. (D) Auto Recovery exists but typically you'd configure it via CloudWatch alarm with EC2 Recover action; "wait passively" isn't reliable for prod.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> System Status Check fail = AWS hardware issue. Stop/start moves you to fresh hardware. For automation, configure CloudWatch alarm + EC2 Recover action.</div>
+</div>
+</div>
+
+<!-- Q24 -->
+<div class="qcard">
+<span class="qnum">Question 24</span> <span class="qtype">Single answer</span>
+<div class="qscenario">A company is planning a major product launch and expects an unpredictable but potentially massive traffic spike. Their architect wants to <strong>guarantee</strong> that 100 specific m5.4xlarge instances will be available in us-east-1a during the launch window, regardless of region-wide capacity pressure. They do NOT want to commit to a long-term billing reservation. Which option fits?</div>
+<ol class="qoptions">
+  <li>3-year All Upfront Reserved Instances for those m5.4xlarge.</li>
+  <li>On-Demand Capacity Reservation in us-east-1a for 100 m5.4xlarge instances.</li>
+  <li>Spot Fleet diversified across instance types.</li>
+  <li>Dedicated Host purchase.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span><strong>On-Demand Capacity Reservation.</strong> Capacity Reservations guarantee that capacity is available when you need it, at On-Demand prices, with no long-term commitment. Perfect for launch events where availability matters more than discount. You can pair it later with a Savings Plan to layer in discounts.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) RIs are about discount, not capacity guarantees, and require commitment. (C) Spot doesn't guarantee capacity. (D) Dedicated Hosts solve licensing, not on-demand capacity guarantees.</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "Guarantee capacity in this AZ, no commitment" = On-Demand Capacity Reservation. A subtle but testable concept.</div>
+</div>
+</div>
+
+<!-- Q25 -->
+<div class="qcard">
+<span class="qnum">Question 25</span> <span class="qtype">Multi-response (Choose 2)</span>
+<div class="qscenario">A startup needs to run a machine learning training job on EC2. The job uses GPU-heavy p4d.24xlarge instances and runs for ~24 hours per training run. The team has built robust checkpointing to S3 every 30 minutes. They want to MINIMIZE compute cost while keeping the option to resume from the last checkpoint if interrupted. Which TWO design choices should they adopt?</div>
+<ol class="qoptions">
+  <li>Use On-Demand instances for the GPU layer to guarantee uninterrupted training.</li>
+  <li>Use Spot Instances for the GPU layer and design the job to resume from S3 checkpoints on interruption.</li>
+  <li>Set Spot interruption behavior to Stop or Hibernate where possible to preserve state.</li>
+  <li>Use Reserved Instances for 3 years.</li>
+  <li>Mount EBS Multi-Attach so multiple training nodes share state directly.</li>
+</ol>
+<div class="answer-block">
+  <div class="answer-label">Answer</div>
+  <p><span class="answer-letter">B</span>+<span class="answer-letter">C</span><strong>Spot for the GPU + Stop/Hibernate interruption behavior.</strong> P4d on Spot can be 70–90% cheaper than On-Demand. Combined with S3 checkpointing, interruption is recoverable. Configuring interruption behavior to Stop (or Hibernate, where supported) preserves more state than the default Terminate.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) On-Demand is 3–4× more expensive than Spot — wastes the cost reduction goal. (D) Training jobs are bursty, not steady — RIs are wrong fit. (E) Multi-Attach is for clustered DBs, not ML training (which typically uses distributed training over the network).</div>
+  <div class="trigger-recall"><strong>Trigger recall:</strong> "ML training, checkpointing, cheapest" = Spot + careful interruption handling. The combination of choices reflects defense-in-depth thinking.</div>
+</div>
+</div>
+
+<!-- ============================== SECTION 8 ============================== -->
+<h2 id="sec8">8. Day-of-Exam Tips for EC2 Questions</h2>
+
+<div class="callout exam-tip">
+  <div class="callout-title">Reading the Question</div>
+  <ol style="margin-bottom: 0;">
+    <li><strong>Read the last sentence first.</strong> That's where the qualifier lives: "MOST cost-effective," "LEAST operational overhead," "BEST resilience."</li>
+    <li><strong>Identify the workload character.</strong> Steady? Spiky? Fault-tolerant? Production-critical? This sets the pricing model.</li>
+    <li><strong>Look for hard constraints.</strong> "BYOL Oracle license" forces Dedicated Host. "Must guarantee capacity" forces Capacity Reservation. "Sub-millisecond latency between nodes" forces Cluster placement.</li>
+    <li><strong>Eliminate obviously wrong answers first.</strong> Spot for production? Eliminate. Hardcoded keys? Eliminate. IMDSv1 in 2026? Eliminate.</li>
+  </ol>
+</div>
+
+<div class="callout exam-tip">
+  <div class="callout-title">Tie-Breaking Between Two "Correct" Answers</div>
+  <ul style="margin-bottom: 0;">
+    <li>If the question emphasizes <strong>cost</strong> → pick Spot / Reserved / Savings Plan / Graviton / gp3 / st1.</li>
+    <li>If it emphasizes <strong>operational overhead</strong> → pick managed services, Compute Savings Plan, IAM Role over keys.</li>
+    <li>If it emphasizes <strong>resilience / HA</strong> → multi-AZ via Auto Scaling Group, Spread or Partition placement, EBS over Instance Store, RDS Multi-AZ.</li>
+    <li>If it emphasizes <strong>performance</strong> → Cluster placement, io2 Block Express, Instance Store, EFA, ENA.</li>
+  </ul>
+</div>
+
+<div class="callout key-fact">
+  <div class="callout-title">The Final 10-Point Recall</div>
+  <p>Before each EC2 question, run this checklist in your head:</p>
+  <ol style="margin-bottom: 0;">
+    <li>What's the qualifier? (cost / ops / HA / performance)</li>
+    <li>Is the workload fault-tolerant? → Spot in play</li>
+    <li>Is the workload steady? → Reserved/Savings in play</li>
+    <li>Does data need to survive instance death? → EBS, not Instance Store</li>
+    <li>Boot volume? → SSD (gp3/io2), never HDD</li>
+    <li>Multi-AZ shared file system? → EFS (Linux), FSx (Windows)</li>
+    <li>Clustered DB shared block volume? → EBS Multi-Attach</li>
+    <li>Placement: speed (Cluster), few critical (Spread ≤7), many distributed (Partition)</li>
+    <li>EC2 → AWS API calls = IAM Role, always IMDSv2</li>
+    <li>Memory/disk-free metric in CW = install CloudWatch Agent</li>
+  </ol>
+</div>
+
+<hr>
+
+<div class="callout concept">
+  <div class="callout-title">You're Ready for EC2</div>
+  <p>You've now done the work most candidates skip: paired conceptual understanding with exam-pattern fluency. If you got 20+ of the 25 questions right, you're solidly above the SAA-C03 pass line on the EC2 portion. If you missed several, go back to Doc 1 for those topics — the concept is what's missing, not the trivia.</p>
+  <p style="margin-bottom: 0;"><strong>Next steps for the bigger SAA picture:</strong> EC2 connects to Auto Scaling Groups (Topic 4), Load Balancers (Topic 5), EBS &amp; storage (Topic 23), and the VPC/networking layer (Topic 2). When you study those, every reference to "EC2" should feel automatic.</p>
+</div>
+
+</div><!-- /container -->
+
+<footer>
+  <p><strong>EC2 Exam Crusher · Document 2 of 2</strong></p>
+  <p>Cheat sheets → Triggers → Traps → Practice → Pass</p>
+  <p style="margin-top: 15px; font-size: 0.9em;">Built for the SAA-C03 exam (May 2026 edition)</p>
+</footer>
+
+</body>
+</html>
