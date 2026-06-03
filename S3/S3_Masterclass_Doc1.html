@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon S3 Masterclass — SAA-C03</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6f0;
+    --warm-white: #fff9f2;
+    --ink: #1a1208;
+    --ink-soft: #3d2e1a;
+    --ink-muted: #6b5744;
+    --accent-amber: #c97d2e;
+    --accent-amber-light: #e8a84a;
+    --accent-teal: #1d7a6e;
+    --accent-teal-light: #2a9d8f;
+    --accent-rust: #b84c2a;
+    --accent-rust-light: #d4693e;
+    --accent-purple: #6b3fa0;
+    --accent-blue: #1e5fa8;
+    --accent-blue-light: #2b7dd4;
+    --accent-green: #2d7a3e;
+    --border: #e8ddd0;
+    --border-warm: #d4c4aa;
+    --shadow-warm: 0 4px 24px rgba(100, 70, 30, 0.12);
+    --shadow-card: 0 2px 12px rgba(100, 70, 30, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1.85;
+    font-weight: 300;
+  }
+
+  /* HERO HEADER */
+  .hero {
+    background: linear-gradient(135deg, #1a1208 0%, #2d1f0e 40%, #1d3a35 100%);
+    color: #fff9f2;
+    padding: 80px 60px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #e8a84a;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(42px, 5vw, 72px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: #fff9f2;
+    margin-bottom: 20px;
+  }
+  .hero h1 span { color: #e8a84a; }
+  .hero-subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    color: rgba(255, 249, 242, 0.75);
+    max-width: 700px;
+    font-style: italic;
+    margin-bottom: 32px;
+  }
+  .hero-pills {
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .hero-pill {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,249,242,0.9);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  /* NAVIGATION */
+  .toc {
+    background: var(--warm-white);
+    border-bottom: 2px solid var(--border);
+    padding: 24px 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(100,70,30,0.06);
+  }
+  .toc-inner {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .toc-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  .toc a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-teal);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .toc a:hover {
+    border-color: var(--accent-teal);
+    background: rgba(29, 122, 110, 0.05);
+  }
+
+  /* LAYOUT */
+  .main-content {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 60px 80px;
+  }
+
+  /* PART HEADERS */
+  .part-header {
+    margin: 80px 0 40px;
+    padding: 40px 50px;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .part-header.amber {
+    background: linear-gradient(135deg, #fdf0e0 0%, #fde8c8 100%);
+    border-left: 5px solid var(--accent-amber);
+  }
+  .part-header.teal {
+    background: linear-gradient(135deg, #e0f4f1 0%, #c8eee9 100%);
+    border-left: 5px solid var(--accent-teal);
+  }
+  .part-header.rust {
+    background: linear-gradient(135deg, #fce8e0 0%, #f8d8cc 100%);
+    border-left: 5px solid var(--accent-rust);
+  }
+  .part-header.purple {
+    background: linear-gradient(135deg, #efe8f8 0%, #e2d4f0 100%);
+    border-left: 5px solid var(--accent-purple);
+  }
+  .part-header.blue {
+    background: linear-gradient(135deg, #e0ecf8 0%, #cce0f5 100%);
+    border-left: 5px solid var(--accent-blue);
+  }
+  .part-header.green {
+    background: linear-gradient(135deg, #e0f0e4 0%, #cce6d2 100%);
+    border-left: 5px solid var(--accent-green);
+  }
+  .part-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+  .part-header h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .part-header p {
+    font-size: 17px;
+    color: var(--ink-soft);
+    font-style: italic;
+    max-width: 700px;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 64px; }
+  .section-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-title .icon {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    background: var(--accent-amber);
+    border-radius: 8px;
+    text-align: center;
+    line-height: 36px;
+    font-size: 16px;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+
+  /* PROSE */
+  .prose p {
+    margin-bottom: 18px;
+    color: var(--ink-soft);
+  }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { color: var(--ink); font-weight: 600; }
+  .prose em { color: var(--accent-teal); font-style: italic; }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    position: relative;
+  }
+  .callout-why {
+    background: linear-gradient(135deg, #fff8e8 0%, #fdefd0 100%);
+    border-left: 4px solid var(--accent-amber);
+  }
+  .callout-industry {
+    background: linear-gradient(135deg, #e8f4f8 0%, #d4ecf4 100%);
+    border-left: 4px solid var(--accent-blue);
+  }
+  .callout-exam {
+    background: linear-gradient(135deg, #e8f4ef 0%, #d0ece4 100%);
+    border-left: 4px solid var(--accent-teal);
+  }
+  .callout-trap {
+    background: linear-gradient(135deg, #fef0e8 0%, #fde0cc 100%);
+    border-left: 4px solid var(--accent-rust);
+  }
+  .callout-tip {
+    background: linear-gradient(135deg, #f0eaf8 0%, #e0d4f0 100%);
+    border-left: 4px solid var(--accent-purple);
+  }
+  .callout-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .callout-why .callout-tag { color: var(--accent-amber); }
+  .callout-industry .callout-tag { color: var(--accent-blue); }
+  .callout-exam .callout-tag { color: var(--accent-teal); }
+  .callout-trap .callout-tag { color: var(--accent-rust); }
+  .callout-tip .callout-tag { color: var(--accent-purple); }
+  .callout p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout strong { color: var(--ink); }
+
+  /* TABLES */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 28px 0;
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  thead {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  thead th {
+    padding: 14px 18px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  tbody tr { background: var(--warm-white); }
+  tbody tr:nth-child(even) { background: #f5efe6; }
+  tbody tr:hover { background: #ede3d5; }
+  tbody td {
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  tbody td strong { color: var(--ink); }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-green { background: #dcf4e0; color: #1a5c28; }
+  .badge-amber { background: #fde8c0; color: #7a4a10; }
+  .badge-red { background: #fde0d8; color: #7a2410; }
+  .badge-blue { background: #dceef8; color: #123e6e; }
+  .badge-purple { background: #ede4f8; color: #3a2060; }
+
+  /* CODE */
+  .code-block {
+    background: #1e1610;
+    color: #e8d5b8;
+    padding: 24px 28px;
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: #6b8a5e; }
+  .code-block .key { color: #e8a84a; }
+  .code-block .string { color: #7ec8a4; }
+  .code-block .number { color: #9ecff8; }
+
+  /* COMPARISON CARDS */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 28px 0;
+  }
+  .comp-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .comp-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-warm);
+  }
+  .comp-card-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+  }
+  .comp-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .comp-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .comp-card ul li {
+    font-size: 15px;
+    color: var(--ink-soft);
+    padding: 4px 0;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .comp-card ul li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--accent-teal);
+    font-weight: 600;
+  }
+
+  /* STORAGE CLASS CARDS */
+  .storage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .storage-card {
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s;
+  }
+  .storage-card:hover { transform: translateY(-2px); }
+  .storage-card .tier { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .storage-card h4 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .storage-card p { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 8px; }
+  .storage-card .meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-muted); }
+  .sc-standard { background: linear-gradient(135deg, #eef8f5, #ddf4ee); }
+  .sc-standard .tier { color: var(--accent-teal); }
+  .sc-standard h4 { color: var(--accent-teal); }
+  .sc-ia { background: linear-gradient(135deg, #fffae8, #fdf0cc); }
+  .sc-ia .tier { color: var(--accent-amber); }
+  .sc-ia h4 { color: var(--accent-amber); }
+  .sc-onezone { background: linear-gradient(135deg, #fdf4e0, #fbe8c4); }
+  .sc-onezone .tier { color: #b8830a; }
+  .sc-onezone h4 { color: #b8830a; }
+  .sc-glacier-instant { background: linear-gradient(135deg, #eef0fc, #dde2f8); }
+  .sc-glacier-instant .tier { color: var(--accent-blue); }
+  .sc-glacier-instant h4 { color: var(--accent-blue); }
+  .sc-glacier-flex { background: linear-gradient(135deg, #eee8f8, #ddd0f4); }
+  .sc-glacier-flex .tier { color: var(--accent-purple); }
+  .sc-glacier-flex h4 { color: var(--accent-purple); }
+  .sc-deep { background: linear-gradient(135deg, #f8e8ee, #f0d4de); }
+  .sc-deep .tier { color: var(--accent-rust); }
+  .sc-deep h4 { color: var(--accent-rust); }
+  .sc-it { background: linear-gradient(135deg, #e8f4e0, #d4ecc8); }
+  .sc-it .tier { color: var(--accent-green); }
+  .sc-it h4 { color: var(--accent-green); }
+
+  /* SVG DIAGRAM WRAPPER */
+  .diagram-wrapper {
+    margin: 32px 0;
+    text-align: center;
+  }
+  .diagram-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+  }
+  svg text { font-family: 'Source Serif 4', serif; }
+
+  /* INDUSTRY SPOTLIGHT */
+  .industry-spotlight {
+    background: linear-gradient(135deg, #0f2a38 0%, #1a3a4a 50%, #0e2830 100%);
+    border-radius: 20px;
+    padding: 48px 52px;
+    margin: 40px 0;
+    color: #e8f4f8;
+    position: relative;
+    overflow: hidden;
+  }
+  .industry-spotlight::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .industry-spotlight-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #7ec8d4;
+    margin-bottom: 12px;
+  }
+  .industry-spotlight h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .industry-spotlight p {
+    font-size: 16px;
+    line-height: 1.85;
+    color: rgba(232, 244, 248, 0.85);
+    margin-bottom: 16px;
+  }
+  .industry-spotlight strong { color: #e8d48a; }
+  .industry-spotlight h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: #7ec8d4;
+    margin: 28px 0 12px;
+  }
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .arch-item {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .arch-item .arch-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7ec8d4;
+    margin-bottom: 6px;
+  }
+  .arch-item p {
+    font-size: 14px;
+    color: rgba(232, 244, 248, 0.8);
+    margin: 0;
+  }
+
+  /* KEY METRICS */
+  .metrics-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 24px 0;
+  }
+  .metric-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    flex: 1;
+    min-width: 160px;
+    box-shadow: var(--shadow-card);
+  }
+  .metric-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--accent-teal);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .metric-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  /* STEP FLOW */
+  .step-flow { margin: 28px 0; }
+  .step-item {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-teal);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+  .step-content h5 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .step-content p {
+    font-size: 16px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  /* ENCRYPTION CARDS */
+  .enc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .enc-card {
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid var(--border);
+  }
+  .enc-card .enc-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .enc-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .enc-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 6px; }
+  .enc-s3 { background: linear-gradient(135deg, #e8f4ef, #d4ecde); }
+  .enc-s3 .enc-tag { color: var(--accent-teal); }
+  .enc-kms { background: linear-gradient(135deg, #fdf4e4, #fae8c0); }
+  .enc-kms .enc-tag { color: var(--accent-amber); }
+  .enc-c { background: linear-gradient(135deg, #f0eaf8, #e0d4f0); }
+  .enc-c .enc-tag { color: var(--accent-purple); }
+  .enc-dsse { background: linear-gradient(135deg, #e8ecf8, #d4dcf0); }
+  .enc-dsse .enc-tag { color: var(--accent-blue); }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-warm), transparent);
+    margin: 48px 0;
+  }
+
+  /* FOOTER */
+  .doc-footer {
+    background: var(--ink);
+    color: rgba(255,249,242,0.6);
+    text-align: center;
+    padding: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  /* INLINE CODE */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: #f0e8dc;
+    color: var(--accent-rust);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* HIGHLIGHT TEXT */
+  .highlight { color: var(--accent-amber); font-weight: 600; }
+  .highlight-teal { color: var(--accent-teal); font-weight: 600; }
+  .highlight-rust { color: var(--accent-rust); font-weight: 600; }
+
+  /* LIST */
+  .nice-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+  }
+  .nice-list li {
+    padding: 6px 0 6px 24px;
+    position: relative;
+    color: var(--ink-soft);
+    font-size: 16.5px;
+    line-height: 1.7;
+  }
+  .nice-list li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    color: var(--accent-amber);
+  }
+
+  @media (max-width: 768px) {
+    .main-content { padding: 0 20px 60px; }
+    .hero { padding: 40px 20px 36px; }
+    .toc { padding: 16px 20px; }
+    .part-header { padding: 28px 24px; }
+    .industry-spotlight { padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<header class="hero">
+  <div class="hero-tag">SAA-C03 Masterclass · Topic 06</div>
+  <h1>Amazon <span>S3</span> —<br>The Backbone of Cloud</h1>
+  <p class="hero-subtitle">From zero to architecture: object storage, security, performance, and real Dublin fintech production patterns.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">S3 Introduction</span>
+    <span class="hero-pill">Advanced S3</span>
+    <span class="hero-pill">S3 Security</span>
+    <span class="hero-pill">Industry Architecture</span>
+    <span class="hero-pill">Exam Concepts</span>
+  </div>
+</header>
+
+<!-- ==================== TOC ==================== -->
+<nav class="toc">
+  <div class="toc-inner">
+    <span class="toc-label">Jump to →</span>
+    <a href="#p1">Why S3?</a>
+    <a href="#p2">S3 Fundamentals</a>
+    <a href="#p3">Storage Classes</a>
+    <a href="#p4">Lifecycle</a>
+    <a href="#p5">Versioning &amp; Lock</a>
+    <a href="#p6">Replication</a>
+    <a href="#p7">Performance</a>
+    <a href="#p8">Event Notifications</a>
+    <a href="#p9">Encryption</a>
+    <a href="#p10">Access Control</a>
+    <a href="#p11">Advanced Features</a>
+    <a href="#p11b">Logging &amp; Monitoring</a>
+    <a href="#p12">Dublin Industry</a>
+  </div>
+</nav>
+
+<div class="main-content">
+
+<!-- ==================== PART 1: WHY S3 ==================== -->
+<div id="p1" class="part-header amber">
+  <div class="part-number">Part 01</div>
+  <h2>The Problem S3 Solves</h2>
+  <p>Before S3 existed, how did companies store files? Let's go back to 2006 and feel the pain.</p>
+</div>
+
+<div class="section">
+  <div class="prose">
+    <p>Imagine you are running a photo-sharing website in 2004. Your users upload 10,000 photos per day. Where do you put them? You buy a hard drive, plug it into your server, and store the files there. Simple. But then your site grows. You get 100,000 uploads a day. You buy more hard drives. You fill a rack. Then two racks. Then an entire server room. And now you have a new set of nightmare problems:</p>
+  </div>
+
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Problem #1</div>
+      <h4>Capacity Guessing</h4>
+      <ul>
+        <li>Buy too little → site crashes when full</li>
+        <li>Buy too much → money wasted on idle drives</li>
+        <li>Hard drives take weeks to order and arrive</li>
+        <li>No way to scale instantly for viral moments</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Problem #2</div>
+      <h4>Reliability Headaches</h4>
+      <ul>
+        <li>Hard drives fail — typically 1-4% per year</li>
+        <li>Data centre fire = all your photos, gone</li>
+        <li>Manual backup takes engineers + more hardware</li>
+        <li>Disasters cost companies millions</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Problem #3</div>
+      <h4>Global Access Pain</h4>
+      <ul>
+        <li>Your server room is in Dublin</li>
+        <li>User in Sydney downloads a photo → 300ms+ latency</li>
+        <li>Your server handles every single request</li>
+        <li>Peak traffic → servers explode under load</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Problem #4</div>
+      <h4>Operational Burden</h4>
+      <ul>
+        <li>Hire sysadmins to manage hardware 24/7</li>
+        <li>Write your own backup, replication, redundancy code</li>
+        <li>Manage RAID arrays, storage networks</li>
+        <li>Replace failed drives at 3am on a Sunday</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why S3 Was Built</div>
+    <p><strong>Amazon solved all four of these problems for themselves first.</strong> Amazon.com — the e-commerce site — was dealing with exactly these problems at massive scale. They engineered an internal solution, then in March 2006, they launched it as a service: Simple Storage Service (S3). The idea was radical: <em>what if storage was just an API call?</em> You call <code>PUT object</code> and your file is stored, replicated, and served globally — with zero servers to manage.</p>
+    <p>S3 didn't just solve Amazon's problem. It kickstarted the entire cloud computing era. <strong>Dropbox, Netflix, Instagram, Airbnb — all built on S3 in their early days</strong> because it meant they could focus on their product instead of managing storage infrastructure.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">The Three Types of Storage — Understanding Where S3 Fits</h3>
+  <div class="prose">
+    <p>Before going deeper, you need to understand the three fundamental types of storage. This distinction matters a LOT on the exam and in real interviews.</p>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">The Three Storage Types — A Visual Analogy</div>
+    <svg viewBox="0 0 960 340" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="blockGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#1d7a6e;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#2a9d8f;stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="fileGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#c97d2e;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#e8a84a;stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="objectGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#1e5fa8;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#2b7dd4;stop-opacity:1"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Block Storage -->
+      <rect x="20" y="20" width="280" height="300" rx="16" fill="#f0faf8" stroke="#1d7a6e" stroke-width="2"/>
+      <rect x="20" y="20" width="280" height="60" rx="16" fill="url(#blockGrad)"/>
+      <rect x="20" y="60" width="280" height="20" fill="url(#blockGrad)"/>
+      <text x="160" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="white" font-family="'Playfair Display',serif">Block Storage</text>
+      <text x="160" y="105" text-anchor="middle" font-size="14" fill="#1a5c4a" font-family="'Source Serif 4',serif">Think: Hard Drive in your PC</text>
+      <rect x="50" y="125" width="60" height="30" rx="4" fill="#1d7a6e" opacity="0.3"/>
+      <rect x="120" y="125" width="60" height="30" rx="4" fill="#1d7a6e" opacity="0.3"/>
+      <rect x="190" y="125" width="60" height="30" rx="4" fill="#1d7a6e" opacity="0.3"/>
+      <rect x="50" y="165" width="60" height="30" rx="4" fill="#1d7a6e" opacity="0.5"/>
+      <rect x="120" y="165" width="60" height="30" rx="4" fill="#1d7a6e" opacity="0.5"/>
+      <rect x="190" y="165" width="60" height="30" rx="4" fill="#1d7a6e" opacity="0.5"/>
+      <text x="55" y="145" font-size="10" fill="#0d4030" font-family="monospace">4KB</text>
+      <text x="55" y="185" font-size="10" fill="#0d4030" font-family="monospace">4KB</text>
+      <text x="160" y="235" text-anchor="middle" font-size="13" fill="#1a5c4a" font-family="'Source Serif 4',serif">Raw blocks of data</text>
+      <text x="160" y="256" text-anchor="middle" font-size="13" fill="#1a5c4a" font-family="'Source Serif 4',serif">Attached to ONE instance</text>
+      <text x="160" y="285" text-anchor="middle" font-size="12" fill="#0d4030" font-weight="600" font-family="monospace">AWS Service: EBS</text>
+
+      <!-- File Storage -->
+      <rect x="340" y="20" width="280" height="300" rx="16" fill="#fffbe8" stroke="#c97d2e" stroke-width="2"/>
+      <rect x="340" y="20" width="280" height="60" rx="16" fill="url(#fileGrad)"/>
+      <rect x="340" y="60" width="280" height="20" fill="url(#fileGrad)"/>
+      <text x="480" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="white" font-family="'Playfair Display',serif">File Storage</text>
+      <text x="480" y="105" text-anchor="middle" font-size="14" fill="#7a4a10" font-family="'Source Serif 4',serif">Think: Shared Network Drive</text>
+      <!-- Folder hierarchy -->
+      <rect x="390" y="125" width="100" height="24" rx="4" fill="#c97d2e" opacity="0.4"/>
+      <text x="440" y="141" text-anchor="middle" font-size="12" fill="#5a3010" font-family="monospace">📁 /home</text>
+      <rect x="410" y="158" width="80" height="20" rx="4" fill="#c97d2e" opacity="0.3"/>
+      <text x="450" y="172" text-anchor="middle" font-size="11" fill="#5a3010" font-family="monospace">📁 /docs</text>
+      <rect x="425" y="187" width="70" height="18" rx="4" fill="#c97d2e" opacity="0.2"/>
+      <text x="460" y="200" text-anchor="middle" font-size="11" fill="#5a3010" font-family="monospace">📄 file.txt</text>
+      <text x="480" y="240" text-anchor="middle" font-size="13" fill="#7a4a10" font-family="'Source Serif 4',serif">Hierarchical folders</text>
+      <text x="480" y="260" text-anchor="middle" font-size="13" fill="#7a4a10" font-family="'Source Serif 4',serif">Multiple instances share it</text>
+      <text x="480" y="285" text-anchor="middle" font-size="12" fill="#5a3010" font-weight="600" font-family="monospace">AWS Service: EFS / FSx</text>
+
+      <!-- Object Storage -->
+      <rect x="660" y="20" width="280" height="300" rx="16" fill="#e8eef8" stroke="#1e5fa8" stroke-width="2"/>
+      <rect x="660" y="20" width="280" height="60" rx="16" fill="url(#objectGrad)"/>
+      <rect x="660" y="60" width="280" height="20" fill="url(#objectGrad)"/>
+      <text x="800" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="white" font-family="'Playfair Display',serif">Object Storage</text>
+      <text x="800" y="105" text-anchor="middle" font-size="14" fill="#123e6e" font-family="'Source Serif 4',serif">Think: Giant Locker Room</text>
+      <!-- Objects with keys -->
+      <circle cx="720" cy="150" r="22" fill="#1e5fa8" opacity="0.3"/>
+      <text x="720" y="154" text-anchor="middle" font-size="11" fill="#0a2a50" font-family="monospace">🔑 key</text>
+      <circle cx="800" cy="150" r="22" fill="#1e5fa8" opacity="0.3"/>
+      <text x="800" y="154" text-anchor="middle" font-size="11" fill="#0a2a50" font-family="monospace">🔑 key</text>
+      <circle cx="720" cy="205" r="22" fill="#1e5fa8" opacity="0.3"/>
+      <text x="720" y="209" text-anchor="middle" font-size="11" fill="#0a2a50" font-family="monospace">🔑 key</text>
+      <circle cx="800" cy="205" r="22" fill="#1e5fa8" opacity="0.5"/>
+      <text x="800" y="209" text-anchor="middle" font-size="11" fill="#0a2a50" font-family="monospace">🔑 key</text>
+      <text x="800" y="255" text-anchor="middle" font-size="13" fill="#123e6e" font-family="'Source Serif 4',serif">Flat namespace + API</text>
+      <text x="800" y="275" text-anchor="middle" font-size="13" fill="#123e6e" font-family="'Source Serif 4',serif">Infinitely scalable, HTTP</text>
+      <text x="800" y="296" text-anchor="middle" font-size="12" fill="#0a2a50" font-weight="600" font-family="monospace">AWS Service: S3</text>
+    </svg>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Key Concept</div>
+    <p><strong>S3 is object storage — not a file system, not a block device.</strong> This means: you CANNOT mount S3 like a hard drive. You CANNOT open a file and write to the middle of it. You retrieve or replace entire objects via HTTP GET/PUT. This is a core architectural constraint that drives exam questions.</p>
+    <p><strong>Quick rule:</strong> Need a database → don't use S3. Need to run an OS → use EBS. Need shared drive across Linux EC2 instances → use EFS. Need to store files, images, videos, backups, logs → use S3.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 2: S3 FUNDAMENTALS ==================== -->
+<div id="p2" class="part-header teal">
+  <div class="part-number">Part 02</div>
+  <h2>S3 Fundamentals</h2>
+  <p>Buckets, objects, keys — the vocabulary you need before anything else makes sense.</p>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Buckets and Objects — The Mental Model</h3>
+  <div class="prose">
+    <p><strong>Think of S3 like a giant, magical filing system with two levels: buckets and objects.</strong></p>
+    <p>A <strong>bucket</strong> is like a top-level container — think of it like a postal code district. You create a bucket, give it a name, and choose which AWS Region it lives in. All data inside that bucket physically lives in that region (important for GDPR compliance in Ireland!).</p>
+    <p>An <strong>object</strong> is anything you store inside a bucket — a photo, a video, a PDF, a ZIP file, a database backup. The maximum size for a single object is <strong>5 TB</strong>. For anything over 5 GB, you <em>must</em> use multipart upload (more on this in Performance).</p>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-value">11 9s</div>
+      <div class="metric-label">Durability (99.999999999%)</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">99.99%</div>
+      <div class="metric-label">Availability (S3 Standard)</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">5 TB</div>
+      <div class="metric-label">Max Object Size</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">∞</div>
+      <div class="metric-label">Total Storage</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">3+ AZs</div>
+      <div class="metric-label">Automatic Replication</div>
+    </div>
+  </div>
+
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 What "11 Nines" Actually Means</div>
+    <p>If you store 10,000,000 objects in S3, you'd expect to lose <strong>0.001 objects per year</strong> on average. That's basically "never lose anything". AWS achieves this by automatically copying your data across <strong>at least 3 Availability Zones</strong> within your region. When you PUT an object, it's replicated before S3 confirms success. No action required from you.</p>
+    <p><strong>Real-world illustration:</strong> Netflix stores over 1 petabyte of video content in S3. Dropbox stores billions of user files in S3. Neither has to worry about a failed hard drive wiping their data.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Bucket Naming Rules — The Gotchas</h3>
+  <div class="prose">
+    <p>Bucket names are globally unique across all AWS accounts in the world. This is because S3 bucket URLs look like this: <code>https://my-bucket.s3.amazonaws.com/photo.jpg</code> — and there can only be one DNS entry per name.</p>
+  </div>
+  <ul class="nice-list">
+    <li>3–63 characters long, lowercase letters, numbers, hyphens only</li>
+    <li>Must start with a letter or number — NOT a hyphen or uppercase</li>
+    <li>Cannot be formatted as an IP address (e.g., <code>192.168.1.1</code>)</li>
+    <li>Globally unique — even across different AWS accounts and regions</li>
+    <li>Region-specific data — your bucket lives in one region (e.g., <code>eu-west-1</code> = Ireland)</li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Insight</div>
+    <p><strong>S3 is a global service</strong> (appears under "Global" in AWS console) but <strong>buckets are regional</strong>. Data in a bucket in eu-west-1 (Ireland) physically stays in Ireland unless you configure Cross-Region Replication. This is crucial for data residency requirements — a major concern for Dublin fintech companies under GDPR.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Object Keys — How S3 "Fakes" a Folder Structure</h3>
+  <div class="prose">
+    <p>Here's something that trips many people up: <strong>S3 has no real folders.</strong> It has a flat namespace. An object key is just a string — the full "path" to your object. The key <code>2025/january/invoice-001.pdf</code> is just a string that happens to contain slashes.</p>
+    <p>The AWS console and SDKs display these keys as if they were folders — they group keys that share the same prefix. But underneath, it's all flat. This matters for performance: you can distribute requests across prefixes to avoid "hot spots" (more on this in the Performance section).</p>
+  </div>
+  <div class="code-block">
+<span class="comment"># These look like folders in the console but are just object keys:</span>
+s3://my-fenergo-bucket/<span class="key">kyc-docs</span>/<span class="string">2025</span>/<span class="key">january</span>/<span class="string">client-passport-12345.pdf</span>
+s3://my-fenergo-bucket/<span class="key">contracts</span>/<span class="string">europe</span>/<span class="key">ireland</span>/<span class="string">agreement-xyz.pdf</span>
+s3://my-fenergo-bucket/<span class="key">audit-logs</span>/<span class="string">2025-01-15-access.log</span>
+
+<span class="comment"># The key for the first object is literally:</span>
+<span class="string">"kyc-docs/2025/january/client-passport-12345.pdf"</span>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Strong Consistency — The 2020 Game Changer</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why This Was a Big Deal</div>
+    <p>Before December 2020, S3 had a confusing split: <em>read-after-write consistency</em> for new PUTs (you could immediately read a newly uploaded file) but only <em>eventual consistency</em> for overwrite PUTs and DELETEs (you might get a stale version for a short period after updating or deleting). This caused real bugs in applications that read immediately after writing.</p>
+    <p>In December 2020, AWS upgraded S3 to be <strong>strongly consistent for ALL operations</strong> — at no extra cost, no config needed, no performance trade-off. This was a massive engineering achievement given S3 handles trillions of requests per day.</p>
+  </div>
+  <div class="prose">
+    <p><strong>What strong consistency means in plain language:</strong> The moment a PUT (upload) or DELETE succeeds and S3 confirms it, every subsequent GET or LIST will reflect that change. There is no "stale read" window anymore. If you upload a file and immediately list the bucket, the file appears. If you delete a file and immediately GET it, you get a 404. Always. No exceptions.</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Before Dec 2020 (Old)</div>
+      <h4>Eventual Consistency</h4>
+      <ul>
+        <li>Overwrite a file → might read old version briefly</li>
+        <li>Delete a file → might still get it for a short window</li>
+        <li>List bucket after upload → new file might not appear</li>
+        <li>Required workarounds in application code</li>
+        <li>Caused race conditions in distributed systems</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">After Dec 2020 (Current)</div>
+      <h4>Strong Consistency</h4>
+      <ul>
+        <li>PUT succeeds → immediately readable everywhere</li>
+        <li>DELETE succeeds → immediately gone, GET returns 404</li>
+        <li>LIST after PUT → new object appears immediately</li>
+        <li>No workarounds needed in application code</li>
+        <li>Applies to ALL S3 operations, ALL storage classes</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ Exam Trap — Old Questions Are Still Around</div>
+    <p>Many old practice questions and study materials (written before Dec 2020) will mention eventual consistency for S3 overwrites and deletes. <strong>These are now wrong.</strong> S3 is strongly consistent for all operations since December 2020. If an exam question asks "what consistency model does S3 use?" — the answer is <strong>strong consistency</strong>. If you see answer choices suggesting eventual consistency for S3 in modern questions, that is a trap/distractor.</p>
+    <p><strong>Exception to know:</strong> S3 strong consistency does NOT apply to S3's integration with Amazon CloudFront edge caches (that's still eventual via TTL-based caching) or to S3 bucket configuration (like policy changes — those may have brief propagation delays). The strong consistency guarantee is for object data operations: GET, PUT, DELETE, LIST.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 3: STORAGE CLASSES ==================== -->
+<div id="p3" class="part-header rust">
+  <div class="part-number">Part 03</div>
+  <h2>Storage Classes — The Cost Brain</h2>
+  <p>Why pay the same for data you access daily vs. data from 3 years ago? S3's tiered pricing is one of its most powerful features.</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why Storage Classes Were Invented</div>
+    <p>Imagine a company stores 100TB of data. 5TB is actively used daily — product images, current invoices, logs from the last week. The other 95TB is older data: last year's tax filings, 3-year-old customer records, archived videos. <strong>Treating all 100TB identically is massively wasteful.</strong></p>
+    <p>AWS's answer: <strong>storage classes</strong>. You pay less to store data you rarely access, but you pay a <em>retrieval fee</em> when you do need it. The less you access data, the cheaper the storage — but the more you pay per retrieval, and the longer it takes to get. Pick the class that matches your actual access pattern.</p>
+  </div>
+
+  <div class="storage-grid">
+    <div class="storage-card sc-standard">
+      <div class="tier">Tier 1 — Hot</div>
+      <h4>S3 Standard</h4>
+      <p>Your everyday workhorse. Data stored across 3+ AZs. Millisecond access. No minimum storage duration.</p>
+      <p class="meta">✓ 99.999999999% durability | ✓ 99.99% availability | ✓ No retrieval fee</p>
+    </div>
+    <div class="storage-card sc-ia">
+      <div class="tier">Tier 2 — Warm</div>
+      <h4>Standard-IA</h4>
+      <p>Infrequent Access. Same durability as Standard, multi-AZ. Cheaper storage but you pay per retrieval. Min 30-day storage.</p>
+      <p class="meta">Use for: backups, DR copies, data accessed monthly | Min 30 days | Retrieval fee applies</p>
+    </div>
+    <div class="storage-card sc-onezone">
+      <div class="tier">Tier 3 — Warm+Risky</div>
+      <h4>One Zone-IA</h4>
+      <p>Like Standard-IA but data lives in only ONE Availability Zone. 20% cheaper than Standard-IA but if that AZ fails, your data is gone.</p>
+      <p class="meta">Use for: re-creatable data, secondary backups | Min 30 days | Single AZ risk</p>
+    </div>
+    <div class="storage-card sc-glacier-instant">
+      <div class="tier">Tier 4 — Cold</div>
+      <h4>Glacier Instant Retrieval</h4>
+      <p>Archive data you access maybe once a quarter, but still need in milliseconds when you do. Huge cost savings vs Standard.</p>
+      <p class="meta">Retrieval: milliseconds | Min 90 days | Multi-AZ</p>
+    </div>
+    <div class="storage-card sc-glacier-flex">
+      <div class="tier">Tier 5 — Colder</div>
+      <h4>Glacier Flexible Retrieval</h4>
+      <p>Archive for data accessed maybe 1-2 times per year. Retrieval takes minutes to 12 hours. Much cheaper storage cost.</p>
+      <p class="meta">Retrieval: 1 min–12 hrs (expedited/standard/bulk) | Min 90 days</p>
+    </div>
+    <div class="storage-card sc-deep">
+      <div class="tier">Tier 6 — Frozen</div>
+      <h4>Glacier Deep Archive</h4>
+      <p>Cheapest storage AWS offers. For compliance archives — 7-year financial records, medical data, legal documents. Retrieve in 12–48 hours.</p>
+      <p class="meta">Retrieval: 12–48 hours | Min 180 days | Lowest $/GB</p>
+    </div>
+    <div class="storage-card sc-it">
+      <div class="tier">Tier 7 — Smart</div>
+      <h4>Intelligent-Tiering</h4>
+      <p>AWS watches how often you access each object and automatically moves it between hot, warm, and cold tiers. Small monthly monitoring fee (~$0.0025/1000 objects). No retrieval fee.</p>
+      <p class="meta">Best for: unknown or changing access patterns | No min size for auto-tier</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3 class="section-title">Intelligent-Tiering: The 5 Internal Access Tiers</h3>
+    <div class="prose">
+      <p>Intelligent-Tiering isn't just "hot or cold." It has <strong>five distinct access tiers</strong> that objects move between automatically. The first three are automatic — no configuration needed. The last two are optional archive tiers you opt into for even bigger savings on data you almost never need.</p>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Triggered After</th>
+            <th>Retrieval Time</th>
+            <th>Auto?</th>
+            <th>Real-World Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Frequent Access</strong></td>
+            <td>Default starting tier</td>
+            <td>Milliseconds</td>
+            <td><span class="badge badge-green">Auto</span></td>
+            <td>Newly uploaded objects, recently accessed data</td>
+          </tr>
+          <tr>
+            <td><strong>Infrequent Access</strong></td>
+            <td>No access for 30 days</td>
+            <td>Milliseconds</td>
+            <td><span class="badge badge-green">Auto</span></td>
+            <td>Reports, backups accessed occasionally</td>
+          </tr>
+          <tr>
+            <td><strong>Archive Instant Access</strong></td>
+            <td>No access for 90 days</td>
+            <td>Milliseconds</td>
+            <td><span class="badge badge-green">Auto</span></td>
+            <td>Old logs, historical files rarely needed but retrieved instantly</td>
+          </tr>
+          <tr>
+            <td><strong>Archive Access</strong></td>
+            <td>No access for 90–730 days</td>
+            <td>Minutes to hours</td>
+            <td><span class="badge badge-amber">Optional</span></td>
+            <td>Compliance archives — must enable this tier explicitly</td>
+          </tr>
+          <tr>
+            <td><strong>Deep Archive Access</strong></td>
+            <td>No access for 180–730 days</td>
+            <td>Hours (12–48)</td>
+            <td><span class="badge badge-amber">Optional</span></td>
+            <td>7-year regulatory archives — must enable this tier explicitly</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-tip">
+      <div class="callout-tag">💡 Key Insight</div>
+      <p>If an object that has been moved to Archive Access or Deep Archive Access is retrieved, it moves <strong>back to Frequent Access tier automatically</strong>. The whole system is self-healing — data returns to the hot tier on access, then cools down again if not accessed further. You never need to manually manage tiers.</p>
+      <p><strong>When to choose Intelligent-Tiering over manual storage classes:</strong> Use it when you genuinely don't know the access pattern of your data. For predictable patterns (logs always cold after 30 days), manual lifecycle rules are cheaper because you avoid the per-object monitoring fee. For unpredictable patterns (user-generated content, documents), Intelligent-Tiering automates the optimisation.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ Critical Traps — These Appear on the Exam</div>
+    <p><strong>Trap 1 — Minimum Storage Duration Fees:</strong> If you store an object in Glacier Deep Archive and delete it after 30 days, you still pay for <strong>180 days</strong>. You're charged for the full minimum regardless of when you delete. Same idea: Standard-IA = pay for 30 days minimum, Glacier Instant/Flexible = 90 days minimum.</p>
+    <p><strong>Trap 2 — One Zone-IA is NOT the answer for important data:</strong> It's 20% cheaper but lives in one AZ. If AWS has an AZ outage, your data could be gone. Only use it for data you can re-create.</p>
+    <p><strong>Trap 3 — Glacier Instant vs Glacier Flexible:</strong> "Instant" means milliseconds. "Flexible" means minutes to hours. The word "instant" vs "flexible" is the clue. The exam will give you a scenario and the retrieval time requirement will tell you which one to pick.</p>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Storage Class Cost vs Speed Trade-off</div>
+    <svg viewBox="0 0 860 280" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Axes -->
+      <line x1="80" y1="240" x2="820" y2="240" stroke="#c4b4a0" stroke-width="2"/>
+      <line x1="80" y1="240" x2="80" y2="30" stroke="#c4b4a0" stroke-width="2"/>
+      <!-- Labels -->
+      <text x="450" y="270" text-anchor="middle" font-size="13" fill="#6b5744" font-family="monospace">STORAGE COST (lower = cheaper)</text>
+      <text x="30" y="140" text-anchor="middle" font-size="13" fill="#6b5744" font-family="monospace" transform="rotate(-90,30,140)">RETRIEVAL SPEED</text>
+
+      <!-- Bars -->
+      <rect x="110" y="60" width="70" height="180" rx="6" fill="#1d7a6e" opacity="0.85"/>
+      <text x="145" y="55" text-anchor="middle" font-size="11" fill="#1d7a6e" font-weight="600" font-family="monospace">Fastest</text>
+      <text x="145" y="258" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Standard</text>
+
+      <rect x="220" y="90" width="70" height="150" rx="6" fill="#2a9d8f" opacity="0.75"/>
+      <text x="255" y="258" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Std-IA</text>
+
+      <rect x="330" y="110" width="70" height="130" rx="6" fill="#c97d2e" opacity="0.8"/>
+      <text x="365" y="258" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">1Zone-IA</text>
+
+      <rect x="440" y="130" width="70" height="110" rx="6" fill="#1e5fa8" opacity="0.8"/>
+      <text x="475" y="258" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Glac-Inst</text>
+
+      <rect x="550" y="165" width="70" height="75" rx="6" fill="#6b3fa0" opacity="0.8"/>
+      <text x="585" y="258" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Glac-Flex</text>
+
+      <rect x="660" y="195" width="70" height="45" rx="6" fill="#b84c2a" opacity="0.85"/>
+      <text x="695" y="258" text-anchor="middle" font-size="10" fill="#3d2e1a" font-family="monospace">Deep Archive</text>
+
+      <!-- Intelligent Tiering badge -->
+      <rect x="760" y="80" width="52" height="155" rx="6" fill="#2d7a3e" opacity="0.75"/>
+      <text x="786" y="258" text-anchor="middle" font-size="10" fill="#3d2e1a" font-family="monospace">Int-Tier</text>
+      <text x="786" y="165" text-anchor="middle" font-size="9" fill="white" font-family="monospace">AUTO</text>
+
+      <!-- Arrows for cost direction -->
+      <text x="145" y="30" text-anchor="middle" font-size="10" fill="#b84c2a" font-family="monospace">$$$$</text>
+      <text x="695" y="30" text-anchor="middle" font-size="10" fill="#2d7a3e" font-family="monospace">$</text>
+      <path d="M165 28 L680 28" stroke="#c4b4a0" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <polygon points="680,24 686,28 680,32" fill="#c4b4a0"/>
+    </svg>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 4: LIFECYCLE ==================== -->
+<div id="p4" class="part-header purple">
+  <div class="part-number">Part 04</div>
+  <h2>Lifecycle Policies — Automating Cost Savings</h2>
+  <p>Why manually move objects between storage classes when AWS can do it for you, automatically?</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why Lifecycle Policies Exist</div>
+    <p>A company uploads a new product image to S3. For the first 30 days, customers browse it frequently — it must be in S3 Standard (fast access). After 30 days, it's rarely viewed. After 90 days, almost never. After a year, it's only kept for legal archiving.</p>
+    <p><strong>Without lifecycle rules:</strong> Engineers need to manually move objects, write scripts, track dates. Impossible at scale when you have millions of objects.</p>
+    <p><strong>With lifecycle rules:</strong> You define rules once. S3 automatically transitions objects at the right time. Zero ongoing effort. Costs drop automatically as data ages.</p>
+  </div>
+
+  <h3 class="section-title">Two Types of Actions</h3>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Action Type 1</div>
+      <h4>Transition Actions</h4>
+      <ul>
+        <li>Move objects to a colder storage class after N days</li>
+        <li>Example: Standard → Standard-IA after 30 days</li>
+        <li>Example: Standard-IA → Glacier after 90 days</li>
+        <li>Chain multiple transitions</li>
+        <li>Can only go colder, never back to warmer via lifecycle</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Action Type 2</div>
+      <h4>Expiration Actions</h4>
+      <ul>
+        <li>Delete objects after N days</li>
+        <li>Delete old versions of versioned objects</li>
+        <li>Clean up incomplete multipart uploads</li>
+        <li>Remove expired delete markers automatically</li>
+        <li>Great for log files, temp data, short-lived reports</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Typical Lifecycle Transition Flow</div>
+    <svg viewBox="0 0 900 180" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#3d2e1a"/>
+        </marker>
+      </defs>
+      <!-- Stage boxes -->
+      <rect x="10" y="60" width="150" height="60" rx="10" fill="#d4ecde" stroke="#1d7a6e" stroke-width="2"/>
+      <text x="85" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#0d4030" font-family="'Source Serif 4',serif">S3 Standard</text>
+      <text x="85" y="105" text-anchor="middle" font-size="11" fill="#1d7a6e" font-family="monospace">0 – 30 days</text>
+
+      <line x1="160" y1="90" x2="210" y2="90" stroke="#3d2e1a" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="185" y="82" text-anchor="middle" font-size="11" fill="#6b5744" font-family="monospace">Day 30</text>
+
+      <rect x="210" y="60" width="160" height="60" rx="10" fill="#fde8c8" stroke="#c97d2e" stroke-width="2"/>
+      <text x="290" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#7a4a10" font-family="'Source Serif 4',serif">Standard-IA</text>
+      <text x="290" y="105" text-anchor="middle" font-size="11" fill="#c97d2e" font-family="monospace">30 – 90 days</text>
+
+      <line x1="370" y1="90" x2="420" y2="90" stroke="#3d2e1a" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="395" y="82" text-anchor="middle" font-size="11" fill="#6b5744" font-family="monospace">Day 90</text>
+
+      <rect x="420" y="60" width="180" height="60" rx="10" fill="#dde2f8" stroke="#1e5fa8" stroke-width="2"/>
+      <text x="510" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#123e6e" font-family="'Source Serif 4',serif">Glacier Flex.</text>
+      <text x="510" y="105" text-anchor="middle" font-size="11" fill="#1e5fa8" font-family="monospace">90 – 365 days</text>
+
+      <line x1="600" y1="90" x2="650" y2="90" stroke="#3d2e1a" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="625" y="82" text-anchor="middle" font-size="11" fill="#6b5744" font-family="monospace">Day 365</text>
+
+      <rect x="650" y="60" width="175" height="60" rx="10" fill="#fde0d8" stroke="#b84c2a" stroke-width="2"/>
+      <text x="737" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#7a2410" font-family="'Source Serif 4',serif">Deep Archive</text>
+      <text x="737" y="105" text-anchor="middle" font-size="11" fill="#b84c2a" font-family="monospace">365+ days</text>
+
+      <!-- Delete arrow -->
+      <line x1="737" y1="120" x2="737" y2="155" stroke="#b84c2a" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+      <text x="760" y="150" font-size="11" fill="#b84c2a" font-family="monospace">Delete (Day 2555 / 7yr)</text>
+    </svg>
+  </div>
+
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ Lifecycle Traps</div>
+    <p><strong>Trap 1:</strong> You <strong>cannot</strong> use lifecycle rules to transition objects from a colder class back to a warmer one. E.g., you can't auto-move from Glacier back to Standard. Lifecycle only goes one direction: colder.</p>
+    <p><strong>Trap 2 — Minimum age requirements:</strong> Objects must be in Standard for at least 30 days before transitioning to Standard-IA. S3 enforces this because Standard-IA has a 30-day minimum storage charge anyway — moving earlier would cost more, not less.</p>
+    <p><strong>Trap 3 — Small objects:</strong> As of September 2024, objects smaller than 128KB are NOT transitioned by default lifecycle rules (except to Glacier Flexible and Deep Archive). Be aware of this for small-object workloads.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 5: VERSIONING & LOCK ==================== -->
+<div id="p5" class="part-header amber">
+  <div class="part-number">Part 05</div>
+  <h2>Versioning &amp; Object Lock — Time Machine for Your Data</h2>
+  <p>Protection against the worst kind of mistake: "I accidentally deleted everything."</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why Versioning Was Needed</div>
+    <p>One Saturday morning, a junior developer at a startup ran a script to clean up old S3 objects. The script had a bug. It deleted the company's entire production database backup instead of the old log files. Without versioning: the data is <em>gone forever</em>. With versioning: every version of every file is preserved. The delete only adds a "delete marker" — the real file is still there, one click away.</p>
+    <p>This is a real scenario that has killed companies. <strong>Versioning is the undo button for S3.</strong></p>
+  </div>
+
+  <h3 class="section-title">How Versioning Works</h3>
+  <div class="prose">
+    <p>When you enable versioning on a bucket, S3 assigns every object a unique <strong>version ID</strong>. When you "overwrite" a file, S3 doesn't actually replace it — it creates a new version. The old version still exists with its original version ID.</p>
+    <p>When you "delete" a file, S3 doesn't actually delete it — it adds a <strong>delete marker</strong> (a special version that makes the object appear deleted). All old versions are still retrievable. To permanently delete an object, you must explicitly delete ALL versions, including the delete marker.</p>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Versioning: How Objects Change Over Time</div>
+    <svg viewBox="0 0 860 220" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Timeline -->
+      <line x1="60" y1="110" x2="820" y2="110" stroke="#e8ddd0" stroke-width="2" stroke-dasharray="6,4"/>
+
+      <!-- Event 1: Upload -->
+      <circle cx="160" cy="110" r="8" fill="#1d7a6e"/>
+      <rect x="115" y="30" width="90" height="64" rx="8" fill="#d4ecde" stroke="#1d7a6e" stroke-width="1.5"/>
+      <text x="160" y="50" text-anchor="middle" font-size="11" fill="#0d4030" font-family="monospace">invoice.pdf</text>
+      <text x="160" y="66" text-anchor="middle" font-size="10" fill="#1d7a6e" font-family="monospace">ver: abc123</text>
+      <text x="160" y="82" text-anchor="middle" font-size="10" fill="#6b5744" font-family="monospace">v1 (2KB)</text>
+      <text x="160" y="130" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Upload v1</text>
+
+      <!-- Event 2: Re-upload -->
+      <circle cx="360" cy="110" r="8" fill="#c97d2e"/>
+      <rect x="315" y="30" width="90" height="64" rx="8" fill="#fde8c8" stroke="#c97d2e" stroke-width="1.5"/>
+      <text x="360" y="50" text-anchor="middle" font-size="11" fill="#7a4a10" font-family="monospace">invoice.pdf</text>
+      <text x="360" y="66" text-anchor="middle" font-size="10" fill="#c97d2e" font-family="monospace">ver: def456</text>
+      <text x="360" y="82" text-anchor="middle" font-size="10" fill="#6b5744" font-family="monospace">v2 (3KB)</text>
+      <text x="360" y="130" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Overwrite → v2</text>
+      <text x="360" y="147" text-anchor="middle" font-size="10" fill="#6b5744" font-family="monospace">v1 still there!</text>
+
+      <!-- Event 3: Delete -->
+      <circle cx="560" cy="110" r="8" fill="#b84c2a"/>
+      <rect x="515" y="30" width="90" height="64" rx="8" fill="#fde0d8" stroke="#b84c2a" stroke-width="1.5"/>
+      <text x="560" y="50" text-anchor="middle" font-size="11" fill="#7a2410" font-family="monospace">invoice.pdf</text>
+      <text x="560" y="66" text-anchor="middle" font-size="10" fill="#b84c2a" font-family="monospace">DELETE MARKER</text>
+      <text x="560" y="82" text-anchor="middle" font-size="10" fill="#6b5744" font-family="monospace">appears deleted</text>
+      <text x="560" y="130" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Delete operation</text>
+      <text x="560" y="147" text-anchor="middle" font-size="10" fill="#b84c2a" font-family="monospace">v1 &amp; v2 still there!</text>
+
+      <!-- Event 4: Restore -->
+      <circle cx="740" cy="110" r="8" fill="#2d7a3e"/>
+      <rect x="695" y="30" width="90" height="64" rx="8" fill="#dcf4e0" stroke="#2d7a3e" stroke-width="1.5"/>
+      <text x="740" y="50" text-anchor="middle" font-size="11" fill="#1a5c28" font-family="monospace">invoice.pdf</text>
+      <text x="740" y="66" text-anchor="middle" font-size="10" fill="#2d7a3e" font-family="monospace">Restore v1/v2</text>
+      <text x="740" y="82" text-anchor="middle" font-size="10" fill="#6b5744" font-family="monospace">delete marker</text>
+      <text x="740" y="130" text-anchor="middle" font-size="11" fill="#3d2e1a" font-family="monospace">Restore: delete</text>
+      <text x="740" y="147" text-anchor="middle" font-size="10" fill="#2d7a3e" font-family="monospace">the delete marker</text>
+    </svg>
+  </div>
+
+  <h3 class="section-title" style="margin-top:40px">MFA Delete</h3>
+  <div class="prose">
+    <p>Once versioning is enabled, you can add another layer of protection: <strong>MFA Delete</strong>. This requires a physical MFA (Multi-Factor Authentication) device to permanently delete versions or disable versioning. Even if an attacker steals your IAM credentials, they cannot mass-delete your data without the MFA device in their hands.</p>
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p>"Protect S3 data from accidental deletion by employees" → <strong>Enable Versioning</strong></p>
+    <p>"Prevent even root account from deleting data, most secure protection" → <strong>Enable Versioning + MFA Delete</strong></p>
+    <p>"Cannot be deleted for 7 years for regulatory compliance" → <strong>Object Lock (Compliance Mode)</strong></p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Object Lock — WORM Storage</h3>
+  <div class="prose">
+    <p><strong>WORM = Write Once, Read Many.</strong> Object Lock prevents objects from being deleted or overwritten for a defined retention period — or even indefinitely. This is not "just make it hard to delete" — it is a technical enforcement mechanism where even AWS itself cannot delete your data during the lock period.</p>
+    <p>This is critical for industries like finance (7-year record retention laws in Ireland), healthcare (patient records), and legal. Dublin-based Fenergo, for example, would use Object Lock to ensure KYC documents cannot be tampered with — satisfying both EU GDPR audit trail requirements and Irish financial regulations.</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Mode 1</div>
+      <h4>Compliance Mode</h4>
+      <ul>
+        <li>Object CANNOT be overwritten or deleted by ANYONE</li>
+        <li>Not even the root AWS account</li>
+        <li>Not even AWS support</li>
+        <li>Retention period cannot be shortened once set</li>
+        <li>Use for: strict regulatory compliance (SEC, FINRA, CBI Ireland)</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Mode 2</div>
+      <h4>Governance Mode</h4>
+      <ul>
+        <li>Most users CANNOT delete or overwrite the object</li>
+        <li>But users with special IAM permission can override</li>
+        <li>Retention period CAN be modified by privileged users</li>
+        <li>Use for: internal policies, accidental deletion prevention</li>
+        <li>Softer compliance where emergency overrides are needed</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Legal Hold</div>
+      <h4>Legal Hold</h4>
+      <ul>
+        <li>No fixed retention period — locked until explicitly released</li>
+        <li>Used during litigation or investigations</li>
+        <li>Any user with s3:PutObjectLegalHold permission can toggle</li>
+        <li>Independent of retention mode — can be combined</li>
+        <li>Real use: "freeze" data during a court case</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Glacier Vault Lock — S3 Object Lock's Older Sibling</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why This Is a Separate Thing</div>
+    <p>S3 Object Lock (covered above) works on S3 buckets. But <strong>Amazon S3 Glacier</strong> as a standalone service (not S3 Glacier storage class — the original standalone Glacier service) has its own separate locking mechanism called <strong>Vault Lock</strong>. The exam treats these as distinct concepts.</p>
+    <p>Think of it this way: Object Lock is for when you store data in S3 buckets and use Glacier as a storage class within S3. Vault Lock is for when you work directly with standalone Glacier <em>vaults</em> (the original Glacier API before it was integrated into S3).</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">S3 Object Lock</div>
+      <h4>For S3 Buckets</h4>
+      <ul>
+        <li>Applied to objects inside S3 buckets</li>
+        <li>Two modes: Compliance and Governance</li>
+        <li>Works with any S3 storage class (including Glacier class)</li>
+        <li>Can be set per-object or per-bucket default</li>
+        <li>Managed via S3 API and console</li>
+        <li>Modern standard for new architectures</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Glacier Vault Lock</div>
+      <h4>For Glacier Vaults</h4>
+      <ul>
+        <li>Applied to entire Glacier <em>vaults</em> (not individual archives)</li>
+        <li>Single mode: equivalent to Compliance Mode</li>
+        <li>Policy cannot be changed once locked — permanently immutable</li>
+        <li>Uses a two-step process: initiate lock → validate → complete lock</li>
+        <li>Supports time-based retention AND access control policies</li>
+        <li>WORM guarantee: even AWS cannot override once locked</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p>"Prevent compliance data stored in Glacier vaults from being modified even by the account owner" → <strong>Glacier Vault Lock Policy</strong></p>
+    <p>"Enforce WORM directly at the Glacier vault level" → <strong>Glacier Vault Lock</strong></p>
+    <p><strong>Key distinction:</strong> S3 Object Lock = object-level, within S3 buckets. Glacier Vault Lock = vault-level, standalone Glacier service. Both are WORM. The question context (bucket vs vault) tells you which one to pick.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 6: REPLICATION ==================== -->
+<div id="p6" class="part-header blue">
+  <div class="part-number">Part 06</div>
+  <h2>S3 Replication — Cloning Your Data Across the World</h2>
+  <p>CRR and SRR: why copy your bucket, and what can go wrong if you set it up wrong.</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why Replication Was Needed</div>
+    <p>A Dublin fintech company stores transaction records in S3 (eu-west-1 region). One day, AWS has a regional incident in Ireland — all services in eu-west-1 become unavailable. The company's customers can't access their data for hours. Revenue stops.</p>
+    <p>With <strong>Cross-Region Replication (CRR)</strong>, every new object in the Ireland bucket is automatically copied to a backup bucket in Frankfurt (eu-central-1). When Ireland goes down, the Frankfurt copy is immediately available. <strong>Zero data loss. Zero manual effort.</strong></p>
+  </div>
+
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Replication Type 1</div>
+      <h4>CRR — Cross-Region Replication</h4>
+      <ul>
+        <li>Copies objects to a bucket in a DIFFERENT AWS region</li>
+        <li>Primary use: Disaster Recovery (DR)</li>
+        <li>Reduces latency for global users (put copy near them)</li>
+        <li>Meets data residency requirements for regulators</li>
+        <li>Complies with legal requirements to keep copies offsite</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Replication Type 2</div>
+      <h4>SRR — Same-Region Replication</h4>
+      <ul>
+        <li>Copies to another bucket in THE SAME region</li>
+        <li>Use case: separate production and test buckets</li>
+        <li>Use case: aggregate logs from many buckets to one</li>
+        <li>Use case: maintain exact copy for different teams/accounts</li>
+        <li>Same-region = same latency, different IAM/billing account</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ Replication Rules — These Kill Exam Scores</div>
+    <p><strong>Rule 1 — Versioning is REQUIRED:</strong> Both the source AND destination bucket must have versioning enabled before you can set up replication. This is mandatory.</p>
+    <p><strong>Rule 2 — Replication is NOT retroactive:</strong> When you enable replication, only NEW objects uploaded AFTER enabling it will be replicated. Existing objects are NOT copied. To replicate existing objects, you must use <strong>S3 Batch Replication</strong> separately.</p>
+    <p><strong>Rule 3 — Delete markers are NOT replicated by default:</strong> If you delete an object in the source bucket, the delete marker is NOT automatically replicated to the destination. This is configurable. The reason: to protect against malicious or accidental deletions spreading to your backup.</p>
+    <p><strong>Rule 4 — No chaining:</strong> If bucket A replicates to bucket B, and bucket B replicates to bucket C — an object added to A does NOT automatically go to C. Each replication rule is independent. A to B happens, but B to C is a separate replication rule triggered only if an object is directly added/modified in B.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 7: PERFORMANCE ==================== -->
+<div id="p7" class="part-header green">
+  <div class="part-number">Part 07</div>
+  <h2>S3 Performance — Speed at Scale</h2>
+  <p>How to move terabytes fast, how to read only part of a file, and how S3 handles millions of requests per second.</p>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Baseline Performance (No Config Needed)</h3>
+  <div class="prose">
+    <p>S3 can handle <strong>3,500 PUT/COPY/POST/DELETE requests per second per prefix</strong> and <strong>5,500 GET/HEAD requests per second per prefix</strong>. These limits are per prefix — not per bucket. A prefix is the path before the object key, like <code>/2025/january/</code>.</p>
+    <p><strong>The performance trick:</strong> If your workload needs more than 5,500 reads/second, spread your objects across multiple prefixes. Each prefix gets its own 5,500/s quota. Ten prefixes = 55,000 reads/second. This is why production S3 architectures use random or hashed prefixes rather than dates.</p>
+  </div>
+  <div class="callout callout-tip">
+    <div class="callout-tag">💡 Industry Pattern — Avoiding Hot Prefixes</div>
+    <p>A Dublin media company streams video thumbnails from S3. They have 10 million videos. Naming files <code>/thumbnails/2025-01-15/video1.jpg</code> puts all January videos under one prefix → hits the 5,500/s limit instantly. Instead, they hash the video ID: <code>/th/a3/video-abc123.jpg</code> — distributing requests across thousands of 2-character prefixes. Zero bottleneck at any scale.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Multipart Upload — The Must-Use for Large Files</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Problem It Solves</div>
+    <p>You're uploading a 10GB video file to S3. Halfway through, your network hiccups. The upload fails. You start again from zero. That's 5GB of wasted bandwidth and time. With a slow connection, a 10GB upload might take 2 hours — and if it fails at 90% complete, you restart everything.</p>
+    <p><strong>Multipart Upload</strong> splits your large file into small chunks (minimum 5MB each, up to 10,000 parts). Each chunk is uploaded independently in parallel. If one chunk fails, only that chunk is retried. When all chunks arrive, S3 reassembles them. Result: massive files upload faster and more reliably.</p>
+  </div>
+  <ul class="nice-list">
+    <li><strong>Recommended</strong> for files over 100MB</li>
+    <li><strong>Required (mandatory)</strong> for files over 5GB</li>
+    <li>Parallel uploads = much faster on fast connections</li>
+    <li>Failed parts retry without restarting from zero</li>
+    <li>You can pause and resume large uploads</li>
+    <li>Use lifecycle rules to <strong>clean up incomplete multipart uploads</strong> — abandoned parts waste money</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Transfer Acceleration — Fast Uploads from Across the Globe</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Problem It Solves</div>
+    <p>Your S3 bucket is in Dublin (eu-west-1). A user in Sydney, Australia needs to upload a 500MB file. Over the public internet, this upload travels through multiple hops, ISPs, and undersea cables — each hop adds latency and potential for packet loss. The upload is slow and unreliable.</p>
+    <p>With <strong>Transfer Acceleration</strong>, the upload goes to the <em>nearest CloudFront edge location</em> (probably in Sydney or Singapore). From there, it travels over <strong>AWS's private backbone network</strong> — which is much faster and more reliable than the public internet — to your bucket in Dublin. Think of it as putting your data on an express motorway instead of city roads.</p>
+  </div>
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Transfer Acceleration vs Standard Upload</div>
+    <svg viewBox="0 0 860 200" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Standard path -->
+      <text x="430" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#b84c2a" font-family="'Source Serif 4',serif">Without Acceleration (Public Internet)</text>
+      <rect x="10" y="45" width="80" height="36" rx="8" fill="#fde0d8" stroke="#b84c2a"/>
+      <text x="50" y="66" text-anchor="middle" font-size="11" fill="#7a2410" font-family="monospace">Sydney</text>
+      <!-- Wobbly line representing public internet -->
+      <path d="M90 63 Q 180 40 260 63 Q 340 86 420 63 Q 500 40 580 63 Q 640 78 680 63" stroke="#b84c2a" stroke-width="2" fill="none" stroke-dasharray="6,4"/>
+      <text x="385" y="55" text-anchor="middle" font-size="11" fill="#b84c2a" font-family="monospace">Public Internet (slow, unreliable)</text>
+      <rect x="680" y="45" width="80" height="36" rx="8" fill="#fde0d8" stroke="#b84c2a"/>
+      <text x="720" y="66" text-anchor="middle" font-size="11" fill="#7a2410" font-family="monospace">S3 Dublin</text>
+
+      <!-- Accelerated path -->
+      <text x="430" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="#1d7a6e" font-family="'Source Serif 4',serif">With Transfer Acceleration (AWS Backbone)</text>
+      <rect x="10" y="140" width="80" height="36" rx="8" fill="#d4ecde" stroke="#1d7a6e"/>
+      <text x="50" y="161" text-anchor="middle" font-size="11" fill="#0d4030" font-family="monospace">Sydney</text>
+      <line x1="90" y1="158" x2="210" y2="158" stroke="#1d7a6e" stroke-width="2.5"/>
+      <rect x="210" y="140" width="90" height="36" rx="8" fill="#d4ecde" stroke="#1d7a6e"/>
+      <text x="255" y="157" text-anchor="middle" font-size="10" fill="#0d4030" font-family="monospace">CloudFront</text>
+      <text x="255" y="170" text-anchor="middle" font-size="10" fill="#0d4030" font-family="monospace">Edge (SYD)</text>
+      <line x1="300" y1="158" x2="620" y2="158" stroke="#1d7a6e" stroke-width="3"/>
+      <text x="462" y="148" text-anchor="middle" font-size="11" fill="#1d7a6e" font-family="monospace">AWS Private Backbone (fast, reliable)</text>
+      <rect x="620" y="140" width="80" height="36" rx="8" fill="#d4ecde" stroke="#1d7a6e"/>
+      <text x="660" y="161" text-anchor="middle" font-size="11" fill="#0d4030" font-family="monospace">S3 Dublin</text>
+    </svg>
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p>"Global users need to upload large files to a single S3 bucket quickly" → <strong>Enable S3 Transfer Acceleration</strong></p>
+    <p>"Upload from geographically distant location to S3 is slow" → <strong>S3 Transfer Acceleration</strong></p>
+    <p><strong>Note:</strong> Transfer Acceleration works for both uploads AND downloads. It has additional cost on top of standard S3 pricing.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Byte-Range Fetches — Downloading Part of a File</h3>
+  <div class="prose">
+    <p>What if you have a 10GB log file in S3 and you only need the last 100MB? Normally you'd download the whole 10GB first. That's expensive and slow. <strong>Byte-Range Fetches</strong> let you request only a specific byte range from S3.</p>
+    <p>Even better: you can request multiple byte ranges in parallel, just like multipart upload in reverse. This is how Netflix downloads video — not the whole file, just the next few seconds worth of data. And it's how S3 Select works under the hood.</p>
+  </div>
+  <ul class="nice-list">
+    <li>Request: <code>GET /my-log-file.gz Range: bytes=0-104857600</code> — gets first 100MB</li>
+    <li>Parallelise multiple range requests → dramatically faster for large files</li>
+    <li>Use case: retrieve file header only (e.g., first 50 bytes to check file type)</li>
+    <li>Use case: resume interrupted downloads from where they stopped</li>
+    <li>Use case: read only the beginning of large CSV files for data processing</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Select &amp; Glacier Select — SQL Inside S3</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why This Exists</div>
+    <p>You have a 5GB CSV file in S3 containing 100 million rows. You need just 500 rows that match a specific condition. Without S3 Select, you download the entire 5GB, then filter in your application. That costs money (data transfer) and time.</p>
+    <p>With <strong>S3 Select</strong>, you send a SQL-like query <em>to S3 itself</em>: <code>SELECT * FROM S3Object WHERE country = 'IE'</code>. S3 runs the filter server-side and returns only the matching 500 rows. <strong>Up to 400% faster, 80% cheaper</strong> than downloading everything first.</p>
+  </div>
+  <div class="code-block">
+<span class="comment"># S3 Select example — query a CSV file without downloading it</span>
+aws s3api select-object-content \
+  --bucket fenergo-transactions \
+  --key <span class="string">2025/all-transactions.csv</span> \
+  --expression <span class="string">"SELECT * FROM S3Object s WHERE s.country = 'IE'"</span> \
+  --expression-type SQL \
+  --input-serialization <span class="string">'{"CSV": {"FileHeaderInfo": "USE"}, "CompressionType": "NONE"}'</span> \
+  --output-serialization <span class="string">'{"CSV": {}}'</span> \
+  output.csv
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 8: EVENT NOTIFICATIONS ==================== -->
+<div id="p8" class="part-header teal">
+  <div class="part-number">Part 08</div>
+  <h2>S3 Event Notifications — React to What Happens in Your Bucket</h2>
+  <p>Every upload, delete, or restore can trigger an automated workflow. This is where S3 becomes a first-class event source.</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why Event Notifications Were Needed</div>
+    <p>A company lets users upload profile photos to S3. After upload, the company needs to: resize the image to 3 different sizes, run it through a content moderation AI to check for inappropriate content, send a notification email to the user, and update a database with the new photo URL.</p>
+    <p>Without event notifications, you'd need a polling process: "check S3 every 5 seconds for new files" — wasteful and adds latency. With event notifications, the moment an object lands in S3, it <em>immediately fires an event</em> to trigger all these workflows automatically.</p>
+  </div>
+
+  <h3 class="section-title">Supported Events and Destinations</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Event Type</th>
+          <th>Triggers When...</th>
+          <th>Destination</th>
+          <th>Real-World Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>s3:ObjectCreated:*</strong></td>
+          <td>Object uploaded (PUT, POST, Copy, multipart complete)</td>
+          <td>Lambda, SQS, SNS, EventBridge</td>
+          <td>Process uploaded documents, generate thumbnails</td>
+        </tr>
+        <tr>
+          <td><strong>s3:ObjectRemoved:*</strong></td>
+          <td>Object deleted or delete marker created</td>
+          <td>Lambda, SQS, SNS, EventBridge</td>
+          <td>Audit deletion, clean up related DB records</td>
+        </tr>
+        <tr>
+          <td><strong>s3:ObjectRestore:*</strong></td>
+          <td>Object restored from Glacier</td>
+          <td>Lambda, SQS, SNS, EventBridge</td>
+          <td>Notify when archived document becomes available</td>
+        </tr>
+        <tr>
+          <td><strong>s3:Replication:*</strong></td>
+          <td>Replication fails or threshold exceeded</td>
+          <td>Lambda, SQS, SNS, EventBridge</td>
+          <td>Alert when cross-region backup fails</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">S3 Event Notification Fan-Out Architecture</div>
+    <svg viewBox="0 0 860 260" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- S3 Bucket -->
+      <rect x="30" y="100" width="130" height="60" rx="12" fill="#d4ecde" stroke="#1d7a6e" stroke-width="2"/>
+      <text x="95" y="125" text-anchor="middle" font-size="14" font-weight="700" fill="#0d4030" font-family="'Playfair Display',serif">S3 Bucket</text>
+      <text x="95" y="144" text-anchor="middle" font-size="11" fill="#1d7a6e" font-family="monospace">Object Upload</text>
+
+      <!-- Arrow to SNS -->
+      <line x1="160" y1="130" x2="330" y2="80" stroke="#3d2e1a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Arrow to SQS -->
+      <line x1="160" y1="130" x2="330" y2="130" stroke="#3d2e1a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Arrow to Lambda -->
+      <line x1="160" y1="130" x2="330" y2="180" stroke="#3d2e1a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Arrow to EventBridge -->
+      <line x1="160" y1="130" x2="330" y2="230" stroke="#3d2e1a" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+      <!-- SNS -->
+      <rect x="330" y="56" width="130" height="48" rx="10" fill="#fde8c8" stroke="#c97d2e" stroke-width="1.5"/>
+      <text x="395" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#7a4a10" font-family="'Playfair Display',serif">SNS Topic</text>
+      <text x="395" y="92" text-anchor="middle" font-size="11" fill="#c97d2e" font-family="monospace">→ Fan-out to multiple</text>
+      <!-- SNS to subscribers -->
+      <line x1="460" y1="80" x2="570" y2="60" stroke="#c97d2e" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="460" y1="80" x2="570" y2="100" stroke="#c97d2e" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="570" y="46" width="90" height="28" rx="6" fill="#fde8c8"/>
+      <text x="615" y="63" text-anchor="middle" font-size="10" fill="#7a4a10" font-family="monospace">Email / SMS</text>
+      <rect x="570" y="86" width="90" height="28" rx="6" fill="#fde8c8"/>
+      <text x="615" y="103" text-anchor="middle" font-size="10" fill="#7a4a10" font-family="monospace">SQS Queue</text>
+
+      <!-- SQS -->
+      <rect x="330" y="106" width="130" height="48" rx="10" fill="#dde2f8" stroke="#1e5fa8" stroke-width="1.5"/>
+      <text x="395" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="#123e6e" font-family="'Playfair Display',serif">SQS Queue</text>
+      <text x="395" y="142" text-anchor="middle" font-size="11" fill="#1e5fa8" font-family="monospace">→ Process sequentially</text>
+      <line x1="460" y1="130" x2="570" y2="130" stroke="#1e5fa8" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="570" y="116" width="90" height="28" rx="6" fill="#dde2f8"/>
+      <text x="615" y="133" text-anchor="middle" font-size="10" fill="#123e6e" font-family="monospace">Worker Service</text>
+
+      <!-- Lambda -->
+      <rect x="330" y="156" width="130" height="48" rx="10" fill="#e0f0e4" stroke="#2d7a3e" stroke-width="1.5"/>
+      <text x="395" y="175" text-anchor="middle" font-size="13" font-weight="700" fill="#1a5c28" font-family="'Playfair Display',serif">Lambda</text>
+      <text x="395" y="192" text-anchor="middle" font-size="11" fill="#2d7a3e" font-family="monospace">→ Instant processing</text>
+      <line x1="460" y1="180" x2="570" y2="180" stroke="#2d7a3e" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="570" y="166" width="90" height="28" rx="6" fill="#e0f0e4"/>
+      <text x="615" y="183" text-anchor="middle" font-size="10" fill="#1a5c28" font-family="monospace">Thumbnails/OCR</text>
+
+      <!-- EventBridge -->
+      <rect x="330" y="210" width="130" height="40" rx="10" fill="#ede4f8" stroke="#6b3fa0" stroke-width="1.5"/>
+      <text x="395" y="228" text-anchor="middle" font-size="13" font-weight="700" fill="#3a2060" font-family="'Playfair Display',serif">EventBridge</text>
+      <text x="395" y="243" text-anchor="middle" font-size="11" fill="#6b3fa0" font-family="monospace">→ Rule-based routing</text>
+    </svg>
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Insight</div>
+    <p><strong>If you need to deliver S3 events to MULTIPLE destinations simultaneously</strong> → Use SNS fan-out (SNS to multiple SQS queues). Direct S3 notification to SQS goes to one queue only.</p>
+    <p><strong>EventBridge as destination</strong> is the most flexible option — it supports richer content-based filtering, replay, schema registry, and many more AWS/SaaS destinations. When the question mentions "complex routing rules" or "audit all S3 API calls including from the console" → EventBridge.</p>
+    <p><strong>Versioning for notifications:</strong> For non-versioned buckets, if two writes happen simultaneously to the same key, only one notification may fire. Enable versioning to guarantee one notification per write.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 9: ENCRYPTION ==================== -->
+<div id="p9" class="part-header rust">
+  <div class="part-number">Part 09</div>
+  <h2>S3 Encryption — Protecting Data at Rest and in Transit</h2>
+  <p>Four different ways to encrypt S3 objects — each with a different trust model. The exam absolutely loves these.</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why Encryption Matters — Especially in Ireland</div>
+    <p>Fenergo, the Dublin fintech company, handles KYC documents for 26 of the world's top 50 financial institutions. Those documents contain names, passport numbers, addresses, financial history — extremely sensitive data. Under <strong>EU GDPR</strong> and the Irish <strong>Central Bank of Ireland's</strong> regulations, this data must be encrypted at rest and in transit. A data breach can mean fines of up to 4% of global annual revenue.</p>
+    <p>S3 offers four server-side encryption options. The choice determines <strong>who controls the encryption keys</strong> — which is the critical security and compliance decision. The more control you want over keys, the more responsibility you take on.</p>
+  </div>
+
+  <h3 class="section-title">The Four Encryption Options</h3>
+  <div class="enc-grid">
+    <div class="enc-card enc-s3">
+      <div class="enc-tag">SSE-S3</div>
+      <h4>AWS Manages Everything</h4>
+      <p><strong>How:</strong> AWS creates and manages encryption keys. AES-256 encryption. Default for all new S3 objects since Jan 2023.</p>
+      <p><strong>Who controls keys:</strong> AWS (you have zero visibility into the keys)</p>
+      <p><strong>Audit trail:</strong> None for key usage</p>
+      <p><strong>Mechanism:</strong> Header <code>x-amz-server-side-encryption: AES256</code></p>
+      <p><strong>Use when:</strong> You need encryption but don't care about key management. Lowest friction.</p>
+    </div>
+    <div class="enc-card enc-kms">
+      <div class="enc-tag">SSE-KMS</div>
+      <h4>KMS Keys, You're in Control</h4>
+      <p><strong>How:</strong> Uses AWS KMS keys (either AWS-managed or customer-managed CMK). Full key rotation control.</p>
+      <p><strong>Who controls keys:</strong> You (through KMS policies + IAM)</p>
+      <p><strong>Audit trail:</strong> Every key usage logged in CloudTrail — who accessed what, when</p>
+      <p><strong>Mechanism:</strong> Header <code>x-amz-server-side-encryption: aws:kms</code></p>
+      <p><strong>Use when:</strong> Regulatory requirement to control and audit key usage. Financial services, healthcare.</p>
+    </div>
+    <div class="enc-card enc-c">
+      <div class="enc-tag">SSE-C</div>
+      <h4>You Provide the Key, AWS Encrypts</h4>
+      <p><strong>How:</strong> You provide your own key with every PUT/GET request. AWS encrypts/decrypts then discards your key — never stores it.</p>
+      <p><strong>Who controls keys:</strong> 100% you (AWS never stores the key)</p>
+      <p><strong>Requirement:</strong> Must use HTTPS (keys sent over HTTP = massive security risk)</p>
+      <p><strong>Mechanism:</strong> Send key in request header every time</p>
+      <p><strong>Use when:</strong> You already have an external key management system and can't use KMS. Or extreme compliance requirements.</p>
+    </div>
+    <div class="enc-card enc-dsse">
+      <div class="enc-tag">DSSE-KMS</div>
+      <h4>Double Encryption Layer</h4>
+      <p><strong>How:</strong> Applies TWO independent KMS encryption layers on the same object. Extra protection.</p>
+      <p><strong>Who controls keys:</strong> You (through KMS)</p>
+      <p><strong>Use when:</strong> Highest regulatory compliance requirements (some US government, defence, extreme PCI-DSS).</p>
+      <p><strong>Cost:</strong> Twice the KMS API calls → twice the cost. Only use when the compliance standard explicitly requires it.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3 class="section-title">Client-Side Encryption — Encrypt Before It Leaves Your Machine</h3>
+    <div class="callout callout-why">
+      <div class="callout-tag">💡 The Key Difference From Server-Side Encryption</div>
+      <p>All four SSE options above (SSE-S3, SSE-KMS, SSE-C, DSSE-KMS) are <strong>server-side</strong> — meaning your data travels to AWS first, then AWS encrypts it before writing to disk. The data is in plaintext during the network journey from your application to S3 (though TLS protects it in transit).</p>
+      <p><strong>Client-side encryption</strong> flips this: you encrypt the data <em>on your own machine or server</em> before uploading it to S3. S3 receives only encrypted bytes and has no idea what the actual data is. AWS cannot decrypt it — even if they wanted to, even if compelled by a court order. Total data sovereignty.</p>
+    </div>
+    <div class="comparison-grid">
+      <div class="comp-card">
+        <div class="comp-card-tag">How It Works</div>
+        <h4>Client-Side Flow</h4>
+        <ul>
+          <li>Your application generates/loads an encryption key</li>
+          <li>Encrypts the file locally (e.g., AES-256-GCM)</li>
+          <li>Uploads the encrypted blob to S3</li>
+          <li>S3 stores opaque encrypted bytes — no metadata about content</li>
+          <li>To read: download blob, decrypt locally with your key</li>
+          <li>AWS SDKs have built-in client-side encryption helpers</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-tag">When To Use</div>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>"Zero trust" architecture — don't trust the cloud provider</li>
+          <li>Defence/intelligence workloads where even AWS access is unacceptable</li>
+          <li>Highly sensitive IP (pharmaceutical formulas, trade secrets)</li>
+          <li>Regulations that prohibit any third party from even theoretically accessing data</li>
+          <li>Multi-cloud strategies where you need portable encryption</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-tag">Trade-offs</div>
+        <h4>The Costs</h4>
+        <ul>
+          <li>You own key management entirely — lose the key, lose the data forever</li>
+          <li>S3 features like Select, Batch Operations cannot work on encrypted blobs</li>
+          <li>Search, indexing, and analytics on S3 content become impossible without decrypt</li>
+          <li>More application code and complexity to maintain</li>
+          <li>Key rotation requires re-encrypting all existing objects</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout-exam">
+      <div class="callout-tag">📋 Exam Trigger</div>
+      <p>"Data must be encrypted before it ever reaches AWS" → <strong>Client-Side Encryption</strong></p>
+      <p>"AWS must have absolutely no ability to decrypt data, even theoretically" → <strong>Client-Side Encryption</strong></p>
+      <p><strong>Contrast:</strong> SSE-C is often confused with client-side encryption. SSE-C still sends plaintext to AWS (AWS does the encrypting). Client-side means AWS receives already-encrypted bytes. The encryption happens at the client — before the network call.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ SSE-KMS Has a Hidden Scaling Trap</div>
+    <p><strong>Every S3 request using SSE-KMS makes a KMS API call.</strong> KMS has default quota limits (5,500 to 10,000 API calls per second depending on region). If you have 1,000 clients downloading SSE-KMS encrypted objects simultaneously, you're making 1,000 KMS API calls per second. You can hit KMS throttling limits, causing download failures!</p>
+    <p><strong>Solution:</strong> Enable S3 Bucket Keys. When you enable S3 Bucket Keys, S3 generates a short-lived key from your KMS key and caches it. Instead of one KMS call per object access, the cache handles most requests — dramatically reducing KMS API calls (up to 99% reduction) and cost.</p>
+  </div>
+
+  <h3 class="section-title" style="margin-top:40px">Enforcing Encryption — Deny Unencrypted Uploads</h3>
+  <div class="prose">
+    <p>Saying "enable encryption" on a bucket doesn't prevent someone from uploading an unencrypted object if they don't send the encryption header. <strong>To enforce encryption, you need a bucket policy.</strong></p>
+  </div>
+  <div class="code-block">
+<span class="comment">{
+  // Deny any PUT that doesn't use SSE-KMS encryption
+  // This forces ALL uploads to use KMS encryption
+}</span>
+{
+  <span class="key">"Version"</span>: <span class="string">"2012-10-17"</span>,
+  <span class="key">"Statement"</span>: [{
+    <span class="key">"Effect"</span>: <span class="string">"Deny"</span>,
+    <span class="key">"Principal"</span>: <span class="string">"*"</span>,
+    <span class="key">"Action"</span>: <span class="string">"s3:PutObject"</span>,
+    <span class="key">"Resource"</span>: <span class="string">"arn:aws:s3:::my-secure-bucket/*"</span>,
+    <span class="key">"Condition"</span>: {
+      <span class="key">"StringNotEquals"</span>: {
+        <span class="key">"s3:x-amz-server-side-encryption"</span>: <span class="string">"aws:kms"</span>
+      }
+    }
+  }]
+}
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p>"Force encryption on all S3 uploads" → <strong>Bucket Policy with Deny condition on missing encryption header</strong></p>
+    <p>"Audit who accessed specific S3 objects using which encryption key" → <strong>SSE-KMS + CloudTrail</strong></p>
+    <p>"Compliance requires you never share encryption keys with AWS" → <strong>SSE-C (you provide keys, AWS never stores them)</strong></p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Encryption in Transit — HTTPS is Mandatory</h3>
+  <div class="prose">
+    <p>Data moving between your application and S3 (in transit) is encrypted using <strong>TLS/HTTPS</strong>. S3 supports both HTTP and HTTPS endpoints, but you should always use HTTPS. To enforce it, add a bucket policy that denies any non-HTTPS request.</p>
+  </div>
+  <div class="code-block">
+<span class="comment">// Deny HTTP requests — only allow HTTPS (TLS/SSL)</span>
+{
+  <span class="key">"Effect"</span>: <span class="string">"Deny"</span>,
+  <span class="key">"Principal"</span>: <span class="string">"*"</span>,
+  <span class="key">"Action"</span>: <span class="string">"s3:*"</span>,
+  <span class="key">"Resource"</span>: [<span class="string">"arn:aws:s3:::my-bucket"</span>, <span class="string">"arn:aws:s3:::my-bucket/*"</span>],
+  <span class="key">"Condition"</span>: {
+    <span class="key">"Bool"</span>: { <span class="key">"aws:SecureTransport"</span>: <span class="string">"false"</span> }
+  }
+}
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 10: ACCESS CONTROL ==================== -->
+<div id="p10" class="part-header purple">
+  <div class="part-number">Part 10</div>
+  <h2>S3 Access Control — Who Can Access What</h2>
+  <p>Four different mechanisms, each solving a different access control problem. Understanding when to use which is key.</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Access Control Problem in the Real World</div>
+    <p>A Dublin e-commerce startup has an S3 bucket with: product images (should be public), customer invoices (only the customer themselves), internal reports (only the finance team), and raw transaction logs (only the analytics pipeline). All in the same AWS account. How do you control access to each type of object differently?</p>
+    <p>AWS gives you four tools. Each has a different scope and purpose. The exam will test whether you know which tool to reach for in each scenario.</p>
+  </div>
+
+  <h3 class="section-title">The Four Access Control Mechanisms</h3>
+
+  <div class="step-flow">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h5>Block Public Access (Account-Level Safety Net)</h5>
+        <p>This is a master override. When enabled (it's ON by default for all new buckets since April 2023), it prevents any S3 bucket or object in your account from being made public — even if a bucket policy or ACL says "allow public access". Think of it as a circuit breaker. The exam answer for "ensure NO S3 data in this account is ever publicly accessible" is always: <strong>Enable Block Public Access at the account level</strong>. AWS now enables this by default on all new buckets.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h5>IAM Policies (Identity-Based Control)</h5>
+        <p>Attached to IAM users, groups, or roles. Controls what those identities can do. Example: "Alice's IAM policy allows her to GET objects from the finance-reports bucket". IAM policies work great for controlling access within your own AWS account. For cross-account access, you still need a bucket policy on the destination bucket to grant trust to the external account. Key insight: IAM policies and bucket policies are evaluated together — both must allow access for a request to succeed.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h5>Bucket Policies (Resource-Based, the Workhorse)</h5>
+        <p>JSON policies attached directly to the S3 bucket. The most powerful and commonly used access control mechanism. Can grant/deny access to specific AWS accounts, IAM users, roles, IP ranges, VPCs, and even anonymous (public) users. Bucket policies are how you grant cross-account access, enforce HTTPS-only, require specific encryption, allow public access for a static website, and much more. For any scenario where you need to control access based on who the caller is (not just what they're doing), bucket policy is your tool.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h5>ACLs — Access Control Lists (Legacy, Use Sparingly)</h5>
+        <p>Pre-IAM era access control. Coarse-grained (read/write/full control permissions per bucket or object). AWS now disables ACLs by default on new buckets. You may see ACL questions on the exam in legacy context, but the answer is almost always to use bucket policies instead. The one remaining ACL use case: granting AWS services like CloudFront or S3 replication permissions to access objects — though even this is being replaced by bucket policies and OAI/OAC.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Access Control Decision Flow</div>
+    <svg viewBox="0 0 860 320" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Start -->
+      <ellipse cx="430" cy="24" rx="80" ry="20" fill="#1a1208" opacity="0.85"/>
+      <text x="430" y="29" text-anchor="middle" font-size="13" fill="white" font-family="monospace">S3 Request</text>
+
+      <!-- Block Public Access -->
+      <line x1="430" y1="44" x2="430" y2="74" stroke="#3d2e1a" stroke-width="2"/>
+      <rect x="280" y="74" width="300" height="44" rx="10" fill="#fde0d8" stroke="#b84c2a" stroke-width="2"/>
+      <text x="430" y="93" text-anchor="middle" font-size="13" font-weight="700" fill="#7a2410" font-family="'Source Serif 4',serif">Block Public Access</text>
+      <text x="430" y="110" text-anchor="middle" font-size="11" fill="#b84c2a" font-family="monospace">Is bucket/account public access blocked?</text>
+
+      <!-- Deny path -->
+      <line x1="580" y1="96" x2="750" y2="96" stroke="#b84c2a" stroke-width="2"/>
+      <text x="665" y="88" text-anchor="middle" font-size="11" fill="#b84c2a" font-family="monospace">YES → Public request</text>
+      <ellipse cx="790" cy="96" rx="60" ry="18" fill="#b84c2a"/>
+      <text x="790" y="100" text-anchor="middle" font-size="12" fill="white" font-family="monospace">DENIED</text>
+
+      <!-- IAM check -->
+      <line x1="430" y1="118" x2="430" y2="148" stroke="#3d2e1a" stroke-width="2"/>
+      <rect x="280" y="148" width="300" height="44" rx="10" fill="#fde8c8" stroke="#c97d2e" stroke-width="2"/>
+      <text x="430" y="167" text-anchor="middle" font-size="13" font-weight="700" fill="#7a4a10" font-family="'Source Serif 4',serif">IAM Policy Check</text>
+      <text x="430" y="184" text-anchor="middle" font-size="11" fill="#c97d2e" font-family="monospace">Does caller's IAM policy allow this action?</text>
+
+      <!-- Bucket policy check -->
+      <line x1="430" y1="192" x2="430" y2="222" stroke="#3d2e1a" stroke-width="2"/>
+      <rect x="280" y="222" width="300" height="44" rx="10" fill="#dde2f8" stroke="#1e5fa8" stroke-width="2"/>
+      <text x="430" y="241" text-anchor="middle" font-size="13" font-weight="700" fill="#123e6e" font-family="'Source Serif 4',serif">Bucket Policy Check</text>
+      <text x="430" y="258" text-anchor="middle" font-size="11" fill="#1e5fa8" font-family="monospace">Does bucket policy allow or deny this action?</text>
+
+      <!-- Final result -->
+      <line x1="430" y1="266" x2="430" y2="290" stroke="#3d2e1a" stroke-width="2"/>
+      <text x="430" y="290" text-anchor="middle" font-size="12" fill="#6b5744" font-family="monospace">If any explicit DENY → Denied. Otherwise if Allow exists → Allowed.</text>
+      <text x="430" y="310" text-anchor="middle" font-size="11" fill="#b84c2a" font-family="monospace">⚠ Explicit DENY always wins over any Allow</text>
+    </svg>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Access Points — Simplifying Shared Bucket Access</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Problem Access Points Solve</div>
+    <p>A company has one S3 bucket with data from multiple applications: the analytics team needs read access to certain prefixes, the data science team needs read/write to a different set, and the compliance team needs read access to audit logs. Managing this via bucket policy becomes a massive JSON blob that's hard to read, audit, and change safely.</p>
+    <p><strong>S3 Access Points</strong> solve this by creating named virtual entry points into the bucket — each with its own hostname, IAM policy, and VPC restrictions. Instead of one complex bucket policy, you have clear, separated access policies per team or application.</p>
+  </div>
+  <ul class="nice-list">
+    <li>Each access point has its own DNS hostname: <code>my-ap.s3-accesspoint.eu-west-1.amazonaws.com</code></li>
+    <li>Each access point has its own IAM policy — much easier to manage per-team or per-app</li>
+    <li>You can restrict an access point to a specific VPC (private access only)</li>
+    <li>Access points can only grant permissions, never more than the bucket policy allows</li>
+    <li>You can have multiple access points per bucket — one per application, department, or partner</li>
+  </ul>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 11: ADVANCED FEATURES ==================== -->
+<div id="p11" class="part-header blue">
+  <div class="part-number">Part 11</div>
+  <h2>Advanced S3 Features — The Full Toolkit</h2>
+  <p>Presigned URLs, CORS, Object Lambda, Static Website Hosting, Batch Operations, Requester Pays, VPC Endpoint access.</p>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Presigned URLs — Temporary Access to Private Objects</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Problem Presigned URLs Solve</div>
+    <p>Your application stores user documents in a private S3 bucket (no public access). A logged-in user wants to download their own tax statement PDF. You have two bad options: make the bucket public (everyone can download everyone's files — terrible!) or route the download through your application server (your server becomes a bottleneck, extra cost).</p>
+    <p>The good option: your server generates a <strong>presigned URL</strong>. This is a special URL that includes an encrypted signature embedding your AWS credentials. Anyone with this URL can download the exact object — but only for a limited time window (you choose: 1 minute to 7 days). After expiry, the URL is dead.</p>
+  </div>
+  <div class="code-block">
+<span class="comment"># Generate a presigned URL that expires in 3600 seconds (1 hour)</span>
+aws s3 presign s3://fenergo-kyc-docs/<span class="string">client-12345/passport.pdf</span> \
+  --expires-in <span class="number">3600</span> \
+  --region eu-west-1
+
+<span class="comment"># Returns something like:</span>
+<span class="string">https://fenergo-kyc-docs.s3.eu-west-1.amazonaws.com/client-12345/passport.pdf
+  ?X-Amz-Algorithm=AWS4-HMAC-SHA256
+  &X-Amz-Credential=AKIAIOSFODNN7EXAMPLE/20250115/eu-west-1/s3/aws4_request
+  &X-Amz-Expires=3600
+  &X-Amz-Signature=....(unique signature)...</span>
+  </div>
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ Presigned URL Traps</div>
+    <p><strong>Trap 1 — Permissions are checked at USE time, not generation time:</strong> If you generate a URL but then revoke the IAM permissions of the user who generated it before the URL expires, the URL immediately stops working even before its expiry time.</p>
+    <p><strong>Trap 2 — Expiry tied to credential type:</strong> If the URL is generated by an IAM role (like an EC2 instance profile), the URL expires when the role's temporary credentials expire — which can be as soon as 1 hour, regardless of the expiry you set. For longer-lived URLs, use IAM user permanent credentials or set a short expiry and regenerate.</p>
+    <p><strong>Trap 3 — Works for PUT too:</strong> Presigned URLs work for both GET (download) and PUT (upload). You can let users upload directly to S3 without proxying through your server — saving bandwidth costs.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">CORS — Cross-Origin Resource Sharing</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 What CORS Is and Why It's Needed</div>
+    <p>Imagine you have a web app at <code>https://app.fenergo.com</code>. Your JavaScript code wants to fetch a PDF from <code>https://fenergo-docs.s3.amazonaws.com</code>. The browser says: STOP. This is a <em>cross-origin request</em> — the "origin" (app.fenergo.com) is different from the resource origin (s3.amazonaws.com). The browser blocks it by default for security.</p>
+    <p>CORS lets you configure S3 to tell the browser: "It's OK, requests from app.fenergo.com are allowed." Without this, your web app simply cannot load assets directly from S3.</p>
+  </div>
+  <div class="code-block">
+<span class="comment">// S3 CORS configuration example</span>
+[{
+  <span class="key">"AllowedHeaders"</span>: [<span class="string">"*"</span>],
+  <span class="key">"AllowedMethods"</span>: [<span class="string">"GET"</span>, <span class="string">"PUT"</span>, <span class="string">"POST"</span>],
+  <span class="key">"AllowedOrigins"</span>: [<span class="string">"https://app.fenergo.com"</span>],
+  <span class="key">"ExposeHeaders"</span>: [<span class="string">"ETag"</span>],
+  <span class="key">"MaxAgeSeconds"</span>: <span class="number">3000</span>
+}]
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p>"Static website hosted on S3 in one bucket needs to load assets from a second S3 bucket" → <strong>Enable CORS on the second bucket</strong> to allow requests from the first bucket's origin.</p>
+    <p>"Browser is getting 'No Access-Control-Allow-Origin' error when loading S3 resources" → <strong>CORS policy missing or incorrect on the S3 bucket</strong>.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Object Lambda — Transform Data on the Fly</h3>
+  <div class="prose">
+    <p><strong>S3 Object Lambda</strong> intercepts GET requests to S3 and runs a Lambda function before the data reaches the requester. You don't need to store multiple versions of the same data.</p>
+    <p><strong>Example:</strong> You store customer reports in S3. When the analytics team GETs a report, they get the full data. When the customer GETs the same report via S3 Object Lambda, your Lambda function redacts sensitive fields (like full credit card numbers, showing only last 4 digits) before returning it. One source of truth, multiple filtered views.</p>
+  </div>
+  <ul class="nice-list">
+    <li>Automatically watermark documents based on the requesting user</li>
+    <li>Decompress Gzip files on the fly for applications that can't handle compression</li>
+    <li>Enrich data with information from other sources before returning it</li>
+    <li>Filter out rows in a CSV that the requester doesn't have access to see</li>
+    <li>Convert between formats (CSV → JSON) without duplicating storage</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Static Website Hosting</h3>
+  <div class="prose">
+    <p>S3 can serve HTML, CSS, and JavaScript files directly as a static website. No servers needed. Your website URL becomes: <code>http://my-bucket.s3-website.eu-west-1.amazonaws.com</code>.</p>
+    <p>This is how many companies serve their landing pages, documentation sites, and single-page applications (React/Vue/Angular built apps). Typically paired with CloudFront for HTTPS and a custom domain. For dynamic content (databases, server-side logic), you still need a backend — S3 is static only.</p>
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p>"Host a static website with no servers at minimum cost" → <strong>S3 Static Website + CloudFront</strong></p>
+    <p>"Error 403 on static website" → Usually means Block Public Access is still on, or bucket policy doesn't allow public GetObject.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Batch Operations — Process Millions of Objects at Once</h3>
+  <div class="prose">
+    <p>Need to copy 500 million objects from one bucket to another? Encrypt all existing objects in a bucket that weren't encrypted before? Run a Lambda function against every object in a 10TB bucket? S3 Batch Operations handles this at massive scale — no custom code or scripts needed.</p>
+    <p>You create a "job" that specifies a list of objects (from an S3 Inventory report) and an operation (copy, invoke Lambda, restore from Glacier, tag, etc.). AWS runs the job in parallel across its infrastructure and gives you a completion report.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Requester Pays — Shifting Transfer Costs to the Downloader</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Problem It Solves</div>
+    <p>A Dublin research institution stores 50TB of public genomics data in S3. Scientists worldwide download from it daily. Without Requester Pays, the research institution pays for all data transfer out of S3 — which can run into thousands of euros per month for popular datasets. They're paying to give data away.</p>
+    <p><strong>Requester Pays</strong> flips the billing model. The research institution pays for storage. The person downloading pays for the data transfer and request costs. This is how large public datasets (government open data, scientific research, geospatial data) are distributed without breaking the publisher's budget.</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Normal S3 (Default)</div>
+      <h4>Bucket Owner Pays Everything</h4>
+      <ul>
+        <li>Bucket owner pays: storage + data transfer + requests</li>
+        <li>Works fine when you control who downloads and how much</li>
+        <li>Problem: public datasets with thousands of external downloaders</li>
+        <li>Transfer costs scale with popularity — can become unsustainable</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Requester Pays Enabled</div>
+      <h4>Downloader Pays Transfer</h4>
+      <ul>
+        <li>Bucket owner pays: storage only</li>
+        <li>Requester pays: data transfer + request costs</li>
+        <li>Requester MUST be authenticated (no anonymous access allowed)</li>
+        <li>Requester must include <code>x-amz-requester-pays</code> header</li>
+        <li>Used by: AWS public datasets, open data initiatives, large media</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ Requester Pays Constraints</div>
+    <p><strong>Anonymous access is automatically blocked</strong> when Requester Pays is enabled. Every requester must have valid AWS credentials — because AWS needs to know who to bill. This means you cannot serve anonymous public content with Requester Pays. Use standard public bucket policy for anonymous access instead.</p>
+    <p><strong>Exam trigger:</strong> "Company hosts a large public dataset in S3, wants external users to pay for their own downloads" → <strong>Enable Requester Pays on the bucket</strong>.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">VPC Gateway Endpoint — Private S3 Access Without the Internet</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Problem It Solves</div>
+    <p>Your EC2 instances are in a private subnet (no internet gateway, no NAT). They need to read and write to S3 — but S3's endpoint is on the public internet. Without a VPC Endpoint, your private instances simply cannot reach S3 at all.</p>
+    <p>Even if your instances ARE in a public subnet and CAN reach the internet, all S3 traffic going via the internet means: data transfer costs (egress fees), potential security exposure (traffic on public internet), and latency. A <strong>VPC Gateway Endpoint for S3</strong> solves all of this: your EC2 instances talk to S3 over AWS's private network, never touching the internet.</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Without VPC Endpoint</div>
+      <h4>S3 via Internet</h4>
+      <ul>
+        <li>Private subnet → NAT Gateway → Internet → S3</li>
+        <li>OR: Public subnet → Internet Gateway → Internet → S3</li>
+        <li>Data transfer charges apply (NAT Gateway + internet egress)</li>
+        <li>Traffic traverses public internet — security exposure</li>
+        <li>Cannot be used from private subnets without NAT</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">With Gateway Endpoint</div>
+      <h4>S3 via AWS Private Network</h4>
+      <ul>
+        <li>EC2 (any subnet) → Route table entry → S3 directly</li>
+        <li>Completely free — no hourly charge, no data charge</li>
+        <li>Traffic stays within AWS network, never public internet</li>
+        <li>Works from private subnets without NAT Gateway</li>
+        <li>Bucket policies can restrict access to only VPC traffic</li>
+      </ul>
+    </div>
+  </div>
+  <ul class="nice-list">
+    <li>Gateway Endpoints are <strong>free</strong> — unlike Interface Endpoints (~$0.01/hr/AZ)</li>
+    <li>Only works for <strong>S3 and DynamoDB</strong> — everything else needs Interface Endpoint (PrivateLink)</li>
+    <li>Works by adding a <strong>route table entry</strong> in your VPC routing table — not an ENI</li>
+    <li>Scope is <strong>regional</strong> — one endpoint connects to all S3 buckets in that region</li>
+    <li>You can restrict bucket access to only requests coming through the endpoint (bucket policy condition)</li>
+  </ul>
+  <div class="code-block">
+<span class="comment">// Bucket policy: only allow access from within your VPC (via Gateway Endpoint)
+// Blocks all internet access to the bucket — even from valid IAM users outside VPC</span>
+{
+  <span class="key">"Effect"</span>: <span class="string">"Deny"</span>,
+  <span class="key">"Principal"</span>: <span class="string">"*"</span>,
+  <span class="key">"Action"</span>: <span class="string">"s3:*"</span>,
+  <span class="key">"Resource"</span>: [<span class="string">"arn:aws:s3:::my-private-bucket"</span>, <span class="string">"arn:aws:s3:::my-private-bucket/*"</span>],
+  <span class="key">"Condition"</span>: {
+    <span class="key">"StringNotEquals"</span>: {
+      <span class="key">"aws:SourceVpc"</span>: <span class="string">"vpc-0a1b2c3d4e5f67890"</span>
+    }
+  }
+}
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Triggers</div>
+    <p>"EC2 in private subnet needs to access S3 without internet, cheapest option" → <strong>VPC Gateway Endpoint for S3 (free)</strong></p>
+    <p>"Prevent S3 bucket from being accessed outside your VPC" → <strong>Bucket policy with aws:SourceVpc condition + Gateway Endpoint</strong></p>
+    <p>"Connect to S3 privately but need it to work for all AWS services" → <strong>Interface Endpoint (PrivateLink) — paid</strong></p>
+    <p><strong>The key comparison always tested:</strong> Gateway Endpoint = free, S3+DynamoDB only, uses route tables. Interface Endpoint = paid, almost every AWS service, uses ENIs in your subnet.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== PART 11b: LOGGING & MONITORING ==================== -->
+<div id="p11b" class="part-header green">
+  <div class="part-number">Part 11b</div>
+  <h2>S3 Logging &amp; Monitoring — Knowing What's Happening</h2>
+  <p>Server Access Logging, Storage Lens, and how S3 monitoring differs from CloudTrail — a common exam confusion point.</p>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Server Access Logging — The Detailed HTTP Log</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 Why This Is Different From CloudTrail</div>
+    <p>CloudTrail records API calls made to the <em>S3 management plane</em> — bucket creation, policy changes, lifecycle rule updates, replication configuration. It's the "who configured what" log.</p>
+    <p><strong>S3 Server Access Logging</strong> records every individual HTTP request made to the <em>data plane</em> — every GET, PUT, DELETE of individual objects. It's the "who accessed which file, when, from where" log. This is what you need for: security forensics (which IP downloaded this file?), billing analysis (which app is making the most requests?), and detailed access auditing.</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">CloudTrail S3 Logging</div>
+      <h4>Management Plane Events</h4>
+      <ul>
+        <li>Bucket-level API calls (CreateBucket, DeleteBucket)</li>
+        <li>Policy changes, ACL changes, lifecycle changes</li>
+        <li>Cross-account access events</li>
+        <li>Free for management events by default</li>
+        <li>Data events (object-level) require additional configuration + cost</li>
+        <li>Near real-time delivery (minutes)</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">S3 Server Access Logging</div>
+      <h4>Data Plane Events (Every HTTP Request)</h4>
+      <ul>
+        <li>Every GET, PUT, DELETE of every object</li>
+        <li>Requester IP address, request time, HTTP status code</li>
+        <li>Bytes transferred, referrer, user agent</li>
+        <li>Logs stored in a different S3 bucket (never same bucket)</li>
+        <li>Best-effort delivery (not guaranteed for every request)</li>
+        <li>Can have hours of delay before logs appear</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ Critical Setup Rules</div>
+    <p><strong>Rule 1 — Never log to the same bucket you're monitoring.</strong> This creates an infinite loop: logging a request creates a log file, which creates another log request, which creates another log file... The destination bucket must be a different bucket in the same region.</p>
+    <p><strong>Rule 2 — Delivery is best-effort, not guaranteed.</strong> Some requests may not appear in logs. For guaranteed capture of all access events, use CloudTrail Data Events (with additional cost) instead of Server Access Logging.</p>
+    <p><strong>Rule 3 — Logs can be hours behind.</strong> Don't use Server Access Logs for real-time alerting. Use CloudWatch metrics or EventBridge for that. Access logs are for retrospective analysis.</p>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Logging Type</th><th>What It Captures</th><th>Cost</th><th>Use For</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CloudTrail (Mgmt)</strong></td>
+          <td>Bucket config changes, policy changes</td>
+          <td>Free</td>
+          <td>Compliance, "who changed config"</td>
+        </tr>
+        <tr>
+          <td><strong>CloudTrail (Data Events)</strong></td>
+          <td>Every object-level GET/PUT/DELETE — guaranteed</td>
+          <td>Paid per event</td>
+          <td>Audit trail, forensics — guaranteed delivery</td>
+        </tr>
+        <tr>
+          <td><strong>S3 Server Access Logs</strong></td>
+          <td>Every HTTP request — best-effort, detailed HTTP info</td>
+          <td>Storage cost only</td>
+          <td>Usage analysis, security investigation, referrer tracking</td>
+        </tr>
+        <tr>
+          <td><strong>S3 Storage Lens</strong></td>
+          <td>Usage metrics, activity trends, cost insights</td>
+          <td>Free (advanced = paid)</td>
+          <td>Cost optimisation, usage trends across all buckets</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">S3 Storage Lens — Organisation-Wide S3 Analytics</h3>
+  <div class="callout callout-why">
+    <div class="callout-tag">💡 The Problem It Solves</div>
+    <p>A company has 500 S3 buckets across 12 AWS accounts and 6 regions. The CTO asks: "How much of our S3 data is actually being accessed? Are we wasting money on Standard storage for data no one reads? Which buckets are growing fastest? Are any buckets not encrypted?"</p>
+    <p>Without Storage Lens: answering these questions requires running custom scripts across every account and region — a multi-week engineering project. With <strong>S3 Storage Lens</strong>: you get a single interactive dashboard showing all of this automatically, across your entire AWS Organisation, updated daily.</p>
+  </div>
+  <div class="prose">
+    <p>Storage Lens works at three levels of scope: individual account, multi-account (AWS Organizations), and optionally filtered by region, bucket, or prefix. It aggregates dozens of metrics into an interactive console dashboard and can also export data to an S3 bucket for custom analysis with Athena or QuickSight.</p>
+  </div>
+  <div class="comparison-grid">
+    <div class="comp-card">
+      <div class="comp-card-tag">Free Tier Metrics</div>
+      <h4>Default Dashboard</h4>
+      <ul>
+        <li>Total storage used per bucket and region</li>
+        <li>Object count trends over time</li>
+        <li>Storage class distribution (how much in Standard vs Glacier)</li>
+        <li>Buckets missing versioning, MFA Delete, or encryption</li>
+        <li>Buckets with public access enabled</li>
+        <li>15-day data retention in the dashboard</li>
+      </ul>
+    </div>
+    <div class="comp-card">
+      <div class="comp-card-tag">Advanced Metrics (Paid)</div>
+      <h4>Deep Insights</h4>
+      <ul>
+        <li>Activity metrics: request counts, data retrieved, error rates</li>
+        <li>Cost optimisation: identifies buckets where Intelligent-Tiering would save money</li>
+        <li>Data protection: detailed encryption, replication coverage stats</li>
+        <li>Per-prefix analysis (not just per-bucket)</li>
+        <li>15-month data retention</li>
+        <li>CloudWatch integration for alarms</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p>"Get a single view of S3 usage and activity across all AWS accounts in the organisation" → <strong>S3 Storage Lens</strong></p>
+    <p>"Identify which S3 buckets are not using encryption or versioning across all accounts" → <strong>S3 Storage Lens default dashboard</strong></p>
+    <p>"Understand S3 cost trends and optimisation opportunities at scale" → <strong>S3 Storage Lens advanced metrics</strong></p>
+    <p><strong>Contrast with:</strong> AWS Config can also check S3 bucket compliance (encryption, versioning) but Config is rule-based and per-resource. Storage Lens is analytics-based, aggregated, and trend-oriented.</p>
+  </div>
+</div>
+<div id="p12" class="industry-spotlight">
+  <div class="industry-spotlight-tag">🏢 Dublin Industry Architecture — Real-World Deep Dive</div>
+  <h3>Fenergo-Style KYC Document Platform in Dublin</h3>
+  <p>Let's build the architecture of a real Dublin-based fintech company's KYC (Know Your Customer) document management system — the type of platform <strong>Fenergo</strong> (headquartered on Mayor Street, Dublin 1) builds for the world's largest banks. This is a concrete example of every S3 concept you've just learned, applied in production.</p>
+
+  <h4>📋 The Business Context</h4>
+  <p>Fenergo helps financial institutions onboard corporate clients. When a bank onboards a new corporate client, it needs to collect and verify: a company's certificate of incorporation, directors' passport copies, proof of address, source of funds documentation, and audited financial statements. Under EU GDPR, Irish Central Bank rules, and MiFID II regulations, these documents must be: <strong>encrypted at rest, access-logged, retained for at least 7 years, non-deletable during retention period, and geographically restricted to the EU</strong>.</p>
+
+  <h4>🏗️ The S3 Architecture</h4>
+  <div class="arch-grid">
+    <div class="arch-item">
+      <div class="arch-label">Primary Storage</div>
+      <p>Single S3 bucket in eu-west-1 (Dublin). Versioning enabled. All objects encrypted with SSE-KMS using Customer Managed Keys. Block Public Access: ON at account level.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">DR Replication</div>
+      <p>CRR to eu-central-1 (Frankfurt). Meets EU data residency: data never leaves EU. RPO near-zero. If Dublin AWS region fails, Frankfurt has the full copy immediately.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Compliance Lock</div>
+      <p>S3 Object Lock in Compliance Mode. Retention: 7 years. Even if an attacker compromises the root account, they cannot delete KYC documents during this window. Satisfies Irish law.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Cost Lifecycle</div>
+      <p>Day 0–365: S3 Standard. Day 365–2555: S3 Glacier Instant Retrieval (cheap, but available in ms for compliance audits). Day 2555+: Glacier Deep Archive. Auto-managed via lifecycle rules.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Access Control</div>
+      <p>Three S3 Access Points: one for Document Upload Service, one for Compliance Team (read-only), one for Analytics Pipeline (VPC-restricted). Each with separate IAM policies.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Secure Distribution</div>
+      <p>When a bank officer needs to review a document, the backend generates a Presigned URL valid for 15 minutes. User gets a direct, time-limited download link. No object is ever public. Audit trail in CloudTrail.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Event Processing</div>
+      <p>Every S3 upload fires an EventBridge event → triggers Lambda for OCR/AI extraction → results stored in DynamoDB → SQS queue for downstream compliance workflow processing.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Audit &amp; Monitoring</div>
+      <p>S3 Server Access Logging enabled. CloudTrail logs every API call. Macie scans for unexpected PII in non-KYC buckets. CloudWatch Alarms on bucket size and API error rates.</p>
+    </div>
+  </div>
+
+  <h4>💬 What an Engineer Would Say in an Interview</h4>
+  <p>"We used <strong>SSE-KMS with customer-managed keys</strong> rather than SSE-S3 because the Central Bank of Ireland requires financial institutions to demonstrate key management control. We rotate the KMS keys annually and every key usage is logged in CloudTrail — giving us a full audit trail of who accessed which document with which key. We also enabled <strong>S3 Bucket Keys</strong> to avoid KMS throttling at scale, since we have ~50,000 document access events per day."</p>
+  <p>"For disaster recovery, we configured <strong>CRR to Frankfurt</strong> specifically because some of our bank clients are domiciled in Germany under German regulatory jurisdiction. Having a German region replica satisfies their local compliance requirements without duplicating the operational stack. The replication is configured with <strong>Replication Time Control (RTC)</strong> which gives us a guaranteed 15-minute RPO with SLA, rather than the best-effort default replication."</p>
+  <p>"The <strong>Object Lock in Compliance Mode</strong> was a non-negotiable. When the European Banking Authority audits a client bank, they need to verify that document records haven't been tampered with. Compliance Mode means that even if our own DBA account is compromised, those 7-year-locked documents cannot be deleted. That's the same guarantee as physical tape archiving, delivered in the cloud."</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== QUICK REFERENCE ==================== -->
+<div class="part-header amber">
+  <div class="part-number">Quick Reference</div>
+  <h2>S3 Exam Decision Tables</h2>
+  <p>The patterns you need to recognise instantly in exam questions.</p>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Storage Class — Retrieval Time Clues</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>If the question says...</th>
+          <th>→ Answer</th>
+          <th>Min Storage</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>"Frequently accessed, always available"</td><td><strong>S3 Standard</strong></td><td>None</td><td><span class="badge badge-red">$$$$</span></td></tr>
+        <tr><td>"Infrequently accessed, millisecond retrieval"</td><td><strong>Standard-IA</strong></td><td>30 days</td><td><span class="badge badge-amber">$$$</span></td></tr>
+        <tr><td>"Infrequently accessed, can lose if AZ fails, cheapest IA"</td><td><strong>One Zone-IA</strong></td><td>30 days</td><td><span class="badge badge-amber">$$</span></td></tr>
+        <tr><td>"Archive, but need it immediately sometimes"</td><td><strong>Glacier Instant Retrieval</strong></td><td>90 days</td><td><span class="badge badge-green">$$</span></td></tr>
+        <tr><td>"Archive, retrieval in minutes is fine"</td><td><strong>Glacier Flexible Retrieval</strong></td><td>90 days</td><td><span class="badge badge-green">$</span></td></tr>
+        <tr><td>"Cheapest possible, retrieval in 12-48 hours OK"</td><td><strong>Glacier Deep Archive</strong></td><td>180 days</td><td><span class="badge badge-green">$</span></td></tr>
+        <tr><td>"Unknown access pattern, automate cost"</td><td><strong>Intelligent-Tiering</strong></td><td>None</td><td><span class="badge badge-blue">Auto</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="section-title" style="margin-top:40px">Access Control — Which Mechanism to Use</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Use This</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>EC2 instance needs to read from S3</td><td><strong>IAM Role attached to EC2</strong></td></tr>
+        <tr><td>Another AWS account needs access to your S3 bucket</td><td><strong>Bucket Policy granting the external account</strong></td></tr>
+        <tr><td>Block ALL public access regardless of bucket/object settings</td><td><strong>Block Public Access at account level</strong></td></tr>
+        <tr><td>Give a user a temporary link to a private file</td><td><strong>Presigned URL</strong></td></tr>
+        <tr><td>Many different apps/teams share one bucket, complex permissions</td><td><strong>S3 Access Points</strong></td></tr>
+        <tr><td>Force HTTPS only on a bucket</td><td><strong>Bucket Policy with aws:SecureTransport condition</strong></td></tr>
+        <tr><td>Force specific encryption on all uploads</td><td><strong>Bucket Policy with encryption header condition</strong></td></tr>
+        <tr><td>Grant a website (different domain) access to load S3 assets</td><td><strong>CORS configuration on S3</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="section-title" style="margin-top:40px">Encryption — Which Type to Use</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Use This</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>"Simplest encryption, AWS manages everything"</td><td><strong>SSE-S3</strong> (default on all new objects)</td></tr>
+        <tr><td>"Need audit trail of who accessed which key"</td><td><strong>SSE-KMS</strong> (CloudTrail logs KMS usage)</td></tr>
+        <tr><td>"We manage our own keys, never share with AWS"</td><td><strong>SSE-C</strong></td></tr>
+        <tr><td>"Regulatory compliance requires double-layer encryption"</td><td><strong>DSSE-KMS</strong></td></tr>
+        <tr><td>"Data must be encrypted BEFORE it ever reaches AWS"</td><td><strong>Client-Side Encryption</strong></td></tr>
+        <tr><td>"SSE-KMS hitting throttle limits at scale"</td><td><strong>Enable S3 Bucket Keys</strong></td></tr>
+        <tr><td>"Force all uploads to be encrypted"</td><td><strong>Bucket Policy with Deny on missing encryption header</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="section-title" style="margin-top:40px">Logging &amp; Monitoring — Which Service to Use</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Use This</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>"Who deleted the S3 bucket / changed the bucket policy?"</td><td><strong>CloudTrail (Management Events — free)</strong></td></tr>
+        <tr><td>"Which IP downloaded this specific object?"</td><td><strong>S3 Server Access Logging</strong></td></tr>
+        <tr><td>"Guaranteed audit trail of every object-level access"</td><td><strong>CloudTrail Data Events (paid)</strong></td></tr>
+        <tr><td>"Storage usage trends across all buckets in all accounts"</td><td><strong>S3 Storage Lens</strong></td></tr>
+        <tr><td>"Which buckets don't have versioning or encryption enabled?"</td><td><strong>S3 Storage Lens default dashboard</strong></td></tr>
+        <tr><td>"Detect unexpected PII data in S3 buckets"</td><td><strong>Amazon Macie</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="section-title" style="margin-top:40px">Consistency, Networking &amp; Billing Edge Cases</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Use This</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>"What consistency does S3 provide for reads after writes?"</td><td><strong>Strong consistency</strong> (since Dec 2020, all operations)</td></tr>
+        <tr><td>"Private subnet EC2 needs S3 access, no internet, free option"</td><td><strong>VPC Gateway Endpoint for S3</strong></td></tr>
+        <tr><td>"External users should pay for downloading a public dataset"</td><td><strong>S3 Requester Pays</strong></td></tr>
+        <tr><td>"Enforce WORM on standalone Glacier vaults"</td><td><strong>Glacier Vault Lock Policy</strong></td></tr>
+        <tr><td>"Intelligent-Tiering archive tiers not activating automatically"</td><td><strong>Must manually enable Archive Access and Deep Archive tiers</strong></td></tr>
+        <tr><td>"Retroactively replicate existing objects after enabling CRR"</td><td><strong>S3 Batch Replication</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- end main-content -->
+
+<footer class="doc-footer">
+  SAA-C03 Masterclass · Amazon S3 (Introduction + Advanced + Security) · Document 1 of 2 · Study Series by Sanky
+</footer>
+
+</body>
+</html>

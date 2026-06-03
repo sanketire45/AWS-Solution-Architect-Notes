@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route 53 — SAA-C03 Exam Cracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0c0f16;
+    --s1:       #121722;
+    --s2:       #1a2030;
+    --s3:       #1f2840;
+    --border:   #252f45;
+    --border2:  #2e3a55;
+    --gold:     #e6a817;
+    --gold2:    #f7cc60;
+    --blue:     #4a9eff;
+    --blue2:    #7dc0ff;
+    --green:    #1fc585;
+    --green2:   #5cdaaa;
+    --red:      #f05252;
+    --red2:     #fc8989;
+    --purple:   #9b6dff;
+    --purple2:  #c4abff;
+    --teal:     #17c9b2;
+    --teal2:    #5ee4d3;
+    --orange:   #f97316;
+    --orange2:  #fdba74;
+    --text:     #d8e4f5;
+    --muted:    #7d94b8;
+    --dim:      #4a5a78;
+    --heading:  #f0f6ff;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'IBM Plex Sans',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-size:17px;
+    line-height:1.75;
+  }
+
+  /* ─── HEADER BAR ─── */
+  .topbar{
+    background:linear-gradient(135deg,#0a1628,#12203a);
+    border-bottom:2px solid var(--gold);
+    padding:28px 48px;
+    display:flex;align-items:center;gap:20px;
+    position:sticky;top:0;z-index:100;
+  }
+  .topbar-badge{
+    background:var(--gold);
+    color:#0a0e1a;
+    font-weight:800;font-size:12px;letter-spacing:2px;
+    padding:5px 14px;border-radius:4px;
+    font-family:'Syne',sans-serif;
+    white-space:nowrap;
+  }
+  .topbar h1{
+    font-family:'Syne',sans-serif;font-size:1.3rem;
+    font-weight:700;color:var(--heading);
+  }
+  .topbar h1 span{color:var(--gold2);}
+  .topbar-right{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;}
+  .score-pill{
+    font-size:12px;font-weight:600;padding:5px 14px;
+    border-radius:20px;letter-spacing:0.5px;
+    border:1px solid;
+  }
+
+  /* ─── LAYOUT ─── */
+  .page{max-width:1120px;margin:0 auto;padding:0 48px;}
+
+  /* ─── SECTION HEADERS ─── */
+  .sec-head{
+    padding:48px 0 24px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:36px;
+  }
+  .sec-head .label{
+    font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+    color:var(--gold);margin-bottom:10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .sec-head .label::before,.sec-head .label::after{
+    content:'';flex:1;height:1px;background:var(--border2);
+  }
+  .sec-head .label::before{max-width:30px;}
+  .sec-head h2{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(1.6rem,3vw,2.2rem);
+    font-weight:800;color:var(--heading);
+    line-height:1.1;
+  }
+  .sec-head p{color:var(--muted);font-size:15px;margin-top:10px;}
+
+  h3{
+    font-family:'Syne',sans-serif;
+    font-size:1.25rem;font-weight:700;
+    color:var(--heading);margin:36px 0 16px;
+  }
+  h4{font-size:1rem;font-weight:600;color:var(--blue2);margin:24px 0 10px;}
+  p{margin-bottom:16px;}
+  strong{color:var(--heading);}
+
+  /* ─── TABLES ─── */
+  .tw{overflow-x:auto;margin:20px 0;}
+  table{width:100%;border-collapse:collapse;font-size:15px;}
+  thead{background:var(--s3);}
+  th{
+    padding:13px 16px;text-align:left;
+    font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;
+    color:var(--muted);border-bottom:2px solid var(--border2);
+  }
+  td{
+    padding:12px 16px;border-bottom:1px solid var(--border);
+    color:var(--text);vertical-align:top;
+  }
+  tr:hover td{background:rgba(30,45,66,0.4);}
+  .yes{color:var(--green2);font-weight:600;}
+  .no{color:var(--red2);font-weight:600;}
+  .warn{color:var(--gold2);font-weight:600;}
+  .highlight-row{background:rgba(74,158,255,0.06)!important;}
+
+  /* ─── CALLOUTS ─── */
+  .box{border-radius:12px;padding:20px 24px;margin:20px 0;border-left:4px solid;font-size:15px;line-height:1.7;}
+  .box-title{font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .trigger{background:rgba(230,168,23,0.07);border-color:var(--gold);}
+  .trigger .box-title{color:var(--gold2);}
+  .trap{background:rgba(240,82,82,0.07);border-color:var(--red);}
+  .trap .box-title{color:var(--red2);}
+  .note{background:rgba(74,158,255,0.07);border-color:var(--blue);}
+  .note .box-title{color:var(--blue2);}
+  .green-box{background:rgba(31,197,133,0.07);border-color:var(--green);}
+  .green-box .box-title{color:var(--green2);}
+
+  /* ─── CHEAT PANELS ─── */
+  .cheat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin:24px 0;}
+  .cheat-card{
+    background:var(--s1);border:1px solid var(--border);border-radius:14px;
+    overflow:hidden;
+  }
+  .cheat-card-head{
+    padding:14px 20px;
+    display:flex;align-items:center;gap:12px;
+    border-bottom:1px solid var(--border);
+  }
+  .cheat-card-head .icon{font-size:22px;}
+  .cheat-card-head .name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--heading);}
+  .cheat-card-head .tag{
+    margin-left:auto;font-size:11px;font-weight:700;
+    padding:3px 10px;border-radius:10px;letter-spacing:0.5px;
+  }
+  .cheat-card-body{padding:16px 20px;}
+  .cheat-card-body p{font-size:14px;color:var(--muted);margin-bottom:10px;}
+  .cheat-kv{display:flex;gap:8px;margin-bottom:8px;font-size:14px;}
+  .cheat-k{color:var(--muted);min-width:120px;flex-shrink:0;}
+  .cheat-v{color:var(--text);}
+  .cheat-trigger{
+    background:rgba(230,168,23,0.1);
+    border-radius:8px;padding:10px 14px;
+    font-size:13px;color:var(--gold2);
+    margin-top:12px;line-height:1.5;
+  }
+  .cheat-trap{
+    background:rgba(240,82,82,0.1);
+    border-radius:8px;padding:10px 14px;
+    font-size:13px;color:var(--red2);
+    margin-top:8px;line-height:1.5;
+  }
+
+  /* ─── MNEMONIC BOX ─── */
+  .mnemonic{
+    background:linear-gradient(135deg,rgba(155,109,255,0.1),rgba(23,201,178,0.1));
+    border:1px solid var(--purple);
+    border-radius:14px;
+    padding:28px 32px;
+    margin:24px 0;
+  }
+  .mnemonic-title{
+    font-family:'Syne',sans-serif;
+    font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--purple2);margin-bottom:16px;
+  }
+  .mnemonic-letters{
+    display:flex;flex-wrap:wrap;gap:12px;
+    margin-bottom:20px;
+  }
+  .ml{
+    padding:10px 16px;
+    background:rgba(155,109,255,0.15);
+    border:1px solid rgba(155,109,255,0.4);
+    border-radius:10px;
+    font-family:'Syne',sans-serif;
+    font-size:1.1rem;font-weight:800;
+    color:var(--purple2);
+  }
+  .ml span{color:var(--muted);font-size:0.7rem;font-weight:400;display:block;margin-top:2px;font-family:'IBM Plex Sans',sans-serif;}
+
+  /* ─── QUESTION CARDS ─── */
+  .qcard{
+    background:var(--s1);
+    border:1px solid var(--border);
+    border-radius:16px;
+    margin-bottom:32px;
+    overflow:hidden;
+  }
+  .qcard-head{
+    padding:16px 24px;
+    background:var(--s2);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:12px;
+  }
+  .q-num{
+    font-family:'Syne',sans-serif;font-size:13px;font-weight:800;
+    color:var(--bg);background:var(--blue);
+    width:36px;height:36px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .q-type{font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:0.5px;}
+  .q-diff{font-size:12px;color:var(--muted);margin-left:auto;}
+
+  .qcard-body{padding:24px;}
+  .q-text{font-size:16px;line-height:1.75;color:var(--heading);margin-bottom:24px;}
+  .q-scenario{
+    background:var(--s2);border:1px solid var(--border2);
+    border-radius:10px;padding:18px 22px;
+    margin-bottom:20px;
+    font-size:15px;color:var(--text);line-height:1.7;
+    border-left:3px solid var(--blue);
+  }
+
+  .options{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+  .option{
+    display:flex;align-items:flex-start;gap:14px;
+    padding:14px 18px;
+    background:var(--s2);
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    cursor:pointer;
+    transition:all 0.15s;
+    font-size:15px;
+  }
+  .option:hover{border-color:var(--blue);background:rgba(74,158,255,0.06);}
+  .opt-letter{
+    width:28px;height:28px;border-radius:6px;
+    background:var(--s3);border:1.5px solid var(--border2);
+    color:var(--muted);font-weight:700;font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;margin-top:1px;
+    font-family:'Syne',sans-serif;
+  }
+  .opt-text{color:var(--text);line-height:1.6;}
+
+  /* answer reveal states */
+  .option.correct{border-color:var(--green)!important;background:rgba(31,197,133,0.08)!important;}
+  .option.correct .opt-letter{background:var(--green);color:#0c0f16;border-color:var(--green);}
+  .option.wrong{border-color:var(--red)!important;background:rgba(240,82,82,0.06)!important;opacity:0.7;}
+  .option.wrong .opt-letter{background:rgba(240,82,82,0.2);color:var(--red2);border-color:var(--red);}
+  .option.selected-wrong{border-color:var(--red)!important;background:rgba(240,82,82,0.1)!important;}
+  .option.selected-wrong .opt-letter{background:var(--red);color:white;border-color:var(--red);}
+
+  .reveal-btn{
+    background:var(--gold);color:#0c0f16;
+    border:none;border-radius:8px;
+    padding:10px 24px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:0.5px;
+    transition:opacity 0.2s;
+  }
+  .reveal-btn:hover{opacity:0.85;}
+
+  .explanation{
+    display:none;
+    background:var(--s2);border:1px solid var(--border2);
+    border-top:3px solid var(--green);
+    border-radius:12px;
+    padding:20px 24px;
+    margin-top:20px;
+    font-size:15px;line-height:1.7;
+  }
+  .explanation.show{display:block;}
+  .exp-title{
+    font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+    letter-spacing:2px;text-transform:uppercase;
+    color:var(--green2);margin-bottom:12px;
+  }
+  .exp-answer{
+    display:inline-block;
+    background:rgba(31,197,133,0.15);border:1px solid var(--green);
+    color:var(--green2);font-weight:700;
+    padding:4px 14px;border-radius:6px;font-size:13px;
+    margin-bottom:12px;font-family:'Syne',sans-serif;
+  }
+  .why-wrong{
+    background:rgba(240,82,82,0.07);border:1px solid rgba(240,82,82,0.3);
+    border-radius:8px;padding:12px 16px;margin-top:12px;
+    font-size:14px;color:var(--text);
+  }
+  .why-wrong strong{color:var(--red2);}
+  .memory-hook{
+    background:rgba(155,109,255,0.1);border:1px solid rgba(155,109,255,0.4);
+    border-radius:8px;padding:12px 16px;margin-top:10px;
+    font-size:14px;color:var(--purple2);
+  }
+
+  /* ─── SCORE TRACKER ─── */
+  .score-bar{
+    position:fixed;bottom:24px;right:24px;
+    background:var(--s1);border:1px solid var(--gold);
+    border-radius:14px;padding:16px 22px;
+    font-family:'Syne',sans-serif;
+    font-size:14px;font-weight:700;
+    color:var(--gold2);
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    z-index:200;
+    text-align:center;
+    min-width:130px;
+  }
+  .score-bar .score-num{font-size:2rem;display:block;line-height:1;}
+  .score-bar .score-label{font-size:10px;color:var(--muted);letter-spacing:1px;}
+
+  /* ─── QUICK REF ─── */
+  .qref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin:20px 0;}
+  .qref{
+    background:var(--s1);border:1px solid var(--border);border-radius:10px;
+    padding:14px 18px;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .qref-q{font-size:13px;color:var(--muted);line-height:1.4;}
+  .qref-a{font-size:14px;font-weight:700;color:var(--gold2);font-family:'Syne',sans-serif;}
+
+  /* ─── DIFF BADGE ─── */
+  .easy{color:var(--green2);border:1px solid var(--green);}
+  .medium{color:var(--gold2);border:1px solid var(--gold);}
+  .hard{color:var(--red2);border:1px solid var(--red);}
+  .t-single{background:rgba(74,158,255,0.15);color:var(--blue2);}
+  .t-multi{background:rgba(155,109,255,0.15);color:var(--purple2);}
+
+  /* ─── DECISION FLOW ─── */
+  .flow-wrap{
+    background:var(--s1);border:1px solid var(--border);border-radius:16px;
+    padding:28px;margin:24px 0;overflow-x:auto;
+  }
+
+  /* ─── SECTION DIVIDER ─── */
+  .sdiv{height:2px;background:linear-gradient(to right,transparent,var(--border2),transparent);margin:56px 0;}
+
+  /* ─── MULTI-SELECT NOTE ─── */
+  .multi-note{
+    background:rgba(155,109,255,0.1);border:1px solid rgba(155,109,255,0.4);
+    border-radius:8px;padding:8px 14px;
+    font-size:13px;color:var(--purple2);
+    margin-bottom:16px;
+    display:inline-block;
+  }
+
+  code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(74,158,255,0.12);color:var(--blue2);padding:2px 7px;border-radius:4px;}
+
+  @media(max-width:700px){
+    body{font-size:15px;}
+    .page{padding:0 20px;}
+    .topbar{padding:18px 20px;flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── TOP BAR ─── -->
+<header class="topbar">
+  <div class="topbar-badge">SAA-C03</div>
+  <h1>Route 53 — <span>Exam Cracker</span></h1>
+  <div class="topbar-right">
+    <span class="score-pill easy">Exam Weight: High</span>
+    <span class="score-pill medium">Questions: 18</span>
+    <span class="score-pill hard">Domain: Networking + DR</span>
+  </div>
+</header>
+
+<!-- ─── SCORE TRACKER ─── -->
+<div class="score-bar" id="scoreBar">
+  <span class="score-num" id="scoreNum">0/0</span>
+  <span class="score-label">SCORE</span>
+</div>
+
+<div class="page">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PART 1 — CHEAT SHEETS
+══════════════════════════════════════════════════════════════════ -->
+<div class="sec-head">
+  <div class="label">Part 01</div>
+  <h2>Cheat Sheets & Memory Anchors</h2>
+  <p>Read these first. Every card below maps directly to exam question patterns.</p>
+</div>
+
+<!-- ROUTING POLICIES CHEAT CARDS -->
+<h3>The 7 Routing Policies — All Key Facts</h3>
+<div class="cheat-grid">
+
+  <div class="cheat-card">
+    <div class="cheat-card-head">
+      <span class="icon">➡️</span>
+      <span class="name">Simple</span>
+      <span class="tag" style="background:rgba(74,158,255,0.15);color:var(--blue2);">Basic</span>
+    </div>
+    <div class="cheat-card-body">
+      <div class="cheat-kv"><span class="cheat-k">Multiple values:</span><span class="cheat-v">Returns all, client picks randomly</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Health checks:</span><span class="cheat-v no">NOT supported</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Use case:</span><span class="cheat-v">Single server, no logic needed</span></div>
+      <div class="cheat-trigger">🎯 "Basic routing to one server" → Simple</div>
+      <div class="cheat-trap">🪤 No health check = no failover. Down server still gets returned.</div>
+    </div>
+  </div>
+
+  <div class="cheat-card">
+    <div class="cheat-card-head">
+      <span class="icon">⚖️</span>
+      <span class="name">Weighted</span>
+      <span class="tag" style="background:rgba(230,168,23,0.15);color:var(--gold2);">A/B Testing</span>
+    </div>
+    <div class="cheat-card-body">
+      <div class="cheat-kv"><span class="cheat-k">Range:</span><span class="cheat-v">0–255 (weight 0 = stop traffic)</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Health checks:</span><span class="cheat-v warn">Optional</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Sum needed?</span><span class="cheat-v">No. Proportional calc by R53.</span></div>
+      <div class="cheat-trigger">🎯 "10% to new version," "canary deploy," "A/B test" → Weighted</div>
+      <div class="cheat-trap">🪤 Weight=0 does NOT delete the record. Traffic just stops going there.</div>
+    </div>
+  </div>
+
+  <div class="cheat-card">
+    <div class="cheat-card-head">
+      <span class="icon">⚡</span>
+      <span class="name">Latency</span>
+      <span class="tag" style="background:rgba(31,197,133,0.15);color:var(--green2);">Performance</span>
+    </div>
+    <div class="cheat-card-body">
+      <div class="cheat-kv"><span class="cheat-k">Based on:</span><span class="cheat-v">Actual measured network latency</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Health checks:</span><span class="cheat-v warn">Optional</span></div>
+      <div class="cheat-kv"><span class="cheat-k">≠ Geolocation:</span><span class="cheat-v">Fastest ≠ nearest</span></div>
+      <div class="cheat-trigger">🎯 "Route to fastest region," "minimize latency" → Latency</div>
+      <div class="cheat-trap">🪤 A US user MAY go to EU if EU has lower latency for their path.</div>
+    </div>
+  </div>
+
+  <div class="cheat-card">
+    <div class="cheat-card-head">
+      <span class="icon">🔁</span>
+      <span class="name">Failover</span>
+      <span class="tag" style="background:rgba(240,82,82,0.15);color:var(--red2);">DR</span>
+    </div>
+    <div class="cheat-card-body">
+      <div class="cheat-kv"><span class="cheat-k">Health checks:</span><span class="cheat-v no">MANDATORY on primary</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Records:</span><span class="cheat-v">PRIMARY + SECONDARY only</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Switchover:</span><span class="cheat-v">Automatic when primary fails HC</span></div>
+      <div class="cheat-trigger">🎯 "Active-passive DR," "switch to secondary if primary fails" → Failover</div>
+      <div class="cheat-trap">🪤 Without a health check on PRIMARY, failover NEVER happens automatically.</div>
+    </div>
+  </div>
+
+  <div class="cheat-card">
+    <div class="cheat-card-head">
+      <span class="icon">🗺️</span>
+      <span class="name">Geolocation</span>
+      <span class="tag" style="background:rgba(155,109,255,0.15);color:var(--purple2);">Compliance</span>
+    </div>
+    <div class="cheat-card-body">
+      <div class="cheat-kv"><span class="cheat-k">Based on:</span><span class="cheat-v">User's physical country/continent</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Default record:</span><span class="cheat-v no">REQUIRED. No default = no answer.</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Health checks:</span><span class="cheat-v warn">Optional</span></div>
+      <div class="cheat-trigger">🎯 "GDPR," "data residency," "EU users to EU servers," "localized content" → Geolocation</div>
+      <div class="cheat-trap">🪤 ALWAYS add Default record or unmatched users get "no answer" (NXDOMAIN).</div>
+    </div>
+  </div>
+
+  <div class="cheat-card">
+    <div class="cheat-card-head">
+      <span class="icon">📍</span>
+      <span class="name">Geoproximity</span>
+      <span class="tag" style="background:rgba(23,201,178,0.15);color:var(--teal2);">Advanced</span>
+    </div>
+    <div class="cheat-card-body">
+      <div class="cheat-kv"><span class="cheat-k">Based on:</span><span class="cheat-v">Geographic distance + bias</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Requires:</span><span class="cheat-v no">Route 53 Traffic Flow (REQUIRED)</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Bias range:</span><span class="cheat-v">-99 to +99 (shrink/expand area)</span></div>
+      <div class="cheat-trigger">🎯 "Shift traffic between regions," "bias to expand coverage," "Traffic Flow" → Geoproximity</div>
+      <div class="cheat-trap">🪤 Cannot use standard console. Must use Traffic Flow visual editor.</div>
+    </div>
+  </div>
+
+  <div class="cheat-card">
+    <div class="cheat-card-head">
+      <span class="icon">🔢</span>
+      <span class="name">Multi-Value</span>
+      <span class="tag" style="background:rgba(230,168,23,0.15);color:var(--gold2);">Availability</span>
+    </div>
+    <div class="cheat-card-body">
+      <div class="cheat-kv"><span class="cheat-k">Returns:</span><span class="cheat-v">Up to 8 healthy records</span></div>
+      <div class="cheat-kv"><span class="cheat-k">Health checks:</span><span class="cheat-v no">REQUIRED (filters out unhealthy)</span></div>
+      <div class="cheat-kv"><span class="cheat-k">NOT a:</span><span class="cheat-v">load balancer (use ALB/NLB for that)</span></div>
+      <div class="cheat-trigger">🎯 "Return multiple healthy IPs," "remove unhealthy endpoints from DNS" → Multi-Value</div>
+      <div class="cheat-trap">🪤 Exam may say "load balancing via DNS" — this is NOT what Multi-Value does. It's DNS-level availability only.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sdiv"></div>
+
+<!-- RECORD TYPES CHEAT -->
+<h3>DNS Records — Exam-Focused Facts</h3>
+<div class="tw">
+<table>
+  <thead>
+    <tr><th>Record</th><th>Maps to</th><th>Zone Apex?</th><th>Cost per query</th><th>Key exam note</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>A</strong></td><td>IPv4 address</td>
+      <td class="yes">✓ Yes</td><td>Charged</td>
+      <td>Use for EC2 instances (no Alias for EC2!)</td>
+    </tr>
+    <tr>
+      <td><strong>AAAA</strong></td><td>IPv6 address</td>
+      <td class="yes">✓ Yes</td><td>Charged</td>
+      <td>Same as A but IPv6</td>
+    </tr>
+    <tr class="highlight-row">
+      <td><strong>CNAME</strong></td><td>Another hostname</td>
+      <td class="no">✗ No (never at apex)</td><td>Charged</td>
+      <td>Cannot point <code>example.com</code> to ALB. Use Alias instead.</td>
+    </tr>
+    <tr class="highlight-row">
+      <td><strong>Alias</strong></td><td>AWS resource (ALB, CF, S3…)</td>
+      <td class="yes">✓ Yes (apex OK!)</td><td class="yes">FREE</td>
+      <td>Alias &gt; CNAME for AWS resources. Cannot alias to EC2 directly.</td>
+    </tr>
+    <tr>
+      <td><strong>NS</strong></td><td>Authoritative nameservers</td>
+      <td class="yes">✓ Yes</td><td>—</td>
+      <td>Auto-created with hosted zone. Do not modify unless you know why.</td>
+    </tr>
+    <tr>
+      <td><strong>MX</strong></td><td>Mail server</td>
+      <td class="yes">✓ Yes</td><td>Charged</td>
+      <td>Priority number: lower = higher priority</td>
+    </tr>
+    <tr>
+      <td><strong>TXT</strong></td><td>Text string</td>
+      <td class="yes">✓ Yes</td><td>Charged</td>
+      <td>Used for domain verification (SPF, DKIM, SES validation)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- HEALTH CHECKS CHEAT -->
+<h3>Health Checks — Exam Facts</h3>
+<div class="tw">
+<table>
+  <thead>
+    <tr><th>Type</th><th>How it works</th><th>When to use</th><th>Exam trap</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Endpoint HC</strong></td>
+      <td>Route 53 directly hits the IP/domain via HTTP/HTTPS/TCP</td>
+      <td>Public-facing resources</td>
+      <td>Checks from multiple global locations. Need &gt;18% healthy checkers to be "healthy"</td>
+    </tr>
+    <tr class="highlight-row">
+      <td><strong>Calculated HC</strong></td>
+      <td>Combines multiple HCs using AND/OR/NOT logic</td>
+      <td>Complex health conditions (e.g., 2-of-3 must be healthy)</td>
+      <td>Up to 256 child health checks</td>
+    </tr>
+    <tr class="highlight-row">
+      <td><strong>CloudWatch Alarm HC</strong></td>
+      <td>Monitors a CloudWatch alarm state</td>
+      <td><strong>Private VPC resources</strong> (R53 can't reach them directly)</td>
+      <td>This is the ONLY way to health-check private resources. Exam loves this.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box note">
+  <div class="box-title">💡 Private VPC Health Check Pattern (High-Frequency Exam Topic)</div>
+  Route 53 health checkers live on the <strong>public internet</strong>. They cannot reach inside a private VPC. Solution: Create a <strong>CloudWatch Metric → CloudWatch Alarm</strong> for the private resource, then create a Route 53 Health Check that watches the <strong>CloudWatch Alarm state</strong>.
+</div>
+
+<div class="sdiv"></div>
+
+<!-- HOSTED ZONES -->
+<h3>Hosted Zones — Exam Facts</h3>
+<div class="tw">
+<table>
+  <thead>
+    <tr><th>Feature</th><th>Public HZ</th><th>Private HZ</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Visible to</td><td>Anyone on internet</td><td>Only VPCs you associate it with</td></tr>
+    <tr><td>Cost</td><td>$0.50/month/zone</td><td>$0.50/month/zone</td></tr>
+    <tr class="highlight-row"><td>Use case</td><td>Public website DNS</td><td>Internal service discovery</td></tr>
+    <tr><td>Can it be associated with multiple VPCs?</td><td class="no">N/A</td><td class="yes">Yes (even cross-account)</td></tr>
+    <tr><td>Resolves from</td><td>Any DNS resolver globally</td><td>VPC DNS resolver (169.254.169.253 or base+2)</td></tr>
+    <tr class="highlight-row"><td>Split-view DNS possible?</td><td colspan="2">Yes — same domain name, different records in public vs private HZ</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ALIAS vs CNAME -->
+<h3>Alias vs CNAME — The Most-Tested Comparison</h3>
+<div class="tw">
+<table>
+  <thead>
+    <tr><th>Feature</th><th>CNAME</th><th>Alias</th></tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-row"><td><strong>Zone apex (root domain)?</strong></td><td class="no">❌ NEVER</td><td class="yes">✅ YES</td></tr>
+    <tr class="highlight-row"><td><strong>Cost?</strong></td><td class="warn">Charged per query</td><td class="yes">FREE</td></tr>
+    <tr><td>Points to</td><td>Any hostname (any DNS name)</td><td>AWS resources only</td></tr>
+    <tr><td>TTL configurable?</td><td class="yes">Yes (you set it)</td><td class="no">No (AWS manages it)</td></tr>
+    <tr><td>Health check support?</td><td class="no">No</td><td class="yes">Yes</td></tr>
+    <tr><td>Works with EC2?</td><td class="yes">Yes (via A/IP)</td><td class="no">No direct EC2 alias</td></tr>
+    <tr class="highlight-row"><td>Works with ALB?</td><td class="warn">Yes, but use Alias</td><td class="yes">Yes — preferred</td></tr>
+    <tr><td>Works with CloudFront?</td><td class="warn">Only subdomains</td><td class="yes">Yes — preferred</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- TTL -->
+<h3>TTL — Exam Key Points</h3>
+<div class="tw">
+<table>
+  <thead><tr><th>Scenario</th><th>Recommended Action</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Planning a server IP migration</td><td>Lower TTL to 60s, 2 days before</td><td>Changes propagate in 60s not hours</td></tr>
+    <tr class="highlight-row"><td>Alias record TTL</td><td>Cannot configure — AWS manages it</td><td>Alias automatically follows resource IPs</td></tr>
+    <tr><td>Stable production server</td><td>TTL 300–3600</td><td>Fewer DNS queries, lower cost</td></tr>
+    <tr><td>After a failed migration, rolling back</td><td>Low TTL helps here too</td><td>Rollback propagates quickly</td></tr>
+    <tr class="highlight-row"><td>"DNS changes not taking effect quickly"</td><td>The current TTL is too high, must wait for it to expire</td><td>Clients cache the old answer until TTL expires</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- RESOLVER / HYBRID DNS -->
+<h3>Route 53 Resolver — Hybrid DNS Facts</h3>
+<div class="tw">
+<table>
+  <thead><tr><th>Component</th><th>Direction</th><th>Use Case</th></tr></thead>
+  <tbody>
+    <tr class="highlight-row">
+      <td><strong>Inbound Endpoint</strong></td>
+      <td>On-prem → AWS VPC</td>
+      <td>On-prem DNS servers forward queries to Route 53 to resolve AWS VPC hostnames</td>
+    </tr>
+    <tr class="highlight-row">
+      <td><strong>Outbound Endpoint + Forwarding Rules</strong></td>
+      <td>AWS VPC → On-prem</td>
+      <td>VPC resources forward DNS queries to on-prem DNS servers (e.g., to resolve <code>corp.internal</code>)</td>
+    </tr>
+    <tr>
+      <td><strong>VPC DNS Resolver</strong></td>
+      <td>Internal VPC</td>
+      <td>Default DNS for all VPC resources (at base VPC CIDR + 2 or 169.254.169.253)</td>
+    </tr>
+    <tr>
+      <td><strong>DNS Firewall</strong></td>
+      <td>Outbound from VPC</td>
+      <td>Block VPC resources from resolving malicious/unwanted domains</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- BIG COMPARISON: Route 53 vs Global Accelerator vs CloudFront -->
+<h3>The "Three Traffic Services" — Must-Know Comparison</h3>
+<div class="tw">
+<table>
+  <thead>
+    <tr><th></th><th>Route 53</th><th>CloudFront</th><th>Global Accelerator</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>What it is</strong></td><td>DNS service</td><td>CDN (caches content)</td><td>Network accelerator</td></tr>
+    <tr class="highlight-row"><td><strong>Static IPs?</strong></td><td class="no">No</td><td class="no">No</td><td class="yes">Yes (2 anycast IPs)</td></tr>
+    <tr class="highlight-row"><td><strong>Content caching?</strong></td><td class="no">No</td><td class="yes">Yes</td><td class="no">No</td></tr>
+    <tr><td><strong>Protocol support</strong></td><td>DNS (port 53)</td><td>HTTP/HTTPS only</td><td>Any TCP/UDP</td></tr>
+    <tr class="highlight-row"><td><strong>Failover speed</strong></td><td>Depends on TTL (can be minutes)</td><td>Depends on TTL</td><td class="yes">Seconds (&lt;30s)</td></tr>
+    <tr><td><strong>DDoS protection</strong></td><td>Shield Standard (free)</td><td>Shield Standard + WAF</td><td>Shield Advanced support</td></tr>
+    <tr><td><strong>Pricing model</strong></td><td>Per query + per zone</td><td>Per GB + per request</td><td>Fixed hourly + per GB</td></tr>
+    <tr class="highlight-row"><td><strong>Exam trigger</strong></td><td>Routing rules, DR, geolocation</td><td>"Cache static content globally," "reduce origin load"</td><td>"Static IPs," "non-HTTP," "instant failover without DNS TTL"</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- MNEMONIC -->
+<h3>🧠 Mnemonic — Remember All 7 Routing Policies</h3>
+<div class="mnemonic">
+  <div class="mnemonic-title">Memory Device: "Some Warm Lions Fight Grizzly Gray Monsters"</div>
+  <div class="mnemonic-letters">
+    <div class="ml">S<span>Simple</span></div>
+    <div class="ml">W<span>Weighted</span></div>
+    <div class="ml">L<span>Latency</span></div>
+    <div class="ml">F<span>Failover</span></div>
+    <div class="ml">G<span>Geolocation</span></div>
+    <div class="ml">G<span>Geoproximity</span></div>
+    <div class="ml">M<span>Multi-Value</span></div>
+  </div>
+  <p style="font-size:15px;color:var(--muted);">And their primary uses in the same order: <strong>S</strong>ingle server → <strong>W</strong>eight-based split → <strong>L</strong>owest latency → <strong>F</strong>ailover DR → <strong>G</strong>eo-country → <strong>G</strong>eo-distance → <strong>M</strong>ultiple IPs</p>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- QUICK-FIRE REFERENCE -->
+<h3>⚡ Quick-Fire Exam Answers</h3>
+<div class="qref-grid">
+  <div class="qref"><div class="qref-q">"Route <code>example.com</code> root domain to ALB"</div><div class="qref-a">Alias A Record → ALB</div></div>
+  <div class="qref"><div class="qref-q">"Cheapest way to connect domain to CloudFront"</div><div class="qref-a">Alias Record (free vs CNAME charged)</div></div>
+  <div class="qref"><div class="qref-q">"EU users must be served from EU region (GDPR)"</div><div class="qref-a">Geolocation Routing</div></div>
+  <div class="qref"><div class="qref-q">"Route user to fastest AWS region"</div><div class="qref-a">Latency-Based Routing</div></div>
+  <div class="qref"><div class="qref-q">"Switch to DR site if primary fails"</div><div class="qref-a">Failover Routing + Health Check</div></div>
+  <div class="qref"><div class="qref-q">"Send 10% traffic to new app version"</div><div class="qref-a">Weighted Routing (weight 10 vs 90)</div></div>
+  <div class="qref"><div class="qref-q">"Health check for private VPC resource"</div><div class="qref-a">CloudWatch Alarm → HC (CloudWatch alarm type)</div></div>
+  <div class="qref"><div class="qref-q">"On-prem resolve AWS VPC names"</div><div class="qref-a">Route 53 Resolver Inbound Endpoint</div></div>
+  <div class="qref"><div class="qref-q">"VPC EC2 resolve on-prem <code>corp.internal</code>"</div><div class="qref-a">Route 53 Resolver Outbound + Forwarding Rule</div></div>
+  <div class="qref"><div class="qref-q">"Block EC2 from accessing malicious domains"</div><div class="qref-a">Route 53 Resolver DNS Firewall</div></div>
+  <div class="qref"><div class="qref-q">"Static global IPs for TCP app"</div><div class="qref-a">Global Accelerator (NOT Route 53)</div></div>
+  <div class="qref"><div class="qref-q">"DNS changes propagating too slowly"</div><div class="qref-a">TTL was too high. Lower TTL before next change.</div></div>
+  <div class="qref"><div class="qref-q">"Route by distance with adjustable catchment area"</div><div class="qref-a">Geoproximity (requires Traffic Flow)</div></div>
+  <div class="qref"><div class="qref-q">"Multiple healthy IPs in DNS response"</div><div class="qref-a">Multi-Value Answer Routing</div></div>
+  <div class="qref"><div class="qref-q">"Failover didn't happen when primary went down"</div><div class="qref-a">Missing health check on PRIMARY record</div></div>
+  <div class="qref"><div class="qref-q">"Users in unconfigured countries get no DNS answer"</div><div class="qref-a">Missing Default record in Geolocation routing</div></div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PART 2 — PRACTICE QUESTIONS
+══════════════════════════════════════════════════════════════════ -->
+<div class="sec-head">
+  <div class="label">Part 02</div>
+  <h2>Practice Questions — Exam Style</h2>
+  <p>18 questions mirroring the style and difficulty of real SAA-C03. Click <strong>"Reveal Answer"</strong> after you choose.</p>
+</div>
+
+<div class="box note" style="margin-bottom:28px;">
+  <div class="box-title">📝 How to Use These Questions</div>
+  Read the scenario carefully. Pick your answer <em>before</em> revealing. For each wrong option, understand <em>why</em> it's wrong — the exam uses the same distractors repeatedly. The explanation section includes a <strong>Memory Hook</strong> for each question to wire the concept into long-term memory.
+</div>
+
+<!-- ═══ Q1 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">1</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Alias vs CNAME at Zone Apex</strong></div>
+    <span class="q-diff easy">Easy</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company has a website hosted behind an Application Load Balancer (ALB). They want users to access the website by typing <code>example.com</code> (without any subdomain) into their browser. The company uses Amazon Route 53 for DNS.
+    </div>
+    <p class="q-text">Which DNS record configuration should a solutions architect create?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,1)"><div class="opt-letter">A</div><div class="opt-text">Create a CNAME record for <code>example.com</code> pointing to the ALB's DNS name</div></li>
+      <li class="option" onclick="choose(this,true,1)"><div class="opt-letter">B</div><div class="opt-text">Create an Alias A record for <code>example.com</code> pointing to the ALB's DNS name</div></li>
+      <li class="option" onclick="choose(this,false,1)"><div class="opt-letter">C</div><div class="opt-text">Create an A record for <code>example.com</code> with the ALB's IP address</div></li>
+      <li class="option" onclick="choose(this,false,1)"><div class="opt-letter">D</div><div class="opt-text">Create a CNAME record for <code>www.example.com</code> pointing to <code>example.com</code></div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(1)">Reveal Answer</button>
+    <div class="explanation" id="exp-1">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">B — Alias A Record</div>
+      <p>A CNAME record <strong>cannot be created at the zone apex</strong> (<code>example.com</code> with no subdomain). This is a fundamental DNS rule (RFC 1912). Route 53's <strong>Alias record</strong> was invented specifically to solve this — it works at the zone apex, points to AWS resources like ALBs, is free, and automatically follows the ALB's changing IPs.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> CNAME at zone apex is forbidden by DNS spec. Route 53 won't let you create it.<br><br>
+        <strong>Why C is wrong:</strong> ALB IPs change dynamically — you'd need to update the A record constantly. Alias handles this automatically.<br><br>
+        <strong>Why D is wrong:</strong> That points a subdomain to the root domain, which doesn't solve the original question of making <code>example.com</code> work.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Zone Apex = Always Alias." If it's the naked root domain → Alias A record. Never CNAME.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q2 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">2</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Routing Policy — Canary Deployment</strong></div>
+    <span class="q-diff easy">Easy</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A development team is deploying a new version of their web application. They want to send 5% of user traffic to the new version while keeping 95% of traffic on the current stable version. If the new version has issues, they need to be able to quickly revert to 0% traffic.
+    </div>
+    <p class="q-text">Which Route 53 routing policy should the solutions architect configure?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">A</div><div class="opt-text">Latency-based routing</div></li>
+      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">B</div><div class="opt-text">Failover routing</div></li>
+      <li class="option" onclick="choose(this,true,2)"><div class="opt-letter">C</div><div class="opt-text">Weighted routing</div></li>
+      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">D</div><div class="opt-text">Geolocation routing</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(2)">Reveal Answer</button>
+    <div class="explanation" id="exp-2">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — Weighted Routing</div>
+      <p>Weighted routing allows you to assign weights to records (e.g., v1=95, v2=5) so Route 53 distributes traffic proportionally. To revert, simply set the new version's weight to <strong>0</strong> — Route 53 stops sending traffic to it without deleting the record.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Latency routing picks the fastest region — it doesn't split traffic by percentage.<br><br>
+        <strong>Why B is wrong:</strong> Failover routes to the secondary only when primary fails — it's for DR, not for canary deploys.<br><br>
+        <strong>Why D is wrong:</strong> Geolocation routes by user country/continent — not by percentage.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Canary = Weight." Any time you see "X% of traffic" → Weighted. Weight=0 is the emergency stop valve.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q3 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">3</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Geolocation — Missing Default Record</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A solutions architect configures Route 53 Geolocation routing for a global application. Records are created for the United States, Germany, and Japan. Users in Australia report they cannot access the application at all, even though the application is running normally.
+    </div>
+    <p class="q-text">What is the most likely cause of this issue?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,3)"><div class="opt-letter">A</div><div class="opt-text">The application's servers in Australia are down</div></li>
+      <li class="option" onclick="choose(this,false,3)"><div class="opt-letter">B</div><div class="opt-text">Australia is not a supported geolocation in Route 53</div></li>
+      <li class="option" onclick="choose(this,true,3)"><div class="opt-letter">C</div><div class="opt-text">A Default record was not created for unmatched geographic locations</div></li>
+      <li class="option" onclick="choose(this,false,3)"><div class="opt-letter">D</div><div class="opt-text">Route 53 does not support the Asia Pacific continent for geolocation routing</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(3)">Reveal Answer</button>
+    <div class="explanation" id="exp-3">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — Missing Default Record</div>
+      <p>When using Geolocation routing, Route 53 only routes users whose location matches one of your configured records. Users from <strong>unmatched locations</strong> receive a DNS error (no answer / NXDOMAIN) unless you create a <strong>Default record</strong>. Australia doesn't match US, Germany, or Japan, so those users get nothing.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> The question says "application is running normally" — ruling out server issues.<br><br>
+        <strong>Why B is wrong:</strong> Route 53 supports all countries globally.<br><br>
+        <strong>Why D is wrong:</strong> Asia Pacific and Oceania are fully supported.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Geo = Always Default." Geolocation without a Default = some users fall through the floor. The Default catches everyone else.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q4 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">4</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Failover + Health Check</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company has a primary web application in <code>us-east-1</code> and a disaster recovery site in <code>eu-west-1</code>. Route 53 Failover routing is configured with the primary pointing to <code>us-east-1</code>. The primary region goes completely down, but traffic is NOT failing over to <code>eu-west-1</code>.
+    </div>
+    <p class="q-text">What is the most likely reason traffic is not failing over?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,4)"><div class="opt-letter">A</div><div class="opt-text">The secondary record in <code>eu-west-1</code> does not have a health check configured</div></li>
+      <li class="option" onclick="choose(this,true,4)"><div class="opt-letter">B</div><div class="opt-text">The primary record in <code>us-east-1</code> does not have a health check configured</div></li>
+      <li class="option" onclick="choose(this,false,4)"><div class="opt-letter">C</div><div class="opt-text">Failover routing requires a minimum TTL of 60 seconds</div></li>
+      <li class="option" onclick="choose(this,false,4)"><div class="opt-letter">D</div><div class="opt-text">Route 53 Failover routing does not support cross-region configurations</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(4)">Reveal Answer</button>
+    <div class="explanation" id="exp-4">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">B — Health check missing on PRIMARY</div>
+      <p>Failover routing only triggers when Route 53 detects the primary endpoint is unhealthy. The detection mechanism is a <strong>health check on the primary record</strong>. Without it, Route 53 assumes the primary is always healthy and never switches to secondary — even if the region is completely down.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> The secondary doesn't need a health check to receive failover traffic. The HC must be on the primary to detect failure.<br><br>
+        <strong>Why C is wrong:</strong> No such TTL requirement exists for failover.<br><br>
+        <strong>Why D is wrong:</strong> Cross-region failover is one of the primary use cases of Route 53 Failover routing.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Failover needs a smoke detector on PRIMARY." No smoke detector = no alarm = no evacuation to secondary.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q5 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">5</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Latency vs Geolocation</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A fintech company stores customer data in two regions: <code>eu-central-1</code> (Frankfurt) for EU customers and <code>us-east-1</code> (Virginia) for US customers. Due to GDPR regulations, <strong>EU customer data must only be processed in the EU region</strong>, regardless of network conditions.
+    </div>
+    <p class="q-text">Which Route 53 routing policy ensures EU customers always use the EU region?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,5)"><div class="opt-letter">A</div><div class="opt-text">Latency-based routing, as it will route EU users to the closest region</div></li>
+      <li class="option" onclick="choose(this,true,5)"><div class="opt-letter">B</div><div class="opt-text">Geolocation routing with EU as a continent rule pointing to <code>eu-central-1</code></div></li>
+      <li class="option" onclick="choose(this,false,5)"><div class="opt-letter">C</div><div class="opt-text">Weighted routing with higher weights for EU records</div></li>
+      <li class="option" onclick="choose(this,false,5)"><div class="opt-letter">D</div><div class="opt-text">Geoproximity routing with a positive bias for <code>eu-central-1</code></div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(5)">Reveal Answer</button>
+    <div class="explanation" id="exp-5">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">B — Geolocation Routing</div>
+      <p>This question is about <strong>compliance, not performance</strong>. Geolocation routing guarantees that users in a specific country or continent ALWAYS go to the configured endpoint — unconditionally. Latency routing could send EU users to Virginia if the US connection is faster, which would violate GDPR.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Latency picks the fastest network path. An EU user might get routed to <code>us-east-1</code> if it has lower latency — violating GDPR data residency.<br><br>
+        <strong>Why C is wrong:</strong> Weighted routing splits traffic by percentage — EU users could still end up in <code>us-east-1</code>.<br><br>
+        <strong>Why D is wrong:</strong> Geoproximity's bias expands/shrinks the catchment area but doesn't guarantee EU users always stay in EU.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Compliance/Data Residency = Geolocation." Any time you see GDPR, HIPAA, data sovereignty, local laws → Geolocation. NOT Latency.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q6 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">6</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Private VPC Health Check</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company uses Route 53 Failover routing to switch traffic between a primary and secondary database endpoint. The primary database is an RDS instance in a private subnet with no public IP address. The team wants Route 53 to automatically detect if this private RDS instance is unhealthy and trigger failover.
+    </div>
+    <p class="q-text">How should a solutions architect configure the health check for the private RDS instance?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,6)"><div class="opt-letter">A</div><div class="opt-text">Create an endpoint health check using the RDS instance's private IP address</div></li>
+      <li class="option" onclick="choose(this,false,6)"><div class="opt-letter">B</div><div class="opt-text">Assign a public IP to the RDS instance and create an endpoint health check</div></li>
+      <li class="option" onclick="choose(this,true,6)"><div class="opt-letter">C</div><div class="opt-text">Create a CloudWatch alarm monitoring the RDS DatabaseConnections metric, then create a Route 53 health check that monitors the CloudWatch alarm state</div></li>
+      <li class="option" onclick="choose(this,false,6)"><div class="opt-letter">D</div><div class="opt-text">Route 53 cannot perform health checks on resources inside a private VPC; use an NLB instead</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(6)">Reveal Answer</button>
+    <div class="explanation" id="exp-6">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — CloudWatch Alarm → Route 53 Health Check</div>
+      <p>Route 53 health checkers are on the <strong>public internet</strong> — they cannot reach a private subnet directly. The solution is to use CloudWatch to monitor the private resource (using VPC agent or RDS native metrics), create a CloudWatch Alarm, and then configure a Route 53 health check of type <strong>"CloudWatch alarm."</strong> Route 53 reads the alarm state to determine health.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Route 53's public health checkers cannot reach private IPs — they're on the internet, not inside your VPC.<br><br>
+        <strong>Why B is wrong:</strong> Assigning a public IP to an RDS instance is a security anti-pattern and not recommended.<br><br>
+        <strong>Why D is wrong:</strong> Route 53 CAN health-check private resources — just indirectly, via CloudWatch alarms.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Private = CloudWatch bridge." Route 53 can't see inside VPC → CloudWatch is the bridge that carries the health signal out.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q7 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">7</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">TTL and Migration</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company is planning to migrate their web application to a new set of servers with different IP addresses next weekend. The current DNS A record has a TTL of 86400 seconds (24 hours). After updating the DNS record, they notice that many users are still being directed to the old servers 6 hours after the change.
+    </div>
+    <p class="q-text">What should the solutions architect have done BEFORE the migration to prevent this issue?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,7)"><div class="opt-letter">A</div><div class="opt-text">Deleted the old DNS record before creating the new one</div></li>
+      <li class="option" onclick="choose(this,false,7)"><div class="opt-letter">B</div><div class="opt-text">Created the new record in a different hosted zone</div></li>
+      <li class="option" onclick="choose(this,true,7)"><div class="opt-letter">C</div><div class="opt-text">Reduced the TTL of the DNS record to a low value (e.g., 60 seconds) several days before the migration</div></li>
+      <li class="option" onclick="choose(this,false,7)"><div class="opt-letter">D</div><div class="opt-text">Used a CNAME record instead of an A record</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(7)">Reveal Answer</button>
+    <div class="explanation" id="exp-7">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — Lower TTL days before migration</div>
+      <p>TTL controls how long DNS resolvers cache an answer. With TTL=86400, resolvers cache the answer for 24 hours. After updating the record, resolvers with a cached answer won't re-query Route 53 until their cache expires — up to 24 hours later. The fix: lower TTL to 60 seconds <strong>several days before the migration</strong> (so all caches have refreshed to the short TTL). Then after the migration, raise it back.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Deleting the record creates an outage. Clients with cached answers might still work, but new queries would fail.<br><br>
+        <strong>Why B is wrong:</strong> A different hosted zone doesn't help with TTL caching.<br><br>
+        <strong>Why D is wrong:</strong> Changing record type doesn't affect TTL caching behaviour.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Migration = TTL prep." Lower TTL 2 days early → wait for old caches to expire → migrate → raise TTL back. Three-step dance.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q8 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">8</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Route 53 vs Global Accelerator</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A financial trading company runs a TCP-based application that requires very fast, deterministic failover between AWS regions. The application cannot tolerate the DNS TTL delays that occur with standard DNS-based failover. The company also requires the application endpoint to have two <strong>static IP addresses</strong> that never change, so they can be whitelisted in client firewalls.
+    </div>
+    <p class="q-text">Which solution BEST meets these requirements?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,8)"><div class="opt-letter">A</div><div class="opt-text">Route 53 Failover routing with health checks and a very low TTL</div></li>
+      <li class="option" onclick="choose(this,false,8)"><div class="opt-letter">B</div><div class="opt-text">Route 53 Latency-based routing with health checks</div></li>
+      <li class="option" onclick="choose(this,true,8)"><div class="opt-letter">C</div><div class="opt-text">AWS Global Accelerator with endpoint groups in each region</div></li>
+      <li class="option" onclick="choose(this,false,8)"><div class="opt-letter">D</div><div class="opt-text">Route 53 with an Alias record pointing to a Network Load Balancer</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(8)">Reveal Answer</button>
+    <div class="explanation" id="exp-8">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — AWS Global Accelerator</div>
+      <p>Three requirements identify Global Accelerator: <strong>(1) Static IPs</strong> — Global Accelerator gives 2 static anycast IPs that never change; <strong>(2) Non-HTTP TCP</strong> — supports any TCP/UDP; <strong>(3) Instant failover without DNS TTL delays</strong> — Global Accelerator routes at the network level (not DNS), so failover is < 30 seconds without any TTL waiting. Route 53 failover always depends on TTL, even at low values.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Even with very low TTL (e.g., 60s), clients still have a cached DNS entry that must expire before they see the new routing. Not truly instant. Also, A doesn't provide static IPs.<br><br>
+        <strong>Why B is wrong:</strong> Latency-based doesn't provide static IPs or instant failover.<br><br>
+        <strong>Why D is wrong:</strong> An NLB has static IPs, but only within one region. Doesn't solve the cross-region instant failover requirement.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Static IPs + Instant Failover + TCP = Global Accelerator." Route 53 = DNS game. Global Accelerator = network-level game. Different layers entirely.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q9 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">9</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Geoproximity Routing Requirements</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A global e-commerce company wants to route users to AWS regions based on their geographic proximity, but they also want the ability to artificially shift more traffic toward <code>ap-southeast-1</code> during off-peak hours in other regions, to balance infrastructure costs. The team is trying to configure this in the standard Route 53 console but cannot find the option.
+    </div>
+    <p class="q-text">What is required to configure this type of routing?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,9)"><div class="opt-letter">A</div><div class="opt-text">Enable Advanced Route 53 features in the AWS console settings</div></li>
+      <li class="option" onclick="choose(this,false,9)"><div class="opt-letter">B</div><div class="opt-text">Use Geolocation routing with per-country rules instead</div></li>
+      <li class="option" onclick="choose(this,true,9)"><div class="opt-letter">C</div><div class="opt-text">Use Route 53 Traffic Flow to configure Geoproximity routing with bias values</div></li>
+      <li class="option" onclick="choose(this,false,9)"><div class="opt-letter">D</div><div class="opt-text">Geoproximity routing is only available via the AWS CLI, not the console</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(9)">Reveal Answer</button>
+    <div class="explanation" id="exp-9">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — Route 53 Traffic Flow</div>
+      <p>Geoproximity routing with bias is only configurable through <strong>Route 53 Traffic Flow</strong> — the visual policy editor. It cannot be set up from the standard DNS record editing interface. Traffic Flow provides a GUI where you can create complex routing policies including Geoproximity with bias adjustments (+/-1 to 99).</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> There is no "Advanced Route 53 features" setting.<br><br>
+        <strong>Why B is wrong:</strong> Geolocation routes by country/continent with hard rules — it doesn't support bias-based shifting.<br><br>
+        <strong>Why D is wrong:</strong> Geoproximity is available in the console — but only through the Traffic Flow interface, not the standard record editor.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Geoproximity = Traffic Flow required." If the exam mentions bias, shifting traffic, or Geoproximity — Traffic Flow is always part of the answer.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q10 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">10</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Multi-Value vs Load Balancer</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A startup runs 6 identical web servers across different Availability Zones. They want Route 53 to return multiple server IPs to clients so that if one server is unhealthy, clients won't be directed to it. The CTO suggests using "Route 53 Multi-Value Answer routing as a load balancer to eliminate the need for an ALB."
+    </div>
+    <p class="q-text">Which statement about this approach is CORRECT?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,10)"><div class="opt-letter">A</div><div class="opt-text">Multi-Value routing is a valid replacement for an ALB as it distributes requests evenly across all healthy instances</div></li>
+      <li class="option" onclick="choose(this,false,10)"><div class="opt-letter">B</div><div class="opt-text">Multi-Value routing can replace an ALB only when all servers are in the same Availability Zone</div></li>
+      <li class="option" onclick="choose(this,true,10)"><div class="opt-letter">C</div><div class="opt-text">Multi-Value routing returns up to 8 healthy IPs and removes unhealthy endpoints from responses, but it is NOT a substitute for a load balancer and does not evenly distribute traffic</div></li>
+      <li class="option" onclick="choose(this,false,10)"><div class="opt-letter">D</div><div class="opt-text">Multi-Value routing is not supported when there are more than 4 records</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(10)">Reveal Answer</button>
+    <div class="explanation" id="exp-10">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — Multi-Value is NOT a load balancer</div>
+      <p>AWS explicitly states Multi-Value Answer routing is <strong>not a substitute for a load balancer</strong>. It returns up to 8 healthy IPs and omits unhealthy ones from DNS responses, but the actual request distribution depends on the client — they pick one IP semi-randomly. There's no session persistence, no connection draining, no algorithm-based balancing. An ALB provides all of these.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> "Evenly distributes requests" is what load balancers do, not Multi-Value DNS routing.<br><br>
+        <strong>Why B is wrong:</strong> Multi-Value works across AZs. This restriction doesn't exist.<br><br>
+        <strong>Why D is wrong:</strong> Multi-Value supports up to 8 records per response, but you can have more records defined (only 8 returned per query).
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Multi-Value = health-aware DNS, NOT a load balancer." The exam uses this as a trap — if they say 'eliminate the ALB' → wrong.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q11 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">11</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Hybrid DNS — Direction</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company has connected their on-premises data centre to AWS using Direct Connect. Their on-premises applications need to resolve the DNS names of resources inside their AWS VPC (e.g., <code>orders.internal.aws</code> which resolves to a private EC2 IP). Currently, the on-premises DNS server cannot resolve these names.
+    </div>
+    <p class="q-text">What should a solutions architect configure to resolve this?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,true,11)"><div class="opt-letter">A</div><div class="opt-text">Create a Route 53 Resolver Inbound Endpoint, then configure the on-premises DNS server to forward queries for the AWS domain to the Inbound Endpoint's IP</div></li>
+      <li class="option" onclick="choose(this,false,11)"><div class="opt-letter">B</div><div class="opt-text">Create a Route 53 Resolver Outbound Endpoint with a forwarding rule for the on-premises DNS server</div></li>
+      <li class="option" onclick="choose(this,false,11)"><div class="opt-letter">C</div><div class="opt-text">Make the private hosted zone public so on-premises servers can query it</div></li>
+      <li class="option" onclick="choose(this,false,11)"><div class="opt-letter">D</div><div class="opt-text">Create an Internet Gateway in the VPC to allow on-premises DNS queries to reach Route 53</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(11)">Reveal Answer</button>
+    <div class="explanation" id="exp-11">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">A — Resolver Inbound Endpoint</div>
+      <p>The direction is: <strong>on-premises → AWS</strong>. For this direction, you need an <strong>Inbound Endpoint</strong>. It creates ENIs in your VPC with private IPs that the on-premises DNS can reach (via Direct Connect). Configure the on-prem DNS to forward queries for your AWS domain to those IPs, and Route 53 answers them.</p>
+      <div class="why-wrong">
+        <strong>Why B is wrong:</strong> Outbound Endpoint is for the reverse direction: AWS → on-premises DNS queries.<br><br>
+        <strong>Why C is wrong:</strong> Making a private hosted zone public would expose internal DNS records to the internet — a security issue.<br><br>
+        <strong>Why D is wrong:</strong> Internet Gateway allows public internet access — it doesn't help route private DNS queries over Direct Connect.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "On-prem needs AWS DNS → INBOUND endpoint (traffic comes IN to AWS)." Think of it from Route 53's perspective: queries are coming IN from outside.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q12 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">12</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Alias Record Targets</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A solutions architect needs to configure Route 53 DNS records for several resources. They plan to use Alias records to avoid per-query charges and to support the zone apex.
+    </div>
+    <p class="q-text">Which of the following targets is NOT supported as an Alias record target in Route 53?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,12)"><div class="opt-letter">A</div><div class="opt-text">An Application Load Balancer (ALB)</div></li>
+      <li class="option" onclick="choose(this,false,12)"><div class="opt-letter">B</div><div class="opt-text">An Amazon CloudFront distribution</div></li>
+      <li class="option" onclick="choose(this,true,12)"><div class="opt-letter">C</div><div class="opt-text">An Amazon EC2 instance</div></li>
+      <li class="option" onclick="choose(this,false,12)"><div class="opt-letter">D</div><div class="opt-text">An Amazon S3 website endpoint</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(12)">Reveal Answer</button>
+    <div class="explanation" id="exp-12">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — EC2 instance is NOT a valid Alias target</div>
+      <p>Route 53 Alias records only work with <strong>AWS-managed resources where AWS manages the DNS name</strong>: ALB, NLB, CloudFront, Elastic Beanstalk, API Gateway, S3 website endpoints, another record in the same hosted zone. EC2 instances have IPs that may change, but AWS doesn't expose them with a stable DNS name that Alias can track. Use a plain <strong>A record with the EC2 IP</strong> instead.</p>
+      <div class="why-wrong">
+        <strong>A, B, D are all valid Alias targets.</strong> ALB, CloudFront, and S3 website endpoints are classic examples taught in every Route 53 resource.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Alias targets = AWS-managed DNS names." EC2 has an IP, not a managed DNS name Route 53 can track. EC2 = A record with IP.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q13 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">13</div>
+    <span class="q-type t-multi">Multiple Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Health Checks — Which Supports Private Resources?</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="multi-note">📋 Select TWO correct answers</div>
+    <div class="q-scenario">
+      A company wants Route 53 to monitor multiple internal resources inside their private VPC and trigger failover if any of them are unhealthy. None of the resources have public IPs.
+    </div>
+    <p class="q-text">Which TWO approaches can be used to set up health checks for these private resources? (Select TWO)</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,13)"><div class="opt-letter">A</div><div class="opt-text">Create an endpoint health check using the private IP address of each resource</div></li>
+      <li class="option" onclick="choose(this,true,13)"><div class="opt-letter">B</div><div class="opt-text">Create a CloudWatch metric and alarm for each resource, then create a Route 53 health check that monitors each CloudWatch alarm</div></li>
+      <li class="option" onclick="choose(this,true,13)"><div class="opt-letter">C</div><div class="opt-text">Create a Calculated health check in Route 53 that combines the CloudWatch alarm-based health checks using AND logic</div></li>
+      <li class="option" onclick="choose(this,false,13)"><div class="opt-letter">D</div><div class="opt-text">Assign Elastic IPs to each resource and use endpoint health checks on those IPs</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(13)">Reveal Answer</button>
+    <div class="explanation" id="exp-13">
+      <div class="exp-title">✅ Correct Answers</div>
+      <div class="exp-answer">B and C</div>
+      <p><strong>B</strong>: For each private resource, create CloudWatch metrics and alarms. Then create a Route 53 health check of type "CloudWatch alarm" — this is the standard pattern for private resource health checking.<br><br>
+      <strong>C</strong>: Once you have individual CloudWatch alarm-based health checks (from B), you can combine them using a <strong>Calculated health check</strong> to represent the overall health of multiple resources with AND/OR logic.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Route 53 health checkers are on the public internet — they cannot reach private IPs directly.<br><br>
+        <strong>Why D is wrong:</strong> Assigning Elastic IPs to internal resources is an anti-pattern and a security risk. Not recommended for this use case.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Private → CloudWatch → R53 HC chain." It's a relay race: private resource → CW metric → CW alarm → R53 HC → failover decision.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q14 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">14</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Public vs Private Hosted Zone</strong></div>
+    <span class="q-diff easy">Easy</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company wants internal microservices inside their AWS VPC to discover each other using human-readable DNS names like <code>payment-service.internal</code> and <code>auth-service.internal</code>. These names should NOT be resolvable from the public internet.
+    </div>
+    <p class="q-text">What type of Route 53 hosted zone should be created?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">A</div><div class="opt-text">A public hosted zone for <code>internal</code> domain</div></li>
+      <li class="option" onclick="choose(this,true,14)"><div class="opt-letter">B</div><div class="opt-text">A private hosted zone associated with the VPC</div></li>
+      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">C</div><div class="opt-text">A public hosted zone with IAM policies to restrict public access</div></li>
+      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">D</div><div class="opt-text">A private hosted zone with NACLs to block external DNS queries</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(14)">Reveal Answer</button>
+    <div class="explanation" id="exp-14">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">B — Private Hosted Zone</div>
+      <p>A <strong>Private Hosted Zone</strong> is only resolvable from within the VPCs it's associated with. It's the standard AWS pattern for internal service discovery — microservices call each other by name (<code>payment-service.internal</code>), and only VPC resources can resolve those names. The public internet gets no answer.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> A public hosted zone is visible worldwide. IAM doesn't restrict DNS resolution — IAM controls API/console access, not DNS query access.<br><br>
+        <strong>Why C is wrong:</strong> Same reason — IAM policies cannot restrict DNS queries from the public internet.<br><br>
+        <strong>Why D is wrong:</strong> NACLs control network traffic to/from instances — they don't affect DNS query resolution at the Route 53 level.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Internal names = Private HZ." Public HZ = the whole world can look it up. Private HZ = VPC-only.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q15 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">15</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Multi-Region Performance Architecture</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A media streaming company serves users in North America, Europe, and Asia Pacific. Their application is deployed in <code>us-east-1</code>, <code>eu-west-1</code>, and <code>ap-southeast-1</code>. They want to automatically route each user to the AWS region that provides the best performance for them. If a region becomes unhealthy, users should be automatically routed to the next best region.
+    </div>
+    <p class="q-text">Which Route 53 configuration should a solutions architect use?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,15)"><div class="opt-letter">A</div><div class="opt-text">Geolocation routing with health checks, configured per continent</div></li>
+      <li class="option" onclick="choose(this,true,15)"><div class="opt-letter">B</div><div class="opt-text">Latency-based routing with health checks on each regional endpoint</div></li>
+      <li class="option" onclick="choose(this,false,15)"><div class="opt-letter">C</div><div class="opt-text">Weighted routing with equal weights and health checks</div></li>
+      <li class="option" onclick="choose(this,false,15)"><div class="opt-letter">D</div><div class="opt-text">Failover routing with <code>us-east-1</code> as primary and the other regions as secondary</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(15)">Reveal Answer</button>
+    <div class="explanation" id="exp-15">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">B — Latency-Based Routing with Health Checks</div>
+      <p>The requirement is "best performance" (lowest latency) with automatic failover if a region is unhealthy. <strong>Latency-based routing</strong> sends each user to the region with the lowest network latency for them. Adding <strong>health checks</strong> means Route 53 automatically excludes unhealthy regions from responses and routes to the next-best region.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Geolocation routes by country/continent — a US user always goes to <code>us-east-1</code> regardless of latency. Not "best performance" based.<br><br>
+        <strong>Why C is wrong:</strong> Equal weights distribute traffic evenly, but don't optimise for performance — a Singapore user might get sent to Virginia.<br><br>
+        <strong>Why D is wrong:</strong> Failover routing is primary/secondary — it's binary, not multi-region performance optimisation.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Best performance globally = Latency + Health Checks." Latency finds the fastest; health checks skip the broken ones.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q16 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">16</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">DNS Firewall Use Case</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A security team has discovered that some EC2 instances in their VPC may be infected with malware. The malware communicates with external command-and-control servers by resolving specific domain names. The security team wants to prevent all VPC resources from resolving known malicious domains, without modifying security groups or NACLs.
+    </div>
+    <p class="q-text">Which AWS service should be used to block these DNS lookups?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,16)"><div class="opt-letter">A</div><div class="opt-text">AWS WAF with a web ACL to block requests to malicious domains</div></li>
+      <li class="option" onclick="choose(this,false,16)"><div class="opt-letter">B</div><div class="opt-text">VPC Security Groups with outbound rules blocking DNS queries</div></li>
+      <li class="option" onclick="choose(this,true,16)"><div class="opt-letter">C</div><div class="opt-text">Route 53 Resolver DNS Firewall with rules blocking known malicious domain names</div></li>
+      <li class="option" onclick="choose(this,false,16)"><div class="opt-letter">D</div><div class="opt-text">Amazon GuardDuty with a threat list of malicious domains</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(16)">Reveal Answer</button>
+    <div class="explanation" id="exp-16">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — Route 53 Resolver DNS Firewall</div>
+      <p>Route 53 Resolver DNS Firewall operates at the DNS resolution layer — it intercepts DNS queries from VPC resources and blocks (or allows) them based on domain name lists. It's the purpose-built service for "prevent VPC resources from resolving malicious/unwanted domains." It works without touching security groups or NACLs.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> AWS WAF operates at HTTP layer 7 — it doesn't intercept DNS queries.<br><br>
+        <strong>Why B is wrong:</strong> Security groups can block network traffic on port 53, but that would block ALL DNS queries including legitimate ones. It's too blunt and would break the VPC's DNS.<br><br>
+        <strong>Why D is wrong:</strong> GuardDuty <em>detects</em> and <em>alerts</em> on suspicious DNS activity but doesn't <em>block</em> DNS queries. It's threat detection, not prevention.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Block VPC DNS = DNS Firewall." GuardDuty alerts. DNS Firewall blocks. Different jobs.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q17 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">17</div>
+    <span class="q-type t-multi">Multiple Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Routing Policy Selection — Two Scenarios</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="multi-note">📋 Select TWO correct answers</div>
+    <p class="q-text">A solutions architect is configuring Route 53 for two separate applications. Which TWO statements correctly match the routing policy to the requirement?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,true,17)"><div class="opt-letter">A</div><div class="opt-text">A gaming company wants to ensure players in South Korea connect to the Seoul region server. Geolocation routing should be used with a country-level rule for South Korea.</div></li>
+      <li class="option" onclick="choose(this,false,17)"><div class="opt-letter">B</div><div class="opt-text">A startup wants to ensure all global users connect to the fastest possible server. Geolocation routing should be used to route by continent.</div></li>
+      <li class="option" onclick="choose(this,true,17)"><div class="opt-letter">C</div><div class="opt-text">A payment processor wants to test a new fraud detection algorithm on 2% of transactions without affecting other users. Weighted routing should be used with a weight of 2 for the new algorithm endpoint and 98 for the existing one.</div></li>
+      <li class="option" onclick="choose(this,false,17)"><div class="opt-letter">D</div><div class="opt-text">An IoT platform requires static IP addresses that clients can whitelist. Route 53 Latency-based routing should be used with Elastic IPs.</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(17)">Reveal Answer</button>
+    <div class="explanation" id="exp-17">
+      <div class="exp-title">✅ Correct Answers</div>
+      <div class="exp-answer">A and C</div>
+      <p><strong>A</strong>: Correct. South Korean players should go to Seoul server regardless of network latency — this is a country-specific routing requirement, so Geolocation with a South Korea country rule is perfect.<br><br>
+      <strong>C</strong>: Correct. Testing a new feature on 2% of traffic = classic Weighted routing use case (canary/A/B testing).</p>
+      <div class="why-wrong">
+        <strong>Why B is wrong:</strong> "Fastest possible server" = Latency-based routing, NOT Geolocation. Geolocation routes by country/continent regardless of speed.<br><br>
+        <strong>Why D is wrong:</strong> Static IPs for clients to whitelist = <strong>Global Accelerator</strong> (gives 2 static anycast IPs). Route 53 Latency routing does NOT provide static IPs.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Fastest = Latency. Fixed country = Geo. % split = Weighted. Static IP = Global Accelerator." These four rules handle 90% of policy questions.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q18 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">18</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Architecture — Full DR Setup</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company runs a critical web application in <code>us-east-1</code>. They have set up a DR environment in <code>eu-west-1</code>. Their requirements are:
+      <br>• The root domain <code>app.company.com</code> should point to an ALB in <code>us-east-1</code>
+      <br>• If <code>us-east-1</code> becomes unavailable, traffic should automatically shift to an ALB in <code>eu-west-1</code>
+      <br>• The solution must use the cheapest possible DNS record type
+      <br>• Health checks must detect failure at the application layer (HTTP), not just TCP connectivity
+    </div>
+    <p class="q-text">Which combination of Route 53 configurations meets ALL requirements?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,18)"><div class="opt-letter">A</div><div class="opt-text">Two CNAME records with Failover routing and TCP health checks</div></li>
+      <li class="option" onclick="choose(this,false,18)"><div class="opt-letter">B</div><div class="opt-text">Two A records (with ALB IPs) with Failover routing and HTTP health checks</div></li>
+      <li class="option" onclick="choose(this,true,18)"><div class="opt-letter">C</div><div class="opt-text">Two Alias A records pointing to each ALB, with Failover routing and HTTP health checks on the primary record</div></li>
+      <li class="option" onclick="choose(this,false,18)"><div class="opt-letter">D</div><div class="opt-text">Two Alias A records pointing to each ALB, with Weighted routing (100/0) and HTTP health checks</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(18)">Reveal Answer</button>
+    <div class="explanation" id="exp-18">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — Alias A records + Failover + HTTP Health Check</div>
+      <p>Breaking down each requirement:
+      <br>• <strong>Root domain pointing to ALB</strong>: Must use Alias A record (CNAME not allowed at zone apex)
+      <br>• <strong>Automatic failover</strong>: Requires Failover routing policy
+      <br>• <strong>Cheapest DNS record</strong>: Alias records are free (vs CNAME which charges per query)
+      <br>• <strong>Application-layer (HTTP) health check</strong>: Route 53 health checks support HTTP protocol, which checks for HTTP 2xx/3xx responses — detecting app-level failures not just TCP connectivity
+      </p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> CNAME at zone apex is not allowed. Also, TCP health checks don't verify application-level health (app could return 503 and TCP would still pass).<br><br>
+        <strong>Why B is wrong:</strong> ALB IPs change dynamically — hardcoding them in A records would break. Must use Alias for ALBs.<br><br>
+        <strong>Why D is wrong:</strong> Weighted routing with 100/0 mimics failover but doesn't automatically switch when the primary fails health check. Only Failover policy does automatic health-check-triggered switching.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "DR checklist: Alias (zone apex + free) + Failover (auto-switch) + HTTP HC (app-layer detection)." Three ingredients, all required.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FINAL SCORE ═══ -->
+<div class="sec-head" style="text-align:center;padding-bottom:40px;">
+  <div class="label">Results</div>
+  <h2 id="finalScoreText">Answer all questions to see your score</h2>
+  <p id="finalScoreMsg" style="margin-top:12px;"></p>
+  <div style="margin-top:24px;" id="scoreBreakdown"></div>
+</div>
+
+<div style="height:80px;"></div>
+
+</div><!-- /page -->
+
+<script>
+  const answers = {};
+  const correct = {};
+  let totalAnswered = 0;
+  let totalCorrect = 0;
+  const total = 18;
+
+  // Mark which options are correct (tracked internally)
+  function choose(el, isCorrect, qNum) {
+    // If already answered, don't allow re-selection
+    if (answers[qNum] !== undefined) return;
+    answers[qNum] = isCorrect;
+    el.classList.add(isCorrect ? 'correct' : 'selected-wrong');
+    if (!isCorrect) {
+      // Don't reveal the correct answer yet — user must click Reveal
+    }
+    totalAnswered++;
+    if (isCorrect) {
+      totalCorrect++;
+    }
+    updateScore();
+  }
+
+  function reveal(qNum) {
+    const expEl = document.getElementById('exp-' + qNum);
+    expEl.classList.add('show');
+
+    // Mark correct options in the question
+    const qcard = expEl.closest('.qcard-body');
+    const options = qcard.querySelectorAll('.option');
+    options.forEach(opt => {
+      const onclick = opt.getAttribute('onclick') || '';
+      // Check if this option has "true" as second param
+      if (onclick.includes('true,' + qNum)) {
+        opt.classList.add('correct');
+      } else if (!opt.classList.contains('correct') && opt.classList.contains('selected-wrong')) {
+        // already marked
+      } else if (!opt.classList.contains('correct') && !opt.classList.contains('selected-wrong')) {
+        opt.classList.add('wrong');
+      }
+    });
+
+    // Hide reveal button
+    const btn = qcard.querySelector('.reveal-btn');
+    if (btn) btn.style.display = 'none';
+
+    updateFinalScore();
+  }
+
+  function updateScore() {
+    document.getElementById('scoreNum').textContent = totalCorrect + '/' + totalAnswered;
+  }
+
+  function updateFinalScore() {
+    const allRevealed = document.querySelectorAll('.explanation.show').length;
+    if (allRevealed >= total) {
+      const pct = Math.round((totalCorrect / total) * 100);
+      document.getElementById('finalScoreText').textContent = totalCorrect + ' / ' + total + ' Correct (' + pct + '%)';
+      let msg = '';
+      let color = '';
+      if (pct >= 85) { msg = '🏆 Excellent! You\'re exam-ready on Route 53. Score in this range on Tutorials Dojo = confident pass.'; color = '#1fc585'; }
+      else if (pct >= 70) { msg = '👍 Good work. Review the questions you missed — focus on the Memory Hooks. You\'re close.'; color = '#e6a817'; }
+      else { msg = '📚 Keep going. Re-read the cheat sheets above and retry. The patterns will click.'; color = '#f05252'; }
+      const msgEl = document.getElementById('finalScoreMsg');
+      msgEl.textContent = msg;
+      msgEl.style.color = color;
+      msgEl.style.fontSize = '16px';
+    }
+  }
+
+  // Scroll indicator for score bar
+  window.addEventListener('scroll', () => {
+    const bar = document.getElementById('scoreBar');
+    bar.style.opacity = '1';
+  });
+</script>
+
+</body>
+</html>

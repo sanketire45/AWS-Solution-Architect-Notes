@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S3 Exam Cracker — SAA-C03 Doc 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #111318;
+  --bg-2:      #171a22;
+  --bg-3:      #1d2030;
+  --bg-card:   #1a1d26;
+  --bg-hover:  #222638;
+  --border:    rgba(255,255,255,0.07);
+  --border-2:  rgba(255,255,255,0.12);
+  --text:      #e2ddd6;
+  --text-soft: #9a9590;
+  --text-muted:#6a6560;
+  --amber:     #f5a623;
+  --amber-dim: rgba(245,166,35,0.12);
+  --amber-glow:rgba(245,166,35,0.25);
+  --teal:      #34c5b0;
+  --teal-dim:  rgba(52,197,176,0.12);
+  --blue:      #5b9cf6;
+  --blue-dim:  rgba(91,156,246,0.12);
+  --green:     #4ade80;
+  --green-dim: rgba(74,222,128,0.12);
+  --red:       #f87171;
+  --red-dim:   rgba(248,113,113,0.12);
+  --purple:    #c084fc;
+  --purple-dim:rgba(192,132,252,0.12);
+  --shadow:    0 4px 24px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:16px;
+  line-height:1.75;
+  font-weight:400;
+  min-height:100vh;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+
+/* ─── HERO ─── */
+.hero{
+  background:linear-gradient(135deg,#0a0c12 0%,#121828 50%,#0e1420 100%);
+  padding:64px 60px 48px;
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;right:-100px;top:-100px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,166,35,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  font-weight:600;letter-spacing:3px;text-transform:uppercase;
+  color:var(--amber);margin-bottom:14px;
+}
+.hero h1{
+  font-family:'Lora',Georgia,serif;
+  font-size:clamp(36px,4.5vw,62px);font-weight:700;
+  line-height:1.1;letter-spacing:-0.5px;
+  color:#fff;margin-bottom:14px;
+}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{
+  font-size:17px;color:rgba(226,221,214,0.65);
+  max-width:600px;margin-bottom:28px;font-weight:300;
+}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  color:rgba(226,221,214,0.8);padding:5px 14px;border-radius:100px;
+  font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;
+}
+
+/* ─── SCORE BAR ─── */
+.score-bar{
+  background:var(--bg-2);
+  border-bottom:1px solid var(--border);
+  padding:12px 60px;
+  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 20px rgba(0,0,0,0.5);
+}
+.score-label{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:var(--text-soft);letter-spacing:1px;
+}
+.score-nums{
+  font-family:'JetBrains Mono',monospace;font-size:18px;
+  font-weight:600;color:var(--amber);
+}
+.score-detail{font-size:13px;color:var(--text-muted);}
+.progress-track{
+  flex:1;min-width:120px;height:4px;
+  background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--amber),var(--teal));
+  border-radius:2px;transition:width 0.5s ease;width:0%;
+}
+.score-actions{display:flex;gap:8px;margin-left:auto;}
+.btn{
+  padding:7px 16px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  transition:all 0.2s;
+}
+.btn-ghost{
+  background:rgba(255,255,255,0.05);color:var(--text-soft);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text);}
+.btn-amber{
+  background:var(--amber);color:#111;font-weight:600;
+}
+.btn-amber:hover{background:#f0b840;transform:translateY(-1px);}
+
+/* ─── TAB NAV ─── */
+.tab-nav{
+  background:var(--bg-2);
+  border-bottom:1px solid var(--border);
+  padding:0 60px;
+  display:flex;gap:4px;
+  position:sticky;top:49px;z-index:190;
+}
+.tab{
+  padding:14px 20px;font-size:14px;font-weight:500;
+  color:var(--text-muted);cursor:pointer;border:none;background:none;
+  border-bottom:2px solid transparent;transition:all 0.2s;
+  font-family:'DM Sans',sans-serif;
+}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+
+/* ─── MAIN ─── */
+.main{max-width:1200px;margin:0 auto;padding:40px 60px 80px;}
+
+/* ─── SECTION HEADER ─── */
+.sec-header{
+  margin:0 0 32px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--border);
+}
+.sec-header h2{
+  font-family:'Lora',serif;font-size:30px;font-weight:700;
+  color:#fff;margin-bottom:6px;
+}
+.sec-header p{font-size:15px;color:var(--text-soft);}
+
+/* ─── CHEAT SHEET CONTENT ─── */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── Numbers to know ── */
+.numbers-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;margin-bottom:40px;
+}
+.num-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:20px;text-align:center;
+  transition:transform 0.2s,border-color 0.2s;
+}
+.num-card:hover{transform:translateY(-2px);border-color:var(--border-2);}
+.num-val{
+  font-family:'Lora',serif;font-size:32px;font-weight:700;
+  color:var(--amber);line-height:1;margin-bottom:6px;
+}
+.num-label{font-size:12px;color:var(--text-soft);line-height:1.4;}
+
+/* ── Cheat tables ── */
+.cheat-table-wrap{overflow-x:auto;margin-bottom:36px;border-radius:12px;border:1px solid var(--border);}
+.cheat-table{width:100%;border-collapse:collapse;font-size:14px;}
+.cheat-table thead tr{background:rgba(255,255,255,0.04);}
+.cheat-table th{
+  padding:12px 16px;text-align:left;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text-muted);font-weight:500;
+  border-bottom:1px solid var(--border);
+}
+.cheat-table td{
+  padding:11px 16px;border-bottom:1px solid var(--border);
+  color:var(--text-soft);vertical-align:top;line-height:1.5;
+}
+.cheat-table tr:last-child td{border-bottom:none;}
+.cheat-table tr:hover td{background:rgba(255,255,255,0.02);}
+.cheat-table td strong{color:var(--text);font-weight:500;}
+.cheat-table td code{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;
+  color:var(--amber);
+}
+
+/* ── Storage class strip ── */
+.sc-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:32px;}
+.sc-card{
+  border-radius:10px;padding:14px;border:1px solid;
+  transition:transform 0.2s;
+}
+.sc-card:hover{transform:translateY(-2px);}
+.sc-card .sc-name{font-weight:600;font-size:13px;margin-bottom:4px;}
+.sc-card .sc-speed{font-family:'JetBrains Mono',monospace;font-size:11px;margin-bottom:3px;}
+.sc-card .sc-min{font-size:11px;opacity:0.7;}
+.sc-standard{background:rgba(52,197,176,0.08);border-color:rgba(52,197,176,0.3);color:var(--teal);}
+.sc-ia{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.3);color:var(--amber);}
+.sc-1z{background:rgba(245,166,35,0.05);border-color:rgba(245,166,35,0.2);color:#d4920a;}
+.sc-gi{background:rgba(91,156,246,0.08);border-color:rgba(91,156,246,0.3);color:var(--blue);}
+.sc-gf{background:rgba(192,132,252,0.08);border-color:rgba(192,132,252,0.3);color:var(--purple);}
+.sc-da{background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.3);color:var(--red);}
+.sc-it{background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.3);color:var(--green);}
+
+/* ── Trigger list ── */
+.trigger-section{margin-bottom:36px;}
+.trigger-section h3{
+  font-family:'Lora',serif;font-size:18px;font-weight:600;
+  color:var(--amber);margin-bottom:16px;
+  padding-left:12px;border-left:3px solid var(--amber);
+}
+.trigger-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:12px 16px;margin-bottom:6px;
+  background:var(--bg-card);border-radius:8px;border:1px solid var(--border);
+  transition:border-color 0.2s;
+}
+.trigger-item:hover{border-color:var(--border-2);}
+.trigger-kw{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:var(--teal);min-width:280px;flex-shrink:0;line-height:1.5;
+}
+.trigger-arrow{color:var(--amber);flex-shrink:0;margin-top:1px;}
+.trigger-ans{font-size:14px;color:var(--text);line-height:1.5;}
+.trap-item{border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.04);}
+.trap-item .trigger-kw{color:var(--red);}
+.trap-item .trigger-arrow{color:var(--red);}
+
+/* ─── QUESTIONS SECTION ─── */
+.q-filter-bar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-bottom:28px;padding:16px 20px;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+}
+.q-filter-bar label{font-size:13px;color:var(--text-soft);font-weight:500;}
+.filter-select{
+  background:rgba(255,255,255,0.06);border:1px solid var(--border-2);
+  color:var(--text);padding:7px 14px;border-radius:8px;font-size:13px;
+  font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;
+}
+.filter-select:focus{border-color:var(--amber);}
+.q-count{
+  margin-left:auto;font-family:'JetBrains Mono',monospace;
+  font-size:12px;color:var(--text-muted);
+}
+
+/* ── Question Card ── */
+.q-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:14px;padding:28px 32px;margin-bottom:18px;
+  transition:border-color 0.2s;
+  position:relative;
+}
+.q-card:hover{border-color:var(--border-2);}
+.q-card.answered-correct{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);}
+.q-card.answered-wrong{border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.03);}
+.q-card.marked{border-color:rgba(245,166,35,0.4);}
+
+.q-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.q-num{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+  color:var(--amber);background:var(--amber-dim);
+  padding:3px 10px;border-radius:6px;
+}
+.q-topic-tag{
+  font-size:11px;font-family:'JetBrains Mono',monospace;
+  padding:3px 10px;border-radius:6px;letter-spacing:0.5px;
+}
+.topic-storage{background:var(--teal-dim);color:var(--teal);}
+.topic-lifecycle{background:var(--amber-dim);color:var(--amber);}
+.topic-versioning{background:var(--blue-dim);color:var(--blue);}
+.topic-replication{background:var(--purple-dim);color:var(--purple);}
+.topic-performance{background:var(--green-dim);color:var(--green);}
+.topic-events{background:rgba(250,204,21,0.12);color:#fbbf24;}
+.topic-encryption{background:rgba(248,113,113,0.12);color:var(--red);}
+.topic-access{background:rgba(52,197,176,0.12);color:var(--teal);}
+.topic-logging{background:rgba(192,132,252,0.12);color:var(--purple);}
+.topic-misc{background:rgba(255,255,255,0.06);color:var(--text-soft);}
+
+.q-diff{
+  font-size:11px;font-family:'JetBrains Mono',monospace;
+  padding:3px 10px;border-radius:6px;
+}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--green);}
+.diff-medium{background:rgba(245,166,35,0.1);color:var(--amber);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--red);}
+
+.q-mark-btn{
+  margin-left:auto;background:none;border:none;cursor:pointer;
+  font-size:18px;opacity:0.4;transition:opacity 0.2s,transform 0.2s;
+  color:var(--amber);
+}
+.q-mark-btn:hover{opacity:1;transform:scale(1.1);}
+.q-mark-btn.marked{opacity:1;}
+
+.q-type-badge{
+  font-size:11px;color:var(--text-muted);font-style:italic;
+  font-family:'DM Sans',sans-serif;
+}
+
+.q-text{
+  font-family:'Lora',Georgia,serif;
+  font-size:17px;line-height:1.8;color:var(--text);
+  margin-bottom:22px;font-weight:400;
+}
+.q-text strong{color:#fff;font-weight:600;}
+
+/* Options */
+.options-list{list-style:none;padding:0;margin-bottom:0;}
+.option{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:13px 18px;margin-bottom:8px;
+  background:rgba(255,255,255,0.03);
+  border:1.5px solid var(--border);border-radius:10px;
+  cursor:pointer;transition:all 0.18s;
+  font-size:15px;line-height:1.6;color:var(--text-soft);
+  user-select:none;
+}
+.option:hover:not(.disabled){
+  background:rgba(255,255,255,0.06);
+  border-color:var(--border-2);color:var(--text);
+}
+.option.disabled{cursor:default;}
+.option-letter{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+  width:24px;height:24px;min-width:24px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.06);color:var(--text-muted);
+  flex-shrink:0;margin-top:1px;transition:all 0.18s;
+}
+.option.selected .option-letter{background:var(--amber);color:#111;}
+.option.selected{border-color:var(--amber);color:var(--text);}
+.option.correct-reveal{
+  background:var(--green-dim);border-color:rgba(74,222,128,0.5);color:var(--text);
+}
+.option.correct-reveal .option-letter{background:var(--green);color:#111;}
+.option.wrong-reveal{
+  background:var(--red-dim);border-color:rgba(248,113,113,0.5);color:var(--text);
+}
+.option.wrong-reveal .option-letter{background:var(--red);color:#fff;}
+
+/* Multi-select checkbox styling */
+.option.multi .option-letter{border-radius:4px;}
+
+/* Explanation */
+.explanation{
+  margin-top:18px;padding:18px 20px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-left:3px solid var(--teal);
+  border-radius:0 10px 10px 0;
+  display:none;
+}
+.explanation.show{display:block;animation:fadeSlide 0.3s ease;}
+@keyframes fadeSlide{
+  from{opacity:0;transform:translateY(-6px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.exp-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--teal);margin-bottom:8px;
+}
+.exp-correct-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:600;color:var(--green);
+  margin-bottom:10px;
+}
+.exp-wrong-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:600;color:var(--red);
+  margin-bottom:10px;
+}
+.explanation p{font-size:14px;line-height:1.75;color:var(--text-soft);}
+.explanation p strong{color:var(--text);font-weight:600;}
+.explanation .correct-ans{
+  margin-top:10px;padding:10px 14px;
+  background:var(--green-dim);border-radius:8px;
+  font-size:13px;color:var(--green);font-weight:500;
+}
+
+.submit-btn{
+  display:block;margin-top:18px;
+  padding:11px 24px;border-radius:10px;border:none;cursor:pointer;
+  background:var(--bg-3);color:var(--text-soft);
+  font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;
+  border:1px solid var(--border);transition:all 0.2s;
+}
+.submit-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border-2);}
+.submit-btn.hide{display:none;}
+
+/* no-questions message */
+.no-q{
+  text-align:center;padding:60px 20px;color:var(--text-muted);
+  font-size:15px;
+}
+
+/* ─── SECTION DIVIDER ─── */
+.section-divider{
+  height:1px;background:var(--border);margin:48px 0;
+}
+.sub-section-title{
+  font-family:'Lora',serif;font-size:20px;font-weight:600;
+  color:#fff;margin-bottom:18px;margin-top:36px;
+}
+.sub-section-title span{
+  font-size:14px;font-weight:400;color:var(--text-soft);
+  font-family:'DM Sans',sans-serif;margin-left:10px;
+}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .hero{padding:40px 20px 36px;}
+  .score-bar{padding:10px 20px;}
+  .tab-nav{padding:0 20px;}
+  .main{padding:28px 20px 60px;}
+  .q-card{padding:20px;}
+  .trigger-kw{min-width:200px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HERO ─── -->
+<header class="hero">
+  <div class="hero-eyebrow">SAA-C03 · Topic 06 · Document 2 of 2</div>
+  <h1>S3 <em>Exam Cracker</em></h1>
+  <p>Cheat sheets, exam triggers, traps, and 55 scenario-based practice questions — exactly like the real exam.</p>
+  <div class="pill-row">
+    <span class="pill">Cheat Sheets</span>
+    <span class="pill">Exam Triggers</span>
+    <span class="pill">55 Questions</span>
+    <span class="pill">Score Tracker</span>
+    <span class="pill">Mark for Review</span>
+  </div>
+</header>
+
+<!-- ─── SCORE BAR ─── -->
+<div class="score-bar">
+  <span class="score-label">SCORE</span>
+  <span class="score-nums" id="scoreDisplay">0 / 0</span>
+  <span class="score-detail" id="scorePercent">—</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="score-actions">
+    <button class="btn btn-ghost" onclick="resetAll()">↺ Reset</button>
+    <button class="btn btn-ghost" onclick="revealAll()">Reveal All</button>
+  </div>
+</div>
+
+<!-- ─── TAB NAV ─── -->
+<nav class="tab-nav">
+  <button class="tab active" onclick="switchTab('cheatsheets',this)">📋 Cheat Sheets</button>
+  <button class="tab" onclick="switchTab('triggers',this)">⚡ Triggers &amp; Traps</button>
+  <button class="tab" onclick="switchTab('questions',this)">🎯 Practice Questions</button>
+</nav>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════
+     TAB 1 — CHEAT SHEETS
+═══════════════════════════════════════════════ -->
+<div id="tab-cheatsheets" class="tab-content active">
+
+  <div class="sec-header">
+    <h2>Master Cheat Sheets</h2>
+    <p>Everything you need to recall instantly on exam day — numbers, comparisons, and decision rules.</p>
+  </div>
+
+  <!-- KEY NUMBERS -->
+  <div class="sub-section-title">🔢 Numbers You Must Know Cold</div>
+  <div class="numbers-grid">
+    <div class="num-card"><div class="num-val">11 9s</div><div class="num-label">S3 Durability<br>99.999999999%</div></div>
+    <div class="num-card"><div class="num-val">5 TB</div><div class="num-label">Max Single Object Size</div></div>
+    <div class="num-card"><div class="num-val">5 GB</div><div class="num-label">Max Single PUT (use multipart above this)</div></div>
+    <div class="num-card"><div class="num-val">100 MB</div><div class="num-label">Recommended threshold for multipart upload</div></div>
+    <div class="num-card"><div class="num-val">5,500</div><div class="num-label">GET requests/sec per prefix</div></div>
+    <div class="num-card"><div class="num-val">3,500</div><div class="num-label">PUT/POST/DELETE/sec per prefix</div></div>
+    <div class="num-card"><div class="num-val">30 days</div><div class="num-label">Min storage: Standard-IA, One Zone-IA</div></div>
+    <div class="num-card"><div class="num-val">90 days</div><div class="num-label">Min storage: Glacier Instant &amp; Flexible</div></div>
+    <div class="num-card"><div class="num-val">180 days</div><div class="num-label">Min storage: Glacier Deep Archive</div></div>
+    <div class="num-card"><div class="num-val">128 KB</div><div class="num-label">Lifecycle small object threshold (Sep 2024)</div></div>
+    <div class="num-card"><div class="num-val">15 min</div><div class="num-label">S3 RTC replication SLA guarantee</div></div>
+    <div class="num-card"><div class="num-val">7 days</div><div class="num-label">Max presigned URL duration (IAM user)</div></div>
+  </div>
+
+  <!-- STORAGE CLASSES -->
+  <div class="sub-section-title">🗄️ Storage Classes at a Glance</div>
+  <div class="sc-strip">
+    <div class="sc-card sc-standard">
+      <div class="sc-name">S3 Standard</div>
+      <div class="sc-speed">⚡ Milliseconds</div>
+      <div class="sc-min">No min duration · 3+ AZs</div>
+    </div>
+    <div class="sc-card sc-ia">
+      <div class="sc-name">Standard-IA</div>
+      <div class="sc-speed">⚡ Milliseconds</div>
+      <div class="sc-min">Min 30 days · 3+ AZs · Retrieval fee</div>
+    </div>
+    <div class="sc-card sc-1z">
+      <div class="sc-name">One Zone-IA</div>
+      <div class="sc-speed">⚡ Milliseconds</div>
+      <div class="sc-min">Min 30 days · 1 AZ only (risk!)</div>
+    </div>
+    <div class="sc-card sc-gi">
+      <div class="sc-name">Glacier Instant</div>
+      <div class="sc-speed">⚡ Milliseconds</div>
+      <div class="sc-min">Min 90 days · 3+ AZs · Archive pricing</div>
+    </div>
+    <div class="sc-card sc-gf">
+      <div class="sc-name">Glacier Flexible</div>
+      <div class="sc-speed">🕐 Mins – 12hrs</div>
+      <div class="sc-min">Min 90 days · Expedited/Std/Bulk</div>
+    </div>
+    <div class="sc-card sc-da">
+      <div class="sc-name">Deep Archive</div>
+      <div class="sc-speed">🕒 12 – 48 hrs</div>
+      <div class="sc-min">Min 180 days · Cheapest $/GB</div>
+    </div>
+    <div class="sc-card sc-it">
+      <div class="sc-name">Intelligent-Tier</div>
+      <div class="sc-speed">⚡ – 🕒 Auto</div>
+      <div class="sc-min">No min · 5 tiers · Archive tiers: opt-in</div>
+    </div>
+  </div>
+
+  <div class="cheat-table-wrap">
+    <table class="cheat-table">
+      <thead><tr>
+        <th>Storage Class</th><th>Retrieval Speed</th><th>Min Duration</th>
+        <th>Retrieval Fee?</th><th>AZs</th><th>Best For</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>Standard</strong></td><td>Milliseconds</td><td>None</td><td>No</td><td>3+</td><td>Frequent access, hot data</td></tr>
+        <tr><td><strong>Standard-IA</strong></td><td>Milliseconds</td><td>30 days</td><td>Yes</td><td>3+</td><td>Backups, monthly access</td></tr>
+        <tr><td><strong>One Zone-IA</strong></td><td>Milliseconds</td><td>30 days</td><td>Yes</td><td>1</td><td>Re-creatable data, cheapest IA</td></tr>
+        <tr><td><strong>Glacier Instant</strong></td><td>Milliseconds</td><td>90 days</td><td>Yes</td><td>3+</td><td>Archive, immediate retrieval</td></tr>
+        <tr><td><strong>Glacier Flexible</strong></td><td>1 min – 12 hrs</td><td>90 days</td><td>Yes</td><td>3+</td><td>Archive, hours retrieval OK</td></tr>
+        <tr><td><strong>Deep Archive</strong></td><td>12 – 48 hours</td><td>180 days</td><td>Yes</td><td>3+</td><td>7-year compliance, cheapest</td></tr>
+        <tr><td><strong>Intelligent-Tiering</strong></td><td>ms – 48hrs</td><td>None</td><td>No</td><td>3+</td><td>Unknown patterns, auto-tiering</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ENCRYPTION -->
+  <div class="sub-section-title">🔐 Encryption Types — Quick Comparison</div>
+  <div class="cheat-table-wrap">
+    <table class="cheat-table">
+      <thead><tr><th>Type</th><th>Who Manages Keys</th><th>Audit Trail</th><th>HTTPS Required</th><th>Exam Trigger</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SSE-S3</strong></td><td>AWS (fully)</td><td>None</td><td>No</td><td>"Simplest", "AWS manages everything"</td></tr>
+        <tr><td><strong>SSE-KMS</strong></td><td>You (via KMS)</td><td>CloudTrail ✓</td><td>No</td><td>"Audit key usage", "control rotation"</td></tr>
+        <tr><td><strong>SSE-C</strong></td><td>You (send per request)</td><td>None</td><td><strong>Yes — mandatory</strong></td><td>"Never share keys with AWS"</td></tr>
+        <tr><td><strong>DSSE-KMS</strong></td><td>You (double KMS)</td><td>CloudTrail ✓</td><td>No</td><td>"Double-layer encryption", highest compliance</td></tr>
+        <tr><td><strong>Client-Side</strong></td><td>You (encrypt before upload)</td><td>None</td><td>Recommended</td><td>"Encrypted before it reaches AWS"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OBJECT LOCK -->
+  <div class="sub-section-title">🔒 Object Lock Modes — Side by Side</div>
+  <div class="cheat-table-wrap">
+    <table class="cheat-table">
+      <thead><tr><th>Feature</th><th>Compliance Mode</th><th>Governance Mode</th><th>Legal Hold</th><th>Glacier Vault Lock</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Who can override?</strong></td><td>Nobody (not even root)</td><td>Privileged IAM users</td><td>Any user with permission</td><td>Nobody (ever)</td></tr>
+        <tr><td><strong>Retention period</strong></td><td>Fixed, cannot shorten</td><td>Can be modified</td><td>No fixed period</td><td>Permanently immutable</td></tr>
+        <tr><td><strong>Applied to</strong></td><td>S3 bucket objects</td><td>S3 bucket objects</td><td>Individual S3 objects</td><td>Entire Glacier vault</td></tr>
+        <tr><td><strong>Exam trigger</strong></td><td>"Cannot be deleted by anyone"</td><td>"Emergency override possible"</td><td>"Ongoing litigation"</td><td>"Standalone Glacier vault WORM"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- REPLICATION -->
+  <div class="sub-section-title">🔁 Replication — Rules You Must Know</div>
+  <div class="cheat-table-wrap">
+    <table class="cheat-table">
+      <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Versioning required</strong></td><td>Both source AND destination buckets must have versioning enabled</td></tr>
+        <tr><td><strong>Not retroactive</strong></td><td>Only new objects after enabling replication are replicated; use Batch Replication for existing objects</td></tr>
+        <tr><td><strong>Delete markers</strong></td><td>NOT replicated by default — must explicitly enable delete marker replication</td></tr>
+        <tr><td><strong>Not transitive</strong></td><td>A→B and B→C rules exist, but uploading to A only replicates to B, not C</td></tr>
+        <tr><td><strong>CRR</strong></td><td>Cross-Region: different AWS regions, DR, latency reduction, compliance</td></tr>
+        <tr><td><strong>SRR</strong></td><td>Same-Region: same region, log aggregation, dev/prod sync, cross-account copy</td></tr>
+        <tr><td><strong>RTC</strong></td><td>Replication Time Control: guaranteed 15-min SLA for 99.99% of objects (paid add-on)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ACCESS CONTROL -->
+  <div class="sub-section-title">🛡️ Access Control — When to Use What</div>
+  <div class="cheat-table-wrap">
+    <table class="cheat-table">
+      <thead><tr><th>Scenario</th><th>Use This</th></tr></thead>
+      <tbody>
+        <tr><td>EC2 instance needs to read S3</td><td><strong>IAM Role</strong> attached to EC2</td></tr>
+        <tr><td>Another AWS account needs bucket access</td><td><strong>Bucket Policy</strong> granting external account</td></tr>
+        <tr><td>Block ALL public access in entire account</td><td><strong>Block Public Access</strong> at account level</td></tr>
+        <tr><td>Time-limited download link for private object</td><td><strong>Presigned URL</strong></td></tr>
+        <tr><td>Multiple apps/teams, complex permissions on one bucket</td><td><strong>S3 Access Points</strong></td></tr>
+        <tr><td>Force HTTPS only</td><td><strong>Bucket Policy</strong> with <code>aws:SecureTransport: false</code> → Deny</td></tr>
+        <tr><td>Force encryption on all uploads</td><td><strong>Bucket Policy</strong> with encryption header condition → Deny</td></tr>
+        <tr><td>Web app on different domain loading S3 assets</td><td><strong>CORS</strong> configuration on S3</td></tr>
+        <tr><td>Private subnet EC2 needs S3, no internet, free</td><td><strong>VPC Gateway Endpoint</strong></td></tr>
+        <tr><td>External users should pay for downloads</td><td><strong>Requester Pays</strong> on bucket</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LOGGING -->
+  <div class="sub-section-title">📊 Logging &amp; Monitoring — Which Captures What</div>
+  <div class="cheat-table-wrap">
+    <table class="cheat-table">
+      <thead><tr><th>Service</th><th>Captures</th><th>Delivery</th><th>Cost</th><th>Use For</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CloudTrail Mgmt</strong></td><td>Bucket config API calls</td><td>Near real-time</td><td>Free</td><td>"Who changed the bucket policy?"</td></tr>
+        <tr><td><strong>CloudTrail Data Events</strong></td><td>Every object GET/PUT/DELETE — guaranteed</td><td>Near real-time</td><td>Paid/event</td><td>Full audit trail, forensics</td></tr>
+        <tr><td><strong>Server Access Logs</strong></td><td>Every HTTP request, IP, status, bytes</td><td>Best-effort, hours delay</td><td>Storage only</td><td>"Which IP downloaded this file?"</td></tr>
+        <tr><td><strong>Storage Lens</strong></td><td>Usage metrics, trends, cost insights</td><td>Daily</td><td>Free (adv: paid)</td><td>Multi-account usage analytics</td></tr>
+        <tr><td><strong>Amazon Macie</strong></td><td>PII and sensitive data detection</td><td>Continuous</td><td>Paid</td><td>"Find personal data in S3"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PERFORMANCE QUICK REF -->
+  <div class="sub-section-title">⚡ Performance Features — When to Apply</div>
+  <div class="cheat-table-wrap">
+    <table class="cheat-table">
+      <thead><tr><th>Feature</th><th>Solves</th><th>When to Use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Multipart Upload</strong></td><td>Slow/failed uploads of large files</td><td>Recommended &gt;100MB, mandatory &gt;5GB</td></tr>
+        <tr><td><strong>Transfer Acceleration</strong></td><td>Slow long-distance uploads to S3</td><td>Users far from your bucket's region</td></tr>
+        <tr><td><strong>Multiple Prefixes</strong></td><td>Request rate throttling</td><td>High-throughput workloads, distribute keys</td></tr>
+        <tr><td><strong>Byte-Range Fetch</strong></td><td>Downloading only part of large file</td><td>Partial reads, parallel downloads</td></tr>
+        <tr><td><strong>S3 Select</strong></td><td>Downloading full file to filter it</td><td>SQL-like filter on CSV/JSON/Parquet in S3</td></tr>
+        <tr><td><strong>S3 Bucket Keys</strong></td><td>KMS API throttling with SSE-KMS</td><td>High-throughput SSE-KMS workloads</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- end cheatsheets tab -->
+
+
+<!-- ═══════════════════════════════════════════════
+     TAB 2 — TRIGGERS & TRAPS
+═══════════════════════════════════════════════ -->
+<div id="tab-triggers" class="tab-content">
+
+  <div class="sec-header">
+    <h2>Exam Triggers &amp; Traps</h2>
+    <p>If the question says <strong style="color:var(--teal)">X</strong> → the answer is <strong style="color:var(--amber)">Y</strong>. Traps in red.</p>
+  </div>
+
+  <div class="trigger-section">
+    <h3>Storage Classes</h3>
+    <div class="trigger-item"><span class="trigger-kw">"Milliseconds, archive, quarterly access"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Glacier Instant Retrieval</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Minutes to hours acceptable, archive"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Glacier Flexible Retrieval</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"12–48 hours acceptable, compliance archive, cheapest"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Glacier Deep Archive</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Unknown access pattern, auto optimize"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Intelligent-Tiering</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Infrequent, but can lose data if AZ fails"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>One Zone-IA</strong> (acceptable for re-creatable data)</span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "Archive tiers in Intelligent-Tiering activate automatically"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>FALSE</strong> — Archive Access and Deep Archive tiers must be manually enabled</span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "Delete Standard-IA object after 10 days, pay 10 days"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>FALSE</strong> — minimum 30-day billing still applies</span></div>
+  </div>
+
+  <div class="trigger-section">
+    <h3>Versioning, Object Lock &amp; Replication</h3>
+    <div class="trigger-item"><span class="trigger-kw">"Protect against accidental deletion"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Enable Versioning</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Cannot be deleted by anyone, 7-year compliance"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Object Lock — Compliance Mode</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"WORM but privileged users can override"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Object Lock — Governance Mode</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Preserve data for litigation, no fixed date"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Object Lock — Legal Hold</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"WORM on standalone Glacier vault"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Glacier Vault Lock Policy</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"DR copy in another region" / "comply with data residency in second region"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Cross-Region Replication (CRR)</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Aggregate logs from multiple buckets to one"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Same-Region Replication (SRR)</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Guaranteed 15-minute replication RPO SLA"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>S3 Replication Time Control (RTC)</strong></span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "Enable CRR → existing objects replicate"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>FALSE</strong> — only new objects. Use S3 Batch Replication for existing.</span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "A→B replication + B→C replication means A→C"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>FALSE</strong> — replication is not transitive</span></div>
+  </div>
+
+  <div class="trigger-section">
+    <h3>Performance</h3>
+    <div class="trigger-item"><span class="trigger-kw">"Upload large file from distant location, slow/fails"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Multipart Upload + S3 Transfer Acceleration</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"S3 GET requests hitting throughput limits"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Distribute objects across multiple prefixes</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Need only certain rows from a large CSV in S3"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>S3 Select</strong> (SQL-like query on S3)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Abandoned multipart uploads costing money"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Lifecycle rule: AbortIncompleteMultipartUpload</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"KMS throttling errors with SSE-KMS at scale"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Enable S3 Bucket Keys</strong></span></div>
+  </div>
+
+  <div class="trigger-section">
+    <h3>Encryption</h3>
+    <div class="trigger-item"><span class="trigger-kw">"Simplest, AWS manages keys, default"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>SSE-S3</strong> (default since Jan 2023)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Audit who used which key, key rotation control"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>SSE-KMS</strong> (CloudTrail logs every KMS call)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"You provide encryption keys, AWS never stores them"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>SSE-C</strong> (HTTPS is mandatory)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Data must be encrypted BEFORE it reaches AWS"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Client-Side Encryption</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Force all PUT operations to be encrypted"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Bucket Policy — Deny PUT without encryption header</strong></span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "SSE-C = client-side encryption"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>FALSE</strong> — SSE-C still sends plaintext to AWS. Client-side = you encrypt first, AWS never sees plaintext.</span></div>
+  </div>
+
+  <div class="trigger-section">
+    <h3>Access Control, Security &amp; Networking</h3>
+    <div class="trigger-item"><span class="trigger-kw">"Ensure no bucket in account is ever public"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Block Public Access at account level</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Allow user to download private file for 1 hour"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Presigned URL</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"JS on one domain loading files from another S3 domain"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>CORS configuration on S3</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Private subnet EC2 accessing S3, no internet, free"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>VPC Gateway Endpoint for S3</strong> (free, route table only)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Connect to S3 via PrivateLink / other AWS services"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>VPC Interface Endpoint</strong> (paid, ~$0.01/hr/AZ)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"External downloaders pay their own transfer costs"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Requester Pays</strong> (authenticated users only — no anonymous)</span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "Presigned URL always valid until its expiry time"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>FALSE</strong> — URL expires when the creator's IAM credentials expire, which may be sooner</span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "Explicit ALLOW in bucket policy overrides DENY in IAM"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>FALSE</strong> — Explicit DENY always wins everywhere</span></div>
+  </div>
+
+  <div class="trigger-section">
+    <h3>Logging, Monitoring &amp; Consistency</h3>
+    <div class="trigger-item"><span class="trigger-kw">"Who deleted the S3 bucket / changed policy?"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>CloudTrail</strong> (management events)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Which IP address downloaded a specific object?"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>S3 Server Access Logging</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"Guaranteed capture of every object-level access event"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>CloudTrail Data Events</strong> (paid, not Server Access Logs)</span></div>
+    <div class="trigger-item"><span class="trigger-kw">"S3 usage trends across all accounts in Organisation"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>S3 Storage Lens</strong></span></div>
+    <div class="trigger-item"><span class="trigger-kw">"What consistency model does S3 use?"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Strong consistency</strong> (since December 2020, for all operations)</span></div>
+    <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "Log S3 access to the same bucket"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>NEVER do this</strong> — creates infinite logging loop. Use a separate destination bucket.</span></div>
+  </div>
+
+</div><!-- end triggers tab -->
+
+
+<!-- ═══════════════════════════════════════════════
+     TAB 3 — QUESTIONS
+═══════════════════════════════════════════════ -->
+<div id="tab-questions" class="tab-content">
+
+  <div class="sec-header">
+    <h2>Practice Questions</h2>
+    <p>55 SAA-C03 style scenario questions. Select your answer then click <strong>Check Answer</strong> to see the explanation. Multi-answer questions are labelled.</p>
+  </div>
+
+  <div class="q-filter-bar">
+    <label for="topicFilter">Filter by Topic:</label>
+    <select id="topicFilter" class="filter-select" onchange="filterQuestions()">
+      <option value="all">All Topics</option>
+      <option value="Storage Classes">Storage Classes</option>
+      <option value="Lifecycle">Lifecycle</option>
+      <option value="Versioning & Lock">Versioning &amp; Lock</option>
+      <option value="Replication">Replication</option>
+      <option value="Performance">Performance</option>
+      <option value="Event Notifications">Event Notifications</option>
+      <option value="Encryption">Encryption</option>
+      <option value="Access Control">Access Control</option>
+      <option value="Logging & Monitoring">Logging &amp; Monitoring</option>
+      <option value="Misc">Misc / Fundamentals</option>
+    </select>
+    <label for="diffFilter">Difficulty:</label>
+    <select id="diffFilter" class="filter-select" onchange="filterQuestions()">
+      <option value="all">All</option>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+    <span class="q-count" id="qCount">55 questions</span>
+  </div>
+
+  <div id="questionsList"></div>
+
+</div><!-- end questions tab -->
+
+</div><!-- end main -->
+
+<script>
+// ═══════════════════════════════════════════════
+// QUESTION DATA
+// ═══════════════════════════════════════════════
+const questions = [
+  // ── STORAGE CLASSES ──
+  {id:1,topic:'Storage Classes',diff:'medium',type:'single',
+   q:'A media company stores video files in S3. Files are accessed heavily in the first 30 days, rarely between 30–90 days, and almost never after 90 days. The company needs <strong>millisecond retrieval at any point</strong>. Which lifecycle configuration minimises cost while meeting this requirement?',
+   opts:['S3 Standard for all videos — no transitions','S3 Standard for 30 days → Standard-IA at 30 days → Glacier Instant Retrieval at 90 days','S3 Standard for 30 days → Glacier Flexible Retrieval at 30 days','S3 Intelligent-Tiering for all videos'],
+   correct:1,
+   exp:'The critical clue is <strong>"millisecond retrieval at any point."</strong> Glacier Flexible Retrieval (Option C) takes minutes to hours — violates the requirement. Glacier Instant Retrieval provides millisecond access like Standard, at archive pricing. Intelligent-Tiering (Option D) would work but is slightly more expensive for a predictable, known access pattern like this — a manual lifecycle rule is more cost-efficient. Option B is correct.'},
+
+  {id:2,topic:'Storage Classes',diff:'easy',
+   q:'A company stores monthly financial reports in S3. Reports are accessed frequently for the first month. After that, they may be retrieved once or twice per year. The company needs the data stored across multiple Availability Zones. Which storage class is MOST cost-effective for storing reports older than 30 days?',
+   opts:['S3 Standard','S3 Standard-IA','S3 One Zone-IA','S3 Glacier Deep Archive'],
+   correct:1,
+   exp:'<strong>Standard-IA</strong> is designed for infrequently accessed data that still needs millisecond retrieval when accessed. It stores data across 3+ AZs (eliminating One Zone-IA). Glacier Deep Archive would require 12-48 hours for retrieval — too slow for "once or twice per year" retrieval where immediate access is implied.'},
+
+  {id:3,topic:'Storage Classes',diff:'easy',
+   q:'A company uploads objects to S3 Standard-IA and deletes them after 20 days. How does AWS bill the storage for these objects?',
+   opts:['For 20 days of Standard-IA storage','For 30 days of Standard-IA storage','For 20 days of Standard storage (S3 upgrades billing class for short-lived objects)','There is no charge if objects are deleted before 30 days'],
+   correct:1,
+   exp:'S3 Standard-IA has a <strong>30-day minimum storage duration</strong>. If you delete an object before 30 days, you are still charged for the full 30-day period. The same applies to One Zone-IA (30 days), Glacier Instant/Flexible (90 days), and Glacier Deep Archive (180 days). Deleting early does not reduce the minimum charge.'},
+
+  {id:4,topic:'Storage Classes',diff:'medium',
+   q:'A company has enabled S3 Intelligent-Tiering on a large data lake. After 6 months, objects that have not been accessed for over 180 days are still in the Archive Instant Access tier instead of Deep Archive Access. What is the MOST likely reason?',
+   opts:['Intelligent-Tiering does not support Glacier Deep Archive','Objects under 128KB cannot be moved to Deep Archive','The Deep Archive Access tier has not been explicitly enabled on the bucket','Deep Archive Access requires a separate lifecycle rule'],
+   correct:2,
+   exp:'The <strong>Archive Access tier</strong> (90–730 days) and <strong>Deep Archive Access tier</strong> (180–730 days) within Intelligent-Tiering are <strong>optional tiers that must be manually enabled</strong>. They are NOT automatically active. The three automatic tiers are Frequent Access, Infrequent Access, and Archive Instant Access. To get Deep Archive Access, you must enable it in the Intelligent-Tiering configuration.'},
+
+  {id:5,topic:'Storage Classes',diff:'easy',
+   q:'Which Amazon S3 storage class stores data in only ONE Availability Zone, making it the most risky choice for critical data but offering the lowest cost for infrequently accessed data?',
+   opts:['S3 Glacier Instant Retrieval','S3 Standard-IA','S3 One Zone-IA','S3 Intelligent-Tiering'],
+   correct:2,
+   exp:'<strong>S3 One Zone-IA</strong> is the only S3 storage class that stores data in a single Availability Zone. All other classes store across a minimum of 3 AZs. If that single AZ fails, the data can be permanently lost. It is appropriate only for data that can be re-created (e.g., thumbnails generated from originals).'},
+
+  {id:6,topic:'Storage Classes',diff:'hard',
+   q:'A solutions architect needs to store compliance documents for 7 years. The documents will be actively accessed for the first 6 months. After 6 months, they will almost never be accessed, but when retrieved, a response time of <strong>under 12 hours is acceptable</strong>. The company wants the absolute minimum storage cost. Which lifecycle configuration is correct?',
+   opts:['S3 Standard for 180 days → Glacier Flexible Retrieval forever','S3 Standard for 180 days → Glacier Deep Archive for the remaining time','S3 Intelligent-Tiering for the full 7 years','S3 Standard-IA for 180 days → Glacier Deep Archive'],
+   correct:1,
+   exp:'<strong>Glacier Deep Archive</strong> is the cheapest S3 storage class at approximately $0.00099/GB/month. The requirement states retrieval under 12 hours is acceptable, and Deep Archive delivers in 12 hours (standard retrieval). After 180 days in Standard, transition to Deep Archive for years 1–7. The 7-year retention exceeds Deep Archive\'s 180-day minimum, so no early deletion penalty applies.'},
+
+  {id:7,topic:'Storage Classes',diff:'medium',
+   q:'A company stores analytics data in S3. The access pattern is completely unpredictable — some files are hit daily while others have not been accessed in years. The team wants to minimise cost without writing lifecycle rules or managing storage classes manually. Which solution BEST meets this requirement?',
+   opts:['S3 Standard for all objects','S3 Standard-IA for all objects','S3 Intelligent-Tiering with automatic tiering enabled','S3 Glacier Instant Retrieval for all objects'],
+   correct:2,
+   exp:'<strong>S3 Intelligent-Tiering</strong> is specifically designed for unpredictable or unknown access patterns. It automatically moves objects between Frequent Access, Infrequent Access, and Archive Instant Access tiers based on actual usage, with no retrieval fees and a small per-object monitoring cost. Standard-IA would charge retrieval fees on hot objects, making it potentially more expensive than Standard for frequently accessed data.'},
+
+  {id:8,topic:'Storage Classes',diff:'hard',
+   q:'A data engineering team uploads a 200KB configuration file to S3. They need this file available for processing with millisecond latency. They plan to keep it for exactly 10 days. Which storage class should be used to AVOID unexpected charges?',
+   opts:['S3 Standard — no minimum storage duration, safe for 10 days','S3 Standard-IA — cheapest option for small files','S3 Glacier Instant Retrieval — fastest archive retrieval','S3 One Zone-IA — cheapest infrequent access option'],
+   correct:0,
+   exp:'Only <strong>S3 Standard has no minimum storage duration</strong>. Storing for 10 days and deleting is fine — you pay for only 10 days. Standard-IA, One Zone-IA minimum is 30 days. Glacier Instant minimum is 90 days. Choosing any IA or Glacier class for a 10-day retention would result in extra charges for the minimum period. Standard is the correct and safest choice here.'},
+
+  // ── LIFECYCLE ──
+  {id:9,topic:'Lifecycle',diff:'medium',
+   q:'A solutions architect is configuring an S3 lifecycle rule to transition objects from S3 Standard to S3 Standard-IA. What is the MINIMUM number of days objects must remain in S3 Standard before the transition occurs?',
+   opts:['0 days — objects can be transitioned immediately','14 days','30 days','60 days'],
+   correct:2,
+   exp:'S3 enforces a <strong>minimum 30-day wait</strong> before objects can be transitioned from S3 Standard to Standard-IA (or One Zone-IA). This constraint exists because Standard-IA has a 30-day minimum billing duration — transitioning earlier would not reduce cost and would complicate billing. You cannot override this constraint.'},
+
+  {id:10,topic:'Lifecycle',diff:'medium',
+   q:'A company discovers that incomplete multipart uploads are accumulating in their S3 bucket, costing significant money. Multipart uploads are sometimes started but never completed due to application errors. What is the MOST operationally efficient solution?',
+   opts:['Write a daily Lambda function to scan and delete incomplete parts','Configure an S3 lifecycle rule with the AbortIncompleteMultipartUpload action','Enable S3 Versioning — it automatically cleans up failed multipart uploads','Use AWS Trusted Advisor to identify and remove incomplete uploads weekly'],
+   correct:1,
+   exp:'S3 lifecycle rules support a specific action called <strong>AbortIncompleteMultipartUpload</strong>. Setting this to, say, 7 days will automatically clean up any multipart upload parts that were not completed within 7 days. This is fully automatic, requires no custom code, and runs continuously — making it the most operationally efficient approach.'},
+
+  {id:11,topic:'Lifecycle',diff:'hard',
+   q:'A lifecycle rule transitions an object from S3 Standard to Glacier Deep Archive after 90 days. The object is uploaded on Day 1, transitions on Day 91, and is deleted on Day 105. What is the total storage charge?',
+   opts:['90 days of Standard + 14 days of Deep Archive','90 days of Standard + 180 days of Deep Archive','105 days of Standard (no Glacier charge for short period)','90 days of Standard + 105 days of Deep Archive'],
+   correct:1,
+   exp:'<strong>Glacier Deep Archive has a 180-day minimum storage duration.</strong> Even though the object was only in Deep Archive for 14 days (Day 91 to Day 105), you are charged for the full 180-day minimum. Total: 90 days of Standard pricing + 180 days of Deep Archive pricing. Always consider minimum duration billing when designing lifecycle rules for objects that may be deleted early.'},
+
+  {id:12,topic:'Lifecycle',diff:'easy',
+   q:'A lifecycle rule is configured to move objects from S3 Standard to S3 Glacier Instant Retrieval. Which statement correctly describes what happens to objects that are moved via lifecycle rules?',
+   opts:['Objects can be automatically moved back to Standard if access patterns change','Lifecycle transitions only move objects to colder storage classes — not back to warmer ones','Lifecycle rules can transition objects in both directions between Standard and Glacier','Objects moved to Glacier Instant Retrieval can be transitioned back to Standard-IA automatically'],
+   correct:1,
+   exp:'S3 lifecycle rules only support transitions to <strong>colder (cheaper) storage classes</strong>. You cannot use lifecycle rules to automatically move objects back to a warmer (more expensive) class. Transitioning from Glacier back to Standard requires a manual restore operation. This is a one-way street: Standard → Standard-IA → Glacier Instant → Glacier Flexible → Deep Archive.'},
+
+  {id:13,topic:'Lifecycle',diff:'hard',
+   q:'After September 2024, a solutions architect configures a lifecycle rule to transition ALL objects in a bucket to Glacier Flexible Retrieval after 30 days. The bucket contains many files ranging from 50KB to 50MB. What will happen to the 50KB files?',
+   opts:['They will transition to Glacier Flexible Retrieval like all other objects','They will NOT be transitioned by default — objects under 128KB are excluded by the updated default behavior','They will be deleted after 30 days since they cannot be archived','They will be moved to S3 Standard-IA instead of Glacier Flexible Retrieval'],
+   correct:1,
+   exp:'In <strong>September 2024</strong>, AWS updated the default S3 lifecycle transition behavior: objects <strong>smaller than 128KB are not transitioned by default</strong> to any storage class. This change was made because small objects in IA/Glacier classes can cost more per-object than simply keeping them in Standard. The behavior can be overridden, but the default now excludes sub-128KB objects from transitions.'},
+
+  // ── VERSIONING & LOCK ──
+  {id:14,topic:'Versioning & Lock',diff:'easy',
+   q:'A developer accidentally issues a DELETE command for an object in a versioning-enabled S3 bucket. No version ID was specified in the delete request. What is the state of the data after this operation?',
+   opts:['The object and all previous versions are permanently deleted','The latest version is permanently deleted; previous versions remain','A delete marker is created; the object appears deleted but all versions are preserved','The delete is rejected automatically since versioning is enabled'],
+   correct:2,
+   exp:'In a versioned S3 bucket, a <strong>DELETE without a version ID</strong> does NOT permanently delete anything. Instead, S3 adds a <strong>delete marker</strong> — a special placeholder that makes the object appear deleted in normal listings and GET requests. All previous versions remain intact and are fully recoverable. To permanently delete, you must explicitly delete each version including the delete marker.'},
+
+  {id:15,topic:'Versioning & Lock',diff:'medium',
+   q:'A financial institution must ensure that KYC compliance documents stored in S3 cannot be deleted or modified by ANY user, including the AWS root account, for 7 years. Which S3 configuration achieves this requirement?',
+   opts:['S3 Versioning with MFA Delete enabled','S3 Object Lock in Governance Mode with a 7-year retention period','S3 Object Lock in Compliance Mode with a 7-year retention period','S3 Bucket Policy with explicit Deny on DeleteObject for all principals'],
+   correct:2,
+   exp:'<strong>S3 Object Lock — Compliance Mode</strong> prevents any user — including the AWS root account and AWS support — from deleting or modifying objects during the retention period. The retention period cannot be shortened once set. Governance Mode allows privileged users to override. Bucket Policies can be modified by a sufficiently privileged account. MFA Delete requires an MFA device but can still be bypassed by the root account in most scenarios.'},
+
+  {id:16,topic:'Versioning & Lock',diff:'medium',
+   q:'A company needs WORM protection on S3 but the security team requires the ability to override the lock in an emergency with proper authorization. Which S3 Object Lock mode should be used?',
+   opts:['Compliance Mode','Governance Mode','Legal Hold','Standard versioning with MFA Delete'],
+   correct:1,
+   exp:'<strong>Governance Mode</strong> provides WORM protection where most users cannot delete or overwrite protected objects. However, users with the <code>s3:BypassGovernanceRetention</code> IAM permission can override the retention. This is designed for organizations that need strong protection but require the ability to handle legitimate emergency situations. Compliance Mode allows no overrides — not even root.'},
+
+  {id:17,topic:'Versioning & Lock',diff:'easy',
+   q:'A legal team needs to freeze specific S3 objects while a court case is ongoing. The case has no defined end date. Which S3 feature best meets this requirement WITHOUT requiring a fixed retention period?',
+   opts:['S3 Object Lock — Compliance Mode with a 10-year retention','S3 Object Lock — Legal Hold','S3 Versioning with MFA Delete','S3 Bucket Policy with Deny on delete operations'],
+   correct:1,
+   exp:'<strong>S3 Object Lock — Legal Hold</strong> protects objects from deletion with no specified retention period. Objects remain protected until the legal hold is explicitly removed by an authorized user. This is ideal for litigation where the duration is unknown. Object Lock retention modes require a specific end date, making them less suitable for open-ended legal preservation.'},
+
+  {id:18,topic:'Versioning & Lock',diff:'hard',type:'multi',
+   q:'<strong>(Select TWO)</strong> A solutions architect enables MFA Delete on an S3 bucket. Which operations will now REQUIRE an MFA token to complete?',
+   opts:['Uploading new objects to the bucket','Permanently deleting a specific version of an object','Listing all versions of objects in the bucket','Disabling or suspending versioning on the bucket','Creating a lifecycle rule to expire old versions'],
+   correct:[1,3],
+   exp:'<strong>MFA Delete</strong> requires MFA for exactly two operations: (1) <strong>permanently deleting a specific version</strong> of an object and (2) <strong>changing the versioning state</strong> (disabling or suspending versioning). All other operations — including regular uploads, version listings, and lifecycle rule creation — do not require MFA. This is important for the exam: MFA Delete is specifically about version deletion and versioning state changes.'},
+
+  {id:19,topic:'Versioning & Lock',diff:'medium',
+   q:'A company stores long-term archives directly in Amazon S3 Glacier <strong>vaults</strong> using the standalone Glacier service API (not as an S3 storage class). They need to enforce WORM compliance at the vault level so that the compliance policy itself is immutable. Which feature should they implement?',
+   opts:['S3 Object Lock in Compliance Mode applied to the vault','Glacier Vault Lock policy','IAM Deny policies restricting DeleteArchive actions','S3 Lifecycle rule preventing transitions out of Glacier'],
+   correct:1,
+   exp:'<strong>Glacier Vault Lock</strong> is the correct answer for standalone Glacier vaults (distinct from S3 Glacier storage class). Once the vault lock policy is locked through a two-step process (initiate → complete), it becomes permanently immutable — even AWS cannot change it. This is the equivalent of Object Lock Compliance Mode but specifically for standalone Glacier vaults. S3 Object Lock only applies to S3 buckets, not Glacier vaults accessed via the Glacier API.'},
+
+  // ── REPLICATION ──
+  {id:20,topic:'Replication',diff:'easy',
+   q:'A company enables Cross-Region Replication from a bucket in eu-west-1 to eu-central-1. After enabling replication, they discover that 5 million existing objects have NOT been copied to the destination bucket. What is the reason?',
+   opts:['CRR requires 24–48 hours to replicate existing objects','CRR only replicates objects created or modified AFTER replication was configured','Versioning must be enabled for existing objects to be replicated','Existing objects require manual tagging before they can be replicated'],
+   correct:1,
+   exp:'S3 Cross-Region Replication is <strong>not retroactive</strong>. Only objects that are uploaded or modified <strong>after</strong> the replication rule is enabled will be replicated. Existing objects are not automatically copied. To replicate existing objects, the company must use <strong>S3 Batch Replication</strong> — a separate operation that processes the existing inventory.'},
+
+  {id:21,topic:'Replication',diff:'medium',
+   q:'An S3 bucket (A) in us-east-1 replicates to bucket (B) in eu-west-1. Bucket B also has a replication rule configured to replicate to bucket (C) in ap-southeast-1. An object is uploaded to bucket A. In which buckets will the object ultimately exist?',
+   opts:['Bucket A only','Buckets A and B only','Buckets A, B, and C (replication chains automatically)','Buckets A and C only (replication skips intermediate buckets)'],
+   correct:1,
+   exp:'S3 replication is <strong>not transitive</strong>. When an object is uploaded to bucket A, the A→B rule fires and replicates it to B. However, the arrival of a replicated object in B does <strong>NOT</strong> trigger B\'s replication rule to C. Only objects directly uploaded or modified in B will trigger the B→C rule. The object will exist only in A and B.'},
+
+  {id:22,topic:'Replication',diff:'easy',
+   q:'A company wants to configure S3 Cross-Region Replication. Which prerequisite must be satisfied on BOTH the source and destination buckets before CRR can be enabled?',
+   opts:['Both buckets must use the same storage class','Both buckets must be in the same AWS account','Both buckets must have versioning enabled','Both buckets must have the same encryption configuration'],
+   correct:2,
+   exp:'<strong>Versioning must be enabled on both the source and destination buckets</strong> before CRR (or SRR) can be configured. This is a hard prerequisite — without it, AWS will not allow the replication rule to be created. The buckets can be in different accounts (common for cross-account architectures) and different regions (required for CRR).'},
+
+  {id:23,topic:'Replication',diff:'hard',
+   q:'A company configures CRR from bucket A to bucket B. An engineer deletes an object in bucket A. The company notices the object still exists in bucket B. What is the explanation?',
+   opts:['CRR replicates all operations including deletes — this is a bug','Delete markers are NOT replicated by default in S3 CRR','The replication rule has a filter excluding delete operations','Versioning must be disabled on bucket B for delete replication to work'],
+   correct:1,
+   exp:'By default, S3 CRR does <strong>NOT</strong> replicate delete markers. This is intentional — it protects the destination bucket from accidental or malicious deletions spreading to the backup. You can optionally enable "delete marker replication" in the replication configuration, but it is off by default. Version deletions (with a version ID) are also never replicated, regardless of configuration.'},
+
+  {id:24,topic:'Replication',diff:'hard',
+   q:'A company\'s SLA requires that all S3 objects replicated via CRR reach the destination bucket within 15 minutes for 99.99% of objects. Standard CRR is already configured but does not provide an SLA. What additional feature must be enabled?',
+   opts:['Enable S3 Transfer Acceleration on the destination bucket','Enable S3 Replication Time Control (RTC)','Switch from CRR to SRR for faster replication','Configure Direct Connect to improve replication throughput'],
+   correct:1,
+   exp:'<strong>S3 Replication Time Control (RTC)</strong> is an add-on feature that provides a guaranteed SLA: 99.99% of objects will be replicated within 15 minutes. It includes real-time replication metrics in CloudWatch to monitor compliance. Standard CRR is best-effort with no time guarantee. RTC has additional cost beyond standard CRR pricing.'},
+
+  // ── PERFORMANCE ──
+  {id:25,topic:'Performance',diff:'medium',
+   q:'A company\'s S3 bucket receives 12,000 GET requests per second all targeting objects in the <code>/logs/2025-01-15/</code> prefix. They are hitting S3 request rate limits. What is the MOST effective solution to increase throughput?',
+   opts:['Enable S3 Transfer Acceleration to increase throughput','Distribute objects across multiple prefixes (e.g., using hash-based prefixes)','Split the objects across multiple S3 buckets','Enable S3 Intelligent-Tiering to improve request handling'],
+   correct:1,
+   exp:'S3 supports <strong>5,500 GET requests per second per prefix</strong>. With all objects under one prefix, the limit is 5,500/s. Distributing objects across multiple prefixes multiplies this quota — 4 prefixes = 22,000 GET/s. This is achieved by using hash-based or random prefixes instead of date-based prefixes. Transfer Acceleration improves upload speed but not request rate limits. Multiple buckets also work but add operational complexity.'},
+
+  {id:26,topic:'Performance',diff:'medium',
+   q:'A company needs to upload 8GB video files to an S3 bucket in eu-west-1 from offices in Australia, Brazil, and Japan. Users report very slow upload speeds and frequent upload failures due to network timeouts. Which combination of S3 features BEST addresses both the speed and reliability concerns?',
+   opts:['S3 Transfer Acceleration only','Multipart upload only','S3 Transfer Acceleration combined with multipart upload','Direct Connect from each office location to AWS'],
+   correct:2,
+   exp:'Two separate problems require two solutions: <strong>Multipart upload</strong> addresses reliability — large files are split into parts; only failed parts need retry instead of the entire 8GB file. <strong>Transfer Acceleration</strong> addresses speed — routes uploads through the nearest CloudFront edge location then over AWS\'s private backbone. Note: for files over 5GB, multipart upload is also mandatory. Together they solve both issues.'},
+
+  {id:27,topic:'Performance',diff:'medium',
+   q:'A data science team needs to analyse a specific column from a 15GB CSV file stored in S3. Downloading the entire file takes too long and wastes bandwidth. Which feature enables them to retrieve ONLY the relevant data from S3 without downloading the entire file?',
+   opts:['S3 Byte-Range Fetches — retrieve specific byte positions','S3 Select — use SQL expressions to filter data server-side','S3 Object Lambda — transform data before returning it','S3 Intelligent-Tiering — improves access performance for large files'],
+   correct:1,
+   exp:'<strong>S3 Select</strong> allows you to run SQL-like queries directly against S3 objects (CSV, JSON, Parquet) without downloading the full file. S3 filters the data server-side and returns only matching results — up to 80% less data transfer and 400% faster processing. Byte-Range Fetch retrieves specific byte positions (not specific data values). Object Lambda transforms retrieved data but still requires downloading first.'},
+
+  {id:28,topic:'Performance',diff:'easy',
+   q:'A developer uploads a 200MB file to S3 as a single PUT request. The upload fails at 95% completion due to a network issue. What is the BEST practice to handle this situation and prevent full re-uploads on failure?',
+   opts:['Increase the timeout on the PUT request and retry','Use multipart upload so only the failed chunk needs to be retried','Enable S3 Transfer Acceleration to make uploads more reliable','Split the file into two 100MB files and upload separately'],
+   correct:1,
+   exp:'<strong>Multipart upload</strong> breaks the 200MB file into multiple parts (each uploaded independently). If one part fails, only that part needs to be retried — not the entire file. Once all parts are successfully uploaded, S3 assembles them. For a 200MB file, multipart upload is recommended (threshold is 100MB). Additionally, partial parts can be resumed without starting from scratch.'},
+
+  {id:29,topic:'Performance',diff:'hard',
+   q:'A company uses SSE-KMS to encrypt all objects in a high-traffic S3 bucket. They are experiencing intermittent failures with the error "KMS throttling." The KMS quota is 10,000 requests per second. What is the MOST cost-effective solution?',
+   opts:['Request a KMS quota increase from AWS Support','Enable S3 Bucket Keys for the bucket','Switch from SSE-KMS to SSE-S3 to eliminate KMS calls','Enable S3 Transfer Acceleration to reduce the number of requests'],
+   correct:1,
+   exp:'<strong>S3 Bucket Keys</strong> solves KMS throttling by generating a short-lived data key from your KMS CMK and caching it at the S3 bucket level. Instead of one KMS API call per object access, most operations use the cached bucket key — reducing KMS API calls by up to 99%. This is much cheaper than a KMS quota increase and avoids changing the encryption method. Transfer Acceleration does not affect encryption calls.'},
+
+  // ── EVENT NOTIFICATIONS ──
+  {id:30,topic:'Event Notifications',diff:'medium',
+   q:'A company uploads product images to S3. For each upload, they need to simultaneously trigger: (1) a Lambda function to resize the image, (2) a message to an SQS queue for downstream processing, and (3) an SNS push notification to a mobile app. What is the MOST reliable architecture?',
+   opts:['Configure three separate S3 event notification rules — one per destination','Configure S3 event notification → SNS topic, then subscribe Lambda, SQS, and mobile SNS endpoint to that topic','Configure Lambda as the only S3 target; Lambda then calls SQS and SNS','Configure S3 event notification → SQS FIFO queue, and have Lambda poll the queue for all processing'],
+   correct:1,
+   exp:'S3 can send event notifications to multiple destinations via multiple rules, but the <strong>SNS fan-out pattern</strong> is the most elegant and reliable for simultaneous delivery to multiple consumers. S3 sends one event to SNS. SNS then simultaneously pushes to all subscribers (Lambda, SQS queue, mobile endpoint). Using Lambda as middleware (Option C) creates a bottleneck and single point of failure.'},
+
+  {id:31,topic:'Event Notifications',diff:'hard',
+   q:'A company needs to route S3 object creation events to different targets based on the object\'s key prefix: images in <code>/premium/</code> go to a high-priority Lambda, images in <code>/standard/</code> go to an SQS queue. Which S3 event destination provides the RICHEST content-based routing capabilities?',
+   opts:['Direct S3 event notification to Lambda with routing logic inside the function','S3 event notification to SNS with filter policies per subscription','S3 event notification to Amazon EventBridge with rules targeting different services','S3 event notification directly to SQS with message attribute filtering'],
+   correct:2,
+   exp:'<strong>Amazon EventBridge</strong> provides the richest content-based filtering for S3 events. You can create EventBridge rules that match on any field in the event — including object key prefix, suffix, event type, and size. Different rules can route to different targets. SNS filter policies are more limited. Using Lambda for routing works but creates code to maintain. EventBridge is the recommended pattern for complex routing requirements.'},
+
+  {id:32,topic:'Event Notifications',diff:'medium',
+   q:'A company has S3 Server Access Logging enabled on a bucket. An auditor asks for a complete, guaranteed record of every object-level GET and PUT operation from the past 90 days with no missed events. The solutions architect realises S3 Access Logs might not cover everything. What service should they use instead?',
+   opts:['S3 Server Access Logging — it captures all requests without gaps','AWS CloudTrail with S3 Data Events enabled','Amazon GuardDuty with S3 protection enabled','Amazon Macie for data access monitoring'],
+   correct:1,
+   exp:'<strong>S3 Server Access Logging is best-effort</strong> — some events may not appear in logs, and there can be hours of delay. For a <strong>guaranteed, complete audit trail</strong> of every object-level operation, you need <strong>AWS CloudTrail with S3 Data Events enabled</strong>. CloudTrail Data Events capture every GetObject, PutObject, DeleteObject with guaranteed delivery. Note: this costs money per 100,000 events, unlike Server Access Logging.'},
+
+  {id:33,topic:'Event Notifications',diff:'medium',
+   q:'A company wants S3 event notifications to trigger a Lambda function whenever a new object is created. They discover that for a non-versioned bucket, when two applications simultaneously write to the same object key, only one notification is received. What is the RECOMMENDED solution to ensure one notification per write?',
+   opts:['Switch to SQS FIFO to enforce ordering','Enable S3 Versioning on the bucket','Increase Lambda concurrency to process duplicate events','Configure two separate event notification rules for the same event type'],
+   correct:1,
+   exp:'For <strong>non-versioned buckets</strong>, simultaneous writes to the same key can result in only one notification being sent. <strong>Enabling S3 Versioning</strong> ensures that each write operation creates a unique version — and each version creation fires its own notification. This guarantees one notification per write operation. Versioning is the recommended approach when notification accuracy for concurrent writes is required.'},
+
+  // ── ENCRYPTION ──
+  {id:34,topic:'Encryption',diff:'easy',
+   q:'A solutions architect wants to encrypt all objects stored in S3. The company has no specific requirements for key management, audit trails, or compliance controls. Which encryption option is SIMPLEST and requires the LEAST configuration?',
+   opts:['SSE-KMS with AWS-managed keys','SSE-C with your own encryption keys','SSE-S3 — AWS manages all encryption keys automatically','DSSE-KMS for maximum security'],
+   correct:2,
+   exp:'<strong>SSE-S3</strong> is the simplest option: AWS automatically manages all encryption keys using AES-256. It has been the default encryption for all new S3 objects since January 2023. No configuration, no cost beyond standard S3, no key management overhead. When there are no compliance requirements for key visibility, SSE-S3 is the go-to answer.'},
+
+  {id:35,topic:'Encryption',diff:'medium',
+   q:'A financial company stores sensitive client data in S3 using SSE-KMS. The security team needs to produce an audit report showing exactly which users accessed which encrypted objects and which KMS key was used on what date. Which service provides this audit trail?',
+   opts:['S3 Server Access Logs — logs every HTTP request','AWS CloudTrail — logs every KMS key usage event','S3 Storage Lens — tracks access patterns per bucket','Amazon Macie — discovers and classifies sensitive data'],
+   correct:1,
+   exp:'<strong>AWS CloudTrail</strong> logs every AWS API call including KMS operations. When SSE-KMS is used, every S3 GET/PUT results in a KMS <code>Decrypt</code> or <code>GenerateDataKey</code> API call — all logged in CloudTrail with the caller\'s identity, timestamp, and key ARN. This provides the exact audit trail the security team needs. S3 Server Access Logs record HTTP activity but not KMS key details.'},
+
+  {id:36,topic:'Encryption',diff:'medium',
+   q:'A company uses SSE-C (Server-Side Encryption with Customer-Provided Keys). A developer attempts to upload an object using HTTP (not HTTPS). What will happen?',
+   opts:['The upload will succeed and AWS will encrypt using the provided key','The upload will succeed but AWS will use SSE-S3 instead of SSE-C','The upload will fail — SSE-C requires HTTPS','The upload will succeed but the object will be stored unencrypted'],
+   correct:2,
+   exp:'<strong>SSE-C requires HTTPS (TLS)</strong> — this is mandatory, not optional. Since you must send the encryption key in the request header, AWS refuses HTTP connections to prevent the key from being transmitted in plaintext over an unencrypted connection. Any SSE-C request over HTTP is rejected with a 400 Bad Request error. This is unique to SSE-C — other encryption methods (SSE-S3, SSE-KMS) work over both HTTP and HTTPS.'},
+
+  {id:37,topic:'Encryption',diff:'hard',
+   q:'A company stores encrypted objects in S3 using SSE-KMS. As request volumes scale to 50,000 object downloads per second, they begin seeing <code>KmsThrottlingException</code> errors. Which solution reduces KMS API calls by up to 99% WITHOUT changing the encryption method?',
+   opts:['Switch from SSE-KMS to SSE-S3','Enable S3 Bucket Keys on the bucket','Request a KMS quota increase to 100,000 requests/sec','Use client-side encryption instead of SSE-KMS'],
+   correct:1,
+   exp:'<strong>S3 Bucket Keys</strong> works by generating a short-lived data key from your KMS CMK and caching it at the bucket level. Subsequent S3 operations use the cached bucket key instead of calling KMS directly for each object. This reduces KMS API calls by up to 99%, effectively eliminating throttling at scale while keeping the same SSE-KMS encryption method. A quota increase is more expensive and doesn\'t scale proportionally.'},
+
+  {id:38,topic:'Encryption',diff:'hard',
+   q:'A defence contractor requires that encrypted data stored in S3 must NEVER be decryptable by AWS — not even theoretically. The encryption process must occur entirely within the contractor\'s own systems. Which approach satisfies this requirement?',
+   opts:['SSE-KMS with Customer Managed Keys (CMK) — you control the keys','SSE-C — you provide the key with each request; AWS never stores it','Client-Side Encryption — data is encrypted before it leaves the contractor\'s systems','DSSE-KMS — dual-layer encryption prevents single-entity decryption'],
+   correct:2,
+   exp:'Only <strong>Client-Side Encryption</strong> guarantees that AWS never receives plaintext data. The data is encrypted within the contractor\'s own infrastructure before the network call to S3. AWS receives only encrypted bytes and has no knowledge of the keys or the plaintext. SSE-C sends plaintext to AWS over TLS — AWS performs the encryption, meaning AWS temporarily processes plaintext. SSE-KMS and DSSE-KMS both involve AWS-side encryption.'},
+
+  {id:39,topic:'Encryption',diff:'medium',
+   q:'A company wants to ensure that ALL objects uploaded to an S3 bucket are encrypted with SSE-KMS. Currently, some developers are uploading objects without specifying an encryption header. Which action enforces this requirement?',
+   opts:['Enable Default Encryption on the bucket — unencrypted uploads will be encrypted automatically','Create a Bucket Policy with a Deny statement when the encryption header is missing','Create an IAM Policy denying PutObject for all users without the encryption header','Configure an SCP preventing unencrypted uploads across the entire AWS account'],
+   correct:0,
+   exp:'<strong>Enabling Default Encryption with SSE-KMS</strong> on the bucket automatically encrypts all uploaded objects using the specified KMS key, even if developers don\'t include an encryption header. This is the simplest approach. A bucket policy Deny (Option B) is also technically correct for strictly blocking unencrypted uploads, but default encryption is more user-friendly — it silently upgrades unencrypted uploads rather than rejecting them. The exam typically prefers the default encryption approach for "ensure all objects are encrypted."'},
+
+  {id:40,topic:'Encryption',diff:'medium',
+   q:'A company wants to ensure data stored in S3 is encrypted in transit. Which mechanism enforces HTTPS-only access to an S3 bucket?',
+   opts:['Enable SSL/TLS in the bucket settings (one-click option)','Create a Bucket Policy with a Deny action when <code>aws:SecureTransport</code> is false','Create an IAM Policy requiring TLS for all S3 actions','Enable S3 Transfer Acceleration which always uses HTTPS'],
+   correct:1,
+   exp:'To enforce HTTPS-only access to S3, create a <strong>Bucket Policy with a Deny</strong> on the condition <code>"aws:SecureTransport": "false"</code>. This rejects any S3 request that comes over HTTP (non-TLS). There is no built-in one-click SSL toggle in S3. IAM policies can restrict users but cannot block all anonymous or cross-account HTTP access. Transfer Acceleration uses HTTPS but doesn\'t block direct HTTP access to S3.'},
+
+  {id:41,topic:'Encryption',diff:'hard',type:'multi',
+   q:'<strong>(Select TWO)</strong> A company stores sensitive PII in S3 and needs the highest level of protection. They need to be able to demonstrate to regulators that encryption keys were used only by authorized users AND that the data was encrypted before leaving their application servers. Which TWO features address these requirements respectively?',
+   opts:['SSE-S3 for automated encryption','SSE-KMS with CloudTrail logging for key usage audit trail','Client-Side Encryption so data is encrypted before reaching AWS','Glacier Vault Lock to prevent data modification','S3 Object Lock to protect against deletion'],
+   correct:[1,2],
+   exp:'Two distinct requirements, two distinct features: (1) <strong>SSE-KMS with CloudTrail</strong> creates an audit trail of every KMS key usage — who used which key at what time — satisfying the "demonstrate authorized key usage" requirement. (2) <strong>Client-Side Encryption</strong> ensures data is encrypted within the application before the network call — data never reaches AWS in plaintext, satisfying the "encrypted before leaving application servers" requirement. These can be used together.'},
+
+  // ── ACCESS CONTROL ──
+  {id:42,topic:'Access Control',diff:'easy',
+   q:'A company has multiple AWS accounts and S3 buckets. The security team wants to ensure that <strong>no S3 bucket across any account</strong> can ever be made publicly accessible — regardless of bucket policies or ACLs. What is the SIMPLEST solution?',
+   opts:['Create IAM policies denying public access on every bucket in every account','Enable S3 Block Public Access at the account level for all accounts','Use AWS Config rules to detect and remediate public buckets automatically','Create SCPs in AWS Organizations blocking public bucket configuration'],
+   correct:1,
+   exp:'<strong>S3 Block Public Access at the account level</strong> is the master override. When enabled, it prevents all buckets and objects in that account from being made public — regardless of any bucket policy, ACL, or individual bucket settings. It\'s like a circuit breaker. Enabling it at the account level is the simplest and most effective approach. Since April 2023, Block Public Access is enabled by default on all new buckets and accounts.'},
+
+  {id:43,topic:'Access Control',diff:'medium',
+   q:'An application in AWS Account A needs to read objects from an S3 bucket in AWS Account B. What configuration is required to grant this access?',
+   opts:['Create an IAM policy in Account A granting S3 access — no changes needed in Account B','Create a Bucket Policy in Account B granting access to Account A\'s IAM role or account','Create VPC Peering between Account A and Account B','Enable S3 Cross-Region Replication from Account B to Account A'],
+   correct:1,
+   exp:'For cross-account S3 access, a <strong>Bucket Policy in Account B</strong> must explicitly grant access to Account A\'s principal (IAM role or account). For a request from Account A to succeed against Account B\'s bucket, BOTH the IAM policy in Account A (allowing the action) AND the Bucket Policy in Account B (granting trust to Account A) must permit the access. The bucket policy is the cross-account trust mechanism.'},
+
+  {id:44,topic:'Access Control',diff:'hard',
+   q:'An S3 bucket has a Bucket Policy that explicitly ALLOWs all users to GetObject. A specific IAM policy for a user explicitly DENYs s3:GetObject on this bucket. Can the user access the bucket?',
+   opts:['Yes — the Bucket Policy ALLOW overrides the IAM DENY','No — an explicit DENY in any policy always overrides any ALLOW','Yes — the user\'s IAM DENY applies only to IAM-based requests, not resource-based policies','Depends on which policy was created more recently'],
+   correct:1,
+   exp:'In AWS IAM, an <strong>explicit DENY always wins</strong> over any ALLOW, regardless of where the ALLOW comes from. If any policy (IAM policy, Bucket Policy, SCP, permission boundary) contains an explicit Deny, that Deny cannot be overridden by an Allow from another policy. The user cannot access the bucket. This is one of the most fundamental AWS IAM rules and appears frequently in exam questions.'},
+
+  {id:45,topic:'Access Control',diff:'medium',
+   q:'A solutions architect generates a presigned URL using an IAM role (EC2 instance profile) with a 24-hour expiry. The IAM role\'s session credentials expire after 6 hours. What happens to the presigned URL after 6 hours?',
+   opts:['The URL remains valid for the full 24 hours as specified','The URL expires when the underlying role credentials expire (6 hours), not the specified 24 hours','The URL must be regenerated after each credential rotation','The URL is valid until explicitly revoked by the bucket owner'],
+   correct:1,
+   exp:'<strong>Presigned URL validity is bounded by the credential expiry</strong> of whoever generated it. If an IAM role\'s session expires in 6 hours, any presigned URL generated by that role expires in 6 hours — even if you specified 24 hours. This is a critical exam trap. For longer-lived URLs, use IAM user permanent credentials. For EC2-generated presigned URLs, the effective maximum validity is the credential rotation period (~6 hours).'},
+
+  {id:46,topic:'Access Control',diff:'medium',
+   q:'An EC2 instance in a private subnet needs to access objects in S3. The subnet has no internet gateway and no NAT gateway. The company wants the MOST cost-effective solution that keeps traffic off the public internet.',
+   opts:['Add a NAT Gateway to the VPC to allow private subnet instances to reach S3','Create a VPC Gateway Endpoint for S3 — free, routes traffic through AWS private network','Create a VPC Interface Endpoint (PrivateLink) for S3 at $0.01/hr per AZ','Configure Direct Connect for private S3 access'],
+   correct:1,
+   exp:'A <strong>VPC Gateway Endpoint for S3 is completely free</strong> — no hourly charge, no data processing charge. It works by adding a route table entry that redirects S3 traffic through the AWS private network instead of the internet. Unlike Interface Endpoints (PrivateLink, ~$0.01/hr/AZ), Gateway Endpoints have zero cost. This is the most cost-effective way to give private subnet EC2 instances private access to S3.'},
+
+  {id:47,topic:'Access Control',diff:'medium',
+   q:'A web application at <code>https://app.example.com</code> has JavaScript that loads images directly from an S3 bucket at <code>https://assets.example-bucket.s3.amazonaws.com</code>. Users report that images fail to load and the browser console shows a CORS error. What must be configured to resolve this?',
+   opts:['Make the S3 bucket publicly accessible','Enable S3 Transfer Acceleration to allow cross-origin requests','Add a CORS configuration to the S3 bucket allowing the origin <code>https://app.example.com</code>','Enable CloudFront in front of S3 — it handles CORS automatically'],
+   correct:2,
+   exp:'Browser security blocks cross-origin requests by default. Since <code>app.example.com</code> and <code>s3.amazonaws.com</code> are different origins, the browser blocks the JavaScript fetch request unless the S3 bucket returns appropriate CORS headers. You must configure a <strong>CORS policy on the S3 bucket</strong> that lists <code>https://app.example.com</code> as an allowed origin. This tells the browser the cross-origin request is permitted.'},
+
+  {id:48,topic:'Access Control',diff:'hard',
+   q:'A large organisation has a single S3 bucket shared by 10 different application teams. Each team should only be able to access their own prefix and should not see other teams\' data. The current bucket policy is becoming extremely complex. What is the BEST solution to simplify this access model?',
+   opts:['Create separate S3 buckets for each team','Create 10 IAM roles with prefix-based bucket policy conditions','Create S3 Access Points — one per team, each with its own scoped IAM policy','Use S3 Object Tags to restrict access per team'],
+   correct:2,
+   exp:'<strong>S3 Access Points</strong> are designed exactly for this scenario. Each Access Point has its own hostname and its own scoped IAM policy, making it trivial to restrict each team to their own prefix. Instead of one complex bucket policy with 10 sets of conditions, you have 10 clean, simple Access Point policies. Each team connects via their own Access Point endpoint. Access Points can also be restricted to specific VPCs.'},
+
+  // ── LOGGING & MONITORING ──
+  {id:49,topic:'Logging & Monitoring',diff:'easy',
+   q:'A security engineer needs to determine which specific IP address downloaded a file from an S3 bucket 3 days ago. Which S3 feature would provide this information?',
+   opts:['AWS CloudTrail (management events only)','S3 Server Access Logging','Amazon GuardDuty S3 protection','S3 Storage Lens activity metrics'],
+   correct:1,
+   exp:'<strong>S3 Server Access Logging</strong> records detailed HTTP access logs for every request made to an S3 bucket, including the <strong>requester\'s IP address</strong>, request time, HTTP method, object key, response status, and bytes transferred. This is exactly the kind of forensic data needed. Note: logs must have been enabled beforehand to have historical data. CloudTrail management events don\'t capture individual object-level request details at this granularity by default.'},
+
+  {id:50,topic:'Logging & Monitoring',diff:'medium',
+   q:'A company enables S3 Server Access Logging on a bucket called <code>production-data</code>. Where should the log files be delivered?',
+   opts:['To the same <code>production-data</code> bucket in a <code>/logs/</code> prefix','To a different S3 bucket (never the same bucket being monitored)','To an S3 Glacier vault for cost efficiency','To Amazon CloudWatch Logs directly'],
+   correct:1,
+   exp:'<strong>Log files must NEVER be sent to the same bucket being monitored.</strong> Delivering access logs to the same bucket creates an infinite loop: each log file delivery creates a new access event, which generates another log file, which generates another access event, and so on. The logging destination must always be a <strong>different bucket</strong>. Both buckets must be in the same AWS region.'},
+
+  {id:51,topic:'Logging & Monitoring',diff:'medium',
+   q:'A company has 300 S3 buckets across 8 AWS accounts in an AWS Organisation. The cloud team needs a single dashboard to understand total storage usage, identify buckets not using versioning or encryption, and find storage cost optimisation opportunities. Which AWS feature provides this?',
+   opts:['AWS Config aggregator across all accounts','S3 Storage Lens with Organisation-wide scope','Amazon Macie with multi-account support','AWS Trusted Advisor consolidated view'],
+   correct:1,
+   exp:'<strong>S3 Storage Lens</strong> is designed exactly for this use case — it provides an <strong>Organisation-wide analytics dashboard</strong> for S3. It aggregates usage metrics, activity trends, and data protection checks (versioning, encryption status) across all accounts and regions into a single interactive view. The free tier includes summary metrics. Advanced metrics (paid) add activity data and cost optimisation recommendations.'},
+
+  {id:52,topic:'Logging & Monitoring',diff:'hard',
+   q:'A compliance auditor asks for evidence that NO S3 GetObject operation occurred in a specific bucket without SSL/TLS encryption during the past 30 days. S3 Server Access Logging is enabled. The auditor says the Server Access Logs alone are insufficient. Why, and what additional data is needed?',
+   opts:['Server Access Logs are delayed — they need CloudTrail real-time data','S3 Server Access Logs use best-effort delivery — some requests may not appear. CloudTrail Data Events provide guaranteed, complete capture','Server Access Logs only track management events, not data events','Server Access Logs expire after 7 days and cannot provide 30-day history'],
+   correct:1,
+   exp:'<strong>S3 Server Access Logging is best-effort</strong> — AWS explicitly states that not all requests may appear in the logs, and there can be several hours of delay. For a compliance audit requiring a <strong>complete, verified record</strong>, <strong>CloudTrail Data Events</strong> must be used. CloudTrail provides guaranteed delivery of every S3 API call. This is a known limitation of Server Access Logs vs CloudTrail for compliance purposes.'},
+
+  // ── MISC / FUNDAMENTALS ──
+  {id:53,topic:'Misc',diff:'easy',
+   q:'After December 2020, what consistency model does Amazon S3 provide for all storage operations?',
+   opts:['Eventual consistency for all operations','Read-after-write consistency for new PUTs only; eventual consistency for overwrites and deletes','Strong consistency for all operations (GET, PUT, DELETE, LIST)','Eventual consistency for LISTs; strong consistency for GET and PUT'],
+   correct:2,
+   exp:'In <strong>December 2020</strong>, AWS upgraded S3 to provide <strong>strong consistency for ALL operations</strong> — at no additional cost, with no performance trade-off. This means: after a successful PUT, any subsequent GET or LIST will immediately reflect the change. After a DELETE, a GET returns 404 immediately. There is no longer any eventual consistency window for any S3 operation. Old study materials referencing eventual consistency for S3 overwrites are outdated.'},
+
+  {id:54,topic:'Misc',diff:'medium',
+   q:'A company wants external research partners to download large public datasets from an S3 bucket. The company pays for S3 storage, but the data transfer costs for millions of downloads per month are unsustainable. Partners have AWS accounts. Which solution allows partners to pay for their own data transfer costs?',
+   opts:['Make the bucket public — no transfer charges for public buckets','Enable Requester Pays on the bucket — authenticated requesters pay for their own data transfer','Use CloudFront to distribute the data — no origin transfer costs','Create S3 Access Points for each partner and charge through AWS Marketplace'],
+   correct:1,
+   exp:'<strong>Requester Pays</strong> shifts the data transfer and request cost from the bucket owner to the requester. The bucket owner still pays for storage. Partners pay for the bytes they download. Important constraint: Requester Pays automatically <strong>disables anonymous access</strong> — all requesters must have valid AWS credentials (since AWS needs to know who to bill). Partners must include the <code>x-amz-requester-pays</code> header in their requests.'},
+
+  {id:55,topic:'Misc',diff:'hard',
+   q:'A company uploads 10 billion small objects (average 5KB each) to S3 Standard. They configure a lifecycle rule to transition all objects to S3 Standard-IA after 30 days for cost savings. A cost analyst reports the Standard-IA bill is HIGHER than Standard was. What is the MOST likely reason?',
+   opts:['Standard-IA has higher storage costs than Standard for large objects','Small objects in Standard-IA incur a per-object monitoring fee that exceeds the storage savings','Standard-IA has a 30-day minimum storage billing that makes short-lived objects more expensive','S3 Standard-IA charges are higher per-request than Standard'],
+   correct:1,
+   exp:'<strong>This is a well-known anti-pattern.</strong> S3 Standard-IA charges both a lower storage rate AND a per-GB retrieval fee AND a minimum 128KB per-object billing. For very small objects (5KB), Standard-IA bills each as if it were 128KB — meaning you pay for 128KB of Standard-IA storage for every 5KB object. With 10 billion objects, the per-object overhead costs vastly outweigh the storage savings. Small objects should stay in S3 Standard. Lifecycle rules should filter by object size to avoid this.'},
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let state = {};
+let correctCount = 0;
+let answeredCount = 0;
+
+function initState(){
+  questions.forEach(q => {
+    state[q.id] = { answered: false, correct: false, marked: false, selected: [] };
+  });
+  correctCount = 0;
+  answeredCount = 0;
+}
+initState();
+
+// ═══════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+// SCORE UPDATE
+// ═══════════════════════════════════════════════
+function updateScore(){
+  document.getElementById('scoreDisplay').textContent = correctCount + ' / ' + answeredCount;
+  if(answeredCount > 0){
+    const pct = Math.round((correctCount/answeredCount)*100);
+    document.getElementById('scorePercent').textContent = pct + '% correct';
+    document.getElementById('progressFill').style.width = Math.round((answeredCount/questions.length)*100) + '%';
+  } else {
+    document.getElementById('scorePercent').textContent = '—';
+    document.getElementById('progressFill').style.width = '0%';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// RENDER QUESTIONS
+// ═══════════════════════════════════════════════
+const topicClass = {
+  'Storage Classes':'topic-storage',
+  'Lifecycle':'topic-lifecycle',
+  'Versioning & Lock':'topic-versioning',
+  'Replication':'topic-replication',
+  'Performance':'topic-performance',
+  'Event Notifications':'topic-events',
+  'Encryption':'topic-encryption',
+  'Access Control':'topic-access',
+  'Logging & Monitoring':'topic-logging',
+  'Misc':'topic-misc',
+};
+
+function renderQuestion(q){
+  const s = state[q.id];
+  const isMulti = Array.isArray(q.correct);
+  const cardClass = s.answered ? (s.correct ? 'answered-correct' : 'answered-wrong') : '';
+  const markedClass = s.marked ? 'marked' : '';
+
+  let optionsHTML = q.opts.map((opt, i) => {
+    let cls = 'option';
+    if(isMulti) cls += ' multi';
+    if(s.answered){
+      cls += ' disabled';
+      const correctArr = Array.isArray(q.correct) ? q.correct : [q.correct];
+      if(correctArr.includes(i)) cls += ' correct-reveal';
+      else if(s.selected.includes(i)) cls += ' wrong-reveal';
+    } else {
+      if(s.selected.includes(i)) cls += ' selected';
+    }
+    const letter = String.fromCharCode(65+i);
+    return `<li class="${cls}" onclick="selectOption(${q.id},${i})">
+      <span class="option-letter">${letter}</span>
+      <span>${opt}</span>
+    </li>`;
+  }).join('');
+
+  const expStyle = s.answered ? 'show' : '';
+  const correctArr = Array.isArray(q.correct) ? q.correct : [q.correct];
+  const correctLabels = correctArr.map(i => String.fromCharCode(65+i) + '. ' + q.opts[i]).join(' | ');
+  const resultTag = s.answered
+    ? (s.correct
+        ? `<div class="exp-correct-tag">✅ Correct</div>`
+        : `<div class="exp-wrong-tag">❌ Incorrect</div><div class="correct-ans">✓ Correct: ${correctLabels}</div>`)
+    : '';
+
+  const submitStyle = s.answered ? 'hide' : '';
+  const typeHint = isMulti ? `<span class="q-type-badge">— select two</span>` : '';
+
+  return `
+  <div class="q-card ${cardClass} ${markedClass}" id="qcard-${q.id}">
+    <div class="q-meta">
+      <span class="q-num">Q${q.id}</span>
+      <span class="q-topic-tag ${topicClass[q.topic] || 'topic-misc'}">${q.topic}</span>
+      <span class="q-diff diff-${q.diff}">${q.diff}</span>
+      ${typeHint}
+      <button class="q-mark-btn ${s.marked ? 'marked' : ''}" onclick="toggleMark(${q.id})" title="Mark for review">
+        ${s.marked ? '★' : '☆'}
+      </button>
+    </div>
+    <div class="q-text">${q.q}</div>
+    <ul class="options-list">${optionsHTML}</ul>
+    <button class="submit-btn ${submitStyle}" onclick="checkAnswer(${q.id})">Check Answer</button>
+    <div class="explanation ${expStyle}" id="exp-${q.id}">
+      <div class="exp-label">Explanation</div>
+      ${resultTag}
+      <p>${q.exp}</p>
+    </div>
+  </div>`;
+}
+
+function renderAllQuestions(filtered){
+  const list = document.getElementById('questionsList');
+  const qs = filtered || questions;
+  if(qs.length === 0){
+    list.innerHTML = '<div class="no-q">No questions match the selected filters.</div>';
+    return;
+  }
+  list.innerHTML = qs.map(q => renderQuestion(q)).join('');
+  document.getElementById('qCount').textContent = qs.length + ' question' + (qs.length===1?'':'s');
+}
+
+function rerenderCard(qid){
+  const q = questions.find(q => q.id === qid);
+  const el = document.getElementById('qcard-'+qid);
+  if(el && q) el.outerHTML = renderQuestion(q);
+}
+
+// ═══════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════
+function selectOption(qid, idx){
+  const s = state[qid];
+  if(s.answered) return;
+  const q = questions.find(q => q.id === qid);
+  const isMulti = Array.isArray(q.correct);
+  if(isMulti){
+    if(s.selected.includes(idx)) s.selected = s.selected.filter(i => i !== idx);
+    else s.selected.push(idx);
+  } else {
+    s.selected = [idx];
+  }
+  rerenderCard(qid);
+}
+
+function checkAnswer(qid){
+  const s = state[qid];
+  if(s.answered || s.selected.length === 0) return;
+  const q = questions.find(q => q.id === qid);
+  const correctArr = Array.isArray(q.correct) ? q.correct.slice().sort().join(',') : String(q.correct);
+  const selectedStr = Array.isArray(q.correct)
+    ? s.selected.slice().sort().join(',')
+    : String(s.selected[0]);
+  s.answered = true;
+  s.correct = (correctArr === selectedStr);
+  if(!s.correct && s.selected.length === 0) s.correct = false;
+  answeredCount++;
+  if(s.correct) correctCount++;
+  updateScore();
+  rerenderCard(qid);
+  // Smooth scroll to explanation
+  setTimeout(() => {
+    const exp = document.getElementById('exp-'+qid);
+    if(exp) exp.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 100);
+}
+
+function toggleMark(qid){
+  state[qid].marked = !state[qid].marked;
+  rerenderCard(qid);
+}
+
+function filterQuestions(){
+  const topic = document.getElementById('topicFilter').value;
+  const diff = document.getElementById('diffFilter').value;
+  const filtered = questions.filter(q =>
+    (topic === 'all' || q.topic === topic) &&
+    (diff === 'all' || q.diff === diff)
+  );
+  renderAllQuestions(filtered);
+}
+
+function resetAll(){
+  if(!confirm('Reset all answers and scores?')) return;
+  initState();
+  updateScore();
+  filterQuestions();
+}
+
+function revealAll(){
+  if(!confirm('Reveal answers for all questions?')) return;
+  questions.forEach(q => {
+    const s = state[q.id];
+    if(!s.answered){
+      s.answered = true;
+      const correctArr = Array.isArray(q.correct) ? q.correct : [q.correct];
+      s.selected = correctArr;
+      s.correct = true;
+      answeredCount++;
+      correctCount++;
+    }
+  });
+  updateScore();
+  filterQuestions();
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderAllQuestions();
+  updateScore();
+});
+</script>
+</body>
+</html>
