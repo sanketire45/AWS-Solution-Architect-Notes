@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decoupling: SQS, SNS, Kinesis & Amazon MQ — Masterclass (SAA-C03)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#faf6f0;--warm-white:#fff9f2;--ink:#1a1208;--ink-soft:#3d2e1a;--ink-muted:#6b5744;
+    --accent-amber:#c97d2e;--accent-amber-light:#e8a84a;--accent-teal:#1d7a6e;--accent-teal-light:#2a9d8f;
+    --accent-rust:#b84c2a;--accent-rust-light:#d4693e;--accent-purple:#6b3fa0;--accent-blue:#1e5fa8;
+    --accent-blue-light:#2b7dd4;--accent-green:#2d7a3e;--border:#e8ddd0;--border-warm:#d4c4aa;
+    --shadow-warm:0 4px 24px rgba(100,70,30,0.12);--shadow-card:0 2px 12px rgba(100,70,30,0.08);
+    --accent:#1e5fa8;--paper:#fff9f2;--rule:#e8ddd0;--bg-alt:#f0e8dc;--ink-mute:#6b5744;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+  .hero{background:linear-gradient(135deg,#141a2e 0%,#1a2440 45%,#102a33 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
+  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(43,125,212,0.16) 0%,transparent 70%);}
+  .hero-tag{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-amber-light);font-weight:700;margin-bottom:16px;}
+  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(36px,4.6vw,58px);line-height:1.06;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
+  .hero h1 span{color:var(--accent-amber-light);}
+  .hero-subtitle{font-size:19px;color:rgba(255,255,255,0.72);max-width:780px;font-weight:400;}
+  .hero-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px;}
+  .hero-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.85);padding:6px 15px;border-radius:100px;font-size:13px;font-weight:500;}
+  .svc-tabnav{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:8px;padding:14px 60px;background:rgba(250,246,240,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(100,70,30,0.06);}
+  .svc-tab{font:600 15.5px/1 'Inter',sans-serif;color:var(--ink-muted);background:var(--warm-white);border:1.5px solid var(--border);border-radius:12px;padding:11px 18px;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;gap:8px;}
+  .svc-tab:hover{color:var(--ink);border-color:var(--border-warm);}
+  .svc-tab.sqs.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
+  .svc-tab.sns.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
+  .svc-tab.kin.active{color:#fff;background:var(--accent-purple);border-color:var(--accent-purple);box-shadow:0 3px 12px rgba(107,63,160,0.32);}
+  .svc-tab.mq.active{color:#fff;background:var(--accent-rust);border-color:var(--accent-rust);box-shadow:0 3px 12px rgba(184,76,42,0.32);}
+  .svc-panel{display:none;}.svc-panel.active{display:block;animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .main-content{max-width:1300px;margin:0 auto;padding:0 60px 80px;}
+  .svc-index{background:var(--warm-white);border:1px solid var(--border);border-radius:14px;margin:26px 0 4px;padding:18px 24px;box-shadow:var(--shadow-card);}
+  .svc-index-label{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:12px;}
+  .svc-index-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:3px 22px;}
+  .svc-index-inner a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink-soft);font-size:16px;padding:7px 10px;border-radius:8px;border-left:3px solid transparent;transition:all .15s ease;}
+  .svc-index-inner a:hover{background:#f0e8dc;color:var(--accent-rust);border-left-color:var(--accent-amber);}
+  .idx-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-amber);flex-shrink:0;}
+  .part-header{padding:20px 28px;border-radius:13px;margin:44px 0 6px;scroll-margin-top:86px;}
+  .part-header.blue{background:linear-gradient(135deg,#e0ecf8 0%,#cce0f5 100%);}
+  .part-header.teal{background:linear-gradient(135deg,#e0f4f1 0%,#c8eee9 100%);}
+  .part-header.purple{background:linear-gradient(135deg,#efe8f8 0%,#e2d4f0 100%);}
+  .part-header.rust{background:linear-gradient(135deg,#fce8e0 0%,#f8d8cc 100%);}
+  .part-header.amber{background:linear-gradient(135deg,#fdf0e0 0%,#fde8c8 100%);}
+  .part-number{font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-rust);margin-bottom:4px;}
+  .part-header h2{font-family:'Fraunces',serif;font-size:clamp(22px,2.1vw,28px);line-height:1.18;color:var(--ink);font-weight:700;}
+  .part-header p{font-size:15px;color:var(--ink-soft);margin-top:5px;line-height:1.45;}
+  .section{padding:26px 4px 8px;}
+  .section-title{font-family:'Fraunces',serif;font-size:25px;font-weight:600;color:var(--ink);margin:30px 0 14px;line-height:1.2;}
+  .prose p{margin-bottom:18px;color:var(--ink-soft);}
+  .prose .lead{font-size:20px;color:var(--ink);font-weight:500;}
+  .prose strong{color:var(--ink);font-weight:700;}
+  .prose em{color:var(--accent-rust);font-style:italic;}
+  code{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:0.86em;background:#f0e8dc;color:var(--accent-rust);padding:2px 7px;border-radius:5px;}
+  ul.nice-list{list-style:none;margin:16px 0;}
+  ul.nice-list li{padding:6px 0 6px 26px;position:relative;color:var(--ink-soft);}
+  ul.nice-list li::before{content:'▸';position:absolute;left:4px;color:var(--accent-amber);font-weight:700;}
+  .callout{border-radius:14px;padding:22px 26px;margin:24px 0;border:1px solid var(--border);}
+  .callout-tag{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .callout p{margin-bottom:10px;color:var(--ink-soft);}.callout p:last-child{margin-bottom:0;}
+  .callout-why{background:#fdf4e6;border-color:#f0d9b0;}.callout-why .callout-tag{color:var(--accent-amber);}
+  .callout-trap{background:#fcebe5;border-color:#f0c4b4;}.callout-trap .callout-tag{color:var(--accent-rust);}
+  .callout-key{background:#e6f3f0;border-color:#b4ddd4;}.callout-key .callout-tag{color:var(--accent-teal);}
+  .callout-price{background:#fff6e9;border-color:#f0dcb8;}.callout-price .callout-tag{color:var(--accent-amber);}
+  .price-tag{background:#fff6e9;border-left:3px solid var(--accent-amber);border-radius:0 8px 8px 0;padding:12px 18px;margin:18px 0;font-size:16px;color:var(--ink-soft);}
+  .price-tag strong{color:var(--accent-rust);}
+  .comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin:24px 0;}
+  .comp-card{background:var(--warm-white);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-card);}
+  .comp-card-tag{font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:10px;}
+  .comp-card h4{font-size:18px;color:var(--ink);margin-bottom:10px;font-weight:700;}
+  .comp-card ul{list-style:none;}
+  .comp-card ul li{padding:4px 0 4px 20px;position:relative;font-size:15.5px;color:var(--ink-muted);}
+  .comp-card ul li::before{content:'•';position:absolute;left:4px;color:var(--accent-rust);}
+  .table-wrap{overflow-x:auto;margin:22px 0;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-card);}
+  table.data{width:100%;border-collapse:collapse;font-size:15.5px;background:var(--warm-white);}
+  table.data thead tr{background:#f0e8dc;}
+  table.data th{padding:13px 16px;text-align:left;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:700;border-bottom:2px solid var(--border-warm);}
+  table.data td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--ink-soft);vertical-align:top;}
+  table.data tr:last-child td{border-bottom:none;}
+  table.data td strong{color:var(--ink);}
+  table.data tr:hover td{background:rgba(201,125,46,0.04);}
+  .diagram{background:var(--warm-white);border:1px solid var(--border);border-radius:16px;padding:26px;margin:26px 0;text-align:center;box-shadow:var(--shadow-card);}
+  .diagram svg{max-width:100%;height:auto;}
+  .diagram-caption{font-size:14px;color:var(--ink-muted);margin-top:14px;font-style:italic;}
+  .industry-spotlight{background:linear-gradient(135deg,#1b2438 0%,#142a36 100%);color:#e8eef5;border-radius:18px;padding:34px 38px;margin:34px 0;scroll-margin-top:86px;}
+  .industry-spotlight-tag{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:14px;}
+  .industry-spotlight h3{font-family:'Fraunces',serif;font-size:24px;color:#fff;margin-bottom:14px;font-weight:600;line-height:1.25;}
+  .industry-spotlight p{color:rgba(232,238,245,0.82);margin-bottom:14px;}
+  .industry-spotlight strong{color:#fff;}
+  .arch-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px 18px;margin:10px 0;}
+  .arch-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:5px;}
+  .arch-item p{margin:0;font-size:15.5px;}
+  .trigger-box{background:#1a1208;color:#f0e6d6;border-radius:16px;padding:30px 34px;margin:30px 0;}
+  .trigger-box h3{font-family:'Fraunces',serif;color:var(--accent-amber-light);font-size:22px;margin-bottom:16px;}
+  .trigger-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .trigger-row:last-child{border-bottom:none;}
+  .trigger-kw{color:#e8a84a;font-weight:600;min-width:330px;flex-shrink:0;font-size:15.5px;}
+  .trigger-arrow{color:var(--accent-rust-light);flex-shrink:0;}
+  .trigger-ans{color:#f0e6d6;font-size:15.5px;}
+  @media(max-width:768px){
+    .hero{padding:40px 22px 36px;}.svc-tabnav{padding:12px 16px;}.svc-tab{font-size:13.5px;padding:9px 13px;}
+    .main-content{padding:0 18px 60px;}.part-header{padding:18px 20px;}.industry-spotlight{padding:26px 20px;}
+    .trigger-kw{min-width:100%;}.trigger-row{flex-direction:column;gap:4px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-tag">SAA-C03 Masterclass · Section 17 · Doc 1 of 2</div>
+  <h1>Decoupling — <span>SQS · SNS · Kinesis · Amazon MQ</span></h1>
+  <p class="hero-subtitle">How resilient systems are built: instead of services calling each other directly (and crashing together), they pass <em>messages</em>. Master the four messaging services and — above all — <em>which one</em> the exam wants for each scenario.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">SQS Queues</span><span class="hero-pill">SNS Fan-out</span><span class="hero-pill">Kinesis Streaming</span><span class="hero-pill">Amazon MQ</span><span class="hero-pill">Decision Matrix</span>
+  </div>
+</header>
+
+<nav class="svc-tabnav">
+  <button class="svc-tab sqs active" data-panel="sqs">📥 SQS</button>
+  <button class="svc-tab sns" data-panel="sns">📢 SNS</button>
+  <button class="svc-tab kin" data-panel="kin">🌊 Kinesis</button>
+  <button class="svc-tab mq" data-panel="mq">🔌 Amazon MQ</button>
+</nav>
+
+<div class="main-content">
+
+<!-- ════ SQS ════ -->
+<div id="panel-sqs" class="svc-panel active">
+  <div class="svc-index">
+    <div class="svc-index-label">📥 SQS — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#sqs-p1"><span class="idx-dot"></span>Why Decoupling</a>
+      <a href="#sqs-p2"><span class="idx-dot"></span>How a Queue Works</a>
+      <a href="#sqs-p3"><span class="idx-dot"></span>Standard vs FIFO</a>
+      <a href="#sqs-p4"><span class="idx-dot"></span>The Mechanics (timeouts, DLQ, polling)</a>
+      <a href="#sqs-p5"><span class="idx-dot"></span>Scaling on Queue Depth</a>
+      <a href="#sqs-industry"><span class="idx-dot"></span>Industry &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="sqs-p1">
+    <div class="part-number">SQS · Part 1</div>
+    <h2>Why Decoupling — Don't Let Services Crash Together</h2>
+    <p>When service A calls service B directly, B's bad day becomes A's bad day. A queue breaks that chain.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">Picture an order website. The web tier takes an order and directly calls the payment/processing service. This is <strong>synchronous coupling</strong> — and it's fragile.</p>
+      <p>If the processing service is <strong>slow</strong>, the web request hangs and users wait. If it's <strong>down</strong>, the order is <em>lost</em> and the user sees an error. On <strong>Black Friday</strong>, a flood of orders overwhelms the processor and the whole site falls over. The two tiers are chained together — one's failure drags down the other.</p>
+    </div>
+    <div class="callout callout-why">
+      <div class="callout-tag">💡 Why SQS Was Built</div>
+      <p><strong>Amazon SQS (Simple Queue Service) is a fully-managed message queue that sits between your services as a buffer.</strong> The web tier (the <em>producer</em>) drops an order message into the queue and instantly moves on — the user gets a fast "thanks, order received." The processing tier (the <em>consumer</em>) pulls messages from the queue at its own pace.</p>
+      <p>Now: if the processor is slow, messages simply wait safely in the queue. If it's down, nothing is lost — work resumes when it's back. On Black Friday, the queue absorbs the spike and the processor drains it steadily. The two tiers are <strong>decoupled</strong> — each can fail, scale, or deploy independently. This is the single most important resilience pattern in cloud architecture.</p>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="sqs-p2">
+    <div class="part-number">SQS · Part 2</div>
+    <h2>How a Queue Works</h2>
+  </div>
+  <div class="section">
+    <div class="diagram">
+      <svg viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+        <rect x="20" y="50" width="120" height="50" rx="10" fill="#e0ecf8" stroke="#1e5fa8" stroke-width="2"/><text x="80" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1208">Producers</text><text x="80" y="90" text-anchor="middle" font-size="10" fill="#6b5744">web tier</text>
+        <rect x="250" y="40" width="220" height="70" rx="10" fill="#fdf0e0" stroke="#c97d2e" stroke-width="2"/><text x="360" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1208">SQS Queue</text><text x="360" y="88" text-anchor="middle" font-size="10" fill="#6b5744">messages wait safely (up to 14 days)</text>
+        <rect x="580" y="50" width="120" height="50" rx="10" fill="#e0f4f1" stroke="#1d7a6e" stroke-width="2"/><text x="640" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1208">Consumers</text><text x="640" y="90" text-anchor="middle" font-size="10" fill="#6b5744">ASG, drains at own pace</text>
+        <g stroke="#c97d2e" stroke-width="2" marker-end="url(#qa)"><line x1="142" y1="75" x2="246" y2="75"/><line x1="472" y1="75" x2="576" y2="75"/></g>
+        <text x="194" y="66" text-anchor="middle" font-size="10" fill="#1e5fa8">send</text><text x="524" y="66" text-anchor="middle" font-size="10" fill="#2d7a3e">poll</text>
+        <defs><marker id="qa" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="#c97d2e"/></marker></defs>
+      </svg>
+      <div class="diagram-caption">Producers send; messages persist in the queue; consumers poll, process, then delete. No message is lost if a consumer dies.</div>
+    </div>
+    <ul class="nice-list">
+      <li>A consumer <strong>polls</strong> the queue, processes the message, then explicitly <strong>deletes</strong> it. If it crashes before deleting, the message reappears for another consumer — <strong>at-least-once</strong> delivery.</li>
+      <li>Max message size <strong>256 KB</strong> (use the S3 + SQS Extended Client Library for bigger payloads — store the blob in S3, pass a pointer).</li>
+      <li>One queue can have <strong>many consumers</strong> sharing the load (a competing-consumers pool) — but each message goes to <em>one</em> consumer. (For "everyone gets a copy," that's SNS, next tab.)</li>
+    </ul>
+  </div>
+
+  <div class="part-header blue" id="sqs-p3">
+    <div class="part-number">SQS · Part 3</div>
+    <h2>Standard vs FIFO — the core exam distinction</h2>
+  </div>
+  <div class="section">
+    <div class="comparison-grid">
+      <div class="comp-card">
+        <div class="comp-card-tag">Standard Queue</div>
+        <h4>Scale over order</h4>
+        <ul>
+          <li><strong>Nearly unlimited</strong> throughput</li>
+          <li><strong>At-least-once</strong> delivery (rare duplicates possible)</li>
+          <li><strong>Best-effort ordering</strong> (can arrive out of order)</li>
+          <li>Default — use when order doesn't matter</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-tag">FIFO Queue</div>
+        <h4>Order &amp; exactly-once</h4>
+        <ul>
+          <li><strong>Strict ordering</strong> (First-In-First-Out)</li>
+          <li><strong>Exactly-once</strong> processing (dedup)</li>
+          <li>Throughput <strong>300 msg/s</strong> (3,000 with batching)</li>
+          <li>Name must end in <code>.fifo</code>; uses Message Group ID</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ Exam trap</div>
+      <p>"Order matters / no duplicates / exactly-once" → <strong>FIFO</strong>. "Maximum throughput, order doesn't matter" → <strong>Standard</strong>. Don't pick FIFO just because it sounds "better" — its 300/s limit can be a bottleneck, and Standard is cheaper and more scalable when ordering isn't required.</p>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="sqs-p4">
+    <div class="part-number">SQS · Part 4</div>
+    <h2>The Mechanics — Timeouts, DLQ &amp; Polling</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Feature</th><th>What it does</th><th>Exam angle</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Visibility Timeout</strong></td><td>When a consumer picks up a message, it's hidden from others for this long (default 30s, max 12h)</td><td>Too short → message processed twice; too long → slow retry on failure</td></tr>
+        <tr><td><strong>Message Retention</strong></td><td>How long unread messages survive (default 4 days, max 14 days)</td><td>"Keep messages up to N days" → set retention</td></tr>
+        <tr><td><strong>Dead-Letter Queue (DLQ)</strong></td><td>After N failed processing attempts (<code>maxReceiveCount</code>), the "poison" message moves to a DLQ for inspection</td><td>"Isolate messages that keep failing" → DLQ</td></tr>
+        <tr><td><strong>Long Polling</strong></td><td>Wait up to 20s for a message instead of returning empty immediately</td><td>"Reduce empty receives / cost / latency" → Long Polling</td></tr>
+        <tr><td><strong>Delay Queue</strong></td><td>Hide new messages for up to 15 min before they're available</td><td>"Delay processing by N minutes"</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="part-header blue" id="sqs-p5">
+    <div class="part-number">SQS · Part 5</div>
+    <h2>Decouple + Auto-Scale on Queue Depth</h2>
+  </div>
+  <div class="section">
+    <div class="prose"><p>The classic resilient pattern: put an <strong>Auto Scaling Group of consumers</strong> behind the queue and scale it on the <strong>queue length</strong> (CloudWatch metric <code>ApproximateNumberOfMessages</code>, ideally as a <em>backlog-per-instance</em> target). Spike of orders → queue grows → ASG adds workers → backlog drains → ASG scales back down. The queue buffers; the fleet elastically matches demand.</p></div>
+    <div class="price-tag">💵 SQS is <strong>$0.40 per million</strong> requests (Standard; FIFO $0.50/M), first 1M free. A serverless buffer for a busy app is often <strong>a few dollars a month</strong> — and it scales to zero when idle. (Each request carries ≤64 KB, so a 256 KB message = 4 requests.)</div>
+  </div>
+
+  <div class="industry-spotlight" id="sqs-industry">
+    <div class="industry-spotlight-tag">🏢 Industry — Verified</div>
+    <h3>Starling Bank &amp; Dublin fintech: idempotent, queue-backed microservices</h3>
+    <p><strong>Starling Bank</strong> (the AWS-native UK neobank) is the canonical example: microservices communicate through <strong>SQS</strong> with <strong>idempotent</strong> handlers and "at-least-once" semantics, deliberately avoiding distributed transactions. Dublin's <strong>AccessPay</strong> (B2B payments) uses SQS to buffer payment files arriving via SFTP for PCI-compliant downstream processing. The recurring theme: a queue lets each microservice fail, retry, and scale on its own without losing work — which is exactly why banks trust the pattern.</p>
+  </div>
+
+  <div class="trigger-box">
+    <h3>⚡ SQS — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Decouple / buffer / absorb spikes / async work"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Ordered + exactly-once / no duplicates"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS FIFO</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Maximum throughput, order doesn't matter"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS Standard</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Isolate messages that repeatedly fail"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Dead-Letter Queue</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Reduce empty polls / cost"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Long Polling</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Scale workers to the workload"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ASG on queue depth (backlog/instance)</div></div>
+  </div>
+</div>
+
+<!-- ════ SNS ════ -->
+<div id="panel-sns" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">📢 SNS — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#sns-p1"><span class="idx-dot"></span>Why Pub/Sub</a>
+      <a href="#sns-p2"><span class="idx-dot"></span>How SNS Works</a>
+      <a href="#sns-p3"><span class="idx-dot"></span>The Fan-Out Pattern</a>
+      <a href="#sns-p4"><span class="idx-dot"></span>Filtering &amp; FIFO</a>
+      <a href="#sns-industry"><span class="idx-dot"></span>Industry &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="sns-p1">
+    <div class="part-number">SNS · Part 1</div>
+    <h2>Why SNS — One Event, Many Interested Parties</h2>
+    <p>SQS is one-to-one (one message, one consumer). But what if <em>many</em> systems all need to react to the same event?</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">An order is placed. Now <strong>several</strong> things must happen: email the customer, update inventory, notify the warehouse, refresh analytics, alert fraud detection. Five different systems, all interested in the <em>same</em> event.</p>
+      <p>You could make the order service call all five directly — but that's tight coupling again (and you'd edit the order service every time you add a sixth listener). With a single SQS queue, only <em>one</em> consumer gets each message, not all five.</p>
+    </div>
+    <div class="callout callout-why">
+      <div class="callout-tag">💡 Why SNS Was Built</div>
+      <p><strong>Amazon SNS (Simple Notification Service) is publish/subscribe (pub/sub) messaging.</strong> A publisher sends one message to a <strong>topic</strong>; SNS instantly <strong>pushes a copy to every subscriber</strong> of that topic. The order service publishes "OrderPlaced" once; email, inventory, warehouse, analytics, and fraud each receive their own copy. Add a new listener? Just subscribe it to the topic — the publisher never changes. <strong>One-to-many, push-based, fully decoupled.</strong></p>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="sns-p2">
+    <div class="part-number">SNS · Part 2</div>
+    <h2>How SNS Works</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Topic</strong> — the channel publishers send to.</li>
+      <li><strong>Subscribers</strong> — endpoints that receive every message: <strong>SQS queues, Lambda functions, HTTP/S endpoints, email, SMS, mobile push, and Kinesis Data Firehose.</strong></li>
+      <li><strong>Push, not poll</strong> — SNS delivers to subscribers (unlike SQS, where consumers pull).</li>
+      <li>Up to ~12.5 million subscriptions per topic; messages encrypted in transit, optional KMS at rest.</li>
+    </ul>
+  </div>
+
+  <div class="part-header teal" id="sns-p3">
+    <div class="part-number">SNS · Part 3</div>
+    <h2>The Fan-Out Pattern — SNS + SQS Together</h2>
+    <p>The single most important architecture in this whole section.</p>
+  </div>
+  <div class="section">
+    <div class="diagram">
+      <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+        <rect x="20" y="90" width="120" height="44" rx="10" fill="#e0ecf8" stroke="#1e5fa8" stroke-width="2"/><text x="80" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1208">Publisher</text>
+        <rect x="220" y="88" width="120" height="48" rx="10" fill="#e0f4f1" stroke="#1d7a6e" stroke-width="2"/><text x="280" y="110" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1208">SNS Topic</text><text x="280" y="126" text-anchor="middle" font-size="9" fill="#6b5744">OrderPlaced</text>
+        <g font-size="11" fill="#1a1208" text-anchor="middle">
+        <rect x="450" y="20" width="120" height="40" rx="8" fill="#fdf0e0" stroke="#c97d2e" stroke-width="2"/><text x="510" y="44">SQS → Email</text>
+        <rect x="450" y="72" width="120" height="40" rx="8" fill="#fdf0e0" stroke="#c97d2e" stroke-width="2"/><text x="510" y="96">SQS → Inventory</text>
+        <rect x="450" y="124" width="120" height="40" rx="8" fill="#fdf0e0" stroke="#c97d2e" stroke-width="2"/><text x="510" y="148">SQS → Analytics</text>
+        <rect x="450" y="176" width="120" height="40" rx="8" fill="#efe8f8" stroke="#6b3fa0" stroke-width="2"/><text x="510" y="200">Lambda → Fraud</text>
+        </g>
+        <line x1="142" y1="112" x2="216" y2="112" stroke="#c97d2e" stroke-width="2" marker-end="url(#na)"/>
+        <g stroke="#1d7a6e" stroke-width="2" marker-end="url(#nb)"><line x1="340" y1="108" x2="446" y2="42"/><line x1="340" y1="110" x2="446" y2="92"/><line x1="340" y1="114" x2="446" y2="144"/><line x1="340" y1="118" x2="446" y2="196"/></g>
+        <defs><marker id="na" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="#c97d2e"/></marker><marker id="nb" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="#1d7a6e"/></marker></defs>
+      </svg>
+      <div class="diagram-caption">Publish once to SNS → every subscribed SQS queue / Lambda gets its own copy to process independently, at its own pace.</div>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Why fan-out (SNS → multiple SQS) beats SNS → Lambda directly</div>
+      <p>Subscribing <strong>SQS queues</strong> to the topic gives each consumer its own <strong>durable buffer</strong>: if a consumer is down, its messages wait safely in <em>its</em> queue (and can retry / land in a DLQ). It combines SNS's one-to-many with SQS's persistence + retry. This <strong>SNS → multiple SQS fan-out</strong> is a top-tested pattern for "one event must trigger several independent, reliable consumers."</p>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="sns-p4">
+    <div class="part-number">SNS · Part 4</div>
+    <h2>Message Filtering &amp; SNS FIFO</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Message filtering</strong> — each subscription can have a <strong>filter policy</strong> so a subscriber only receives the messages it cares about (e.g. only <code>orders</code> over €1,000), instead of every message. Avoids consumers filtering in code.</li>
+      <li><strong>SNS FIFO</strong> — pairs with SQS FIFO for <strong>ordered, deduplicated fan-out</strong> (ordering preserved across the fan-out).</li>
+    </ul>
+    <div class="price-tag">💵 SNS is <strong>$0.50 per million</strong> publishes (first 1M free). Deliveries to SQS/Lambda are cheap; <strong>SMS and email deliveries cost extra</strong> per message — a common "why is my SNS bill high?" answer.</div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 SNS vs EventBridge (quick contrast)</div>
+      <p>SNS is fast, simple, high-throughput pub/sub. <strong>EventBridge</strong> adds richer <em>content-based routing</em>, <strong>SaaS partner event sources</strong> (Zendesk, Datadog…), a schema registry, and archive/replay. "Route third-party SaaS events by content to many AWS targets" → EventBridge; "simple high-throughput fan-out to subscribers" → SNS.</p>
+    </div>
+  </div>
+
+  <div class="industry-spotlight" id="sns-industry">
+    <div class="industry-spotlight-tag">🏢 Industry</div>
+    <h3>Event-driven backends: publish once, react everywhere</h3>
+    <p>Dublin platforms like <strong>Ryanair</strong> use SNS/SQS/EventBridge for booking-confirmation and schedule-change events — one "schedule changed" event fans out to notifications, re-accommodation logic, and analytics simultaneously. The pattern lets teams add new reactions (a new loyalty-points service, say) by subscribing to the existing topic, with zero changes to the publisher.</p>
+  </div>
+
+  <div class="trigger-box">
+    <h3>⚡ SNS — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Fan-out / one event to many subscribers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"One event triggers several independent, reliable consumers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS → multiple SQS (fan-out)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Subscribers should only get relevant messages"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS message filtering (filter policy)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Ordered fan-out, no duplicates"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS FIFO + SQS FIFO</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Route SaaS events by content to many targets"</div><div class="trigger-arrow">→</div><div class="trigger-ans">EventBridge (not SNS)</div></div>
+  </div>
+</div>
+
+<!-- ════ KINESIS ════ -->
+<div id="panel-kin" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">🌊 Kinesis — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#kin-p1"><span class="idx-dot"></span>Why Streaming (vs queues)</a>
+      <a href="#kin-p2"><span class="idx-dot"></span>Data Streams</a>
+      <a href="#kin-p3"><span class="idx-dot"></span>Data Firehose</a>
+      <a href="#kin-p4"><span class="idx-dot"></span>SQS vs Kinesis</a>
+      <a href="#kin-industry"><span class="idx-dot"></span>Industry &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="kin-p1">
+    <div class="part-number">Kinesis · Part 1</div>
+    <h2>Why Streaming — When You Need Replay &amp; Many Readers</h2>
+    <p>SQS deletes a message once it's consumed. But some data needs to be re-read, by many systems, in order.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">Think of a firehose of events: every click on a website, every IoT sensor reading, every stock tick — <strong>thousands to millions per second</strong>, continuous, and you want to analyse it in <em>real time</em>.</p>
+      <p>A queue isn't the right tool here. In SQS, once a consumer processes a message it's <strong>deleted</strong> — you can't replay it, and you can't easily have <em>multiple independent</em> consumers each read the whole stream. For real-time analytics you often want exactly that: the analytics team, the ML team, and the archival job all reading the same ordered stream, and the ability to <strong>rewind and re-process</strong> after a bug fix.</p>
+    </div>
+    <div class="callout callout-why">
+      <div class="callout-tag">💡 Why Kinesis Was Built</div>
+      <p><strong>Amazon Kinesis ingests and stores massive real-time data streams.</strong> Records are kept for a <strong>retention window</strong> (default 24h, up to 365 days), so <em>multiple</em> consumers can each read the stream independently and you can <strong>replay</strong> from any point. Data is <strong>ordered within a shard</strong> by partition key. It's built for high-volume, ordered, replayable, multi-consumer streaming — the things queues don't do.</p>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="kin-p2">
+    <div class="part-number">Kinesis · Part 2</div>
+    <h2>Kinesis Data Streams — Shards, Ordering &amp; Replay</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Shards</strong> are the unit of capacity: each ingests <strong>1 MB/s or 1,000 records/s</strong> and emits <strong>2 MB/s</strong>. Scale by adding shards.</li>
+      <li><strong>Partition key</strong> decides which shard a record goes to — and records with the same key stay <strong>ordered</strong> within that shard.</li>
+      <li><strong>Retention &amp; replay:</strong> records persist (24h → 365 days) so consumers can re-read; multiple consumers can read the same stream.</li>
+      <li><strong>Enhanced Fan-Out</strong> gives each consumer its own dedicated <strong>2 MB/s per shard</strong> push pipe — for many parallel consumers without throttling each other.</li>
+      <li><strong>Capacity modes:</strong> <strong>Provisioned</strong> (you manage shards, cheapest at steady scale) vs <strong>On-Demand</strong> (auto-scales, no shard management).</li>
+    </ul>
+    <div class="price-tag">💵 Provisioned Streams: <strong>~$0.015/shard-hour (~$11/shard/month)</strong> + $0.014 per million PUT units — you pay for shards 24/7 even when idle. On-Demand removes shard management at a higher per-GB rate.</div>
+  </div>
+
+  <div class="part-header purple" id="kin-p3">
+    <div class="part-number">Kinesis · Part 3</div>
+    <h2>Kinesis Data Firehose — Stream → Storage, Zero Ops</h2>
+  </div>
+  <div class="section">
+    <div class="prose"><p>Often you don't want to <em>process</em> a stream — you just want to <strong>land it in storage</strong> for analytics. <strong>Firehose</strong> is the fully-managed, serverless delivery service: point a stream at it and it buffers and writes (near-real-time) to <strong>S3, Redshift, OpenSearch, or Splunk</strong> — with optional <strong>Lambda transformation</strong> and format conversion on the way.</p></div>
+    <div class="comparison-grid">
+      <div class="comp-card">
+        <div class="comp-card-tag">Data Streams</div>
+        <h4>Real-time, you build consumers</h4>
+        <ul>
+          <li>Sub-second, custom processing</li>
+          <li>Shards, retention, <strong>replay</strong></li>
+          <li>Many consumers, ordering per key</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-tag">Data Firehose</div>
+        <h4>Near-real-time delivery, no ops</h4>
+        <ul>
+          <li>Fully serverless, no shards</li>
+          <li>Buffers → S3/Redshift/OpenSearch/Splunk</li>
+          <li>No storage / no replay — it just delivers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 The canonical least-ops trigger</div>
+      <p>"Stream data to <strong>S3 / Redshift / OpenSearch</strong> with the <strong>least operational overhead, near-real-time</strong>" → <strong>Kinesis Data Firehose</strong>. (For real-time SQL/aggregates on the stream, that's <strong>Managed Service for Apache Flink</strong>, a.k.a. Kinesis Data Analytics.)</p>
+    </div>
+    <div class="price-tag">💵 Firehose ≈ <strong>$0.029/GB ingested</strong> (tiers down) — pure pay-per-use, no shards to provision.</div>
+  </div>
+
+  <div class="part-header purple" id="kin-p4">
+    <div class="part-number">Kinesis · Part 4</div>
+    <h2>SQS vs Kinesis — Don't Confuse Them</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th></th><th>SQS</th><th>Kinesis Data Streams</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Model</strong></td><td>Queue — consume &amp; delete</td><td>Stream — retain &amp; replay</td></tr>
+        <tr><td><strong>Consumers</strong></td><td>Competing (one gets each msg)</td><td>Multiple independent readers of whole stream</td></tr>
+        <tr><td><strong>Replay</strong></td><td>❌ No (deleted after consume)</td><td>✅ Yes (within retention)</td></tr>
+        <tr><td><strong>Ordering</strong></td><td>FIFO queue only</td><td>Per shard (partition key)</td></tr>
+        <tr><td><strong>Scaling</strong></td><td>Automatic, serverless</td><td>Shards (or On-Demand)</td></tr>
+        <tr><td><strong>Use for</strong></td><td>Decouple, async tasks, work buffering</td><td>Real-time analytics, clickstream/IoT, multi-consumer, replay</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="industry-spotlight" id="kin-industry">
+    <div class="industry-spotlight-tag">🏢 Dublin Industry — Verified</div>
+    <h3>Ryanair runs a company-wide S3 data lake fed by real-time Kinesis analytics</h3>
+    <p><strong>Ryanair</strong> ingests clickstream and operational events through <strong>Kinesis</strong> in real time into its <strong>S3 data lake</strong>, then analyses with downstream tools (and SageMaker for demand forecasting). Streaming — not queuing — is the right tool because many teams replay and analyse the same ordered event history. Coinbase and Flutter/PokerStars (Dublin) use the closely-related <strong>Amazon MSK</strong> (managed Kafka) for the same streaming need at scale.</p>
+  </div>
+
+  <div class="trigger-box">
+    <h3>⚡ Kinesis — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Real-time streaming / clickstream / IoT, ordered, replay"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis Data Streams</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Multiple consumers read the same stream"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis (Enhanced Fan-Out for many)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Stream → S3/Redshift/OpenSearch, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis Data Firehose</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Real-time SQL / windowed aggregates / anomalies"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Managed Service for Apache Flink</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Replay / re-process historical events"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis (NOT SQS — it deletes)</div></div>
+  </div>
+</div>
+
+<!-- ════ AMAZON MQ ════ -->
+<div id="panel-mq" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">🔌 Amazon MQ — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#mq-p1"><span class="idx-dot"></span>Why Amazon MQ</a>
+      <a href="#mq-p2"><span class="idx-dot"></span>What It Is</a>
+      <a href="#mq-p3"><span class="idx-dot"></span>MQ vs SQS/SNS</a>
+      <a href="#mq-p4"><span class="idx-dot"></span>The Big Decision Matrix</a>
+      <a href="#mq-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header rust" id="mq-p1">
+    <div class="part-number">Amazon MQ · Part 1</div>
+    <h2>Why Amazon MQ — Lift-and-Shift Existing Brokers</h2>
+    <p>SQS/SNS are brilliant — but they use AWS's own APIs. What about an old app that already speaks standard messaging protocols?</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">A company has a 10-year-old Java application that talks to a <strong>message broker</strong> using the industry-standard <strong>JMS</strong> and <strong>AMQP</strong> protocols. They want to move it to AWS <em>without rewriting the messaging code</em>.</p>
+      <p>SQS and SNS would mean rewriting the app to use AWS SDK calls — significant work and risk. They need something that speaks the <em>same protocols</em> their app already uses.</p>
+    </div>
+    <div class="callout callout-why">
+      <div class="callout-tag">💡 Why Amazon MQ Was Built</div>
+      <p><strong>Amazon MQ is a managed message broker for Apache ActiveMQ and RabbitMQ.</strong> It speaks the <strong>industry-standard protocols</strong> — JMS, AMQP, MQTT, STOMP, OpenWire, WebSocket — so an existing on-prem app can connect with <strong>little or no code change</strong>. AWS runs and patches the broker; you keep your messaging code. It's the <strong>migration / compatibility</strong> answer, not the cloud-native one.</p>
+    </div>
+  </div>
+
+  <div class="part-header rust" id="mq-p2">
+    <div class="part-number">Amazon MQ · Part 2</div>
+    <h2>What It Is</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li>Managed <strong>ActiveMQ</strong> or <strong>RabbitMQ</strong> brokers — both queues <em>and</em> topics in one service.</li>
+      <li>Standard protocols: <strong>JMS, AMQP, MQTT, STOMP, OpenWire, WSS</strong>.</li>
+      <li>Deployment: <strong>Single-instance</strong> (dev) or <strong>Active/Standby</strong> across two AZs for high availability.</li>
+      <li>Runs on a <strong>broker instance</strong> — so it's <em>always-on</em> (billed per broker-hour), unlike serverless SQS/SNS.</li>
+      <li>Doesn't scale as limitlessly as SQS/SNS — it's a traditional broker, sized to your throughput.</li>
+    </ul>
+    <div class="price-tag">💵 Billed <strong>per broker-instance-hour</strong> — e.g. mq.m5.large ~<strong>$0.30/hr (~$220/month)</strong> + storage, running 24/7. That fixed always-on cost is the trade-off for protocol compatibility.</div>
+  </div>
+
+  <div class="part-header rust" id="mq-p3">
+    <div class="part-number">Amazon MQ · Part 3</div>
+    <h2>MQ vs SQS/SNS — When to Pick Which</h2>
+  </div>
+  <div class="section">
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 The one rule</div>
+      <p><strong>New, cloud-native application → SQS/SNS</strong> (serverless, limitless scale, pay-per-use). <strong>Migrating an existing app that already uses JMS/AMQP/MQTT and you don't want to rewrite it → Amazon MQ.</strong> If a question mentions an existing on-prem broker, "least code change," or specific protocols like JMS/AMQP → it's Amazon MQ. If it's a brand-new design → don't pick MQ.</p>
+    </div>
+  </div>
+
+  <div class="part-header amber" id="mq-p4">
+    <div class="part-number">Section 17 · The Big Decision</div>
+    <h2>SQS vs SNS vs Kinesis vs MQ — Decision Matrix</h2>
+    <p>The whole section in one table. This is what the exam tests.</p>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>You need…</th><th>Service</th></tr></thead>
+      <tbody>
+        <tr><td>Decouple two services / buffer spikes / async task processing</td><td><strong>SQS</strong></td></tr>
+        <tr><td>Ordered, exactly-once processing</td><td><strong>SQS FIFO</strong></td></tr>
+        <tr><td>One event pushed to many subscribers (pub/sub)</td><td><strong>SNS</strong></td></tr>
+        <tr><td>One event → several independent, durable consumers</td><td><strong>SNS → multiple SQS (fan-out)</strong></td></tr>
+        <tr><td>Real-time streaming, multiple readers, replay, ordering per key</td><td><strong>Kinesis Data Streams</strong></td></tr>
+        <tr><td>Stream → S3/Redshift/OpenSearch, least ops, near-real-time</td><td><strong>Kinesis Data Firehose</strong></td></tr>
+        <tr><td>Content-based routing, SaaS event sources, scheduling</td><td><strong>EventBridge</strong></td></tr>
+        <tr><td>Migrate an existing JMS/AMQP/MQTT broker app, least code change</td><td><strong>Amazon MQ</strong></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="trigger-box" id="mq-triggers">
+    <h3>⚡ Amazon MQ — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Migrate existing broker app, least code change"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon MQ</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"App uses JMS / AMQP / MQTT / STOMP / OpenWire"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon MQ</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Managed ActiveMQ / RabbitMQ"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon MQ</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Brand-new cloud-native decoupling"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS / SNS (NOT MQ)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Need HA for the broker"</div><div class="trigger-arrow">→</div><div class="trigger-ans">MQ Active/Standby across 2 AZs</div></div>
+  </div>
+</div>
+
+</div><!-- end main-content -->
+
+<footer style="text-align:center;padding:30px 20px 50px;color:#6b5744;font-size:14px;">
+  SAA-C03 Masterclass · Section 17 — Decoupling: SQS, SNS, Kinesis &amp; Amazon MQ · Document 1 of 2 · Study Series by Sanky
+</footer>
+
+<script id="svc-tabs-js">
+(function(){
+  var tabs = document.querySelectorAll('.svc-tab');
+  var keys = ['sqs','sns','kin','mq'];
+  var panels = {};
+  keys.forEach(function(k){ panels[k] = document.getElementById('panel-'+k); });
+  function activate(key, doScroll){
+    tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.panel === key); });
+    keys.forEach(function(k){ if(panels[k]) panels[k].classList.toggle('active', k === key); });
+    if(doScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){
+    activate(t.dataset.panel, true);
+    if(history.replaceState) history.replaceState(null, '', '#' + t.dataset.panel);
+  }); });
+  var h = (location.hash || '').replace('#','');
+  if(h){
+    var key = null;
+    keys.forEach(function(k){ if(h === k || h.indexOf(k + '-') === 0) key = k; });
+    if(key){ activate(key, false); var el = document.getElementById(h); if(el) setTimeout(function(){ el.scrollIntoView(); }, 30); }
+  }
+})();
+</script>
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class="cnav-current"><a href="01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
+</body>
+</html>

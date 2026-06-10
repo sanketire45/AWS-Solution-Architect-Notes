@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decoupling (SQS/SNS/Kinesis/MQ) — Exam Cracker (SAA-C03)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111318;--bg-2:#171a22;--bg-3:#1d2030;--bg-card:#1a1d26;--bg-hover:#222638;
+  --border:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --text:#e2ddd6;--text-soft:#9a9590;--text-muted:#6a6560;
+  --amber:#f5a623;--amber-dim:rgba(245,166,35,0.12);--teal:#34c5b0;--teal-dim:rgba(52,197,176,0.12);
+  --blue:#5b9cf6;--blue-dim:rgba(91,156,246,0.12);--green:#4ade80;--green-dim:rgba(74,222,128,0.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,0.12);--purple:#c084fc;--purple-dim:rgba(192,132,252,0.12);
+  --rust:#f08a5d;--rust-dim:rgba(240,138,93,0.12);
+  --accent:#5b9cf6;--paper:#1a1d26;--rule:rgba(255,255,255,0.1);--ink:#e2ddd6;--ink-soft:#9a9590;--ink-mute:#6a6560;--bg-alt:#222638;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:17.5px;line-height:1.8;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+.hero{background:linear-gradient(135deg,#0a0c12 0%,#121a2e 50%,#0e1420 100%);padding:60px 60px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(91,156,246,0.07) 0%,transparent 70%);}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
+.hero h1{font-family:'Lora',Georgia,serif;font-size:clamp(32px,4vw,54px);font-weight:700;line-height:1.08;color:#fff;margin-bottom:14px;}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{font-size:17px;color:rgba(226,221,214,0.65);max-width:660px;margin-bottom:26px;font-weight:300;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(226,221,214,0.8);padding:5px 14px;border-radius:100px;font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+.weight-wrap{max-width:1100px;margin:26px auto 0;padding:0 24px;}
+.weight-box{background:var(--bg-2);border:1px solid #2a2e3c;border-left:4px solid var(--amber);border-radius:14px;padding:24px 26px;}
+.weight-box .wlabel{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:700;}
+.weight-box p{margin:0 0 18px;color:var(--text);font-size:16px;line-height:1.65;}
+.weight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.wcard{background:var(--bg-card);border:1px solid #2a2e3c;border-radius:10px;padding:14px;text-align:center;}
+.wcard .wval{font-size:24px;font-weight:800;line-height:1;}
+.wcard .wsub{font-size:12px;color:var(--text-soft);margin-top:6px;}
+.score-bar{background:var(--bg-2);border-bottom:1px solid var(--border);padding:12px 60px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.5);}
+.score-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-soft);letter-spacing:1px;}
+.score-nums{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--amber);}
+.score-detail{font-size:13px;color:var(--text-muted);}
+.progress-track{flex:1;min-width:120px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--teal));border-radius:2px;transition:width 0.5s ease;width:0%;}
+.score-actions{display:flex;gap:8px;margin-left:auto;}
+.btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.2s;}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-soft);border:1px solid var(--border);}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text);}
+.svc-nav{background:var(--bg-2);border-bottom:1px solid var(--border);padding:10px 60px;display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:49px;z-index:190;}
+.svc-tab{padding:10px 18px;font-size:14.5px;font-weight:600;color:var(--text-muted);cursor:pointer;border:1.5px solid var(--border);background:var(--bg-card);border-radius:10px;transition:all 0.2s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
+.svc-tab:hover{color:var(--text);}
+.svc-tab.sqs.active{color:#fff;background:var(--blue);border-color:var(--blue);}
+.svc-tab.sns.active{color:#1a1208;background:var(--teal);border-color:var(--teal);}
+.svc-tab.kin.active{color:#fff;background:var(--purple);border-color:var(--purple);}
+.svc-tab.mq.active{color:#1a1208;background:var(--rust);border-color:var(--rust);}
+.sub-nav{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:30px;padding-top:6px;}
+.sub-tab{padding:12px 18px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.sub-tab:hover{color:var(--text);}
+.sub-tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.svc-panel{display:none;}.svc-panel.active{display:block;}
+.sub-content{display:none;}.sub-content.active{display:block;}
+.main{max-width:1200px;margin:0 auto;padding:34px 60px 80px;}
+.sec-header{margin:0 0 26px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.sec-header h2{font-family:'Lora',serif;font-size:27px;font-weight:700;color:#fff;margin-bottom:6px;}
+.sec-header p{font-size:15px;color:var(--text-soft);}
+.sub-section-title{font-family:'Lora',serif;font-size:20px;font-weight:600;color:#fff;margin-bottom:18px;margin-top:36px;}
+.numbers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:40px;}
+.num-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;transition:transform 0.2s,border-color 0.2s;}
+.num-card:hover{transform:translateY(-2px);border-color:var(--border-2);}
+.num-val{font-family:'Lora',serif;font-size:26px;font-weight:700;color:var(--amber);line-height:1;margin-bottom:6px;}
+.num-label{font-size:12px;color:var(--text-soft);line-height:1.4;}
+.cheat-table-wrap{overflow-x:auto;margin-bottom:36px;border-radius:12px;border:1px solid var(--border);}
+.cheat-table{width:100%;border-collapse:collapse;font-size:15.5px;}
+.cheat-table thead tr{background:rgba(255,255,255,0.04);}
+.cheat-table th{padding:12px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);}
+.cheat-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text-soft);vertical-align:top;line-height:1.5;}
+.cheat-table tr:last-child td{border-bottom:none;}
+.cheat-table tr:hover td{background:rgba(255,255,255,0.02);}
+.cheat-table td strong{color:var(--text);font-weight:600;}
+.cheat-table td code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;color:var(--amber);}
+.trigger-section{margin-bottom:36px;}
+.trigger-section h3{font-family:'Lora',serif;font-size:18px;font-weight:600;color:var(--amber);margin-bottom:16px;padding-left:12px;border-left:3px solid var(--amber);}
+.trigger-item{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;margin-bottom:6px;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);transition:border-color 0.2s;}
+.trigger-item:hover{border-color:var(--border-2);}
+.trigger-kw{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--teal);min-width:330px;flex-shrink:0;line-height:1.55;}
+.trigger-arrow{color:var(--amber);flex-shrink:0;margin-top:1px;}
+.trigger-ans{font-size:15.5px;color:var(--text);line-height:1.6;}
+.trap-item{border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.04);}
+.trap-item .trigger-kw{color:var(--red);}.trap-item .trigger-arrow{color:var(--red);}
+.q-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:18px;transition:border-color 0.2s;}
+.q-card:hover{border-color:var(--border-2);}
+.q-card.answered-correct{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);}
+.q-card.answered-wrong{border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.03);}
+.q-card.marked{border-color:rgba(245,166,35,0.4);}
+.q-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);background:var(--amber-dim);padding:3px 10px;border-radius:6px;}
+.q-topic-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;}
+.topic-sqs{background:var(--blue-dim);color:var(--blue);}
+.topic-sns{background:var(--teal-dim);color:var(--teal);}
+.topic-kin{background:var(--purple-dim);color:var(--purple);}
+.topic-mq{background:var(--rust-dim);color:var(--rust);}
+.topic-decide{background:var(--green-dim);color:var(--green);}
+.q-diff{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--green);}
+.diff-medium{background:rgba(245,166,35,0.1);color:var(--amber);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--red);}
+.q-mark-btn{margin-left:auto;background:none;border:none;cursor:pointer;font-size:18px;opacity:0.4;transition:opacity 0.2s,transform 0.2s;color:var(--amber);}
+.q-mark-btn:hover{opacity:1;transform:scale(1.1);}.q-mark-btn.marked{opacity:1;}
+.q-type-badge{font-size:11px;color:var(--text-muted);font-style:italic;}
+.q-text{font-family:'Lora',Georgia,serif;font-size:19px;line-height:1.8;color:var(--text);margin-bottom:22px;font-weight:400;}
+.q-text strong{color:#fff;font-weight:600;}
+.options-list{list-style:none;padding:0;}
+.option{display:flex;align-items:flex-start;gap:14px;padding:13px 18px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.18s;font-size:17px;line-height:1.65;color:var(--text-soft);user-select:none;}
+.option:hover:not(.disabled){background:rgba(255,255,255,0.06);border-color:var(--border-2);color:var(--text);}
+.option.disabled{cursor:default;}
+.option-letter{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;width:24px;height:24px;min-width:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);color:var(--text-muted);flex-shrink:0;margin-top:1px;transition:all 0.18s;}
+.option.multi .option-letter{border-radius:4px;}
+.option.selected .option-letter{background:var(--amber);color:#111;}
+.option.selected{border-color:var(--amber);color:var(--text);}
+.option.correct-reveal{background:var(--green-dim);border-color:rgba(74,222,128,0.5);color:var(--text);}
+.option.correct-reveal .option-letter{background:var(--green);color:#111;}
+.option.wrong-reveal{background:var(--red-dim);border-color:rgba(248,113,113,0.5);color:var(--text);}
+.option.wrong-reveal .option-letter{background:var(--red);color:#fff;}
+.explanation{margin-top:18px;padding:18px 20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;display:none;}
+.explanation.show{display:block;animation:fadeSlide 0.3s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.exp-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+.exp-correct-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--green);margin-bottom:10px;}
+.exp-wrong-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--red);margin-bottom:10px;}
+.explanation p{font-size:16px;line-height:1.8;color:var(--text-soft);}
+.explanation p strong{color:var(--text);font-weight:600;}
+.correct-ans{margin-top:10px;padding:10px 14px;background:var(--green-dim);border-radius:8px;font-size:13px;color:var(--green);font-weight:500;}
+.submit-btn{display:block;margin-top:18px;padding:11px 24px;border-radius:10px;cursor:pointer;background:var(--bg-3);color:var(--text-soft);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border:1px solid var(--border);transition:all 0.2s;}
+.submit-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border-2);}
+.submit-btn.hide{display:none;}
+@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.svc-nav{padding:10px 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}.trigger-kw{min-width:200px;}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-eyebrow">SAA-C03 · Section 17 · Document 2 of 2</div>
+  <h1>Decoupling <em>Exam Cracker</em></h1>
+  <p>Cheat sheets, triggers, traps, and 22 scenario questions on SQS, SNS, Kinesis &amp; Amazon MQ — the "which messaging service?" decisions the exam loves.</p>
+  <div class="pill-row">
+    <span class="pill">SQS</span><span class="pill">SNS</span><span class="pill">Kinesis</span><span class="pill">Amazon MQ</span><span class="pill">22 Questions</span>
+  </div>
+</header>
+
+<section class="weight-wrap">
+  <div class="weight-box">
+    <div class="wlabel">📊 Exam Weightage — Decoupling / Messaging</div>
+    <p>Messaging is <strong>core exam material</strong> — decoupling is a recurring theme across resilient and scalable architectures. Expect roughly <strong style="color:var(--green);">3–5 of the 65 questions</strong> to hinge on picking SQS vs SNS vs Kinesis vs MQ (or combining SNS+SQS). The <strong>SQS vs Kinesis</strong> and <strong>fan-out</strong> patterns are especially heavily tested.</p>
+    <div class="weight-grid">
+      <div class="wcard"><div class="wval" style="color:var(--green);">~3–5</div><div class="wsub">questions per exam (est.)</div></div>
+      <div class="wcard"><div class="wval" style="color:var(--blue);">HIGH</div><div class="wsub">SQS / fan-out frequency</div></div>
+      <div class="wcard"><div class="wval" style="color:var(--purple);">SQS≠Kinesis</div><div class="wsub">top distinction tested</div></div>
+      <div class="wcard"><div class="wval" style="color:var(--text);">26%</div><div class="wsub">Domain: Resilient</div></div>
+    </div>
+    <ul style="margin:0;padding-left:18px;color:var(--text-soft);font-size:14px;line-height:1.75;">
+      <li><strong style="color:#fff;">Resilient — 26%:</strong> decouple with SQS/SNS, fan-out, DLQ, ordered processing</li>
+      <li><strong style="color:#fff;">High-Performing — 24%:</strong> Kinesis streaming, Firehose, scaling on queue depth</li>
+    </ul>
+  </div>
+</section>
+
+<div class="score-bar">
+  <span class="score-label">SCORE</span>
+  <span class="score-nums" id="scoreDisplay">0 / 0</span>
+  <span class="score-detail" id="scorePercent">—</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="score-actions">
+    <button class="btn btn-ghost" onclick="resetAll()">↺ Reset</button>
+    <button class="btn btn-ghost" onclick="revealAll()">Reveal All</button>
+  </div>
+</div>
+
+<nav class="svc-nav">
+  <button class="svc-tab sqs active" data-svc="sqs">📥 SQS</button>
+  <button class="svc-tab sns" data-svc="sns">📢 SNS</button>
+  <button class="svc-tab kin" data-svc="kin">🌊 Kinesis</button>
+  <button class="svc-tab mq" data-svc="mq">🔌 Amazon MQ</button>
+</nav>
+
+<div class="main">
+
+<!-- ════ SQS ════ -->
+<div id="svc-sqs" class="svc-panel active">
+  <nav class="sub-nav">
+    <button class="sub-tab active" data-svc="sqs" data-sub="cheat">📋 Cheat Sheets</button>
+    <button class="sub-tab" data-svc="sqs" data-sub="triggers">⚡ Triggers &amp; Traps</button>
+    <button class="sub-tab" data-svc="sqs" data-sub="questions">🎯 Questions</button>
+  </nav>
+  <div class="sub-content active" id="sqs-cheat">
+    <div class="sec-header"><h2>SQS — Cheat Sheet</h2><p>The decoupling buffer.</p></div>
+    <div class="numbers-grid">
+      <div class="num-card"><div class="num-val">256 KB</div><div class="num-label">Max message size (bigger → S3)</div></div>
+      <div class="num-card"><div class="num-val">4→14 d</div><div class="num-label">Retention (default 4, max 14 days)</div></div>
+      <div class="num-card"><div class="num-val">30s→12h</div><div class="num-label">Visibility timeout (default→max)</div></div>
+      <div class="num-card"><div class="num-val">300/s</div><div class="num-label">FIFO throughput (3,000 batched)</div></div>
+      <div class="num-card"><div class="num-val">20s</div><div class="num-label">Max long-poll wait</div></div>
+      <div class="num-card"><div class="num-val">$0.40/M</div><div class="num-label">Standard (FIFO $0.50/M), 1M free</div></div>
+    </div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th></th><th>Standard</th><th>FIFO</th></tr></thead>
+      <tbody>
+        <tr><td>Throughput</td><td><strong>Nearly unlimited</strong></td><td>300/s (3,000 batched)</td></tr>
+        <tr><td>Delivery</td><td>At-least-once (rare dupes)</td><td><strong>Exactly-once</strong></td></tr>
+        <tr><td>Ordering</td><td>Best-effort</td><td><strong>Strict FIFO</strong></td></tr>
+        <tr><td>Name</td><td>any</td><td>ends in <code>.fifo</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Feature</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>DLQ</strong></td><td>Isolate poison messages after <code>maxReceiveCount</code> failures</td></tr>
+        <tr><td><strong>Long Polling (≤20s)</strong></td><td>Cut empty receives + cost + latency</td></tr>
+        <tr><td><strong>Delay Queue (≤15min)</strong></td><td>Delay delivery of new messages</td></tr>
+        <tr><td><strong>ASG on queue depth</strong></td><td>Scale consumers on backlog-per-instance</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="sub-content" id="sqs-triggers">
+    <div class="sec-header"><h2>SQS — Triggers &amp; Traps</h2></div>
+    <div class="trigger-section"><h3>⚡ Triggers</h3>
+      <div class="trigger-item"><div class="trigger-kw">"decouple / buffer / absorb spikes"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"ordered + exactly-once"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS FIFO</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"repeatedly failing messages"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Dead-Letter Queue</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"message > 256 KB"</div><div class="trigger-arrow">→</div><div class="trigger-ans">S3 + SQS Extended Client</div></div>
+    </div>
+    <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
+      <div class="trigger-item trap-item"><div class="trigger-kw">FIFO chosen when order doesn't matter</div><div class="trigger-arrow">✗</div><div class="trigger-ans">300/s cap; Standard is cheaper/scalable</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">SQS to "replay" or "many consumers read all"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS deletes on consume → Kinesis</div></div>
+    </div>
+  </div>
+  <div class="sub-content" id="sqs-questions"><div class="sec-header"><h2>SQS — Practice Questions</h2></div><div id="qlist-sqs"></div></div>
+</div>
+
+<!-- ════ SNS ════ -->
+<div id="svc-sns" class="svc-panel">
+  <nav class="sub-nav">
+    <button class="sub-tab active" data-svc="sns" data-sub="cheat">📋 Cheat Sheets</button>
+    <button class="sub-tab" data-svc="sns" data-sub="triggers">⚡ Triggers &amp; Traps</button>
+    <button class="sub-tab" data-svc="sns" data-sub="questions">🎯 Questions</button>
+  </nav>
+  <div class="sub-content active" id="sns-cheat">
+    <div class="sec-header"><h2>SNS — Cheat Sheet</h2><p>Pub/sub fan-out, push-based.</p></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Concept</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Model</strong></td><td>Publish to a <strong>topic</strong> → SNS pushes a copy to every subscriber (one-to-many)</td></tr>
+        <tr><td><strong>Subscribers</strong></td><td>SQS, Lambda, HTTP/S, email, SMS, mobile push, Kinesis Firehose</td></tr>
+        <tr><td><strong>Fan-out</strong></td><td><strong>SNS → multiple SQS</strong> = each consumer gets a durable buffer + retry + DLQ</td></tr>
+        <tr><td><strong>Filtering</strong></td><td>Per-subscription filter policy → only relevant messages</td></tr>
+        <tr><td><strong>SNS FIFO</strong></td><td>Ordered, deduplicated fan-out (with SQS FIFO)</td></tr>
+        <tr><td><strong>Price</strong></td><td>$0.50/M publishes; SMS/email delivery extra</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>SNS vs EventBridge</th></tr></thead>
+      <tbody><tr><td>SNS = simple, fast, high-throughput pub/sub. <strong>EventBridge</strong> = content-based routing + SaaS sources + schema registry + archive/replay + scheduling.</td></tr></tbody>
+    </table></div>
+  </div>
+  <div class="sub-content" id="sns-triggers">
+    <div class="sec-header"><h2>SNS — Triggers &amp; Traps</h2></div>
+    <div class="trigger-section"><h3>⚡ Triggers</h3>
+      <div class="trigger-item"><div class="trigger-kw">"fan-out / one event to many subscribers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"one event → several reliable, independent consumers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS → multiple SQS</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"subscribers only get relevant messages"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS message filtering</div></div>
+    </div>
+    <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
+      <div class="trigger-item trap-item"><div class="trigger-kw">SNS → Lambda directly when buffering/retry needed</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SNS → SQS → Lambda (durable)</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">SNS for SaaS content routing</div><div class="trigger-arrow">✗</div><div class="trigger-ans">EventBridge</div></div>
+    </div>
+  </div>
+  <div class="sub-content" id="sns-questions"><div class="sec-header"><h2>SNS — Practice Questions</h2></div><div id="qlist-sns"></div></div>
+</div>
+
+<!-- ════ KINESIS ════ -->
+<div id="svc-kin" class="svc-panel">
+  <nav class="sub-nav">
+    <button class="sub-tab active" data-svc="kin" data-sub="cheat">📋 Cheat Sheets</button>
+    <button class="sub-tab" data-svc="kin" data-sub="triggers">⚡ Triggers &amp; Traps</button>
+    <button class="sub-tab" data-svc="kin" data-sub="questions">🎯 Questions</button>
+  </nav>
+  <div class="sub-content active" id="kin-cheat">
+    <div class="sec-header"><h2>Kinesis — Cheat Sheet</h2><p>Real-time, ordered, replayable streaming.</p></div>
+    <div class="numbers-grid">
+      <div class="num-card"><div class="num-val">1 MB/s</div><div class="num-label">Shard ingest (or 1,000 rec/s)</div></div>
+      <div class="num-card"><div class="num-val">2 MB/s</div><div class="num-label">Shard read (Enhanced FO: per consumer)</div></div>
+      <div class="num-card"><div class="num-val">24h→365d</div><div class="num-label">Retention (replay window)</div></div>
+      <div class="num-card"><div class="num-val">~$11</div><div class="num-label">Per shard / month (provisioned)</div></div>
+    </div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th></th><th>Data Streams</th><th>Data Firehose</th></tr></thead>
+      <tbody>
+        <tr><td>Latency</td><td>Real-time (sub-second)</td><td>Near-real-time (buffered)</td></tr>
+        <tr><td>Ops</td><td>You build consumers; shards</td><td>Fully serverless, no shards</td></tr>
+        <tr><td>Replay/storage</td><td><strong>Yes</strong> (retention)</td><td>No — just delivers</td></tr>
+        <tr><td>Targets</td><td>Lambda/KCL/custom</td><td>S3, Redshift, OpenSearch, Splunk</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>SQS vs Kinesis</th></tr></thead>
+      <tbody><tr><td>SQS = consume &amp; delete, competing consumers, no replay. <strong>Kinesis</strong> = retain &amp; replay, many readers of the whole stream, ordered per shard. Real-time analytics/clickstream/IoT → Kinesis.</td></tr></tbody>
+    </table></div>
+  </div>
+  <div class="sub-content" id="kin-triggers">
+    <div class="sec-header"><h2>Kinesis — Triggers &amp; Traps</h2></div>
+    <div class="trigger-section"><h3>⚡ Triggers</h3>
+      <div class="trigger-item"><div class="trigger-kw">"real-time streaming, ordered, replay, many readers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis Data Streams</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"stream → S3/Redshift/OpenSearch, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis Data Firehose</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"real-time SQL / windowed analytics"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Managed Service for Apache Flink</div></div>
+    </div>
+    <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
+      <div class="trigger-item trap-item"><div class="trigger-kw">SQS for "replay / multiple full-stream readers"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS deletes → Kinesis</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Firehose for "sub-second custom processing + replay"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">That's Data Streams</div></div>
+    </div>
+  </div>
+  <div class="sub-content" id="kin-questions"><div class="sec-header"><h2>Kinesis — Practice Questions</h2></div><div id="qlist-kin"></div></div>
+</div>
+
+<!-- ════ AMAZON MQ ════ -->
+<div id="svc-mq" class="svc-panel">
+  <nav class="sub-nav">
+    <button class="sub-tab active" data-svc="mq" data-sub="cheat">📋 Cheat Sheets</button>
+    <button class="sub-tab" data-svc="mq" data-sub="triggers">⚡ Triggers &amp; Traps</button>
+    <button class="sub-tab" data-svc="mq" data-sub="questions">🎯 Questions</button>
+  </nav>
+  <div class="sub-content active" id="mq-cheat">
+    <div class="sec-header"><h2>Amazon MQ — Cheat Sheet</h2><p>Managed broker for migrations.</p></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Concept</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td><strong>What</strong></td><td>Managed <strong>ActiveMQ &amp; RabbitMQ</strong> brokers (queues + topics)</td></tr>
+        <tr><td><strong>Protocols</strong></td><td>JMS, AMQP, MQTT, STOMP, OpenWire, WSS (industry-standard)</td></tr>
+        <tr><td><strong>Use for</strong></td><td>Migrate existing broker apps with <strong>least code change</strong></td></tr>
+        <tr><td><strong>HA</strong></td><td>Active/Standby across 2 AZs</td></tr>
+        <tr><td><strong>Billing</strong></td><td>Per <strong>broker-hour</strong> (always-on) + storage — not pay-per-message</td></tr>
+        <tr><td><strong>NOT for</strong></td><td>New cloud-native designs → use SQS/SNS</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>You need…</th><th>Pick</th></tr></thead>
+      <tbody>
+        <tr><td>Decouple / buffer / async</td><td>SQS</td></tr>
+        <tr><td>Pub/sub fan-out</td><td>SNS (→ SQS)</td></tr>
+        <tr><td>Real-time streaming + replay</td><td>Kinesis</td></tr>
+        <tr><td>Migrate JMS/AMQP broker app</td><td>Amazon MQ</td></tr>
+        <tr><td>Content routing / SaaS events</td><td>EventBridge</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="sub-content" id="mq-triggers">
+    <div class="sec-header"><h2>Amazon MQ — Triggers &amp; Traps</h2></div>
+    <div class="trigger-section"><h3>⚡ Triggers</h3>
+      <div class="trigger-item"><div class="trigger-kw">"migrate existing broker, least code change"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon MQ</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"app uses JMS / AMQP / MQTT / OpenWire"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon MQ</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"managed ActiveMQ / RabbitMQ"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon MQ</div></div>
+    </div>
+    <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Amazon MQ for a brand-new cloud-native app</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS/SNS (serverless, scales better, cheaper)</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">SQS to avoid rewriting a JMS app</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS needs SDK rewrite → Amazon MQ</div></div>
+    </div>
+  </div>
+  <div class="sub-content" id="mq-questions"><div class="sec-header"><h2>Amazon MQ — Practice Questions</h2></div><div id="qlist-mq"></div></div>
+</div>
+
+</div><!-- end main -->
+
+<footer style="text-align:center;padding:30px 20px 50px;color:#6a6560;font-size:14px;">
+  SAA-C03 Exam Cracker · Section 17 — Decoupling · Document 2 of 2 · Study Series by Sanky
+</footer>
+
+<script>
+const questions = [
+  // ── SQS ──
+  {id:1,svc:'sqs',topic:'sqs',diff:'hard',
+   q:'An e-commerce site\'s order-processing service occasionally goes down for maintenance, and during sales it\'s overwhelmed by traffic spikes. Orders must <strong>never be lost</strong> and processing should keep up elastically. What is the BEST design?',
+   opts:['Have the web tier call the processing service synchronously with retries','Put an SQS queue between the web tier and an Auto Scaling Group of processors that scales on queue depth','Use SNS to push orders directly to the processing service','Store orders in DynamoDB and have processors scan the table every minute'],
+   correct:1,
+   exp:'An <strong>SQS queue</strong> decouples the tiers: the web tier enqueues orders and responds instantly; messages persist (so nothing is lost if processors are down); and an <strong>ASG scaling on queue depth</strong> elastically matches processing capacity to the backlog during spikes. Synchronous calls (A) couple failure and latency together. SNS push (C) has no durable buffer/retry by itself. Polling DynamoDB (D) is an inefficient, higher-latency anti-pattern versus a purpose-built queue.'},
+  {id:2,svc:'sqs',topic:'sqs',diff:'hard',
+   q:'A financial system processes account transactions where <strong>order matters</strong> per account and <strong>no transaction may be processed twice</strong>. Throughput is modest. Which SQS configuration is correct?',
+   opts:['Standard queue with idempotent consumers','FIFO queue using the account ID as the Message Group ID','Standard queue with a DLQ','Two Standard queues with manual sequencing'],
+   correct:1,
+   exp:'<strong>FIFO queue</strong> provides strict ordering and exactly-once processing. Using the <strong>account ID as the Message Group ID</strong> preserves order <em>per account</em> while still allowing parallel processing across different accounts. Standard queues (A, C) are best-effort order and at-least-once (possible duplicates) — wrong for "no double processing + order." Manual sequencing (D) reinvents what FIFO gives you.'},
+  {id:3,svc:'sqs',topic:'sqs',diff:'medium',
+   q:'Consumers polling an SQS queue make many calls that return <strong>empty</strong>, driving up request costs and CPU. What is the simplest fix?',
+   opts:['Switch to FIFO queues','Enable long polling (set ReceiveMessageWaitTimeSeconds up to 20s)','Increase the visibility timeout','Add a Dead-Letter Queue'],
+   correct:1,
+   exp:'<strong>Long polling</strong> makes a receive call wait (up to 20s) until a message is available rather than returning immediately — drastically cutting empty responses, request count, cost, and latency. FIFO (A) doesn\'t address empty receives. Visibility timeout (C) governs re-delivery, not polling efficiency. A DLQ (D) handles failures, not empty polls.'},
+  {id:4,svc:'sqs',topic:'sqs',diff:'medium',
+   q:'Some messages in an SQS queue repeatedly fail processing and get retried forever, blocking the consumer. What should you configure?',
+   opts:['A Dead-Letter Queue with a redrive policy (maxReceiveCount)','A longer message retention period','A delay queue','FIFO with deduplication'],
+   correct:0,
+   exp:'A <strong>Dead-Letter Queue</strong> with a redrive policy moves a message to the DLQ after it has been received <code>maxReceiveCount</code> times without success — isolating "poison" messages for inspection so they stop blocking the main queue. Longer retention (B) keeps them around longer (worse). Delay queues (C) postpone delivery. FIFO dedup (D) prevents duplicates, not repeated failures.'},
+  {id:5,svc:'sqs',topic:'sqs',diff:'medium',
+   q:'An application must send <strong>1 MB</strong> payloads through SQS, but SQS messages are limited to 256 KB. What is the recommended approach?',
+   opts:['Split the payload into four SQS messages and reassemble','Use the SQS Extended Client Library — store the payload in S3 and send a reference in SQS','Switch to SNS, which has no size limit','Base64-encode the payload to compress it under 256 KB'],
+   correct:1,
+   exp:'The <strong>SQS Extended Client Library</strong> stores large payloads in <strong>S3</strong> and puts a pointer in the SQS message, transparently handling objects far larger than 256 KB. Manual splitting (A) is fragile and breaks atomicity/ordering. SNS (C) has the same 256 KB limit. Base64 (D) <em>increases</em> size by ~33%.'},
+
+  // ── SNS ──
+  {id:6,svc:'sns',topic:'sns',diff:'hard',
+   q:'When a new image is uploaded, the system must <strong>simultaneously</strong> trigger thumbnail generation, a metadata indexer, and an analytics updater — each independent and able to retry on its own without losing events. What is the BEST architecture?',
+   opts:['One SQS queue read by all three services','SNS topic with three subscribed SQS queues (fan-out), each with its own consumer','SNS topic with three Lambda subscriptions','Kinesis Data Stream with three consumers'],
+   correct:1,
+   exp:'The <strong>SNS → multiple SQS fan-out</strong> pattern: publish once to the topic; each of the three SQS queues gets its own copy, giving every consumer an independent <strong>durable buffer + retry + DLQ</strong>. One shared SQS queue (A) gives each message to only one consumer (not all three). Three Lambda subscriptions (C) work but lack the durable buffering/retry of queues for "must not lose events." Kinesis (D) is for ordered replayable streams, heavier than needed for simple fan-out.'},
+  {id:7,svc:'sns',topic:'sns',diff:'medium',
+   q:'A single SNS topic receives order events of many types, but a particular subscriber should only receive <strong>high-value orders over €10,000</strong>. How do you avoid that subscriber processing every message?',
+   opts:['Create a separate topic for high-value orders only','Apply an SNS subscription filter policy on the order amount','Use SQS FIFO with a message group','Filter inside the subscriber code'],
+   correct:1,
+   exp:'<strong>SNS message filtering</strong> attaches a <strong>filter policy</strong> to the subscription so SNS only delivers messages matching the criteria (e.g. amount &gt; 10000) — the subscriber never sees irrelevant messages, saving processing and cost. A separate topic (A) works but adds publisher complexity and coupling. Filtering in code (D) still receives and pays for every message. FIFO groups (C) are about ordering, not content filtering.'},
+  {id:8,svc:'sns',topic:'decide',diff:'medium',
+   q:'A company needs to route events from <strong>third-party SaaS products (Zendesk, Datadog)</strong> to multiple AWS targets based on the <strong>content</strong> of each event. Which service fits best?',
+   opts:['Amazon SNS','Amazon EventBridge','Amazon SQS','Amazon MQ'],
+   correct:1,
+   exp:'<strong>EventBridge</strong> is built for this: it has <strong>SaaS partner event sources</strong> and powerful <strong>content-based routing rules</strong> to many targets, plus a schema registry and archive/replay. SNS (A) is high-throughput pub/sub but lacks native SaaS sources and rich content filtering/routing. SQS (C) is a queue, not an event router. Amazon MQ (D) is a protocol-compatible broker for migrations.'},
+  {id:9,svc:'sns',topic:'sns',diff:'easy',
+   q:'Which statement correctly distinguishes SNS from SQS?',
+   opts:['SNS is poll-based; SQS is push-based','SNS pushes each message to all subscribers (one-to-many); SQS delivers each message to one consumer','Both deliver each message to exactly one consumer','SNS stores messages for 14 days; SQS does not store messages'],
+   correct:1,
+   exp:'<strong>SNS = pub/sub, push, one-to-many</strong> (every subscriber gets a copy). <strong>SQS = queue, pull, one consumer per message</strong> (competing consumers share the load). Option A reverses push/poll. SQS — not SNS — is the one that stores messages (up to 14 days); SNS pushes immediately and doesn\'t retain like a queue (D is wrong).'},
+
+  // ── KINESIS ──
+  {id:10,svc:'kin',topic:'kin',diff:'hard',
+   q:'A gaming platform ingests a <strong>clickstream of millions of events/second</strong>. Multiple teams (analytics, ML, fraud) must each independently process the <strong>entire</strong> ordered stream in real time, and be able to <strong>replay</strong> the last 7 days after a bug fix. Which service fits?',
+   opts:['Amazon SQS Standard','Amazon Kinesis Data Streams','Amazon SNS','Amazon MQ'],
+   correct:1,
+   exp:'<strong>Kinesis Data Streams</strong>: high-volume real-time ingestion, <strong>ordered per shard</strong>, <strong>retention/replay</strong> (up to 365 days), and <strong>multiple independent consumers</strong> each reading the whole stream (Enhanced Fan-Out for many). SQS (A) deletes on consume — no replay, and each message goes to only one consumer. SNS (C) is push pub/sub without stream storage/replay. Amazon MQ (D) is a broker for migrations, not high-volume streaming analytics.'},
+  {id:11,svc:'kin',topic:'kin',diff:'hard',
+   q:'A team needs to continuously deliver streaming log data into <strong>Amazon S3 and OpenSearch</strong> in near-real-time, with optional format conversion, and the <strong>least operational overhead</strong> (no shards or consumers to manage). Which is BEST?',
+   opts:['Kinesis Data Streams with a custom KCL consumer','Kinesis Data Firehose','SQS with Lambda writing to S3','Amazon MQ'],
+   correct:1,
+   exp:'<strong>Kinesis Data Firehose</strong> is fully serverless: it buffers and delivers streams to <strong>S3, OpenSearch, Redshift, or Splunk</strong> in near-real-time, with optional Lambda transformation/format conversion — and <strong>no shards or consumers to manage</strong>. Data Streams + KCL (A) requires building and operating consumers and shards. SQS+Lambda (C) is more plumbing and not stream-native. MQ (D) is unrelated.'},
+  {id:12,svc:'kin',topic:'kin',diff:'medium',
+   q:'A Kinesis Data Stream needs to support <strong>many consumers</strong> each reading at full speed without throttling each other on the standard 2 MB/s-per-shard shared limit. What should you enable?',
+   opts:['More shards only','Enhanced Fan-Out (dedicated 2 MB/s per consumer per shard)','Kinesis Data Firehose','A longer retention period'],
+   correct:1,
+   exp:'<strong>Enhanced Fan-Out</strong> gives each registered consumer its own dedicated <strong>2 MB/s per shard</strong> push pipe, so multiple consumers don\'t contend for the shared read throughput. Adding shards (A) raises total capacity but consumers still share each shard\'s 2 MB/s without EFO. Firehose (C) is a delivery service, not multi-consumer fan-out. Retention (D) affects replay window, not throughput.'},
+  {id:13,svc:'kin',topic:'decide',diff:'hard',
+   q:'Which scenario is BETTER served by SQS than by Kinesis Data Streams?',
+   opts:['Replaying the last 24 hours of events after a code fix','Five independent teams each reading the entire event history','Decoupling a web tier from background workers that each handle a task once and delete it','Real-time clickstream analytics with per-key ordering'],
+   correct:2,
+   exp:'<strong>SQS</strong> shines at <strong>decoupling work where each message is handled once and deleted</strong> by a pool of competing consumers — simple, serverless, auto-scaling. The other three are Kinesis strengths: replay (A), multiple full-stream readers (B), and ordered real-time analytics (D) all require stream retention/ordering that SQS doesn\'t provide. Matching the tool to "delete-after-process vs retain-and-replay" is the key distinction.'},
+  {id:14,svc:'kin',topic:'kin',diff:'medium',
+   q:'A Kinesis Data Streams workload has highly variable, unpredictable throughput and the team wants to <strong>avoid managing shard capacity</strong>. Which option helps?',
+   opts:['Provisioned mode with manual shard splits','On-Demand capacity mode','Switch to SQS Standard','Reduce retention to 24 hours'],
+   correct:1,
+   exp:'<strong>On-Demand</strong> capacity mode auto-scales the stream\'s throughput without you managing shards — ideal for variable/unpredictable load. Provisioned mode (A) means you manually split/merge shards. SQS (C) changes the whole model (no replay/multi-consumer). Retention (D) doesn\'t address capacity management.'},
+
+  // ── AMAZON MQ ──
+  {id:15,svc:'mq',topic:'mq',diff:'hard',
+   q:'A company is migrating an on-prem Java application to AWS. The app communicates through a message broker using <strong>JMS and AMQP</strong>, and the team wants to move it with <strong>minimal code changes</strong>. Which service should they use?',
+   opts:['Amazon SQS','Amazon SNS','Amazon MQ','Amazon Kinesis'],
+   correct:2,
+   exp:'<strong>Amazon MQ</strong> is managed ActiveMQ/RabbitMQ and speaks industry-standard protocols (<strong>JMS, AMQP, MQTT, STOMP, OpenWire, WSS</strong>), so the existing app connects with little or no code change — the right "lift-and-shift the messaging" answer. SQS/SNS (A, B) use AWS-proprietary APIs and would require rewriting the messaging code. Kinesis (D) is streaming, not a JMS/AMQP broker.'},
+  {id:16,svc:'mq',topic:'decide',diff:'medium',
+   q:'A startup is building a brand-new, cloud-native application and needs simple, highly scalable decoupling and pub/sub. Which is the BEST default choice (vs Amazon MQ)?',
+   opts:['Amazon MQ for ActiveMQ','SQS and SNS','Self-managed RabbitMQ on EC2','Kinesis Data Firehose'],
+   correct:1,
+   exp:'For <strong>new cloud-native</strong> designs, <strong>SQS and SNS</strong> are the default: serverless, virtually unlimited scale, pay-per-use, and no brokers to size or patch. <strong>Amazon MQ (A)</strong> is chosen for <em>compatibility</em> when migrating apps that already use standard broker protocols — not for greenfield. Self-managed RabbitMQ (C) adds operational burden. Firehose (D) is stream delivery, not general decoupling/pub-sub.'},
+  {id:17,svc:'mq',topic:'mq',diff:'medium',
+   q:'A team running Amazon MQ needs <strong>high availability</strong> for the broker across Availability Zones. Which deployment should they choose?',
+   opts:['Single-instance broker','Active/Standby broker across two AZs','Two independent single-instance brokers in one AZ','SQS FIFO instead'],
+   correct:1,
+   exp:'<strong>Active/Standby across two AZs</strong> gives Amazon MQ high availability: if the active broker\'s AZ fails, the standby takes over. A single-instance broker (A) is for dev/test with no HA. Two single-instance brokers in one AZ (C) share AZ failure risk and aren\'t an integrated HA pair. Switching to SQS (D) abandons the broker compatibility that was the reason to use MQ.'},
+
+  // ── CROSS-SERVICE DECISIONS ──
+  {id:18,svc:'mq',topic:'decide',diff:'hard',type:'multi',
+   q:'<strong>(Select TWO)</strong> Which statements about choosing between these messaging services are correct?',
+   opts:['SQS deletes a message once consumed, so it cannot replay events','Kinesis Data Streams retains records so multiple consumers can read and replay them','SNS delivers each message to only one subscriber','Amazon MQ is the best choice for a brand-new serverless application','Firehose can replay historical events like Data Streams'],
+   correct:[0,1],
+   exp:'<strong>SQS deletes on consume → no replay</strong> (A correct). <strong>Kinesis Data Streams retains records → multiple consumers + replay</strong> (B correct). SNS delivers to <em>all</em> subscribers, not one (C false — that\'s SQS). Amazon MQ is for migrating existing broker apps, not greenfield serverless (D false). Firehose just delivers; it has no storage/replay (E false).'},
+  {id:19,svc:'sqs',topic:'decide',diff:'hard',
+   q:'An application publishes an event that must reliably reach <strong>two</strong> independent downstream systems. System A is healthy; System B is frequently down for maintenance and must not lose any event. What is the BEST design?',
+   opts:['Send the event to a single SQS queue both systems read','Publish to an SNS topic with two subscribed SQS queues (one per system)','Publish to SNS with two direct HTTP subscriptions','Write the event to Kinesis Firehose'],
+   correct:1,
+   exp:'<strong>SNS → two SQS queues</strong> (fan-out) gives each system its own durable queue: System B\'s events wait safely in <em>its</em> queue during maintenance and are processed when it returns — no loss. A single shared queue (A) delivers each event to only one of the two systems. Direct HTTP subscriptions (C) have no durable buffer, so events to a down System B can be lost. Firehose (D) is for delivery to data stores, not reliable multi-consumer eventing.'},
+  {id:20,svc:'kin',topic:'decide',diff:'medium',
+   q:'An IoT platform receives temperature readings from sensors and must process them <strong>in the exact order per sensor</strong> while scaling to very high volume across millions of sensors. Which is MOST appropriate?',
+   opts:['SQS Standard','Kinesis Data Streams using sensor ID as the partition key','SNS topic per sensor','Amazon MQ cluster'],
+   correct:1,
+   exp:'<strong>Kinesis Data Streams</strong> maintains <strong>order within a shard</strong>, and using the <strong>sensor ID as the partition key</strong> keeps each sensor\'s readings ordered while distributing load across shards at massive scale. SQS Standard (A) is best-effort order. A topic per sensor (C) doesn\'t scale to millions and isn\'t how SNS is used. Amazon MQ (D) is a broker for migrations, not millions-of-sensors streaming.'},
+  {id:21,svc:'sns',topic:'decide',diff:'medium',
+   q:'A workflow needs ordered, exactly-once fan-out: one event must reach several queues <strong>in order and without duplicates</strong>. Which combination achieves this?',
+   opts:['SNS Standard → SQS Standard queues','SNS FIFO → SQS FIFO queues','Kinesis → SQS Standard','SQS FIFO only (no fan-out)'],
+   correct:1,
+   exp:'<strong>SNS FIFO topics subscribed by SQS FIFO queues</strong> preserve <strong>ordering and deduplication across the fan-out</strong> — the right combo for "ordered, exactly-once, to several consumers." Standard SNS/SQS (A) are best-effort order with possible duplicates. Kinesis→SQS (C) doesn\'t give SNS-style fan-out semantics. A single FIFO queue (D) can\'t fan out to several independent consumers.'},
+  {id:22,svc:'sqs',topic:'sqs',diff:'medium',
+   q:'A consumer needs up to <strong>10 minutes</strong> to process each SQS message. With the default visibility timeout, messages are being <strong>picked up and processed twice</strong>. What should you do?',
+   opts:['Reduce the visibility timeout to 30 seconds','Increase the visibility timeout to cover the processing time (e.g. 10–12 minutes)','Switch to a delay queue','Enable long polling'],
+   correct:1,
+   exp:'If processing takes longer than the <strong>visibility timeout</strong> (default 30s), the message becomes visible again and a second consumer picks it up — causing double processing. <strong>Raise the visibility timeout</strong> to exceed the processing time (max 12h), or extend it programmatically with ChangeMessageVisibility. Reducing it (A) makes the problem worse. Delay queues (C) postpone initial delivery. Long polling (D) addresses empty receives, not reprocessing.'},
+];
+
+const SERVICES = ['sqs','sns','kin','mq'];
+let state = {};
+let correctCount = 0, answeredCount = 0;
+function initState(){ questions.forEach(q => state[q.id] = {answered:false,correct:false,marked:false,selected:[]}); correctCount=0; answeredCount=0; }
+initState();
+const topicClass = {sqs:'topic-sqs',sns:'topic-sns',kin:'topic-kin',mq:'topic-mq',decide:'topic-decide'};
+document.querySelectorAll('.svc-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const svc = t.dataset.svc;
+    document.querySelectorAll('.svc-tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.svc-panel').forEach(p => p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('svc-'+svc).classList.add('active');
+    if(history.replaceState) history.replaceState(null,'','#'+svc);
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+document.querySelectorAll('.sub-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const svc = t.dataset.svc, sub = t.dataset.sub;
+    const panel = document.getElementById('svc-'+svc);
+    panel.querySelectorAll('.sub-tab').forEach(x => x.classList.remove('active'));
+    panel.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(svc+'-'+sub).classList.add('active');
+  });
+});
+function updateScore(){
+  document.getElementById('scoreDisplay').textContent = correctCount + ' / ' + answeredCount;
+  if(answeredCount > 0){ document.getElementById('scorePercent').textContent = Math.round((correctCount/answeredCount)*100) + '% correct';
+    document.getElementById('progressFill').style.width = Math.round((answeredCount/questions.length)*100) + '%';
+  } else { document.getElementById('scorePercent').textContent = '—'; document.getElementById('progressFill').style.width = '0%'; }
+}
+function renderQuestion(q){
+  const s = state[q.id]; const isMulti = Array.isArray(q.correct);
+  const cardClass = s.answered ? (s.correct ? 'answered-correct' : 'answered-wrong') : '';
+  const optionsHTML = q.opts.map((opt,i) => {
+    let cls = 'option'; if(isMulti) cls += ' multi';
+    if(s.answered){ cls += ' disabled'; const ca = Array.isArray(q.correct)?q.correct:[q.correct];
+      if(ca.includes(i)) cls += ' correct-reveal'; else if(s.selected.includes(i)) cls += ' wrong-reveal';
+    } else if(s.selected.includes(i)) cls += ' selected';
+    return `<li class="${cls}" onclick="selectOption(${q.id},${i})"><span class="option-letter">${String.fromCharCode(65+i)}</span><span>${opt}</span></li>`;
+  }).join('');
+  const ca = Array.isArray(q.correct)?q.correct:[q.correct];
+  const correctLabels = ca.map(i => String.fromCharCode(65+i)+'. '+q.opts[i]).join(' | ');
+  const resultTag = s.answered ? (s.correct ? '<div class="exp-correct-tag">✅ Correct</div>' : `<div class="exp-wrong-tag">❌ Incorrect</div><div class="correct-ans">✓ Correct: ${correctLabels}</div>`) : '';
+  const typeHint = isMulti ? '<span class="q-type-badge">— select two</span>' : '';
+  return `<div class="q-card ${cardClass} ${s.marked?'marked':''}" id="qcard-${q.id}">
+    <div class="q-meta"><span class="q-num">Q${q.id}</span>
+      <span class="q-topic-tag ${topicClass[q.topic]||'topic-sqs'}">${q.topic.toUpperCase()}</span>
+      <span class="q-diff diff-${q.diff}">${q.diff}</span>${typeHint}
+      <button class="q-mark-btn ${s.marked?'marked':''}" onclick="toggleMark(${q.id})" title="Mark for review">${s.marked?'★':'☆'}</button></div>
+    <div class="q-text">${q.q}</div>
+    <ul class="options-list">${optionsHTML}</ul>
+    <button class="submit-btn ${s.answered?'hide':''}" onclick="checkAnswer(${q.id})">Check Answer</button>
+    <div class="explanation ${s.answered?'show':''}" id="exp-${q.id}"><div class="exp-label">Explanation</div>${resultTag}<p>${q.exp}</p></div>
+  </div>`;
+}
+function renderAll(){ SERVICES.forEach(svc => { document.getElementById('qlist-'+svc).innerHTML = questions.filter(q => q.svc===svc).map(renderQuestion).join(''); }); }
+function rerenderCard(qid){ const q = questions.find(q => q.id===qid); const el = document.getElementById('qcard-'+qid); if(el&&q) el.outerHTML = renderQuestion(q); }
+function selectOption(qid, idx){ const s = state[qid]; if(s.answered) return; const q = questions.find(q=>q.id===qid);
+  if(Array.isArray(q.correct)){ if(s.selected.includes(idx)) s.selected = s.selected.filter(i=>i!==idx); else s.selected.push(idx); } else s.selected = [idx];
+  rerenderCard(qid); }
+function checkAnswer(qid){ const s = state[qid]; if(s.answered || s.selected.length===0) return; const q = questions.find(q=>q.id===qid);
+  const cs = Array.isArray(q.correct)?q.correct.slice().sort().join(','):String(q.correct);
+  const ss = Array.isArray(q.correct)?s.selected.slice().sort().join(','):String(s.selected[0]);
+  s.answered = true; s.correct = (cs===ss); answeredCount++; if(s.correct) correctCount++;
+  updateScore(); rerenderCard(qid);
+  setTimeout(()=>{ const e=document.getElementById('exp-'+qid); if(e) e.scrollIntoView({behavior:'smooth',block:'nearest'}); },100); }
+function toggleMark(qid){ state[qid].marked = !state[qid].marked; rerenderCard(qid); }
+function resetAll(){ if(!confirm('Reset all answers and scores?')) return; initState(); updateScore(); renderAll(); }
+function revealAll(){ if(!confirm('Reveal answers for all questions?')) return;
+  questions.forEach(q => { const s = state[q.id]; if(!s.answered){ s.answered=true; s.selected=Array.isArray(q.correct)?q.correct:[q.correct]; s.correct=true; answeredCount++; correctCount++; } });
+  updateScore(); renderAll(); }
+document.addEventListener('DOMContentLoaded', () => {
+  renderAll(); updateScore();
+  const h = (location.hash||'').replace('#','');
+  if(SERVICES.indexOf(h) >= 0){ document.querySelector('.svc-tab[data-svc="'+h+'"]').click(); }
+});
+</script>
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class="cnav-current"><a href="02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
+</body>
+</html>

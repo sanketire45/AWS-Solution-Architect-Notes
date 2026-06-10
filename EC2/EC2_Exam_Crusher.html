@@ -718,90 +718,90 @@
 <!-- Q1 -->
 <div class="qcard">
 <span class="qnum">Question 1</span> <span class="qtype">Single answer</span>
-<div class="qscenario">A media company runs a fleet of 200 EC2 instances 24/7 to power its core video streaming service. The instances are <span class="keyword">m5.4xlarge</span> and the workload has been steady for 2 years. The architecture is mature and unlikely to change. The CFO wants to minimize cost. Which approach is MOST cost-effective?</div>
+<div class="qscenario">A media company runs ~200 <span class="keyword">m5.4xlarge</span> instances 24/7 for a mature, steady streaming workload. Leadership wants the maximum possible savings and Finance can pay all upfront. However, the platform team has an <em>approved</em> plan to re-platform the fleet onto <span class="keyword">Graviton (m7g)</span> instances within the next 12 months. Which single commitment is MOST cost-effective <em>without stranding the spend</em>?</div>
 <ol class="qoptions">
-  <li>Purchase 3-year No Upfront Convertible Reserved Instances.</li>
-  <li>Purchase 3-year All Upfront Standard Reserved Instances for the m5.4xlarge.</li>
-  <li>Use Spot Instances exclusively to maximize savings.</li>
-  <li>Stay on On-Demand with Auto Scaling to handle changes.</li>
+  <li>3-year Standard Reserved Instances, All Upfront, for m5.4xlarge.</li>
+  <li>3-year Compute Savings Plan, All Upfront.</li>
+  <li>3-year Convertible Reserved Instances for m5.4xlarge.</li>
+  <li>1-year EC2 Instance Savings Plan for the m5 family.</li>
 </ol>
 <div class="answer-block">
   <div class="answer-label">Answer</div>
-  <p><span class="answer-letter">B</span><strong>Purchase 3-year All Upfront Standard Reserved Instances.</strong> Steady predictable load + known instance type + 3+ year horizon + no architecture changes is the textbook case for Standard RIs. All Upfront gives the maximum discount (up to 72%).</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) Convertible RIs trade some discount for flexibility you don't need. (C) Spot is wrong — production streaming can't tolerate 2-minute termination warnings. (D) On-Demand wastes money on steady workloads.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Steady 24/7, known instance type, never changing" → Standard RI 3-yr All Upfront. If the question hinted at flexibility, you'd switch to Compute Savings Plan.</div>
+  <p><span class="answer-letter">B</span><strong>3-year Compute Savings Plan, All Upfront.</strong> A Compute Savings Plan applies automatically across <em>any</em> instance family, size, region, OS and tenancy — and even Fargate/Lambda. So when the fleet moves from m5 to Graviton m7g, the commitment still applies and none of the upfront spend is wasted.</p>
+  <div class="why-wrong"><strong>Why the "obvious" answer is a trap:</strong> (A) Standard RIs give the <em>deepest</em> discount and would win <em>if nothing changed</em> — but they lock to the m5 family. The buried "moving to Graviton in 12 months" clause strands that commitment, so over the full term it is <em>not</em> most cost-effective. (C) Convertible RIs can be exchanged, but only via manual exchanges and at a lower discount than a Compute SP for this cross-family case. (D) A 1-year EC2 Instance Savings Plan is anchored to the m5 family/region and commits for a shorter term — less total saving and still stranded by the Graviton move.</p>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> When two pricing options both "save money," let the <em>change</em> in the scenario decide. "Maximum discount, nothing ever changes" → Standard RI. The moment the workload may shift family/compute (Graviton, Fargate, Lambda) → <strong>Compute Savings Plan</strong>, even though its headline discount is lower.</p>
 </div>
 </div>
 
 <!-- Q2 -->
 <div class="qcard">
 <span class="qnum">Question 2</span> <span class="qtype">Single answer</span>
-<div class="qscenario">A data science team runs nightly batch jobs that process click-stream data from S3. Each job takes ~3 hours, can be safely restarted from a checkpoint, and the team has built robust handling for sudden worker death. They want the LOWEST possible compute cost. Which EC2 option is best?</div>
+<div class="qscenario">A data team runs a nightly analytics job that fans out across many worker instances. Workers are fully checkpointed and tolerate sudden termination. The team wants the <em>lowest</em> compute cost — but the job <span class="keyword">must finish before a hard 06:00 SLA</span> every night, and a missed run breaches a customer contract. Which launch strategy best meets BOTH goals?</div>
 <ol class="qoptions">
-  <li>On-Demand instances scheduled to start at 1 AM nightly.</li>
-  <li>1-year Reserved Instances of the largest type they could fully utilize.</li>
-  <li>Spot Instances launched via a Spot Fleet diversified across instance types.</li>
-  <li>Dedicated Instances for compliance isolation.</li>
+  <li>Run the entire fleet on Spot via a diversified, capacity-optimized Spot Fleet.</li>
+  <li>Use an EC2 Fleet with a small On-Demand <em>base capacity</em> plus Spot for the remainder (capacity-optimized).</li>
+  <li>Run entirely On-Demand to guarantee the deadline.</li>
+  <li>Purchase 1-year Reserved Instances sized for the nightly peak.</li>
 </ol>
 <div class="answer-block">
   <div class="answer-label">Answer</div>
-  <p><span class="answer-letter">C</span><strong>Spot Instances via Spot Fleet.</strong> The workload is fault-tolerant, has checkpointing, and survives interruption — the exact use case for Spot. Diversifying across instance types in a Spot Fleet raises availability (different pools), so if one type gets reclaimed, others fill the gap.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) On-Demand wastes ~80% of the savings Spot would give. (B) RI's commitment is overkill for batch — and RIs are billed even when idle. (D) Dedicated Instances are for compliance, not cost reduction.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Fault-tolerant batch + cheapest" = Spot. Doc 1 covered this with the ML training example — same pattern.</div>
+  <p><span class="answer-letter">B</span><strong>EC2 Fleet with an On-Demand base capacity + Spot for the rest.</strong> The On-Demand base guarantees enough capacity to always finish before the SLA even if every Spot pool is reclaimed at once, while Spot drives the bulk of the work at up to ~90% off. This is the standard "cost <em>and</em> reliability" pattern.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Pure Spot is the cheapest and the usual recall answer for "fault-tolerant batch" — but a simultaneous reclaim across pools could blow the <em>hard</em> SLA, and here a miss breaches a contract. That buried deadline is the discriminator. (C) On-Demand-only meets the deadline but discards the savings the workload is eligible for. (D) RIs are billed 24/7 for a job that runs ~3 h/night — mostly idle spend.</p>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Fault-tolerant + cheapest" alone → pure Spot. Add a <em>hard deadline / contractual SLA</em> and it shifts to <strong>Spot + an On-Demand base capacity</strong>: buy a guaranteed floor, let Spot do the cheap bulk.</p>
 </div>
 </div>
 
 <!-- Q3 -->
 <div class="qcard">
 <span class="qnum">Question 3</span> <span class="qtype">Single answer</span>
-<div class="qscenario">A company is planning to migrate their monolithic application to AWS. They expect to start on EC2, but within 18 months migrate most workloads to AWS Fargate, and some to Lambda. They want to commit to savings now but keep flexibility. Which option fits best?</div>
+<div class="qscenario">A company commits to 3 years of savings today. Their baseline is steady EC2 on the <span class="keyword">c6i</span> family, but over the term they will (a) shift ~40% of workloads to AWS Fargate, (b) move some jobs to Lambda, and (c) keep the rest on EC2 while occasionally changing instance families for performance. They want the <em>best blended discount</em> given all this movement. Which single commitment fits best?</div>
 <ol class="qoptions">
-  <li>3-year Standard Reserved Instances on m5 family.</li>
-  <li>1-year EC2 Instance Savings Plan.</li>
+  <li>3-year EC2 Instance Savings Plan for the c6i family.</li>
   <li>3-year Compute Savings Plan.</li>
-  <li>Spot Fleet across multiple regions.</li>
+  <li>3-year Standard RIs for the EC2 baseline plus On-Demand for Fargate/Lambda.</li>
+  <li>3-year Convertible RIs covering the whole fleet.</li>
 </ol>
 <div class="answer-block">
   <div class="answer-label">Answer</div>
-  <p><span class="answer-letter">C</span><strong>3-year Compute Savings Plan.</strong> The Compute Savings Plan is the only option that automatically applies to <strong>EC2, Fargate, AND Lambda</strong>. The company can shift workloads freely without losing the discount. Up to 66% off — slightly less than RI but worth the flexibility.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) and (B) lock to EC2 — they wouldn't apply once workloads move to Fargate/Lambda. (D) Spot can't run their existing monolith reliably.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Might shift to Fargate or Lambda" — the dead giveaway for Compute Savings Plan.</div>
+  <p><span class="answer-letter">B</span><strong>3-year Compute Savings Plan.</strong> It is the only single commitment that automatically covers <em>EC2 across any family</em>, <em>Fargate</em>, and <em>Lambda</em> — the exact three moving parts here — at up to 66% off, with zero manual changes as workloads shift.</p>
+  <div class="why-wrong"><strong>Why the close distractors fail:</strong> (A) An EC2 <em>Instance</em> Savings Plan gives a slightly <em>deeper</em> discount — and that's the trap — but it applies only to EC2 and is anchored to the c6i family/region, so it covers neither Fargate nor Lambda; 40%+ of the spend would get no discount. (C) Standard RIs maximise the EC2 baseline but cover nothing on Fargate/Lambda and lock the family. (D) Convertible RIs don't apply to Fargate/Lambda at all.</p>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> EC2 <em>Instance</em> Savings Plan = deeper discount, but EC2-only and family-anchored. <em>Compute</em> Savings Plan = slightly less discount, but spans EC2 + Fargate + Lambda + any family. Any hint of Fargate/Lambda or family-hopping → <strong>Compute Savings Plan</strong>.</p>
 </div>
 </div>
 
 <!-- Q4 -->
 <div class="qcard">
 <span class="qnum">Question 4</span> <span class="qtype">Single answer</span>
-<div class="qscenario">An enterprise must run Microsoft SQL Server on AWS while reusing its existing per-physical-core SQL Server licenses (BYOL). Compliance requires visibility into the physical hardware. Which EC2 option enables this?</div>
+<div class="qscenario">An enterprise is migrating Oracle Database to AWS under a <span class="keyword">BYOL, per-physical-core</span> licence. To stay compliant the team must (1) see the exact physical sockets/cores their instances run on, (2) consistently place new instances on the <em>same</em> physical hardware to optimise core-licence usage, and (3) track licence consumption automatically. Which option meets ALL three?</div>
 <ol class="qoptions">
-  <li>On-Demand Instances with default shared tenancy.</li>
-  <li>Dedicated Instances.</li>
-  <li>Dedicated Host.</li>
-  <li>Spot Instances tagged for BYOL.</li>
+  <li>Dedicated Instances (single-tenant hardware).</li>
+  <li>Dedicated Hosts with host resource groups + AWS License Manager.</li>
+  <li>On-Demand instances on shared tenancy, tracked with AWS License Manager.</li>
+  <li>On-Demand instances plus a 3-year Reserved Instance for cost.</li>
 </ol>
 <div class="answer-block">
   <div class="answer-label">Answer</div>
-  <p><span class="answer-letter">C</span><strong>Dedicated Host.</strong> Dedicated Host gives you visibility into the physical sockets and cores — required for BYOL per-physical-core licensing of SQL Server, Oracle, and Windows Server. Dedicated Instance doesn't expose hardware details.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) Shared tenancy fails BYOL audit. (B) Dedicated Instance gives single-tenancy but no socket/core visibility. (D) Spot doesn't address BYOL at all.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "BYOL Oracle / SQL Server / Windows" = Dedicated Host.</div>
+  <p><span class="answer-letter">B</span><strong>Dedicated Hosts with host resource groups + AWS License Manager.</strong> A Dedicated Host is the only option that exposes the physical sockets and cores, lets you pin instances to a specific physical host, and integrates with License Manager's host resource groups to auto-track per-physical-core consumption — satisfying all three requirements.</p>
+  <div class="why-wrong"><strong>Why the close ones fail:</strong> (A) Dedicated <em>Instances</em> give single-tenant hardware but expose <em>no</em> socket/core detail and no control over which physical host you land on — so they can't satisfy (1) or (2). (C) is the trap: License Manager <em>can</em> track licences, but on shared tenancy you have no hardware visibility or placement control, so per-physical-core BYOL fails. (D) Shared tenancy + RI is about cost, not licensing — fails the hardware-visibility requirement entirely.</p>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Dedicated <em>Instance</em> = isolation only. Dedicated <em>Host</em> = isolation <em>plus</em> physical socket/core visibility, placement control, and License Manager tracking. "Per-physical-core BYOL / track licences / same host" → Dedicated Host.</p>
 </div>
 </div>
 
 <!-- Q5 -->
 <div class="qcard">
 <span class="qnum">Question 5</span> <span class="qtype">Single answer</span>
-<div class="qscenario">A startup is building a SaaS platform. They expect traffic to be moderate but unpredictable — sudden viral spikes possible. They've heard about Reserved Instances but aren't sure their workload is stable enough. What should the architect recommend for the EC2 layer initially?</div>
+<div class="qscenario">A SaaS platform has now run for a year. Monitoring shows a stable, always-on baseline of about <span class="keyword">12 instances</span>, but traffic spikes unpredictably — occasionally several times that during viral surges. The company wants to start cutting cost <em>now</em> without risking availability during spikes or over-committing. What should the architect recommend?</div>
 <ol class="qoptions">
-  <li>Buy 3-year Standard Reserved Instances immediately to lock in savings.</li>
-  <li>Run On-Demand instances behind an Auto Scaling Group; revisit pricing once load patterns stabilize.</li>
-  <li>Use 100% Spot Instances to minimize cost.</li>
-  <li>Purchase Dedicated Hosts for predictable cost.</li>
+  <li>Buy 3-year Standard Reserved Instances sized for the spike peak.</li>
+  <li>Cover the ~12-instance baseline with a 1-year Compute Savings Plan and absorb spikes with On-Demand via Auto Scaling.</li>
+  <li>Run everything On-Demand behind Auto Scaling.</li>
+  <li>Run the baseline on Spot and serve spikes with On-Demand.</li>
 </ol>
 <div class="answer-block">
   <div class="answer-label">Answer</div>
-  <p><span class="answer-letter">B</span><strong>On-Demand with Auto Scaling, revisit later.</strong> Unpredictable / viral / unknown patterns = On-Demand is the safe starting point. Once you have 2-3 months of stable utilization data, you can convert the steady baseline to Reserved or Savings Plans.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) Locking in 3 years before knowing your baseline is wasted commitment. (C) Pure Spot can drop your platform — bad for a customer-facing SaaS. (D) Dedicated Hosts are expensive and unrelated to traffic patterns.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Unpredictable" or "spiky traffic" → On-Demand baseline. Optimize later, not first.</div>
+  <p><span class="answer-letter">B</span><strong>Commit the baseline, burst the spikes.</strong> There is now a <em>known</em> 24/7 baseline, so committing it to a Savings Plan captures real savings immediately, while On-Demand + Auto Scaling handles the unpredictable surge capacity with no commitment. This "mix your pricing models" pattern is the cost-optimisation sweet spot.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Sizing a 3-year commitment to the <em>peak</em> means paying for mostly-idle capacity for years — over-commitment. (C) is the trap — it's safe, but leaving the known always-on baseline at full On-Demand price isn't "cutting cost now." (D) Running the always-on baseline on Spot risks the customer-facing platform whenever Spot is reclaimed.</p>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> No known baseline yet → start all On-Demand, optimise later. A <em>measured</em> steady baseline + unpredictable spikes → commit the baseline (Savings Plan/RI) and burst the spikes On-Demand. The word "baseline" is the switch.</p>
 </div>
 </div>
 
@@ -819,7 +819,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">C</span><strong>io2 Block Express.</strong> It's the only EBS volume type that supports up to 256,000 IOPS, sub-ms latency, and 64 TB size. Designed exactly for SAP HANA / large Oracle / huge SQL Server.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) gp3 caps at 16,000 IOPS. (B) io1 caps at 64,000 IOPS — not enough. (D) st1 is HDD with only 500 IOPS max — for sequential workloads, not random DB I/O.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "SAP HANA" or "&gt;64k IOPS" or "&gt;16 TB high-IOPS" = io2 Block Express.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Match the number to the ceiling: gp3 maxes ~16,000 IOPS, io1 ~64,000, io2 Block Express up to 256,000 IOPS at sub-ms latency and 64 TB. "&gt;64k IOPS," "SAP HANA," or "huge Oracle/SQL" → io2 Block Express.</div>
 </div>
 </div>
 
@@ -837,7 +837,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">C</span><strong>st1 Throughput Optimized HDD.</strong> The workload is large sequential reads/writes (log streaming) — exactly what st1 is built for. Up to 500 MB/s at HDD prices. It's cheaper than gp3 for this kind of throughput workload.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) gp3 would work but costs more. (B) io2 is massive overkill — random IOPS isn't the need. (D) sc1 is for infrequent / cold access — too slow for a nightly streaming job.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Log streaming, big data, sequential" → st1. "Almost never accessed" → sc1.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Big <em>sequential throughput</em> (logs, big data) → st1. Random small-block IOPS → gp3/io2. Rarely accessed/cold → sc1. The trap is reaching for SSD when the workload is sequential — cheaper HDD throughput wins.</div>
 </div>
 </div>
 
@@ -855,7 +855,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Stop deletes Instance Store data; back up first.</strong> Instance Store lives on the host's local SSD. A stop moves the instance to potentially different hardware on restart — local SSD contents are gone. Only reboot keeps Instance Store data (same host).</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) is the textbook trap — Instance Store ≠ EBS. (C) Reboot doesn't save compute costs anyway. (D) AWS doesn't auto-back up Instance Store.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> Stop/Terminate kills Instance Store data. Only reboot preserves it.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Instance Store = ephemeral local SSD. <em>Reboot</em> keeps it (same host); <em>Stop</em> or <em>Terminate</em> can move you to new hardware → data gone. Anything that can't be lost must not live only on Instance Store — that's the trap.</div>
 </div>
 </div>
 
@@ -873,7 +873,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">C</span><strong>Snapshot → copy with encryption → create new volume.</strong> This is the standard, AWS-documented workflow. The original volume stays untouched (low risk), and the new encrypted volume mirrors it.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Filesystem encryption is OS-level, not the AWS-encryption-at-rest the auditors expect. (B) You cannot toggle encryption on an existing EBS volume — that menu option doesn't exist. (D) Terminating risks data loss.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Encrypt existing unencrypted volume" = snapshot, copy with encryption, new volume. Memorize this 3-step path.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> You can never toggle encryption on an existing EBS volume (that's the distractor). Only path: snapshot → copy the snapshot <em>with encryption</em> → create a new volume from it. Going forward, enable account-level "EBS encryption by default" so it never recurs.</div>
 </div>
 </div>
 
@@ -891,7 +891,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>EFS.</strong> EFS is a Linux NFS file system that mounts to many EC2s simultaneously across AZs. Perfect for shared web content (WordPress uploads, themes). The classic textbook use case.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) <strong>The trap.</strong> EBS Multi-Attach is for clustered DBs (Oracle RAC), not general file sharing — apps would corrupt data without their own locking. (C) Awkward custom solution with sync challenges. (D) FSx for Lustre is HPC-specific, way overpowered for WordPress.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Multiple Linux EC2s share files" = EFS. Don't fall for the Multi-Attach trap.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Many Linux instances share files" → EFS (NFS, multi-AZ). EBS Multi-Attach is <em>only</em> for cluster-aware apps (e.g., Oracle RAC) that do their own write-locking — used as a general shared drive it corrupts data. Windows shares → FSx for Windows; HPC scratch → FSx for Lustre.</div>
 </div>
 </div>
 
@@ -909,7 +909,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">C</span><strong>Cluster placement group with ENA-enabled instances.</strong> Cluster packs instances tightly on the same physical rack for the lowest possible latency (single-digit microseconds). ENA (Elastic Network Adapter) gives up to 100 Gbps throughput. For even lower latency on HPC workloads, you'd add EFA.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Spread is the OPPOSITE of what's needed — spreads across racks. (B) Partition is for distributed systems, not low-latency. (D) Multi-AZ adds latency.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Lowest latency between instances" = Cluster placement group. The trap: confusing Cluster (speed) with Spread (safety).</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Three placement groups, three goals — <strong>Cluster</strong> = lowest latency (one rack, max throughput, but that rack is a single failure domain); <strong>Spread</strong> = isolation for a few critical nodes; <strong>Partition</strong> = isolation for large distributed data systems. "Microsecond latency between nodes" → Cluster; add EFA for HPC/MPI.</div>
 </div>
 </div>
 
@@ -927,7 +927,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">C</span><strong>Partition placement group.</strong> Cassandra is the prototype use case for Partition. Each partition lives on a different rack. Cassandra's rack-awareness places replicas in different partitions, so a rack failure loses at most one replica per data row — cluster keeps serving.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Cluster puts all 20 on one rack — single point of failure. (B) Spread caps at 7 per AZ — 20 nodes won't fit. (D) No placement group provides no guarantees about physical layout.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Cassandra / Hadoop / Kafka" → Partition placement group. "&gt;7 critical instances per AZ" disqualifies Spread.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Large rack-aware distributed data systems (Cassandra, Hadoop, Kafka, HBase) → <strong>Partition</strong> (isolated racks per partition, scales well past 7 nodes). Spread caps at 7 instances per AZ, so 20 nodes rules it out.</div>
 </div>
 </div>
 
@@ -945,25 +945,25 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Spread placement group.</strong> Each of the 3 instances lands on a different physical rack. A single rack failure takes down at most 1 instance. Spread is built exactly for "few critical instances must not share failure domain." 3 is well under the 7-per-AZ limit.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Cluster does the opposite. (C) Partition with 1 partition gives no separation. (D) ASG ensures health but doesn't guarantee different physical racks.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Few critical instances, no shared failure" = Spread (max 7 per AZ).</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> A <em>handful</em> of critical instances that must never share a failure domain → <strong>Spread</strong> (each on its own rack, max 7 per AZ). Many nodes → Partition. Lowest latency → Cluster. An ASG keeps the count healthy but does <em>not</em> guarantee separate racks.</div>
 </div>
 </div>
 
 <!-- Q14 -->
 <div class="qcard">
 <span class="qnum">Question 14</span> <span class="qtype">Single answer</span>
-<div class="qscenario">A team has an EC2 instance that needs to read objects from a specific S3 bucket. A developer suggests creating an IAM user, generating access keys, and storing them in a config file on the instance. The architect rejects this. What should be done instead?</div>
+<div class="qscenario">An application on EC2 in <span class="keyword">Account A</span> must read objects from an S3 bucket owned by a different team in <span class="keyword">Account B</span>. A developer proposes creating an IAM user in Account B, generating long-lived access keys, and storing them in a file on the instance. The architect rejects this. What is the correct, most secure design?</div>
 <ol class="qoptions">
-  <li>Store the access keys in EC2 user data so they're applied at launch.</li>
-  <li>Attach an IAM Role with S3 read permissions to the EC2 instance.</li>
-  <li>Make the S3 bucket public so no credentials are needed.</li>
-  <li>Use the EC2 root account's credentials.</li>
+  <li>Store the Account B access keys in EC2 user data so they load at boot.</li>
+  <li>Attach an IAM role to the instance and have it assume a cross-account role in Account B (trust policy + <code>sts:AssumeRole</code>); grant the bucket to that role.</li>
+  <li>Make the Account B bucket public so no credentials are needed.</li>
+  <li>Bake the Account B access keys into the AMI so they are not in user data.</li>
 </ol>
 <div class="answer-block">
   <div class="answer-label">Answer</div>
-  <p><span class="answer-letter">B</span><strong>Attach an IAM Role.</strong> The instance gets temporary credentials automatically via IMDS, rotated by AWS. No secrets on disk, no compromise risk. This is the security best practice.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) User data is visible in metadata — never put secrets there. (C) Making the bucket public is wildly insecure. (D) The "root" account is not an EC2 concept and is a terrible idea anyway.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "EC2 needs to call AWS API" = IAM Role. Always. Never access keys.</div>
+  <p><span class="answer-letter">B</span><strong>Instance role that assumes a cross-account role in Account B.</strong> The instance gets temporary, auto-rotated credentials from its own role, then uses STS to assume a role in Account B that is trusted and granted to the bucket. No long-lived secrets exist anywhere. (Alternatively, Account B's bucket policy can directly grant the instance role — but assume-role is the canonical cross-account pattern.)</p>
+  <div class="why-wrong"><strong>Why the others fail:</strong> (A) User data is readable via IMDS — never store secrets there. (C) A public bucket is a severe exposure and unnecessary. (D) is the subtle trap: baking keys into the AMI just moves the same long-lived static credentials onto disk, and they now leak with every copy/share of the AMI.</p>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "EC2 calls AWS" → instance role, never static keys. "Across accounts" → instance role that <em>assumes</em> a role in the other account (cross-account trust), or the resource policy grants the instance role. Any answer involving stored access keys is wrong by default.</div>
 </div>
 </div>
 
@@ -981,7 +981,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Enforce IMDSv2.</strong> IMDSv2 requires an initial PUT to get a session token before any GET is honored. SSRF attacks issue only GET, so they fail. AWS designed IMDSv2 specifically to neutralize SSRF (after the Capital One incident).</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Removing the role breaks the app's legitimate AWS access. (C) Security groups don't filter the special link-local 169.254.169.254 address. (D) Disabling metadata breaks credential delivery to the SDK.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "SSRF" or "protect metadata service" = IMDSv2. The Capital One 2019 breach story makes this stick.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "SSRF" / "steal credentials from 169.254.169.254" / "harden the metadata service" → enforce <strong>IMDSv2</strong> (token-required defeats GET-only SSRF). Security groups can't filter the link-local address; removing the role or disabling metadata breaks the app.</div>
 </div>
 </div>
 
@@ -999,7 +999,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Enable Hibernate.</strong> Hibernate saves the in-memory state to the encrypted root EBS volume. On start, RAM is restored — the loaded reference data is already there, no re-loading needed. The 64 GB RAM is under the 150 GB Hibernate limit.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Stop loses RAM contents — 90-min warmup returns every time. (C) 24/7 wastes money for 2–3 sessions/week. (D) An AMI captures disk, not RAM — same problem as Stop.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Long warm-up, intermittent use, preserve RAM state" = Hibernate. Remember the 150 GB RAM cap.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Long in-memory warm-up + intermittent use + must preserve RAM" → <strong>Hibernate</strong> (RAM saved to the encrypted root EBS, restored on start). Stop and AMI keep disk but lose RAM. Watch the ~150 GB RAM cap and the encrypted-root requirement.</div>
 </div>
 </div>
 
@@ -1017,7 +1017,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Install the CloudWatch Agent.</strong> AWS can only see what the hypervisor exposes (CPU, network, disk I/O for instance store). Memory and disk-space-free are <em>inside</em> the OS, invisible to the hypervisor. The CloudWatch Agent runs inside the OS and reports those metrics.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Detailed monitoring is 1-min vs 5-min frequency — same metric set. (C) False — applies to all instance types. (D) AWS Config tracks configuration changes, not memory.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Memory" or "disk space free" on CloudWatch = install CloudWatch Agent. A classic.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> The hypervisor sees CPU, network, and EBS I/O — never <em>inside</em> the OS. So <strong>memory</strong> and <strong>disk-space-free</strong> require the <strong>CloudWatch Agent</strong>. Detailed monitoring only changes frequency (5-min → 1-min), not which metrics exist.</div>
 </div>
 </div>
 
@@ -1035,7 +1035,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Copy the AMI to eu-west-1.</strong> AMIs are region-resident. To use one in another region, you copy it — AWS replicates the underlying snapshots and assigns a new AMI ID in the target region.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) AMI IDs aren't valid across regions. (C) AMIs aren't mountable that way. (D) No such thing as a "Global AMI" in AWS.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Same image in multiple regions" = copy the AMI. EC2 Image Builder can automate this.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> AMIs are region-scoped, so a "golden image" in multiple regions means <strong>copy the AMI</strong> to each region (new AMI ID per region). Automate build + distribution with EC2 Image Builder. There is no cross-region AMI ID and no "Global AMI."</div>
 </div>
 </div>
 
@@ -1054,7 +1054,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span>+<span class="answer-letter">C</span><strong>DLM + Snapshot Archive tier.</strong> DLM automates the create/retain/delete lifecycle on a schedule. EBS Snapshot Archive is ~75% cheaper than standard snapshot storage — ideal for rarely-accessed compliance retention (acceptable to wait 24–72 hours to restore).</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Deleting violates the 7-year requirement. (D) Snapshots already live in S3-class durability under the hood — you can't directly copy them to S3 Standard. (E) AMIs use the same snapshot storage; no savings.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Long retention, rarely accessed" = Snapshot Archive. "Automate snapshot lifecycle" = Data Lifecycle Manager (DLM).</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Long retention + rarely accessed snapshots" → EBS <strong>Snapshot Archive</strong> (~75% cheaper, 24–72 h restore). "Automate create/retain/delete" → <strong>Data Lifecycle Manager</strong>. Trap: you can't copy snapshots to "S3 Standard," and AMIs reuse the same snapshot storage (no saving).</div>
 </div>
 </div>
 
@@ -1072,7 +1072,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Enable Termination Protection.</strong> A simple per-instance toggle that blocks console/CLI termination until explicitly disabled. Cheap, easy, targeted.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Account-wide deny breaks legitimate ops. (C) RIs are a billing mechanism — instances are equally terminable. (D) <strong>Stop Protection prevents STOPS, not terminations.</strong> Common confusion.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> Two separate features — Termination Protection and Stop Protection. Don't confuse them.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Two different toggles the exam loves to swap — <strong>Termination Protection</strong> blocks <em>terminate</em>; <strong>Stop Protection</strong> blocks <em>stop</em>. An account-wide IAM deny is too blunt; RIs are billing, not a safeguard.</div>
 </div>
 </div>
 
@@ -1090,7 +1090,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Enable T3 Unlimited or move to m5.small.</strong> Running out of CPU credits means the workload is no longer a "burstable" fit. T3 Unlimited lets you exceed baseline by paying per CPU-hour above credits (often cheaper than upsizing). If sustained CPU is the new normal, M-family is a better match.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) t3.large still earns credits proportionally — bigger but same model. (C) Adding instances helps the load issue but doesn't fix per-instance credit exhaustion. (D) Spot is unrelated.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Ran out of CPU credits" = workload isn't burstable anymore. Either Unlimited mode or switch to M/C family.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Ran out of CPU credits" means the workload is no longer truly burstable. Fix = <strong>T3 Unlimited</strong> (pay for sustained bursts above baseline) or move to a fixed-performance family (M/C). A bigger T-instance only delays the same problem.</div>
 </div>
 </div>
 
@@ -1108,7 +1108,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>EBS Multi-Attach with io2.</strong> Multi-Attach is specifically designed for clustered apps like Oracle RAC that manage their own block-level concurrency. Up to 16 instances in the same AZ can attach to one io1/io2 volume.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Oracle RAC needs block storage, not NFS file system. (C) S3 is object storage — not how a database engine reads/writes blocks. (D) FSx for Windows is SMB, doesn't match RAC's design.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Oracle RAC" or "clustered DB shared block volume" = EBS Multi-Attach. The flip side of Q10 — context matters.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> The flip side of the EFS question — a <em>cluster-aware</em> DB (Oracle RAC) that does its own block-level locking → <strong>EBS Multi-Attach</strong> (io1/io2, same AZ, ≤16 instances). General file sharing → EFS. The words "shared storage" don't decide it; whether the app handles concurrency does.</div>
 </div>
 </div>
 
@@ -1126,7 +1126,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Stop and start.</strong> When you stop an EBS-backed EC2 instance, it releases the underlying host. On start, AWS places it on different healthy hardware. The instance keeps its instance ID, EBS volumes, and Elastic IP (if attached). This is the standard fix for failed System Status Checks.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) Terminate + relaunch loses the instance ID and is more work than needed. (C) Reboot stays on the same broken host — doesn't help. (D) Auto Recovery exists but typically you'd configure it via CloudWatch alarm with EC2 Recover action; "wait passively" isn't reliable for prod.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> System Status Check fail = AWS hardware issue. Stop/start moves you to fresh hardware. For automation, configure CloudWatch alarm + EC2 Recover action.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> <strong>System</strong> Status Check fail = AWS/host hardware → <strong>stop/start</strong> moves you to healthy hardware (reboot stays on the broken host). <strong>Instance</strong> Status Check fail = your OS/config. Automate with a CloudWatch alarm + EC2 <em>recover</em> action.</div>
 </div>
 </div>
 
@@ -1144,7 +1144,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>On-Demand Capacity Reservation.</strong> Capacity Reservations guarantee that capacity is available when you need it, at On-Demand prices, with no long-term commitment. Perfect for launch events where availability matters more than discount. You can pair it later with a Savings Plan to layer in discounts.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) RIs are about discount, not capacity guarantees, and require commitment. (C) Spot doesn't guarantee capacity. (D) Dedicated Hosts solve licensing, not on-demand capacity guarantees.</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "Guarantee capacity in this AZ, no commitment" = On-Demand Capacity Reservation. A subtle but testable concept.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Guarantee capacity in a specific AZ, no long-term commitment" → <strong>On-Demand Capacity Reservation</strong>. RIs and Savings Plans are about <em>discount</em>, not a capacity guarantee — a common conflation. You can layer a Savings Plan on top for the discount.</div>
 </div>
 </div>
 
@@ -1163,7 +1163,7 @@
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span>+<span class="answer-letter">C</span><strong>Spot for the GPU + Stop/Hibernate interruption behavior.</strong> P4d on Spot can be 70–90% cheaper than On-Demand. Combined with S3 checkpointing, interruption is recoverable. Configuring interruption behavior to Stop (or Hibernate, where supported) preserves more state than the default Terminate.</p>
   <div class="why-wrong"><strong>Why not the others:</strong> (A) On-Demand is 3–4× more expensive than Spot — wastes the cost reduction goal. (D) Training jobs are bursty, not steady — RIs are wrong fit. (E) Multi-Attach is for clustered DBs, not ML training (which typically uses distributed training over the network).</div>
-  <div class="trigger-recall"><strong>Trigger recall:</strong> "ML training, checkpointing, cheapest" = Spot + careful interruption handling. The combination of choices reflects defense-in-depth thinking.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "ML training + checkpointing + cheapest" → <strong>Spot</strong> for the GPUs, with interruption behavior set to Stop/Hibernate (not the default Terminate) to preserve more state. On-Demand/RI waste the savings; Multi-Attach is for clustered DBs, not distributed training (which syncs over the network).</div>
 </div>
 </div>
 
@@ -1223,5 +1223,162 @@
   <p style="margin-top: 15px; font-size: 0.9em;">Built for the SAA-C03 exam (May 2026 edition)</p>
 </footer>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">EC2</div>
+<ul>
+<li class=""><a href="EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class="cnav-current"><a href="EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

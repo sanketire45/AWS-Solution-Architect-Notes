@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudFront & Global Accelerator — Exam Cracker (SAA-C03)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#111318; --bg-2:#171a22; --bg-3:#1d2030; --bg-card:#1a1d26; --bg-hover:#222638;
+  --border:rgba(255,255,255,0.07); --border-2:rgba(255,255,255,0.12);
+  --text:#e2ddd6; --text-soft:#9a9590; --text-muted:#6a6560;
+  --amber:#f5a623; --amber-dim:rgba(245,166,35,0.12);
+  --teal:#34c5b0; --teal-dim:rgba(52,197,176,0.12);
+  --blue:#5b9cf6; --blue-dim:rgba(91,156,246,0.12);
+  --green:#4ade80; --green-dim:rgba(74,222,128,0.12);
+  --red:#f87171; --red-dim:rgba(248,113,113,0.12);
+  --purple:#c084fc; --purple-dim:rgba(192,132,252,0.12);
+  --rust:#f08a5d; --rust-dim:rgba(240,138,93,0.12);
+  --accent:#5b9cf6; --paper:#1a1d26; --rule:rgba(255,255,255,0.1); --ink:#e2ddd6; --ink-soft:#9a9590; --ink-mute:#6a6560; --bg-alt:#222638;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:17.5px;line-height:1.8;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0a0c12 0%,#121828 50%,#0e1420 100%);padding:60px 60px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(245,166,35,0.06) 0%,transparent 70%);}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
+.hero h1{font-family:'Lora',Georgia,serif;font-size:clamp(34px,4.2vw,58px);font-weight:700;line-height:1.08;color:#fff;margin-bottom:14px;}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{font-size:17px;color:rgba(226,221,214,0.65);max-width:640px;margin-bottom:26px;font-weight:300;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(226,221,214,0.8);padding:5px 14px;border-radius:100px;font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+
+/* WEIGHTAGE */
+.weight-wrap{max-width:1100px;margin:26px auto 0;padding:0 24px;}
+.weight-box{background:var(--bg-2);border:1px solid #2a2e3c;border-left:4px solid var(--amber);border-radius:14px;padding:24px 26px;}
+.weight-box .wlabel{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:700;}
+.weight-box p{margin:0 0 18px;color:var(--text);font-size:16px;line-height:1.65;}
+.weight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.wcard{background:var(--bg-card);border:1px solid #2a2e3c;border-radius:10px;padding:14px;text-align:center;}
+.wcard .wval{font-size:26px;font-weight:800;line-height:1;}
+.wcard .wsub{font-size:12px;color:var(--text-soft);margin-top:6px;}
+
+/* SCORE BAR */
+.score-bar{background:var(--bg-2);border-bottom:1px solid var(--border);padding:12px 60px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.5);}
+.score-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-soft);letter-spacing:1px;}
+.score-nums{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--amber);}
+.score-detail{font-size:13px;color:var(--text-muted);}
+.progress-track{flex:1;min-width:120px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--teal));border-radius:2px;transition:width 0.5s ease;width:0%;}
+.score-actions{display:flex;gap:8px;margin-left:auto;}
+.btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.2s;}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-soft);border:1px solid var(--border);}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text);}
+
+/* SERVICE TAB NAV (top level) */
+.svc-nav{background:var(--bg-2);border-bottom:1px solid var(--border);padding:10px 60px;display:flex;gap:10px;position:sticky;top:49px;z-index:190;}
+.svc-tab{padding:11px 22px;font-size:15px;font-weight:600;color:var(--text-muted);cursor:pointer;border:1.5px solid var(--border);background:var(--bg-card);border-radius:10px;transition:all 0.2s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:8px;}
+.svc-tab:hover{color:var(--text);}
+.svc-tab.active{color:#fff;background:var(--blue);border-color:var(--blue);}
+.svc-tab.ga.active{background:var(--rust);border-color:var(--rust);color:#1a1208;}
+
+/* SUB TAB NAV (within a service) */
+.sub-nav{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:30px;padding-top:6px;}
+.sub-tab{padding:12px 18px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.sub-tab:hover{color:var(--text);}
+.sub-tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+
+.svc-panel{display:none;}
+.svc-panel.active{display:block;}
+.sub-content{display:none;}
+.sub-content.active{display:block;}
+
+.main{max-width:1200px;margin:0 auto;padding:34px 60px 80px;}
+.sec-header{margin:0 0 26px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.sec-header h2{font-family:'Lora',serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:6px;}
+.sec-header p{font-size:15px;color:var(--text-soft);}
+.sub-section-title{font-family:'Lora',serif;font-size:20px;font-weight:600;color:#fff;margin-bottom:18px;margin-top:36px;}
+
+/* NUMBERS */
+.numbers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:40px;}
+.num-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;transition:transform 0.2s,border-color 0.2s;}
+.num-card:hover{transform:translateY(-2px);border-color:var(--border-2);}
+.num-val{font-family:'Lora',serif;font-size:30px;font-weight:700;color:var(--amber);line-height:1;margin-bottom:6px;}
+.num-label{font-size:12px;color:var(--text-soft);line-height:1.4;}
+
+/* CHEAT TABLES */
+.cheat-table-wrap{overflow-x:auto;margin-bottom:36px;border-radius:12px;border:1px solid var(--border);}
+.cheat-table{width:100%;border-collapse:collapse;font-size:15.5px;}
+.cheat-table thead tr{background:rgba(255,255,255,0.04);}
+.cheat-table th{padding:12px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);}
+.cheat-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text-soft);vertical-align:top;line-height:1.5;}
+.cheat-table tr:last-child td{border-bottom:none;}
+.cheat-table tr:hover td{background:rgba(255,255,255,0.02);}
+.cheat-table td strong{color:var(--text);font-weight:600;}
+.cheat-table td code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;color:var(--amber);}
+
+/* TRIGGERS */
+.trigger-section{margin-bottom:36px;}
+.trigger-section h3{font-family:'Lora',serif;font-size:18px;font-weight:600;color:var(--amber);margin-bottom:16px;padding-left:12px;border-left:3px solid var(--amber);}
+.trigger-item{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;margin-bottom:6px;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);transition:border-color 0.2s;}
+.trigger-item:hover{border-color:var(--border-2);}
+.trigger-kw{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--teal);min-width:320px;flex-shrink:0;line-height:1.55;}
+.trigger-arrow{color:var(--amber);flex-shrink:0;margin-top:1px;}
+.trigger-ans{font-size:15.5px;color:var(--text);line-height:1.6;}
+.trap-item{border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.04);}
+.trap-item .trigger-kw{color:var(--red);}
+.trap-item .trigger-arrow{color:var(--red);}
+
+/* QUESTIONS */
+.q-intro{font-size:15px;color:var(--text-soft);margin-bottom:24px;}
+.q-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:18px;transition:border-color 0.2s;position:relative;}
+.q-card:hover{border-color:var(--border-2);}
+.q-card.answered-correct{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);}
+.q-card.answered-wrong{border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.03);}
+.q-card.marked{border-color:rgba(245,166,35,0.4);}
+.q-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);background:var(--amber-dim);padding:3px 10px;border-radius:6px;}
+.q-topic-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;}
+.topic-cloudfront{background:var(--blue-dim);color:var(--blue);}
+.topic-security{background:var(--red-dim);color:var(--red);}
+.topic-edge{background:var(--purple-dim);color:var(--purple);}
+.topic-caching{background:var(--teal-dim);color:var(--teal);}
+.topic-ga{background:var(--rust-dim);color:var(--rust);}
+.topic-compare{background:var(--green-dim);color:var(--green);}
+.q-diff{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--green);}
+.diff-medium{background:rgba(245,166,35,0.1);color:var(--amber);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--red);}
+.q-mark-btn{margin-left:auto;background:none;border:none;cursor:pointer;font-size:18px;opacity:0.4;transition:opacity 0.2s,transform 0.2s;color:var(--amber);}
+.q-mark-btn:hover{opacity:1;transform:scale(1.1);}
+.q-mark-btn.marked{opacity:1;}
+.q-type-badge{font-size:11px;color:var(--text-muted);font-style:italic;}
+.q-text{font-family:'Lora',Georgia,serif;font-size:19px;line-height:1.8;color:var(--text);margin-bottom:22px;font-weight:400;}
+.q-text strong{color:#fff;font-weight:600;}
+.options-list{list-style:none;padding:0;}
+.option{display:flex;align-items:flex-start;gap:14px;padding:13px 18px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.18s;font-size:17px;line-height:1.65;color:var(--text-soft);user-select:none;}
+.option:hover:not(.disabled){background:rgba(255,255,255,0.06);border-color:var(--border-2);color:var(--text);}
+.option.disabled{cursor:default;}
+.option-letter{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;width:24px;height:24px;min-width:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);color:var(--text-muted);flex-shrink:0;margin-top:1px;transition:all 0.18s;}
+.option.multi .option-letter{border-radius:4px;}
+.option.selected .option-letter{background:var(--amber);color:#111;}
+.option.selected{border-color:var(--amber);color:var(--text);}
+.option.correct-reveal{background:var(--green-dim);border-color:rgba(74,222,128,0.5);color:var(--text);}
+.option.correct-reveal .option-letter{background:var(--green);color:#111;}
+.option.wrong-reveal{background:var(--red-dim);border-color:rgba(248,113,113,0.5);color:var(--text);}
+.option.wrong-reveal .option-letter{background:var(--red);color:#fff;}
+.explanation{margin-top:18px;padding:18px 20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;display:none;}
+.explanation.show{display:block;animation:fadeSlide 0.3s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.exp-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+.exp-correct-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--green);margin-bottom:10px;}
+.exp-wrong-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--red);margin-bottom:10px;}
+.explanation p{font-size:16px;line-height:1.8;color:var(--text-soft);}
+.explanation p strong{color:var(--text);font-weight:600;}
+.correct-ans{margin-top:10px;padding:10px 14px;background:var(--green-dim);border-radius:8px;font-size:13px;color:var(--green);font-weight:500;}
+.submit-btn{display:block;margin-top:18px;padding:11px 24px;border-radius:10px;cursor:pointer;background:var(--bg-3);color:var(--text-soft);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border:1px solid var(--border);transition:all 0.2s;}
+.submit-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border-2);}
+.submit-btn.hide{display:none;}
+
+@media(max-width:768px){
+  .hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.svc-nav{padding:10px 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}.trigger-kw{min-width:200px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-eyebrow">SAA-C03 · Section 15 · Document 2 of 2</div>
+  <h1>CloudFront &amp; Global Accelerator <em>Exam Cracker</em></h1>
+  <p>Cheat sheets, triggers, traps, and 21 scenario questions — split by service so you drill one at a time, exactly like the real exam tests them.</p>
+  <div class="pill-row">
+    <span class="pill">Cheat Sheets</span><span class="pill">Triggers &amp; Traps</span><span class="pill">21 Questions</span><span class="pill">Score Tracker</span><span class="pill">Per-Service Tabs</span>
+  </div>
+</header>
+
+<!-- WEIGHTAGE -->
+<section class="weight-wrap">
+  <div class="weight-box">
+    <div class="wlabel">📊 Exam Weightage — CloudFront &amp; Global Accelerator</div>
+    <p>This pair lives in the <strong>"edge networking" cluster</strong> (with Route 53). Expect it in roughly <strong style="color:var(--green);">2–4 of the 65 questions</strong> — CloudFront appears frequently (often woven into S3, security, and global-architecture scenarios); <strong>Global Accelerator is a newer C03 emphasis</strong> and shows up as the "static IP / non-HTTP / fast failover" answer. <span style="color:var(--text-muted);">(AWS doesn't publish per-service counts; community estimate from 2024–25 reports.)</span></p>
+    <div class="weight-grid">
+      <div class="wcard"><div class="wval" style="color:var(--blue);">~2–4</div><div class="wsub">questions per exam (est.)</div></div>
+      <div class="wcard"><div class="wval" style="color:var(--amber);">HIGH</div><div class="wsub">CloudFront frequency</div></div>
+      <div class="wcard"><div class="wval" style="color:var(--rust);">⭐ NEW</div><div class="wsub">GA — C03 emphasis</div></div>
+      <div class="wcard"><div class="wval" style="color:var(--text);">24%</div><div class="wsub">Domain: High-Performing</div></div>
+    </div>
+    <div style="font-size:13px;color:var(--text-soft);margin-bottom:8px;">Points land across two domains:</div>
+    <ul style="margin:0;padding-left:18px;color:var(--text-soft);font-size:14px;line-height:1.75;">
+      <li><strong style="color:#fff;">High-Performing — 24%:</strong> CloudFront caching, edge compute, Global Accelerator backbone routing &amp; failover</li>
+      <li><strong style="color:#fff;">Secure — 30%:</strong> OAC, signed URLs/cookies, WAF on CloudFront, geo-restriction, field-level encryption, ACM us-east-1</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <span class="score-label">SCORE</span>
+  <span class="score-nums" id="scoreDisplay">0 / 0</span>
+  <span class="score-detail" id="scorePercent">—</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="score-actions">
+    <button class="btn btn-ghost" onclick="resetAll()">↺ Reset</button>
+    <button class="btn btn-ghost" onclick="revealAll()">Reveal All</button>
+  </div>
+</div>
+
+<!-- SERVICE TABS -->
+<nav class="svc-nav">
+  <button class="svc-tab cf active" data-svc="cf">🌐 CloudFront</button>
+  <button class="svc-tab ga" data-svc="ga">⚡ Global Accelerator</button>
+</nav>
+
+<div class="main">
+
+<!-- ══════════════ CLOUDFRONT PANEL ══════════════ -->
+<div id="svc-cf" class="svc-panel active">
+  <nav class="sub-nav">
+    <button class="sub-tab active" data-svc="cf" data-sub="cheat">📋 Cheat Sheets</button>
+    <button class="sub-tab" data-svc="cf" data-sub="triggers">⚡ Triggers &amp; Traps</button>
+    <button class="sub-tab" data-svc="cf" data-sub="questions">🎯 Practice Questions</button>
+  </nav>
+
+  <!-- CF CHEAT -->
+  <div class="sub-content active" id="cf-cheat">
+    <div class="sec-header"><h2>CloudFront — Cheat Sheet</h2><p>Numbers, comparisons, and decision rules to recall instantly.</p></div>
+
+    <div class="sub-section-title">🔢 Numbers &amp; Facts</div>
+    <div class="numbers-grid">
+      <div class="num-card"><div class="num-val">600+</div><div class="num-label">Edge locations (PoPs) worldwide</div></div>
+      <div class="num-card"><div class="num-val">us-east-1</div><div class="num-label">Where the ACM cert MUST live</div></div>
+      <div class="num-card"><div class="num-val">1 TB</div><div class="num-label">Free data-out / month (forever)</div></div>
+      <div class="num-card"><div class="num-val">$0</div><div class="num-label">Cost of an idle distribution</div></div>
+      <div class="num-card"><div class="num-val">1,000</div><div class="num-label">Free invalidation paths / month</div></div>
+      <div class="num-card"><div class="num-val">FREE</div><div class="num-label">Origin fetch (S3/EC2 → CloudFront)</div></div>
+    </div>
+
+    <div class="sub-section-title">🔐 OAC vs OAI — the #1 trap</div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Feature</th><th>OAC (use this)</th><th>OAI (legacy)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SSE-KMS objects</strong></td><td>✅ Supported</td><td><strong>❌ Cannot decrypt</strong></td></tr>
+        <tr><td>AWS Regions</td><td>All</td><td>Limited</td></tr>
+        <tr><td>Dynamic requests (POST/PUT)</td><td>✅ Yes</td><td>❌ No</td></tr>
+        <tr><td>AWS recommendation</td><td><strong>Default</strong></td><td>Deprecated</td></tr>
+        <tr><td>Exam rule</td><td colspan="2"><strong>When both appear → pick OAC. KMS-encrypted S3 origin → OAC is mandatory.</strong></td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sub-section-title">🍪 Signed URL vs Signed Cookie</div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th></th><th>Signed URL</th><th>Signed Cookie</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Grants access to</strong></td><td>One single file</td><td>Many files / whole area</td></tr>
+        <tr><td><strong>Trigger phrase</strong></td><td>"single file", "one download"</td><td>"premium subscriber, many videos", "HLS streaming"</td></tr>
+        <tr><td><strong>Change URLs?</strong></td><td>Yes (per file)</td><td>No</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Don't confuse</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td><strong>S3 Presigned URL</strong></td><td>Temp access to upload/download <em>directly from S3</em> (no AWS creds needed). "Upload to S3 without credentials".</td></tr>
+        <tr><td><strong>CloudFront Signed URL/Cookie</strong></td><td>Temp access to content <em>through the CDN</em> (caching + edge protection). "Distribute premium media globally with access control".</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sub-section-title">⚙️ CloudFront Functions vs Lambda@Edge</div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th></th><th>CloudFront Functions</th><th>Lambda@Edge</th></tr></thead>
+      <tbody>
+        <tr><td>Language</td><td>JavaScript only</td><td>Node.js / Python</td></tr>
+        <tr><td>Speed</td><td><strong>Sub-ms</strong>, millions/s</td><td>ms, slower</td></tr>
+        <tr><td>Triggers</td><td>Viewer req/resp only</td><td>All 4 (+ origin req/resp)</td></tr>
+        <tr><td>Network / SDK calls</td><td>❌ No</td><td>✅ Yes</td></tr>
+        <tr><td>Cost</td><td><strong>$0.10/1M</strong></td><td>$0.60/1M + duration (~6×)</td></tr>
+        <tr><td>Pick for</td><td>Header/URL rewrite, redirect, cache-key</td><td>Image resize, SSR, call API/DB, dynamic origin</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sub-section-title">🛡️ Security &amp; Features</div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Feature</th><th>What / when</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ACM cert</strong></td><td>For CloudFront → <strong>must be in us-east-1</strong> (ALB cert = same region as ALB)</td></tr>
+        <tr><td><strong>WAF</strong></td><td>Attach Web ACL → standard pattern <strong>CloudFront + WAF + Shield</strong></td></tr>
+        <tr><td><strong>Geo-restriction</strong></td><td>Allow/block by country (licensing/compliance)</td></tr>
+        <tr><td><strong>Field-level encryption</strong></td><td>Encrypt specific PII fields at edge; only backend with private key decrypts</td></tr>
+        <tr><td><strong>Origin Group</strong></td><td>Primary + secondary origin, failover on 4xx/5xx (GET/HEAD/OPTIONS only)</td></tr>
+        <tr><td><strong>Price Classes</strong></td><td>All / 200 (drop SA+Oceania) / 100 (US+CA+EU+IL, cheapest)</td></tr>
+        <tr><td><strong>Invalidation vs versioning</strong></td><td>Stale content → invalidate paths (1,000 free) <em>or</em> use versioned filenames (free, preferred)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- CF TRIGGERS -->
+  <div class="sub-content" id="cf-triggers">
+    <div class="sec-header"><h2>CloudFront — Triggers &amp; Traps</h2><p>Phrase → answer mappings, and the distractors designed to catch you.</p></div>
+    <div class="trigger-section">
+      <h3>⚡ Trigger Phrases</h3>
+      <div class="trigger-item"><div class="trigger-kw">"reduce latency, global users, static content"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudFront</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"lock S3 to CDN, SSE-KMS encrypted objects"</div><div class="trigger-arrow">→</div><div class="trigger-ans">OAC (mandatory for KMS)</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"single file, temporary access"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Signed URL</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"premium subscriber, many videos / HLS"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Signed Cookies</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"upload to S3 without AWS credentials"</div><div class="trigger-arrow">→</div><div class="trigger-ans">S3 Presigned URL (not CloudFront)</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"sub-ms header/URL rewrite, cheapest, scale"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudFront Functions</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"call external API / resize image at edge"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Lambda@Edge</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"custom-domain HTTPS on CloudFront"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ACM cert in us-east-1</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"failover to secondary origin on 5xx"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Origin Group</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"restrict content by country"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Geo-restriction</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"block SQLi / rate-limit / bots on web app"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudFront + WAF</div></div>
+    </div>
+    <div class="trigger-section">
+      <h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
+      <div class="trigger-item trap-item"><div class="trigger-kw">OAI chosen for SSE-KMS objects</div><div class="trigger-arrow">✗</div><div class="trigger-ans">OAI can't decrypt KMS — must use OAC</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">ACM cert in the origin's region for CloudFront</div><div class="trigger-arrow">✗</div><div class="trigger-ans">CloudFront cert is always us-east-1</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Lambda@Edge for a simple header rewrite</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Over-engineered/costlier — CloudFront Functions</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Route 53 failover where origin HA is needed fast</div><div class="trigger-arrow">✗</div><div class="trigger-ans">CloudFront Origin Group (DNS failover is slower)</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">"Users see old content" → re-deploy origin</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Cache TTL — invalidate or version filenames</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Public S3 bucket so CloudFront can read it</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Keep private + OAC; public bypasses the CDN</div></div>
+    </div>
+  </div>
+
+  <!-- CF QUESTIONS -->
+  <div class="sub-content" id="cf-questions">
+    <div class="sec-header"><h2>CloudFront — Practice Questions</h2><p>Select an answer, then <strong>Check Answer</strong> for the explanation. Multi-answer questions are labelled.</p></div>
+    <div id="qlist-cf"></div>
+  </div>
+</div>
+
+<!-- ══════════════ GLOBAL ACCELERATOR PANEL ══════════════ -->
+<div id="svc-ga" class="svc-panel">
+  <nav class="sub-nav">
+    <button class="sub-tab active" data-svc="ga" data-sub="cheat">📋 Cheat Sheets</button>
+    <button class="sub-tab" data-svc="ga" data-sub="triggers">⚡ Triggers &amp; Traps</button>
+    <button class="sub-tab" data-svc="ga" data-sub="questions">🎯 Practice Questions</button>
+  </nav>
+
+  <!-- GA CHEAT -->
+  <div class="sub-content active" id="ga-cheat">
+    <div class="sec-header"><h2>Global Accelerator — Cheat Sheet</h2><p>The facts, the endpoints, and the all-important CloudFront comparison.</p></div>
+
+    <div class="sub-section-title">🔢 Numbers &amp; Facts</div>
+    <div class="numbers-grid">
+      <div class="num-card"><div class="num-val">2</div><div class="num-label">Static anycast IPs you get</div></div>
+      <div class="num-card"><div class="num-val">~30s</div><div class="num-label">Regional failover (no DNS TTL)</div></div>
+      <div class="num-card"><div class="num-val">$18/mo</div><div class="num-label">Fixed floor (even at zero traffic)</div></div>
+      <div class="num-card"><div class="num-val">TCP/UDP</div><div class="num-label">Any protocol (incl. non-HTTP)</div></div>
+      <div class="num-card"><div class="num-val">NO cache</div><div class="num-label">It routes, never stores</div></div>
+      <div class="num-card"><div class="num-val">Backbone</div><div class="num-label">Traffic rides AWS private network</div></div>
+    </div>
+
+    <div class="sub-section-title">🎯 What can be an endpoint?</div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>✅ Valid endpoints</th><th>❌ NOT valid</th></tr></thead>
+      <tbody>
+        <tr><td>Application Load Balancer (ALB)</td><td><strong>S3 bucket</strong></td></tr>
+        <tr><td>Network Load Balancer (NLB)</td><td><strong>CloudFront distribution</strong></td></tr>
+        <tr><td>EC2 instance</td><td>(for static/HTTP caching → use CloudFront)</td></tr>
+        <tr><td>Elastic IP (EIP)</td><td></td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sub-section-title">⚙️ Configuration hierarchy</div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Accelerator</strong></td><td>Top resource → gives 2 static anycast IPs</td></tr>
+        <tr><td><strong>Listener</strong></td><td>Port + protocol (TCP/UDP)</td></tr>
+        <tr><td><strong>Endpoint Group</strong></td><td>Per Region; has a <strong>traffic dial</strong> (% of traffic to region)</td></tr>
+        <tr><td><strong>Endpoint</strong></td><td>ALB/NLB/EC2/EIP; has a <strong>weight</strong></td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sub-section-title">⚔️ CloudFront vs Global Accelerator</div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th></th><th>CloudFront</th><th>Global Accelerator</th></tr></thead>
+      <tbody>
+        <tr><td>Protocol</td><td>HTTP/HTTPS only</td><td><strong>Any TCP/UDP</strong></td></tr>
+        <tr><td>Caching</td><td>✅ Yes</td><td>❌ No</td></tr>
+        <tr><td>Static IPs</td><td>❌ No</td><td>✅ 2 anycast IPs</td></tr>
+        <tr><td>Endpoints</td><td>S3, ALB, EC2, HTTP origins</td><td>ALB, NLB, EC2, EIP (not S3/CF)</td></tr>
+        <tr><td>Failover</td><td>Origin Group (HTTP)</td><td>~30s regional, no DNS</td></tr>
+        <tr><td>Cost shape</td><td>No floor; can lower egress</td><td>~$18/mo + per-GB premium</td></tr>
+        <tr><td>Best for</td><td>Cacheable web/media</td><td>Non-HTTP, static IP, gaming/VoIP, failover</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>Memory hook</th></tr></thead>
+      <tbody><tr><td><strong>CloudFront caches HTTP. Global Accelerator races TCP/UDP.</strong> Both ride AWS edges + get free Shield Standard. GA never caches and never saves transfer cost — it's a performance/availability tool.</td></tr></tbody>
+    </table></div>
+  </div>
+
+  <!-- GA TRIGGERS -->
+  <div class="sub-content" id="ga-triggers">
+    <div class="sec-header"><h2>Global Accelerator — Triggers &amp; Traps</h2><p>The GA answer phrases and the CloudFront-confusion traps.</p></div>
+    <div class="trigger-section">
+      <h3>⚡ Trigger Phrases</h3>
+      <div class="trigger-item"><div class="trigger-kw">"static IP addresses, work globally"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Global Accelerator (2 anycast IPs)</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"non-HTTP / UDP / gaming / VoIP / IoT / MQTT"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Global Accelerator</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"fast failover without DNS propagation"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Global Accelerator (~30s)</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"partner firewall must whitelist fixed IPs"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Global Accelerator</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"lowest latency over AWS backbone, any port"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Global Accelerator</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"gradually shift traffic between regions"</div><div class="trigger-arrow">→</div><div class="trigger-ans">GA endpoint-group traffic dials</div></div>
+    </div>
+    <div class="trigger-section">
+      <h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
+      <div class="trigger-item trap-item"><div class="trigger-kw">GA to "cache static content globally"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">GA never caches → CloudFront</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">GA in front of an S3 bucket / CloudFront</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Not valid endpoints → use CloudFront</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">GA chosen "to reduce data-transfer cost"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">GA ADDS a per-GB premium</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Route 53 failover for sub-minute RTO</div><div class="trigger-arrow">✗</div><div class="trigger-ans">DNS TTL delays it → GA fails over in ~30s</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">"ALB has a static IP we can whitelist"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">ALB IPs change → NLB or GA for static IP</div></div>
+    </div>
+  </div>
+
+  <!-- GA QUESTIONS -->
+  <div class="sub-content" id="ga-questions">
+    <div class="sec-header"><h2>Global Accelerator — Practice Questions</h2><p>Select an answer, then <strong>Check Answer</strong> for the explanation.</p></div>
+    <div id="qlist-ga"></div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<footer style="text-align:center;padding:30px 20px 50px;color:#6a6560;font-size:14px;">
+  SAA-C03 Exam Cracker · Section 15 — CloudFront &amp; Global Accelerator · Document 2 of 2 · Study Series by Sanky
+</footer>
+
+<script>
+// ════════════ QUESTION DATA ════════════
+const questions = [
+  // ───────── CLOUDFRONT ─────────
+  {id:1,svc:'cf',topic:'CloudFront',diff:'hard',
+   q:'A company serves images from a private S3 bucket through CloudFront. The objects are encrypted with <strong>SSE-KMS</strong> using a customer-managed key. After switching the distribution to use an Origin Access Identity (OAI), users get <strong>AccessDenied</strong> errors. What is the correct fix?',
+   opts:['Make the S3 bucket public and rely on the bucket policy','Replace the OAI with Origin Access Control (OAC), which supports SSE-KMS','Disable SSE-KMS and use SSE-S3 instead so OAI can read the objects','Add the OAI to the KMS key policy as a key user'],
+   correct:1,
+   exp:'<strong>OAI cannot decrypt SSE-KMS objects</strong> — this is the single most-tested CloudFront fact. <strong>OAC (Origin Access Control)</strong> supports SSE-KMS, all Regions, and dynamic requests, and is the AWS-recommended replacement. You keep the bucket private and grant access to the distribution via OAC. Making the bucket public (A) defeats the purpose and bypasses the CDN; downgrading encryption (C) weakens security to fit a legacy tool; OAI isn\'t added to KMS key policies the way a role is (D).'},
+
+  {id:2,svc:'cf',topic:'Security',diff:'hard',
+   q:'A streaming service lets <strong>premium subscribers</strong> watch a large library of videos. Each video is delivered as many HLS segment files. They need to grant an authenticated subscriber access to <strong>all</strong> of their entitled content through CloudFront <strong>without generating a separate URL for every segment</strong>. Which mechanism fits best?',
+   opts:['CloudFront Signed URLs','CloudFront Signed Cookies','S3 Presigned URLs','Public objects with WAF rate limiting'],
+   correct:1,
+   exp:'<strong>Signed Cookies</strong> grant access to <em>multiple</em> files (a whole subscriber area or an HLS stream with many segments) with a single signed cookie — no need to sign every file. <strong>Signed URLs (A)</strong> grant access to a single file each, which is impractical for HLS. <strong>S3 presigned URLs (C)</strong> bypass CloudFront entirely (no edge caching/protection) and are for direct S3 access. Public objects (D) remove access control. Trigger: "premium subscriber, many videos" → Signed Cookies.'},
+
+  {id:3,svc:'cf',topic:'Security',diff:'medium',
+   q:'An architect configures CloudFront to serve <code>app.example.com</code> over HTTPS using an ACM certificate. The origin is an ALB in <code>eu-west-1</code>. CloudFront rejects the certificate. What is the most likely cause?',
+   opts:['The certificate must be in the same region as the ALB (eu-west-1)','The certificate must be imported, not ACM-issued','The certificate for a CloudFront distribution must be in us-east-1','CloudFront does not support custom domain certificates'],
+   correct:2,
+   exp:'For <strong>CloudFront</strong>, the ACM certificate <strong>must be created/imported in us-east-1 (N. Virginia)</strong>, regardless of where the origin or users are. (For an ALB, the cert lives in the same region as the ALB — which is the distractor in option A.) This region requirement is a frequent exam trap. ACM-issued public certs auto-renew and work fine (B is false); CloudFront fully supports custom-domain certs (D is false).'},
+
+  {id:4,svc:'cf',topic:'Edge',diff:'hard',
+   q:'A team needs to inspect every viewer request and, based on a header, rewrite the URL path before CloudFront looks in its cache. The logic is simple string manipulation, must run at <strong>massive scale with the lowest possible cost and sub-millisecond latency</strong>, and needs no network calls. Which option is BEST?',
+   opts:['Lambda@Edge on the origin request trigger','CloudFront Functions on the viewer request trigger','An EC2 fleet behind the origin doing the rewrite','API Gateway with a Lambda authorizer'],
+   correct:1,
+   exp:'<strong>CloudFront Functions</strong> are purpose-built for this: JavaScript, <strong>sub-millisecond</strong> execution, millions of requests/second, ~6× cheaper than Lambda@Edge ($0.10 vs $0.60 per 1M), running on <strong>viewer request/response</strong>. They\'re ideal for header/URL rewrites and cache-key normalisation that need <em>no</em> network/SDK access. <strong>Lambda@Edge (A)</strong> is heavier, slower, and pricier — over-engineered here. The EC2/API Gateway options add latency and ops for a trivial edge transform.'},
+
+  {id:5,svc:'cf',topic:'Edge',diff:'hard',
+   q:'An application must, at the edge, resize images on the fly and call an <strong>external REST API</strong> to fetch personalization data before responding. Which CloudFront edge-compute option supports this?',
+   opts:['CloudFront Functions','Lambda@Edge','CloudFront KeyValueStore','S3 Object Lambda'],
+   correct:1,
+   exp:'<strong>Lambda@Edge</strong> supports Node.js/Python, <strong>network and SDK calls</strong>, larger compute/memory, and runs on all four triggers including origin request/response — so it can resize images and call external APIs. <strong>CloudFront Functions (A)</strong> cannot make network calls and are limited to lightweight JS. S3 Object Lambda (D) transforms objects on GET <em>from S3</em>, not arbitrary edge personalization with external API calls. Rule: needs a network/SDK call or heavy logic → Lambda@Edge.'},
+
+  {id:6,svc:'cf',topic:'CloudFront',diff:'hard',
+   q:'A site serves content from a primary S3 bucket via CloudFront. If the primary bucket returns <strong>5xx errors</strong>, requests should automatically be served from a secondary S3 bucket in another Region — with the fastest possible failover and least operational overhead. What should the architect configure?',
+   opts:['Route 53 failover routing between the two buckets','A CloudFront Origin Group with the two buckets as primary and secondary','S3 Cross-Region Replication from primary to secondary','A Lambda@Edge function that retries the second bucket on error'],
+   correct:1,
+   exp:'A <strong>CloudFront Origin Group</strong> defines a primary and secondary origin; on the failure status codes you specify (e.g. 500/502/503/504, 403/404), CloudFront automatically retries the secondary — failover happens <em>at the edge</em>, faster than DNS. <strong>Route 53 failover (A)</strong> is DNS-level and slower (TTL-bound). <strong>CRR (C)</strong> copies data for durability but doesn\'t reroute requests. Lambda@Edge (D) works but is unnecessary custom code versus a built-in feature. Note: origin failover covers GET/HEAD/OPTIONS.'},
+
+  {id:7,svc:'cf',topic:'Caching',diff:'medium',
+   q:'After deploying a new version of their CSS, users still load the <strong>old stylesheet</strong> for hours. The team wants a sustainable approach that avoids paying for purges on every deploy. What is the BEST long-term solution?',
+   opts:['Create a CloudFront invalidation for /style.css on every deploy','Set the cache TTL to 0 so nothing is ever cached','Use versioned filenames (e.g. style.a1b2c3.css) so new content has a new URL','Disable CloudFront and serve directly from S3'],
+   correct:2,
+   exp:'The stale content is the edge serving its cached copy until TTL expires. <strong>Versioned filenames</strong> give each new build a brand-new URL, so it never collides with a cached object — no purge needed, fully cacheable, and <strong>free</strong>. <strong>Invalidations (A)</strong> work but cost $0.005/path beyond 1,000/month and add deploy friction. TTL 0 (B) destroys CDN performance and raises origin load/cost. Disabling CloudFront (D) loses all CDN benefits. Versioning is the architect\'s preferred pattern.'},
+
+  {id:8,svc:'cf',topic:'Security',diff:'medium',
+   q:'A media company is contractually required to make certain videos available <strong>only to viewers in specific countries</strong>. Which CloudFront capability enforces this with the least effort?',
+   opts:['AWS WAF geo-match rules only','CloudFront Geo-restriction (allowlist/blocklist by country)','Signed URLs with country claims','Lambda@Edge reading the viewer IP and blocking manually'],
+   correct:1,
+   exp:'<strong>CloudFront Geo-restriction</strong> lets you allowlist or blocklist whole countries directly on the distribution using a geo-IP database — the simplest built-in fit for licensing/compliance by country. WAF geo-match (A) can also block by country and is valid for more complex rule sets, but native geo-restriction is the least-effort, most direct answer for "only available in these countries." Signed URLs (C) don\'t do geography. Lambda@Edge (D) is unnecessary custom code.'},
+
+  {id:9,svc:'cf',topic:'Security',diff:'medium',type:'multi',
+   q:'<strong>(Select TWO)</strong> A global web application behind CloudFront needs protection against SQL injection, abusive request floods, and bad bots, plus baseline DDoS protection. Which statements are correct?',
+   opts:['Attach an AWS WAF Web ACL to the CloudFront distribution for SQLi, rate-based, and bot rules','CloudFront includes AWS Shield Standard automatically at no extra cost','You must attach WAF to the origin ALB because WAF cannot attach to CloudFront','Global Accelerator should replace CloudFront to add WAF protection','Shield Standard requires a separate paid subscription to work with CloudFront'],
+   correct:[0,1],
+   exp:'<strong>AWS WAF attaches directly to CloudFront</strong> (also ALB, API Gateway, AppSync, Cognito — but NOT NLB), giving SQLi, rate-based, and bot protection at the edge. <strong>Shield Standard is automatic and free</strong> on CloudFront for baseline network/transport DDoS defense. The standard pattern is CloudFront + WAF + Shield. Option C is false (WAF <em>does</em> attach to CloudFront); D is false (GA isn\'t a WAF target and doesn\'t replace a CDN); E is false (Shield Standard is free — only Shield Advanced is paid).'},
+
+  {id:10,svc:'cf',topic:'CloudFront',diff:'hard',
+   q:'A startup serves a large, globally popular public dataset from an S3 bucket. Their AWS bill is dominated by <strong>S3 data-transfer-out to the internet</strong>. They want to cut cost AND improve performance without changing the data. What should they do?',
+   opts:['Move the bucket to S3 One Zone-IA to lower storage cost','Put CloudFront in front of the bucket — origin-to-edge transfer is free and CloudFront egress is cheaper at volume','Enable S3 Transfer Acceleration on the bucket','Switch the bucket to Requester Pays so downloaders cover the cost'],
+   correct:1,
+   exp:'Fronting the bucket with <strong>CloudFront</strong> both speeds delivery (edge caching) and <em>lowers</em> the bill: <strong>data transfer from the S3 origin into CloudFront is free</strong>, and CloudFront\'s per-GB egress undercuts raw S3 egress at volume — plus repeat requests are served from cache, never re-fetching from S3. One Zone-IA (A) cuts storage, not the dominant transfer cost. Transfer Acceleration (C) speeds <em>uploads</em>, not downloads, and costs more. Requester Pays (D) shifts cost to users but is often unacceptable for a public dataset and doesn\'t improve performance.'},
+
+  {id:11,svc:'cf',topic:'Security',diff:'medium',
+   q:'A bank wants specific sensitive fields (like a card number) in HTTPS POST bodies to remain <strong>encrypted from the edge all the way to the one backend service</strong> permitted to read them, so intermediate components never see plaintext. Which CloudFront feature provides this?',
+   opts:['Field-level encryption','SSL/TLS termination at the edge','Signed cookies','AWS WAF body inspection'],
+   correct:0,
+   exp:'<strong>Field-level encryption</strong> encrypts specific named fields at the CloudFront edge using a public key; only the backend component holding the matching private key can decrypt them. The data stays encrypted as it traverses your application tiers, so logs/intermediaries never see plaintext for those fields. TLS termination (B) only protects data in transit on each hop and decrypts at the edge. Signed cookies (C) are about access, not field encryption. WAF (D) inspects/blocks, it doesn\'t provide end-to-end field encryption.'},
+
+  {id:12,svc:'cf',topic:'CloudFront',diff:'easy',
+   q:'A company\'s users are almost entirely in the US, Canada, and Europe. They want to minimise CloudFront cost and accept that the rare visitor elsewhere may have slightly higher latency. Which setting helps?',
+   opts:['Price Class All','Price Class 100 (US, Canada, Europe, Israel)','Disable HTTPS to save on requests','Set TTL to the maximum everywhere'],
+   correct:1,
+   exp:'<strong>Price Class 100</strong> restricts content distribution to the cheapest edge locations (US, Canada, Europe, Israel), lowering data-transfer cost; users elsewhere are still served, just from those edges (a bit more latency). Price Class All (A) uses every edge for best global performance at higher cost. Disabling HTTPS (C) is a security regression and not how you save meaningfully. Max TTL (D) helps cache efficiency but isn\'t the geographic cost dial the question asks about.'},
+
+  // ───────── GLOBAL ACCELERATOR ─────────
+  {id:13,svc:'ga',topic:'Global Accelerator',diff:'hard',
+   q:'A multiplayer game backend uses <strong>UDP</strong> and runs on NLBs in three Regions. Players worldwide complain about latency and jitter. The studio also needs <strong>two fixed IP addresses</strong> that corporate networks can whitelist, and fast failover if a regional cluster dies. Which service should they use?',
+   opts:['Amazon CloudFront','AWS Global Accelerator','Route 53 latency-based routing','Amazon API Gateway'],
+   correct:1,
+   exp:'This is textbook <strong>Global Accelerator</strong>: it supports <strong>UDP</strong> (non-HTTP), provides <strong>2 static anycast IPs</strong> for whitelisting, routes players onto the AWS backbone at the nearest edge to cut latency/jitter, and fails traffic over between Regions in ~30 seconds via health checks. <strong>CloudFront (A)</strong> is HTTP-only and caches — useless for live UDP. <strong>Route 53 (C)</strong> is DNS-only (no static IP, TTL-bound failover). API Gateway (D) is for HTTP/REST/WebSocket APIs, not raw UDP game traffic.'},
+
+  {id:14,svc:'ga',topic:'Compare',diff:'hard',
+   q:'An architect needs to deliver a <strong>static marketing website with images and video</strong> to a global audience at the lowest latency and cost. A colleague suggests AWS Global Accelerator. Why is that the WRONG choice, and what is right?',
+   opts:['GA is correct — it caches static content at the edge','GA does not cache and cannot use S3 as an endpoint; CloudFront is the right CDN for cacheable static content','Both are equivalent for static websites','GA is right because it gives static IPs which static sites need'],
+   correct:1,
+   exp:'<strong>Global Accelerator never caches</strong> (it only routes packets faster) and <strong>cannot use S3 or CloudFront as an endpoint</strong> — so it does nothing for a static site and would even add a per-GB premium. <strong>CloudFront</strong> is the correct CDN: it caches images/video at the edge, fetches from S3 for free, and lowers egress cost. "Static content / cacheable / website" is always a CloudFront signal, never GA. Static sites don\'t need static IPs (D is a non-reason).'},
+
+  {id:15,svc:'ga',topic:'Global Accelerator',diff:'hard',
+   q:'A payments platform runs active-active in two Regions behind ALBs. Regulators require <strong>failover in well under a minute</strong>. With their current Route 53 failover, clients keep hitting the failed Region for minutes after an outage. What change fixes this?',
+   opts:['Lower the Route 53 health check interval to 10 seconds','Reduce the DNS record TTL to 0 so clients never cache it','Put AWS Global Accelerator in front of the two ALBs for ~30-second, DNS-independent failover','Switch from ALB to NLB and keep Route 53 failover'],
+   correct:2,
+   exp:'The root cause is <strong>DNS caching</strong>: clients (and resolvers) cache the record for the TTL and keep using the dead Region. <strong>Global Accelerator</strong> uses fixed anycast IPs and health-checks endpoints itself, rerouting at the network layer in ~30 seconds with <strong>no DNS dependency</strong> — solving sub-minute failover. Lowering TTL to 0 (B) is widely ignored by resolvers and hammers DNS; faster health checks (A) don\'t fix client-side DNS caching; changing LB type (D) doesn\'t remove the DNS-TTL problem.'},
+
+  {id:16,svc:'ga',topic:'Global Accelerator',diff:'medium',
+   q:'A B2B SaaS exposes an API on an ALB. Enterprise customers\' firewalls require <strong>two stable IP addresses</strong> to allowlist, but the ALB\'s IPs change over time and the customers cannot allowlist a DNS name. What is the simplest fix?',
+   opts:['Assign an Elastic IP directly to the ALB','Put Global Accelerator in front of the ALB to get 2 static anycast IPs','Use Route 53 with a low TTL alias record','Replace the ALB with a public CloudFront distribution'],
+   correct:1,
+   exp:'<strong>Global Accelerator</strong> provides <strong>2 static anycast IPs</strong> that never change, sitting in front of the ALB — exactly what firewall allowlisting needs, while the ALB and app can still scale/redeploy. You <strong>cannot assign an EIP to an ALB</strong> (A is invalid; EIPs attach to NLBs/EC2, not ALBs). A DNS name (C) is what customers said they can\'t allowlist. CloudFront (D) is HTTP-caching with no static IPs and doesn\'t solve the whitelisting requirement.'},
+
+  {id:17,svc:'ga',topic:'Global Accelerator',diff:'medium',type:'multi',
+   q:'<strong>(Select TWO)</strong> Which resources can be configured as endpoints behind an AWS Global Accelerator?',
+   opts:['Application Load Balancer (ALB)','Amazon S3 bucket','Network Load Balancer (NLB)','Amazon CloudFront distribution','Amazon SQS queue'],
+   correct:[0,2],
+   exp:'Global Accelerator endpoints are <strong>ALB, NLB, EC2 instances, and Elastic IPs</strong>. So <strong>ALB</strong> and <strong>NLB</strong> are correct. <strong>S3 buckets (B)</strong> and <strong>CloudFront distributions (D)</strong> are explicitly NOT supported — for static/HTTP content you use CloudFront instead. SQS (E) is a messaging queue, never a GA endpoint. Knowing the valid-endpoint list is a common exam discriminator.'},
+
+  {id:18,svc:'ga',topic:'Global Accelerator',diff:'medium',
+   q:'During a regional migration, an operations team wants to <strong>gradually shift</strong> a percentage of production traffic from the eu-west-1 endpoint group to eu-central-1, watching error rates as they go. Which Global Accelerator capability enables this?',
+   opts:['Endpoint weights set to 0','Endpoint group traffic dials (percentage per Region)','Listener protocol switching','Route 53 weighted records on the accelerator'],
+   correct:1,
+   exp:'Each <strong>endpoint group</strong> (one per Region) has a <strong>traffic dial</strong> that controls the percentage of traffic directed to that Region — perfect for gradual, observable regional shifts (e.g. 90/10 → 50/50 → 0/100). <strong>Endpoint weights (A)</strong> tune distribution <em>among endpoints within</em> a group, not the cross-Region split, and "0" would just drain one endpoint. Listener protocol (C) is unrelated. You don\'t front GA\'s anycast IPs with Route 53 weighting for this (D) — the dial is the native control.'},
+
+  {id:19,svc:'ga',topic:'Compare',diff:'hard',
+   q:'A global company runs a large <strong>cacheable web storefront</strong> AND a separate <strong>real-time multiplayer feature using UDP</strong>. Which architecture best serves BOTH efficiently?',
+   opts:['Use Global Accelerator for everything to keep one entry point','Use CloudFront for everything since it is a CDN','CloudFront for the cacheable web storefront, and Global Accelerator in front of NLBs for the UDP real-time feature','Route 53 latency routing for both, with no CloudFront or GA'],
+   correct:2,
+   exp:'Use the right tool per traffic type: <strong>CloudFront</strong> caches and accelerates the HTTP storefront (free origin fetch, lower egress), while <strong>Global Accelerator</strong> fronts the NLBs for the uncacheable UDP real-time feature (backbone routing, static IPs, fast failover). They complement each other. GA-for-everything (A) can\'t cache the storefront and adds premium cost; CloudFront-for-everything (B) can\'t carry UDP; Route 53 alone (D) provides neither caching nor backbone acceleration nor fast failover.'},
+
+  {id:20,svc:'ga',topic:'Global Accelerator',diff:'medium',
+   q:'An architect proposes Global Accelerator primarily to <strong>reduce the company\'s data-transfer costs</strong> for a high-volume HTTP download service. Is this a sound justification?',
+   opts:['Yes — GA caches downloads at the edge, cutting transfer','Yes — GA egress is always cheaper than CloudFront','No — GA adds a per-GB premium and never caches; for cacheable HTTP downloads, CloudFront is the cost/performance choice','No — GA cannot handle HTTP at all'],
+   correct:2,
+   exp:'<strong>Cost reduction is never a reason to choose Global Accelerator</strong>: it has a ~$18/month fixed floor and <strong>adds</strong> a per-GB Data-Transfer-Premium on top of normal transfer, and it does <strong>not cache</strong>. For high-volume cacheable HTTP downloads, <strong>CloudFront</strong> both lowers egress (free origin fetch + caching) and improves performance. (GA <em>can</em> carry HTTP/TCP — so D\'s absolute claim is wrong — but you\'d use it for static IPs / failover, not savings.)'},
+
+  {id:21,svc:'ga',topic:'Global Accelerator',diff:'easy',
+   q:'Which statement about how Global Accelerator improves performance is correct?',
+   opts:['It caches responses in 600+ edge locations','It routes traffic over the AWS global backbone from the nearest edge, reducing public-internet hops','It compresses TCP payloads to reduce bytes','It replaces the need for load balancers in each Region'],
+   correct:1,
+   exp:'Global Accelerator\'s performance win comes from getting user traffic onto the <strong>AWS private global backbone</strong> at the <strong>nearest edge</strong>, then carrying it to your endpoints — avoiding the unpredictable public internet (fewer hops, less jitter). It does <strong>not cache</strong> (A is CloudFront), doesn\'t compress payloads (C), and still routes <em>to</em> your load balancers (it doesn\'t replace them — D). It accelerates and stabilises the network path; your ALB/NLB still distributes within a Region.'},
+];
+
+// ════════════ ENGINE ════════════
+let state = {};
+let correctCount = 0, answeredCount = 0;
+function initState(){ questions.forEach(q => state[q.id] = {answered:false,correct:false,marked:false,selected:[]}); correctCount=0; answeredCount=0; }
+initState();
+
+const topicClass = {
+  'CloudFront':'topic-cloudfront','Security':'topic-security','Edge':'topic-edge',
+  'Caching':'topic-caching','Global Accelerator':'topic-ga','Compare':'topic-compare'
+};
+
+// Top-level service tabs
+document.querySelectorAll('.svc-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const svc = t.dataset.svc;
+    document.querySelectorAll('.svc-tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.svc-panel').forEach(p => p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('svc-'+svc).classList.add('active');
+    if(history.replaceState) history.replaceState(null,'','#'+svc);
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+// Sub tabs (cheat / triggers / questions) within a service
+document.querySelectorAll('.sub-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const svc = t.dataset.svc, sub = t.dataset.sub;
+    const panel = document.getElementById('svc-'+svc);
+    panel.querySelectorAll('.sub-tab').forEach(x => x.classList.remove('active'));
+    panel.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(svc+'-'+sub).classList.add('active');
+  });
+});
+
+function updateScore(){
+  document.getElementById('scoreDisplay').textContent = correctCount + ' / ' + answeredCount;
+  if(answeredCount > 0){
+    document.getElementById('scorePercent').textContent = Math.round((correctCount/answeredCount)*100) + '% correct';
+    document.getElementById('progressFill').style.width = Math.round((answeredCount/questions.length)*100) + '%';
+  } else {
+    document.getElementById('scorePercent').textContent = '—';
+    document.getElementById('progressFill').style.width = '0%';
+  }
+}
+
+function renderQuestion(q){
+  const s = state[q.id];
+  const isMulti = Array.isArray(q.correct);
+  const cardClass = s.answered ? (s.correct ? 'answered-correct' : 'answered-wrong') : '';
+  const markedClass = s.marked ? 'marked' : '';
+  const optionsHTML = q.opts.map((opt,i) => {
+    let cls = 'option';
+    if(isMulti) cls += ' multi';
+    if(s.answered){
+      cls += ' disabled';
+      const correctArr = Array.isArray(q.correct) ? q.correct : [q.correct];
+      if(correctArr.includes(i)) cls += ' correct-reveal';
+      else if(s.selected.includes(i)) cls += ' wrong-reveal';
+    } else if(s.selected.includes(i)) cls += ' selected';
+    return `<li class="${cls}" onclick="selectOption(${q.id},${i})"><span class="option-letter">${String.fromCharCode(65+i)}</span><span>${opt}</span></li>`;
+  }).join('');
+  const correctArr = Array.isArray(q.correct) ? q.correct : [q.correct];
+  const correctLabels = correctArr.map(i => String.fromCharCode(65+i)+'. '+q.opts[i]).join(' | ');
+  const resultTag = s.answered ? (s.correct ? '<div class="exp-correct-tag">✅ Correct</div>' : `<div class="exp-wrong-tag">❌ Incorrect</div><div class="correct-ans">✓ Correct: ${correctLabels}</div>`) : '';
+  const typeHint = isMulti ? '<span class="q-type-badge">— select two</span>' : '';
+  return `<div class="q-card ${cardClass} ${markedClass}" id="qcard-${q.id}">
+    <div class="q-meta">
+      <span class="q-num">Q${q.id}</span>
+      <span class="q-topic-tag ${topicClass[q.topic]||'topic-cloudfront'}">${q.topic}</span>
+      <span class="q-diff diff-${q.diff}">${q.diff}</span>
+      ${typeHint}
+      <button class="q-mark-btn ${s.marked?'marked':''}" onclick="toggleMark(${q.id})" title="Mark for review">${s.marked?'★':'☆'}</button>
+    </div>
+    <div class="q-text">${q.q}</div>
+    <ul class="options-list">${optionsHTML}</ul>
+    <button class="submit-btn ${s.answered?'hide':''}" onclick="checkAnswer(${q.id})">Check Answer</button>
+    <div class="explanation ${s.answered?'show':''}" id="exp-${q.id}">
+      <div class="exp-label">Explanation</div>${resultTag}<p>${q.exp}</p>
+    </div>
+  </div>`;
+}
+
+function renderAll(){
+  ['cf','ga'].forEach(svc => {
+    const list = document.getElementById('qlist-'+svc);
+    const qs = questions.filter(q => q.svc === svc);
+    list.innerHTML = qs.map(renderQuestion).join('');
+  });
+}
+function rerenderCard(qid){
+  const q = questions.find(q => q.id === qid);
+  const el = document.getElementById('qcard-'+qid);
+  if(el && q) el.outerHTML = renderQuestion(q);
+}
+function selectOption(qid, idx){
+  const s = state[qid]; if(s.answered) return;
+  const q = questions.find(q => q.id === qid);
+  if(Array.isArray(q.correct)){
+    if(s.selected.includes(idx)) s.selected = s.selected.filter(i => i !== idx);
+    else s.selected.push(idx);
+  } else s.selected = [idx];
+  rerenderCard(qid);
+}
+function checkAnswer(qid){
+  const s = state[qid]; if(s.answered || s.selected.length === 0) return;
+  const q = questions.find(q => q.id === qid);
+  const correctStr = Array.isArray(q.correct) ? q.correct.slice().sort().join(',') : String(q.correct);
+  const selStr = Array.isArray(q.correct) ? s.selected.slice().sort().join(',') : String(s.selected[0]);
+  s.answered = true; s.correct = (correctStr === selStr);
+  answeredCount++; if(s.correct) correctCount++;
+  updateScore(); rerenderCard(qid);
+  setTimeout(() => { const e = document.getElementById('exp-'+qid); if(e) e.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+}
+function toggleMark(qid){ state[qid].marked = !state[qid].marked; rerenderCard(qid); }
+function resetAll(){ if(!confirm('Reset all answers and scores?')) return; initState(); updateScore(); renderAll(); }
+function revealAll(){
+  if(!confirm('Reveal answers for all questions?')) return;
+  questions.forEach(q => { const s = state[q.id]; if(!s.answered){ s.answered = true; s.selected = Array.isArray(q.correct)?q.correct:[q.correct]; s.correct = true; answeredCount++; correctCount++; } });
+  updateScore(); renderAll();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderAll(); updateScore();
+  const h = (location.hash||'').replace('#','');
+  if(h === 'ga' || h === 'cf'){ document.querySelector('.svc-tab[data-svc="'+h+'"]').click(); }
+});
+</script>
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class="cnav-current"><a href="02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
+</body>
+</html>

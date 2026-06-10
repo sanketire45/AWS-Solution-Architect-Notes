@@ -666,13 +666,28 @@
 <div class="hero">
   <div class="eyebrow">SAA-C03 · Companion to Masterclass No. 04</div>
   <h1>RDS <span class="amp">·</span> Aurora <span class="amp">·</span> ElastiCache</h1>
-  <p class="subtitle">Trigger phrases, decision rules, the numbers you must memorise, the traps that catch everyone, and 22 SAA-style scenario questions.</p>
+  <p class="subtitle">Trigger phrases, decision rules, the numbers you must memorise, the traps that catch everyone, and 24 SAA-style scenario questions.</p>
   <div class="meta">
     <span>Trigger Maps</span>
     <span>Decision Trees</span>
-    <span>22 Practice Questions</span>
+    <span>24 Practice Questions</span>
   </div>
 </div>
+
+<!-- ============== EXAM WEIGHTAGE ============== -->
+<section style="max-width:1000px;margin:24px auto 0;padding:0 24px;">
+  <div style="background:var(--bg-card);border:1px solid #2a343d;border-left:4px solid var(--amber);border-radius:14px;padding:22px 26px;">
+    <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:700;">📊 Exam Weightage — Databases in SAA-C03</div>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#cdd5dc;"><strong style="color:#fff;">Databases are one of the most-tested service families</strong> (alongside IAM, S3, and VPC). RDS / Aurora / ElastiCache sit mainly in <strong style="color:#fff;">Resilient (26%)</strong> and <strong style="color:#fff;">High-Performing (24%)</strong>, and touch Cost too. Expect roughly <strong style="color:var(--green);">5–8 of the 65 questions</strong> to hinge on database choices. <span style="color:#8a929c;">(community estimate; AWS doesn't publish per-service counts)</span></p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;">
+      <div style="background:var(--bg-soft);border:1px solid #2a343d;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:25px;font-weight:800;color:var(--green);line-height:1;">~5–8</div><div style="font-size:12px;color:#8a929c;margin-top:6px;">DB questions per exam (est.)</div></div>
+      <div style="background:var(--bg-soft);border:1px solid #2a343d;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--amber);line-height:1.1;">26% + 24%</div><div style="font-size:12px;color:#8a929c;margin-top:6px;">Resilient + High-Performing</div></div>
+      <div style="background:var(--bg-soft);border:1px solid #2a343d;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:25px;font-weight:800;color:#fff;line-height:1;">65</div><div style="font-size:12px;color:#8a929c;margin-top:6px;">Total questions (50 scored)</div></div>
+      <div style="background:var(--bg-soft);border:1px solid #2a343d;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:25px;font-weight:800;color:#fff;line-height:1;">720</div><div style="font-size:12px;color:#8a929c;margin-top:6px;">Pass score (of 1000)</div></div>
+    </div>
+    <div style="font-size:13px;color:#8a929c;">Highest-yield decisions: <strong style="color:#cdd5dc;">Multi-AZ vs Read Replica vs Multi-AZ DB Cluster</strong> · <strong style="color:#cdd5dc;">RDS vs Aurora vs DynamoDB</strong> · <strong style="color:#cdd5dc;">ElastiCache Redis vs Memcached</strong> · Aurora Global Database for multi-Region DR · RDS Proxy for connection storms.</div>
+  </div>
+</section>
 
 <!-- ============== TOC ============== -->
 <div class="toc">
@@ -1499,7 +1514,7 @@
 <section class="section" id="p15">
   <div class="section-header">
     <div class="section-num">Part 15</div>
-    <h2>22 SAA-style <em>practice questions</em></h2>
+    <h2>24 SAA-style <em>practice questions</em></h2>
     <p class="lede">Real exam style. Read the question, read all four options, decide, then expand the answer. Each one teaches a different rule.</p>
   </div>
 
@@ -1589,21 +1604,22 @@
 
   <!-- Q5 -->
   <div class="question">
-    <div class="q-header"><div class="q-number">Question 05</div><div class="q-difficulty easy">Easy · Caching</div></div>
+    <div class="q-header"><div class="q-number">Question 05</div><div class="q-difficulty hard">Hard · Caching + connections</div></div>
     <div class="q-body">
-      <p class="q-scenario">A web application reads user profile data from a MySQL RDS database thousands of times per second. The data changes rarely. The team wants to reduce database load and return profile data in microseconds. Which solution is BEST?</p>
+      <p class="q-scenario">A <strong>serverless</strong> app (Lambda) reads rarely-changing user-profile data from RDS MySQL thousands of times per second and needs <strong>microsecond</strong> reads. Under load it also <strong>exhausts the database's max connections</strong> — each Lambda invocation opens its own connection — causing "too many connections" errors. Which TWO actions together BEST fix <em>both</em> the latency and the connection exhaustion? (Choose two.)</p>
       <ol class="q-options">
-        <li>Add Read Replicas to the RDS database.</li>
-        <li>Place an ElastiCache for Redis cluster in front of the database using a lazy-loading pattern.</li>
-        <li>Migrate the database to Aurora Serverless v2.</li>
-        <li>Increase the RDS instance class and enable Provisioned IOPS storage.</li>
+        <li>Put an ElastiCache cluster in front of RDS (lazy loading + TTL) to serve the hot reads in microseconds.</li>
+        <li>Add RDS Proxy between Lambda and RDS to pool and reuse database connections.</li>
+        <li>Increase the RDS instance class to raise the connection limit.</li>
+        <li>Add RDS Read Replicas and route reads to them.</li>
+        <li>Migrate to Aurora Serverless v2.</li>
       </ol>
     </div>
     <details class="q-reveal"><summary>Reveal answer &amp; explanation</summary>
       <div class="q-answer">
-        <p class="q-correct">B — ElastiCache for Redis with lazy loading</p>
-        <p class="q-explanation">"Microseconds" is the giveaway phrase — Read Replicas (A) give milliseconds, not microseconds. ElastiCache holds frequently-accessed data in RAM, returning hits in microseconds, while lazy loading only caches what's actually requested. Read replicas help but don't deliver microsecond latency. Aurora Serverless and bigger instances may help performance modestly but neither reaches microsecond reads.</p>
-        <p class="q-rule">"Microsecond reads" + "reduce DB load" → ElastiCache (Redis or Memcached).</p>
+        <p class="q-correct">A and B — ElastiCache + RDS Proxy</p>
+        <p class="q-explanation">Two problems, two targeted fixes. <strong>A</strong> ElastiCache serves the hot, rarely-changing reads from RAM in <em>microseconds</em> and offloads the DB (read replicas give milliseconds, not microseconds — so D fails the latency goal). <strong>B</strong> RDS Proxy pools and reuses connections, absorbing Lambda's connection storms — the standard fix for "Lambda + RDS too many connections." <strong>C</strong> a bigger instance is a costly band-aid that delays the same problem. <strong>E</strong> Serverless v2 changes scaling, not the connection-storm or the µs-latency requirement.</p>
+        <p class="q-rule">Microsecond reads → ElastiCache. Serverless/Lambda exhausting DB connections → RDS Proxy (connection pooling).</p>
       </div>
     </details>
   </div>
@@ -1736,7 +1752,7 @@
 
   <!-- Q12 -->
   <div class="question">
-    <div class="q-header"><div class="q-number">Question 12</div><div class="q-difficulty medium">Medium · Backtrack</div></div>
+    <div class="q-header"><div class="q-number">Question 12</div><div class="q-difficulty hard">Hard · Backtrack vs snapshot</div></div>
     <div class="q-body">
       <p class="q-scenario">A developer accidentally ran <code>UPDATE accounts SET balance = 0</code> against an Aurora MySQL production database 10 minutes ago, zeroing every customer balance. The DBA needs to recover the data with minimum downtime. Which option provides the FASTEST recovery?</p>
       <ol class="q-options">
@@ -1799,7 +1815,7 @@
 
   <!-- Q15 -->
   <div class="question">
-    <div class="q-header"><div class="q-number">Question 15</div><div class="q-difficulty easy">Easy · Trigger phrase</div></div>
+    <div class="q-header"><div class="q-number">Question 15</div><div class="q-difficulty medium">Medium · Memcached choice</div></div>
     <div class="q-body">
       <p class="q-scenario">A team needs simple in-memory caching with the highest possible throughput per cache node. They are okay with losing all cached data if a node restarts and don't need replication. Which option is most appropriate?</p>
       <ol class="q-options">
@@ -1841,7 +1857,7 @@
 
   <!-- Q17 -->
   <div class="question">
-    <div class="q-header"><div class="q-number">Question 17</div><div class="q-difficulty medium">Medium · Cross-region backup</div></div>
+    <div class="q-header"><div class="q-number">Question 17</div><div class="q-difficulty hard">Hard · Cross-region DR</div></div>
     <div class="q-body">
       <p class="q-scenario">A regulated industry requires that database backups be retained for 7 years and stored in a different region from the production database. Which solution meets this with the LEAST operational overhead?</p>
       <ol class="q-options">
@@ -1862,7 +1878,7 @@
 
   <!-- Q18 -->
   <div class="question">
-    <div class="q-header"><div class="q-number">Question 18</div><div class="q-difficulty medium">Medium · DAX confusion</div></div>
+    <div class="q-header"><div class="q-number">Question 18</div><div class="q-difficulty hard">Hard · DAX trap</div></div>
     <div class="q-body">
       <p class="q-scenario">A team is building a high-traffic mobile game that uses DynamoDB to store player state. They want microsecond read latency for the most-accessed items, with minimal application changes. Which service provides this?</p>
       <ol class="q-options">
@@ -1966,13 +1982,212 @@
     </details>
   </div>
 
+  <!-- Q23 -->
+  <div class="question">
+    <div class="q-header"><div class="q-number">Question 23</div><div class="q-difficulty hard">Hard · Upgrades</div></div>
+    <div class="q-body">
+      <p class="q-scenario">A production RDS for PostgreSQL database must be upgraded off a major version that is reaching end-of-life. The business requires: <strong>minimal downtime</strong>, the ability to <strong>fully test</strong> the new version with production-like data before cutting over, and a <strong>fast rollback</strong> if anything goes wrong. Building custom replication is off the table. Which approach BEST meets all of these?</p>
+      <ol class="q-options">
+        <li>Modify the DB engine version in place during a maintenance window.</li>
+        <li>Create a read replica, upgrade it, and promote it to be the new primary.</li>
+        <li>Use an RDS Blue/Green Deployment — a synced "green" copy on the new version that you test, then switch over in about a minute with built-in safety checks.</li>
+        <li>Take a snapshot, restore it to a new instance on the new version, and repoint the application.</li>
+      </ol>
+    </div>
+    <details class="q-reveal"><summary>Reveal answer &amp; explanation</summary>
+      <div class="q-answer">
+        <p class="q-correct">C — RDS Blue/Green Deployment</p>
+        <p class="q-explanation">Blue/Green creates a fully <em>synced</em> green environment already on the target version, so you can test it with real replicated data, then <strong>switch over in ~1 minute</strong> with built-in safety checks and easy rollback — exactly "minimal downtime + test-first + fast rollback, no custom replication." A in-place modify takes the DB down and is hard to roll back. B a promoted read replica can run the new version but loses sync at promotion and rollback is manual. D snapshot/restore loses every write made after the snapshot (downtime + data gap).</p>
+        <p class="q-rule">Major-version upgrade · minimal downtime · test-then-switch · easy rollback → <strong>RDS Blue/Green Deployments</strong>.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q24 -->
+  <div class="question">
+    <div class="q-header"><div class="q-number">Question 24</div><div class="q-difficulty hard">Hard · Cost</div></div>
+    <div class="q-body">
+      <p class="q-scenario">An Aurora MySQL cluster runs an I/O-intensive analytics workload. The bill shows that I/O charges are about <strong>40% of the total Aurora cost</strong> and swing unpredictably month to month, making budgeting hard. The team wants <strong>more predictable, ideally lower</strong> cost without changing the workload or schema. What should they do?</p>
+      <ol class="q-options">
+        <li>Switch the cluster to Aurora Serverless v2.</li>
+        <li>Enable the Aurora I/O-Optimized cluster configuration.</li>
+        <li>Add more read replicas to spread the I/O.</li>
+        <li>Move to Aurora Standard and buy Reserved Instances for the writer.</li>
+      </ol>
+    </div>
+    <details class="q-reveal"><summary>Reveal answer &amp; explanation</summary>
+      <div class="q-answer">
+        <p class="q-correct">B — Aurora I/O-Optimized</p>
+        <p class="q-explanation">Aurora <strong>I/O-Optimized</strong> removes the separate per-I/O charge and bundles it into compute/storage pricing — giving <em>predictable</em> cost and, when I/O is a large share of the bill (AWS guidance: ~25%+; here it's 40%), usually a <em>lower</em> total. A Serverless v2 changes the compute scaling model, not how I/O is billed. C read replicas add cost and don't change per-I/O billing. D Reserved Instances cut compute cost but leave the volatile per-I/O charges in place.</p>
+        <p class="q-rule">Aurora I/O is a big / unpredictable share of the bill (≥~25%) → switch to <strong>Aurora I/O-Optimized</strong> (no per-I/O charges).</p>
+      </div>
+    </details>
+  </div>
+
 </section>
 
 <div class="footer">
   <div class="footer-ornament">❦</div>
-  <p>That's the full RDS · Aurora · ElastiCache exam crack sheet.<br>You've now seen every trigger phrase, every trap, every key number, and 22 questions covering all common patterns.<br>Read this companion once more 24 hours before the exam — it will refresh everything.</p>
+  <p>That's the full RDS · Aurora · ElastiCache exam crack sheet.<br>You've now seen every trigger phrase, every trap, every key number, and 24 questions covering all common patterns.<br>Read this companion once more 24 hours before the exam — it will refresh everything.</p>
 </div>
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class="cnav-current"><a href="02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

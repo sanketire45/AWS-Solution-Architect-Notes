@@ -271,11 +271,11 @@
   }
   .callout-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    font-size: 13.5px;
     font-weight: 700;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -326,6 +326,30 @@
   .callout.analogy .callout-label::before { background: var(--plum); }
 
   /* ============== TABLES ============== */
+  .price-tag {
+    display: block;
+    margin: 20px 0;
+    padding: 11px 15px;
+    border-radius: 9px;
+    background: rgba(40, 40, 55, 0.045);
+    border: 1px solid rgba(40, 40, 55, 0.10);
+    border-left: 3px solid var(--accent, #2a7ae2);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-soft, #3c3c4a);
+  }
+  .price-tag strong { color: var(--ink, #1b1b26); font-weight: 700; }
+  .chart {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 22px 26px 16px;
+    margin: 28px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart-caption { font-size: 13.5px; color: var(--ink-mute, #6b6b7a); font-style: italic; margin-top: 12px; text-align: center; }
+
   .table-wrap {
     margin: 36px 0;
     overflow-x: auto;
@@ -544,6 +568,7 @@
     <li><a href="#s18">Caching strategies (lazy load, write-through, TTL)</a></li>
     <li><a href="#s19">Real-world ElastiCache use cases</a></li>
     <li><a href="#s20">Bringing it all together — the full stack</a></li>
+    <li><a href="#s-cost">💰 What it all costs</a></li>
     <li><a href="#s21">The master cheat sheet</a></li>
   </ol>
 </div>
@@ -821,6 +846,13 @@
     <p class="lede">The single most important RDS feature on the exam. Memorise this chapter cold.</p>
   </div>
 
+  <div class="callout concept">
+    <span class="callout-label">💡 The problem it solves (lead with this in interviews)</span>
+    A single database instance is a <strong>single point of failure</strong>: if its hardware fails, its data centre has an outage, or AWS even just patches it, your whole application goes down with it. <strong>Multi-AZ exists to remove that single point of failure</strong> — it keeps a synchronous standby copy in a <em>different</em> data centre, ready to take over automatically in 60–120 seconds, with no change to your connection string. You pay for a second instance to buy "the database basically never goes down."
+  </div>
+
+  <p class="price-tag">💵 Multi-AZ simply <strong>doubles the instance bill</strong>: db.t3.medium ≈ $50/mo single-AZ → <strong>≈ $100/mo Multi-AZ</strong>; db.m5.large ≈ $125 → ≈ $250. You're paying for a full standby that serves <em>zero</em> traffic until failover — that's the price of "never goes down." (us-east-1; Ireland ≈ +10%.)</p>
+
   <p>An <strong>Availability Zone (AZ)</strong> is a physically separate data centre within an AWS region. Think of <code>us-east-1</code> as a region in Virginia, with <code>us-east-1a</code>, <code>us-east-1b</code>, <code>us-east-1c</code> being three separate buildings, kilometres apart, on different power grids, with different internet links.</p>
 
   <p>If a hurricane takes out one data centre, the others keep running. Multi-AZ deployment uses this to give your database <strong>high availability</strong>.</p>
@@ -918,6 +950,11 @@
     <div class="section-num">Chapter 06</div>
     <h2>Read Replicas — <em>Scaling reads</em></h2>
     <p class="lede">When your database can't keep up with all the people reading from it.</p>
+  </div>
+
+  <div class="callout concept">
+    <span class="callout-label">💡 The problem it solves (and the #1 exam trap)</span>
+    One database instance can only serve so many reads before it slows down — and read-heavy apps (dashboards, product listings, reports) overwhelm it. <strong>Read Replicas exist to spread that read load</strong> across extra read-only copies, freeing the primary for writes. <strong>Crucial trap:</strong> Read Replicas are about <em>scaling reads</em>, NOT availability (async replication, manual promotion). <em>Multi-AZ</em> is about availability (sync standby, auto-failover, not readable). The exam constantly tests whether you confuse the two.
   </div>
 
   <p>Most databases face the same imbalance: <strong>reads vastly outnumber writes</strong>. A typical e-commerce site might have one purchase (write) for every hundred page views (reads). All those reads hammer the database.</p>
@@ -1019,6 +1056,11 @@
     <p class="lede">A 2022 addition to RDS that the SAA-C03 exam loves. Don't confuse it with regular Multi-AZ.</p>
   </div>
 
+  <div class="callout concept">
+    <span class="callout-label">💡 The problem it solves</span>
+    Regular Multi-AZ <strong>wastes the standby</strong> — it sits idle, serving no traffic, purely waiting to fail over. The <strong>Multi-AZ DB Cluster</strong> (2022) fixes that: it gives you <em>two readable</em> standbys, so you get high availability <strong>and</strong> extra read capacity for the money, with failover in ~35 seconds instead of 60–120. It's the "why am I paying for an idle standby?" upgrade.
+  </div>
+
   <p>Standard Multi-AZ has a slight wastefulness problem: the standby just sits there. The Multi-AZ DB Cluster fixes this. It's a newer deployment option for MySQL and PostgreSQL on RDS that gives you:</p>
 
   <ul>
@@ -1070,6 +1112,11 @@
   </div>
 
   <h3>RDS Proxy — the Lambda lifesaver</h3>
+
+  <div class="callout concept">
+    <span class="callout-label">💡 The problem it solves</span>
+    A database allows only a limited number of simultaneous connections. <strong>Serverless apps break this badly:</strong> every Lambda invocation opens its own connection, so a traffic burst can open thousands at once and <strong>exhaust the database's connection limit</strong> ("too many connections" errors and dropped requests). <strong>RDS Proxy exists to pool and reuse a small set of long-lived connections</strong> on the app's behalf, so thousands of clients share a handful of real DB connections. (This is exactly Intercom's connection-limit story from the Dublin section.)
+  </div>
 
   <p>Here's a real problem: imagine you have an API powered by Lambda functions, each calling RDS. When traffic spikes, hundreds of Lambda instances all try to open database connections at the same time. RDS has a finite connection limit (often 100–200 default), and Lambdas don't share connections — each invocation opens a fresh one.</p>
 
@@ -1359,6 +1406,8 @@
     <li>You pay <strong>per ACU per second</strong>.</li>
     <li>v2 supports the full Aurora feature set: Multi-AZ, Global Database, read replicas.</li>
   </ul>
+
+  <p class="price-tag">💵 <strong>~$0.12 per ACU-hour</strong> (1 ACU ≈ 2 GB RAM). At a steady 2 ACU that's ≈ <strong>$175/mo</strong> — but a dev DB that scales to 0.5 ACU overnight/weekends can land nearer <strong>$30–60/mo</strong>, and "scale to zero" auto-pause drops idle time to ~$0. You pay for load, not for a box sitting there. Great for spiky/dev; fixed provisioned + Reserved still wins for flat 24/7.</p>
 
   <div class="callout exam-tip">
     <div class="callout-label">Exam Triggers for Aurora Serverless</div>
@@ -1695,6 +1744,40 @@
 </section>
 
 <!-- ============================================================== -->
+<!-- ============== SECTION 19+: NEWER FEATURES ============== -->
+<!-- ============================================================== -->
+<section class="section" id="s19b">
+  <div class="section-header">
+    <div class="section-num">Chapter 19+</div>
+    <h2>Newer features the exam now leans on <em>(2024–26)</em></h2>
+    <p class="lede">Five recent additions — each is a one-paragraph idea, and each shows up in modern questions.</p>
+  </div>
+
+  <p><strong>RDS Blue/Green Deployments.</strong> A safe way to make a risky change — most often a <em>major-version upgrade</em>. AWS spins up a full <strong>green</strong> copy of your database that stays continuously in sync with the live <strong>blue</strong> one. You test green, then <strong>switch over in about a minute</strong> with built-in safety checks (and you can roll back). The payoff: near-zero-downtime upgrades without building your own replication.</p>
+
+  <p><strong>Aurora I/O-Optimized.</strong> A cluster <em>pricing mode</em>. Standard Aurora bills separately for every I/O operation; I/O-Optimized removes the per-I/O charge and bundles it into a higher compute/storage rate. For <strong>I/O-heavy</strong> workloads (where I/O is roughly 25%+ of the bill), it is <strong>more predictable and often cheaper</strong>.</p>
+
+  <p><strong>ElastiCache for ValKey.</strong> <strong>ValKey</strong> is the open-source fork of Redis, created in 2024 after Redis changed its licence. ElastiCache now offers it as an engine — the same Redis API and features, typically <strong>cheaper</strong>. AWS positions it as the default Redis-compatible choice.</p>
+
+  <p><strong>Aurora Limitless.</strong> Automatically <strong>shards</strong> a single Aurora PostgreSQL database across many instances to handle <strong>millions of writes per second</strong> and petabytes — while still presenting as one database. It breaks the usual "a relational DB scales reads, not writes" ceiling.</p>
+
+  <p><strong>Performance Insights.</strong> A built-in dashboard showing <em>what is making the database slow</em> over time — top SQL statements, wait events, and database load. It is the go-to answer for "identify the queries causing high DB load."</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>If the question says…</th><th>The answer is…</th></tr></thead>
+      <tbody>
+        <tr><td>"Upgrade the engine with minimal downtime + safe rollback"</td><td><strong>RDS Blue/Green Deployments</strong></td></tr>
+        <tr><td>"Aurora I/O charges are unpredictable / a big part of the bill"</td><td><strong>Aurora I/O-Optimized</strong> mode</td></tr>
+        <tr><td>"Redis-compatible cache at the lowest cost"</td><td><strong>ElastiCache for ValKey</strong></td></tr>
+        <tr><td>"Scale relational <em>writes</em> beyond one instance / millions of writes/sec"</td><td><strong>Aurora Limitless</strong></td></tr>
+        <tr><td>"Find the queries causing high database load"</td><td><strong>Performance Insights</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================== -->
 <!-- ============== SECTION 20: FULL STACK ============== -->
 <!-- ============================================================== -->
 <section class="section" id="s20">
@@ -1783,6 +1866,103 @@
 </section>
 
 <!-- ============================================================== -->
+<!-- ============== SECTION COST ============== -->
+<section class="section" id="s-cost">
+  <div class="section-header">
+    <div class="section-num">💰 Cost</div>
+    <h2>What it all <em>costs</em></h2>
+    <p class="lede">A database is usually the most expensive line on the bill — so pricing <em>is</em> the architecture decision. Anchored on us-east-1; eu-west-1 (Dublin) ≈ +10%. Month = 730 hrs.</p>
+  </div>
+
+  <div class="callout concept">
+    <div class="callout-label">💰 What you're billed on</div>
+    <p>For <strong>RDS</strong>: instance-hours × size, <strong>doubled for Multi-AZ</strong>, plus storage (gp2 ~$0.115/GB-mo), plus backups (free up to your DB size, then $0.095/GB-mo), plus data transfer. <strong>Aurora</strong> adds a twist: storage auto-grows at $0.10/GB-mo and you pay <strong>$0.20 per million I/O requests</strong> (Standard) — or switch to <strong>I/O-Optimized</strong> (no per-I/O charge, higher instance/storage). The meter you forget is almost always <em>I/O</em> or <em>Multi-AZ doubling</em>.</p>
+  </div>
+
+  <h3>RDS for MySQL — headline numbers</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instance</th><th>$/hr single-AZ</th><th>≈ $/mo single-AZ</th><th>Multi-AZ (×2)</th></tr></thead>
+      <tbody>
+        <tr><td>db.t3.micro</td><td>~$0.017</td><td>~$12.40</td><td>~$25</td></tr>
+        <tr><td>db.t3.medium</td><td>~$0.068</td><td>~$50</td><td>~$100</td></tr>
+        <tr><td>db.m5.large</td><td>~$0.171</td><td>~$125</td><td>~$250</td></tr>
+        <tr><td>db.r5.large (memory)</td><td>~$0.24</td><td>~$175</td><td>~$350</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart">
+    <svg viewBox="0 0 760 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="How availability and read scaling stack the bill">
+      <text x="20" y="26" font-family="Georgia,serif" font-size="17" font-weight="700" fill="#1b1b26">db.m5.large — how HA &amp; read-scaling stack up</text>
+      <text x="20" y="44" font-family="monospace" font-size="11" fill="#888">us-east-1 · monthly · each step adds a full instance</text>
+
+      <!-- $125 = 210px base unit; Single 125→210, Multi 250→420, +replica 375→630 -->
+      <text x="200" y="80" text-anchor="end" font-family="monospace" font-size="12.5" fill="#1b1b26">Single-AZ</text>
+      <rect x="210" y="69" width="160" height="22" rx="4" fill="#7cae7c"/>
+      <text x="378" y="85" font-family="monospace" font-size="12.5" font-weight="700" fill="#1b1b26">$125/mo</text>
+
+      <text x="200" y="118" text-anchor="end" font-family="monospace" font-size="12.5" fill="#1b1b26">Multi-AZ (HA)</text>
+      <rect x="210" y="107" width="320" height="22" rx="4" fill="#e0a13a"/>
+      <text x="538" y="123" font-family="monospace" font-size="12.5" font-weight="700" fill="#1b1b26">$250/mo</text>
+
+      <text x="200" y="156" text-anchor="end" font-family="monospace" font-size="12.5" fill="#1b1b26">Multi-AZ + 1 replica</text>
+      <rect x="210" y="145" width="480" height="22" rx="4" fill="#c0584a"/>
+      <text x="698" y="161" font-family="monospace" font-size="12.5" font-weight="700" fill="#1b1b26">$375/mo</text>
+
+      <line x1="210" y1="184" x2="690" y2="184" stroke="#ddd" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="450" y="208" text-anchor="middle" font-family="Georgia,serif" font-size="13.5" font-style="italic" fill="#9a5a2a">Multi-AZ buys availability (a standby that serves no reads). A read replica is a separate add-on for scaling reads.</text>
+    </svg>
+    <p class="chart-caption">The #1 exam &amp; cost trap: Multi-AZ ≠ read scaling. Don't pay for a standby expecting faster reads — add a replica for that.</p>
+  </div>
+
+  <h3>Aurora &amp; ElastiCache</h3>
+  <ul>
+    <li><strong>Aurora provisioned:</strong> db.r6g.large ~$0.26/hr · storage $0.10/GB-mo · I/O $0.20/million (Standard).</li>
+    <li><strong>Aurora Serverless v2:</strong> <strong>$0.12 per ACU-hour</strong> (1 ACU ≈ 2 GiB RAM); scales 0.5→256 ACU, or to <strong>0</strong> with auto-pause — you pay only for capacity actually used.</li>
+    <li><strong>RDS Proxy:</strong> $0.015 per vCPU-hour of the underlying instance (the connection-pooling fix from the Intercom story below).</li>
+    <li><strong>ElastiCache:</strong> cache.t3.micro ~$0.017/hr · cache.r6g.large ~$0.226/hr · Redis Serverless $0.125/GB-hr stored + ECPU.</li>
+  </ul>
+
+  <div class="callout trap">
+    <div class="callout-label">⚠️ The hidden costs that bite</div>
+    <p><strong>Multi-AZ doubles the compute bill — and buys availability, not read scaling.</strong> People enable it expecting faster reads, then add read Replicas too (another full instance each) and the bill triples. Aurora's <strong>per-I/O charge</strong> can quietly dominate on chatty workloads — that's the entire reason I/O-Optimized exists. And backups beyond your DB size, plus cross-AZ traffic, are easy to miss.</p>
+  </div>
+
+  <h3>In context</h3>
+  <ul>
+    <li><strong>Small prod app</strong> (the reference $240/mo stack): db.t3.medium <strong>Multi-AZ</strong> + 100 GB ≈ <strong>$111/mo</strong> — nearly half the whole bill. The database is the line to right-size first.</li>
+    <li><strong>Intercom-scale relational tier</strong> (high-connection SaaS, large instances + replicas + Proxy): the DB tier alone runs <strong>tens of thousands $/month</strong> (estimate) — which is exactly why connection pooling and right-sizing matter at their scale.</li>
+  </ul>
+
+  <div class="callout exam-tip">
+    <div class="callout-label">🎯 The one cost lever</div>
+    <p><strong>Match the engine mode to the workload rhythm.</strong> Steady 24/7 production → provisioned instances on a <strong>1–3 yr Reserved/Savings commitment</strong> (~30–40% off) and drop non-prod to single-AZ to halve it. Spiky or dev/test → <strong>Aurora Serverless v2</strong>, which scales to near-zero when idle so you stop paying for an instance that sits there overnight. Getting <em>that</em> choice right moves the bill more than any instance-size tweak.</p>
+  </div>
+</section>
+
+<!-- ============== SECTION 20+: REAL DUBLIN ARCHITECTURES ============== -->
+<section class="section" id="s20b">
+  <div class="section-header">
+    <div class="section-num">Chapter 20+</div>
+    <h2>Real Dublin architectures <em>— databases in the wild</em></h2>
+    <p class="lede">Two verified stories you can name in an interview — each maps straight onto a database decision the exam tests.</p>
+  </div>
+
+  <div class="callout real-world">
+    <div class="callout-label">🏭 Intercom — the canonical "connection-limit" story</div>
+    <p><strong>Intercom</strong> (customer-messaging SaaS, EU customers served from Ireland) ran its Rails fleet on <strong>Aurora MySQL</strong> as the source of truth, with <strong>ElastiCache (Memcached)</strong> for caching and DynamoDB for very-high-throughput data.</p>
+    <p>Their famous scaling pain: a large fleet of app servers <strong>exhausted Aurora's ~16,000-connection-per-host limit</strong> — the Inbox product alone "would routinely require 135,000 active connections." They first solved it with connection pooling, and have since been migrating to <strong>Vitess (PlanetScale)</strong> for horizontal write-sharding.</p>
+    <p><strong>The exam lesson (high-frequency):</strong> when a fleet of app servers — especially serverless/Lambda — exhausts an RDS/Aurora database's connections, the answer is <strong>RDS Proxy</strong> (managed connection pooling), <em>not</em> a bigger instance. Intercom is your real-world anchor for that exact question.</p>
+  </div>
+
+  <div class="callout real-world">
+    <div class="callout-label">🏭 Ryanair — migrating off a self-managed database to Aurora</div>
+    <p><strong>Ryanair</strong> (Europe's largest airline, HQ in Swords, Dublin) is all-in on AWS. It <strong>migrated from self-managed Microsoft SQL Server to Amazon Aurora</strong> and runs a classic <strong>3-tier stack</strong> for Ryanair.com: <strong>ALB → Auto Scaling group of EC2 → Aurora Multi-AZ + ElastiCache</strong>.</p>
+    <p><strong>The exam lesson:</strong> "reduce database admin overhead / get read-scaling and fast failover for MySQL or PostgreSQL" → move to <strong>Aurora</strong> (managed, Multi-AZ, up to 15 read replicas, ~100 ms lag). ElastiCache in front absorbs the hottest reads — the layered pattern from Chapter 20.</p>
+  </div>
+</section>
+
 <!-- ============== SECTION 21: MASTER CHEAT SHEET ============== -->
 <!-- ============================================================== -->
 <section class="section" id="s21">
@@ -1871,5 +2051,162 @@
 </div>
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class="cnav-current"><a href="01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

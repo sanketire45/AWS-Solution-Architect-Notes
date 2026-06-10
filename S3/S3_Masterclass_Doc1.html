@@ -96,39 +96,50 @@
   /* NAVIGATION */
   .toc {
     background: var(--warm-white);
-    border-bottom: 2px solid var(--border);
-    padding: 24px 60px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(100,70,30,0.06);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 1300px;
+    margin: 24px auto 8px;
+    padding: 16px 26px;
+    /* static (not sticky) — a small index at the top that scrolls away, not a bar that eats the page */
   }
   .toc-inner {
-    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 3px 18px;
   }
   .toc-label {
+    display: block;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: 12.5px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
     color: var(--ink-muted);
-    margin-right: 8px;
-    white-space: nowrap;
+    margin-bottom: 14px;
   }
   .toc a {
+    display: flex;
+    align-items: baseline;
+    gap: 11px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 6px 9px;
+    border-radius: 6px;
+    transition: all 0.18s;
+  }
+  .toc a .ti-num {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
+    font-weight: 700;
     color: var(--accent-teal);
-    text-decoration: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    min-width: 58px;
   }
   .toc a:hover {
-    border-color: var(--accent-teal);
-    background: rgba(29, 122, 110, 0.05);
+    background: rgba(29, 122, 110, 0.08);
+    color: var(--ink);
   }
 
   /* LAYOUT */
@@ -140,9 +151,9 @@
 
   /* PART HEADERS */
   .part-header {
-    margin: 80px 0 40px;
-    padding: 40px 50px;
-    border-radius: 16px;
+    margin: 56px 0 30px;
+    padding: 26px 32px;
+    border-radius: 12px;
     position: relative;
     overflow: hidden;
   }
@@ -172,25 +183,27 @@
   }
   .part-number {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 14px;
+    font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: var(--ink-muted);
+    color: var(--ink-soft);
     margin-bottom: 8px;
   }
   .part-header h2 {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(28px, 3vw, 42px);
+    font-size: clamp(27px, 2.6vw, 36px);
     font-weight: 700;
     line-height: 1.2;
     color: var(--ink);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .part-header p {
     font-size: 17px;
     color: var(--ink-soft);
     font-style: italic;
-    max-width: 700px;
+    max-width: 720px;
+    line-height: 1.5;
   }
 
   /* SECTION */
@@ -218,13 +231,17 @@
   }
 
   /* PROSE */
+  .prose { max-width: 730px; }            /* comfortable reading measure — no eye fatigue */
   .prose p {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     color: var(--ink-soft);
   }
   .prose p:last-child { margin-bottom: 0; }
   .prose strong { color: var(--ink); font-weight: 600; }
   .prose em { color: var(--accent-teal); font-style: italic; }
+  /* keep callout text readable too, and let lead-in lines breathe */
+  .callout { max-width: 880px; }
+  .prose .lead { font-size: 19px; color: var(--ink); }
 
   /* CALLOUT BOXES */
   .callout {
@@ -255,11 +272,11 @@
   }
   .callout-tag {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 2.5px;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: flex; align-items: center; gap: 8px;
   }
   .callout-why .callout-tag { color: var(--accent-amber); }
@@ -268,8 +285,8 @@
   .callout-trap .callout-tag { color: var(--accent-rust); }
   .callout-tip .callout-tag { color: var(--accent-purple); }
   .callout p {
-    font-size: 16px;
-    line-height: 1.8;
+    font-size: 17px;
+    line-height: 1.75;
     color: var(--ink-soft);
     margin-bottom: 8px;
   }
@@ -286,7 +303,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 15px;
+    font-size: 15.5px;
   }
   thead {
     background: var(--ink);
@@ -333,7 +350,7 @@
     padding: 24px 28px;
     border-radius: 12px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.8;
     margin: 20px 0;
     overflow-x: auto;
@@ -413,8 +430,43 @@
   .storage-card:hover { transform: translateY(-2px); }
   .storage-card .tier { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
   .storage-card h4 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-  .storage-card p { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 8px; }
+  .storage-card p { font-size: 15px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 8px; }
   .storage-card .meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-muted); }
+
+  /* INLINE PRICE-TAG — binds a plain-English cost to the thing being taught */
+  .price-tag {
+    display: block;
+    margin: 12px 0 4px;
+    padding: 9px 13px;
+    border-radius: 8px;
+    background: rgba(30, 22, 16, 0.055);
+    border: 1px solid rgba(30, 22, 16, 0.10);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .price-tag strong { color: var(--ink); font-weight: 700; }
+  .storage-card .price-tag { margin-top: 10px; font-size: 13px; }
+
+  /* COST CHART (SVG bar charts in the synthesis section) */
+  .chart {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px 16px;
+    margin: 24px 0;
+    box-shadow: var(--shadow-card);
+    max-width: 880px;
+  }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart-caption {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    font-style: italic;
+    margin-top: 12px;
+    text-align: center;
+  }
   .sc-standard { background: linear-gradient(135deg, #eef8f5, #ddf4ee); }
   .sc-standard .tier { color: var(--accent-teal); }
   .sc-standard h4 { color: var(--accent-teal); }
@@ -436,6 +488,9 @@
   .sc-it { background: linear-gradient(135deg, #e8f4e0, #d4ecc8); }
   .sc-it .tier { color: var(--accent-green); }
   .sc-it h4 { color: var(--accent-green); }
+  .sc-express { background: linear-gradient(135deg, #e0f7f2, #c2f0e4); }
+  .sc-express .tier { color: #0f8a78; }
+  .sc-express h4 { color: #0f8a78; }
 
   /* SVG DIAGRAM WRAPPER */
   .diagram-wrapper {
@@ -614,7 +669,7 @@
     font-weight: 700;
     margin-bottom: 10px;
   }
-  .enc-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 6px; }
+  .enc-card p { font-size: 15px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 6px; }
   .enc-s3 { background: linear-gradient(135deg, #e8f4ef, #d4ecde); }
   .enc-s3 .enc-tag { color: var(--accent-teal); }
   .enc-kms { background: linear-gradient(135deg, #fdf4e4, #fae8c0); }
@@ -683,6 +738,67 @@
     .part-header { padding: 28px 24px; }
     .industry-spotlight { padding: 32px 24px; }
   }
+
+  /* ─────────── PART TABS — split the long page into one part at a time ─────────── */
+  .toc { display: none !important; }            /* old anchor TOC replaced by the tab bar */
+
+  .mc-tabnav {
+    position: sticky; top: 0; z-index: 300;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 12px 16px;
+    background: rgba(250, 246, 240, 0.92);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(100, 70, 30, 0.06);
+  }
+  .mc-tab {
+    font: 600 13.5px/1 'Inter', system-ui, sans-serif;
+    color: var(--ink-muted);
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 14px;
+    cursor: pointer; white-space: nowrap;
+    transition: all .15s ease;
+  }
+  .mc-tab:hover { color: var(--ink); border-color: var(--border-warm); }
+  .mc-tab.active {
+    color: #fff; background: var(--accent-amber);
+    border-color: var(--accent-amber);
+    box-shadow: 0 2px 10px rgba(201, 125, 46, 0.35);
+  }
+
+  .tab-panel { display: none; animation: mcFade .25s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes mcFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .mc-partnav {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    margin: 56px 0 8px; padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+  .mc-partnav button {
+    font: 600 15px/1.3 'Inter', system-ui, sans-serif;
+    color: var(--ink-soft);
+    background: var(--warm-white);
+    border: 1px solid var(--border-warm);
+    border-radius: 12px;
+    padding: 14px 20px;
+    cursor: pointer; max-width: 46%; text-align: left;
+    transition: all .15s ease;
+  }
+  .mc-partnav button:hover { border-color: var(--accent-amber); color: var(--accent-amber); box-shadow: var(--shadow-card); }
+  .mc-partnav button.mc-next { text-align: right; }
+  .mc-partnav button .mc-pn-lbl { display: block; font-size: 12px; color: var(--ink-muted); font-weight: 500; margin-bottom: 3px; }
+  .mc-partnav button[disabled] { visibility: hidden; }
+  .mc-progress { font: 500 13px/1 'Inter', system-ui, sans-serif; color: var(--ink-muted); text-align: center; flex: 1; }
+
+  @media (max-width: 768px) {
+    .mc-tabnav { padding: 10px 12px; gap: 5px; }
+    .mc-tab { font-size: 12px; padding: 7px 11px; }
+    .mc-partnav button { font-size: 13.5px; padding: 12px 14px; }
+  }
 </style>
 </head>
 <body>
@@ -703,21 +819,22 @@
 
 <!-- ==================== TOC ==================== -->
 <nav class="toc">
+  <span class="toc-label">Contents — 12 Parts</span>
   <div class="toc-inner">
-    <span class="toc-label">Jump to →</span>
-    <a href="#p1">Why S3?</a>
-    <a href="#p2">S3 Fundamentals</a>
-    <a href="#p3">Storage Classes</a>
-    <a href="#p4">Lifecycle</a>
-    <a href="#p5">Versioning &amp; Lock</a>
-    <a href="#p6">Replication</a>
-    <a href="#p7">Performance</a>
-    <a href="#p8">Event Notifications</a>
-    <a href="#p9">Encryption</a>
-    <a href="#p10">Access Control</a>
-    <a href="#p11">Advanced Features</a>
-    <a href="#p11b">Logging &amp; Monitoring</a>
-    <a href="#p12">Dublin Industry</a>
+    <a href="#p1"><span class="ti-num">Part 01</span> Why S3?</a>
+    <a href="#p2"><span class="ti-num">Part 02</span> S3 Fundamentals</a>
+    <a href="#p3"><span class="ti-num">Part 03</span> Storage Classes</a>
+    <a href="#p4"><span class="ti-num">Part 04</span> Lifecycle</a>
+    <a href="#p5"><span class="ti-num">Part 05</span> Versioning &amp; Lock</a>
+    <a href="#p6"><span class="ti-num">Part 06</span> Replication</a>
+    <a href="#p7"><span class="ti-num">Part 07</span> Performance</a>
+    <a href="#p8"><span class="ti-num">Part 08</span> Event Notifications</a>
+    <a href="#p9"><span class="ti-num">Part 09</span> Encryption</a>
+    <a href="#p10"><span class="ti-num">Part 10</span> Access Control</a>
+    <a href="#p11"><span class="ti-num">Part 11</span> Advanced Features</a>
+    <a href="#p11b"><span class="ti-num">Part 11b</span> Logging &amp; Monitoring</a>
+    <a href="#p-cost"><span class="ti-num">💰 Cost</span> What It Costs</a>
+    <a href="#p12"><span class="ti-num">Part 12</span> Dublin Industry</a>
   </div>
 </nav>
 
@@ -732,7 +849,11 @@
 
 <div class="section">
   <div class="prose">
-    <p>Imagine you are running a photo-sharing website in 2004. Your users upload 10,000 photos per day. Where do you put them? You buy a hard drive, plug it into your server, and store the files there. Simple. But then your site grows. You get 100,000 uploads a day. You buy more hard drives. You fill a rack. Then two racks. Then an entire server room. And now you have a new set of nightmare problems:</p>
+    <p class="lead">The best way to understand <em>why</em> S3 exists is to feel the problem it removes. So let's tell a short story.</p>
+    <p>It's 2004. You're running a photo-sharing website. Users upload 10,000 photos a day, and you need somewhere to put them.</p>
+    <p>At first it's easy. You buy a hard drive, plug it into your server, and save the files there. Done.</p>
+    <p>Then you grow. Now it's 100,000 uploads a day. So you buy more drives. You fill a rack. Then a second rack. Then a whole room full of humming machines.</p>
+    <p>And suddenly you're living four separate nightmares at once:</p>
   </div>
 
   <div class="comparison-grid">
@@ -782,6 +903,35 @@
     <div class="callout-tag">💡 Why S3 Was Built</div>
     <p><strong>Amazon solved all four of these problems for themselves first.</strong> Amazon.com — the e-commerce site — was dealing with exactly these problems at massive scale. They engineered an internal solution, then in March 2006, they launched it as a service: Simple Storage Service (S3). The idea was radical: <em>what if storage was just an API call?</em> You call <code>PUT object</code> and your file is stored, replicated, and served globally — with zero servers to manage.</p>
     <p>S3 didn't just solve Amazon's problem. It kickstarted the entire cloud computing era. <strong>Dropbox, Netflix, Instagram, Airbnb — all built on S3 in their early days</strong> because it meant they could focus on their product instead of managing storage infrastructure.</p>
+  </div>
+
+  <div class="industry-spotlight">
+    <div class="industry-spotlight-tag">Real-World Use · Who Actually Runs on S3</div>
+    <h3>The apps you use every day are storing their files in S3 right now</h3>
+
+    <p>S3 isn't an abstract exam topic. It's the storage layer sitting underneath products you use daily. A few real examples worth knowing — they make great interview talking points:</p>
+
+    <div class="arch-grid">
+      <div class="arch-item">
+        <div class="arch-label">Netflix</div>
+        <p>Stores petabytes in S3 — the master video files and every encoded streaming version. S3 is also the foundation of its <strong>data lake</strong> (a central store where all the company's raw data lives), which analysts query with tools like Spark and Iceberg.</p>
+      </div>
+      <div class="arch-item">
+        <div class="arch-label">Airbnb</div>
+        <p>Every listing photo you scroll past is an object in S3, served quickly worldwide through a <strong>CDN</strong> (a network of caching servers near users) placed in front of the bucket.</p>
+      </div>
+      <div class="arch-item">
+        <div class="arch-label">Pinterest</div>
+        <p>Billions of pinned images live in S3 — the classic "lots of files, written once, read constantly" pattern that S3 is built for.</p>
+      </div>
+      <div class="arch-item">
+        <div class="arch-label">Dropbox — the twist</div>
+        <p>Dropbox <em>launched</em> on S3. But once it reached exabyte scale, building its own storage (called "Magic Pocket") became cheaper, so it migrated off in 2016. The lesson: S3 is the right default for almost everyone — you only outgrow it at truly extreme scale.</p>
+      </div>
+    </div>
+
+    <h4>Why every one of them chose it</h4>
+    <p>The same reason every time: <strong>storage became someone else's problem.</strong> No racks to buy, no failed drives to swap at 3am, no backup-and-replication code to write and maintain. You call <code>PUT</code>, AWS keeps your data safe across multiple data centres, and you go back to building your actual product.</p>
   </div>
 </div>
 
@@ -885,8 +1035,10 @@
   <h3 class="section-title">Buckets and Objects — The Mental Model</h3>
   <div class="prose">
     <p><strong>Think of S3 like a giant, magical filing system with two levels: buckets and objects.</strong></p>
-    <p>A <strong>bucket</strong> is like a top-level container — think of it like a postal code district. You create a bucket, give it a name, and choose which AWS Region it lives in. All data inside that bucket physically lives in that region (important for GDPR compliance in Ireland!).</p>
-    <p>An <strong>object</strong> is anything you store inside a bucket — a photo, a video, a PDF, a ZIP file, a database backup. The maximum size for a single object is <strong>5 TB</strong>. For anything over 5 GB, you <em>must</em> use multipart upload (more on this in Performance).</p>
+    <p>A <strong>bucket</strong> is a top-level container — think of it like a postcode district. You create one, give it a name, and choose which AWS <strong>Region</strong> it lives in.</p>
+    <p>(A <strong>Region</strong> is a geographic location where AWS runs data centres — for example, <code>eu-west-1</code> is Ireland, <code>us-east-1</code> is Northern Virginia.)</p>
+    <p>All data in a bucket physically stays in its Region. That matters for GDPR: a Dublin company can keep customer data inside Ireland simply by using an Irish-region bucket.</p>
+    <p>An <strong>object</strong> is anything you store inside a bucket — a photo, a video, a PDF, a database backup. One object can be up to <strong>5 TB</strong>. For anything over 5 GB you <em>must</em> use multipart upload (covered in Performance).</p>
   </div>
 
   <div class="metrics-row">
@@ -914,8 +1066,10 @@
 
   <div class="callout callout-why">
     <div class="callout-tag">💡 What "11 Nines" Actually Means</div>
-    <p>If you store 10,000,000 objects in S3, you'd expect to lose <strong>0.001 objects per year</strong> on average. That's basically "never lose anything". AWS achieves this by automatically copying your data across <strong>at least 3 Availability Zones</strong> within your region. When you PUT an object, it's replicated before S3 confirms success. No action required from you.</p>
-    <p><strong>Real-world illustration:</strong> Netflix stores over 1 petabyte of video content in S3. Dropbox stores billions of user files in S3. Neither has to worry about a failed hard drive wiping their data.</p>
+    <p>If you store 10,000,000 objects in S3, you'd expect to lose <strong>0.001 objects per year</strong> on average. That's basically "never lose anything."</p>
+    <p>How does AWS pull that off? It automatically copies your data across <strong>at least 3 Availability Zones</strong> in your Region.</p>
+    <p>(An <strong>Availability Zone</strong> — "AZ" — is a separate physical data centre within a Region. Spreading copies across AZs means a fire or power cut in one building can't take your data with it.)</p>
+    <p>When you upload an object, S3 copies it across those zones <em>before</em> it reports success. You do nothing — it's automatic.</p>
   </div>
 </div>
 
@@ -1018,42 +1172,81 @@ s3://my-fenergo-bucket/<span class="key">audit-logs</span>/<span class="string">
       <h4>S3 Standard</h4>
       <p>Your everyday workhorse. Data stored across 3+ AZs. Millisecond access. No minimum storage duration.</p>
       <p class="meta">✓ 99.999999999% durability | ✓ 99.99% availability | ✓ No retrieval fee</p>
+      <p class="price-tag">💵 <strong>~$0.023 per GB / month</strong> → about <strong>$2.30/mo</strong> for 100 GB (~8¢/day). The baseline everything else is cheaper than.</p>
     </div>
     <div class="storage-card sc-ia">
       <div class="tier">Tier 2 — Warm</div>
       <h4>Standard-IA</h4>
       <p>Infrequent Access. Same durability as Standard, multi-AZ. Cheaper storage but you pay per retrieval. Min 30-day storage.</p>
       <p class="meta">Use for: backups, DR copies, data accessed monthly | Min 30 days | Retrieval fee applies</p>
+      <p class="price-tag">💵 <strong>~$0.0125 per GB / month</strong> → about <strong>$1.25/mo</strong> for 100 GB — roughly <strong>half</strong> of Standard. But you pay a small fee (~$0.01/GB) each time you read it back.</p>
     </div>
     <div class="storage-card sc-onezone">
       <div class="tier">Tier 3 — Warm+Risky</div>
       <h4>One Zone-IA</h4>
       <p>Like Standard-IA but data lives in only ONE Availability Zone. 20% cheaper than Standard-IA but if that AZ fails, your data is gone.</p>
       <p class="meta">Use for: re-creatable data, secondary backups | Min 30 days | Single AZ risk</p>
+      <p class="price-tag">💵 <strong>~$0.01 per GB / month</strong> → about <strong>$1/mo</strong> for 100 GB. Cheapest of the "warm" tiers — because it skips the multi-AZ safety net.</p>
     </div>
     <div class="storage-card sc-glacier-instant">
       <div class="tier">Tier 4 — Cold</div>
       <h4>Glacier Instant Retrieval</h4>
       <p>Archive data you access maybe once a quarter, but still need in milliseconds when you do. Huge cost savings vs Standard.</p>
       <p class="meta">Retrieval: milliseconds | Min 90 days | Multi-AZ</p>
+      <p class="price-tag">💵 <strong>~$0.004 per GB / month</strong> → about <strong>40¢/mo</strong> for 100 GB — ~<strong>6× cheaper</strong> than Standard, but still instant to read.</p>
     </div>
     <div class="storage-card sc-glacier-flex">
       <div class="tier">Tier 5 — Colder</div>
       <h4>Glacier Flexible Retrieval</h4>
       <p>Archive for data accessed maybe 1-2 times per year. Retrieval takes minutes to 12 hours. Much cheaper storage cost.</p>
       <p class="meta">Retrieval: 1 min–12 hrs (expedited/standard/bulk) | Min 90 days</p>
+      <p class="price-tag">💵 <strong>~$0.0036 per GB / month</strong> → about <strong>36¢/mo</strong> for 100 GB. Cheap to store, but you wait minutes-to-hours (and pay a retrieval fee) to get it back.</p>
     </div>
     <div class="storage-card sc-deep">
       <div class="tier">Tier 6 — Frozen</div>
       <h4>Glacier Deep Archive</h4>
       <p>Cheapest storage AWS offers. For compliance archives — 7-year financial records, medical data, legal documents. Retrieve in 12–48 hours.</p>
       <p class="meta">Retrieval: 12–48 hours | Min 180 days | Lowest $/GB</p>
+      <p class="price-tag">💵 <strong>~$0.001 per GB / month</strong> → about <strong>$1 per TB / month</strong> — roughly <strong>23× cheaper</strong> than Standard. This ratio is why data lakes live or die on lifecycle rules.</p>
     </div>
     <div class="storage-card sc-it">
       <div class="tier">Tier 7 — Smart</div>
       <h4>Intelligent-Tiering</h4>
       <p>AWS watches how often you access each object and automatically moves it between hot, warm, and cold tiers. Small monthly monitoring fee (~$0.0025/1000 objects). No retrieval fee.</p>
       <p class="meta">Best for: unknown or changing access patterns | No min size for auto-tier</p>
+      <p class="price-tag">💵 <strong>Same per-GB as Standard</strong> ($0.023/GB/mo) <strong>+ ~$0.0025 per 1,000 objects</strong> for the auto-monitoring. No retrieval fee. Pays for itself when access patterns are unknown.</p>
+    </div>
+    <div class="storage-card sc-express">
+      <div class="tier">Tier 0 — Ultra-Hot</div>
+      <h4>S3 Express One Zone</h4>
+      <p>The newest class (2023). Single-digit-millisecond access, up to 2M requests/sec — but data lives in ONE AZ you pick, right next to your compute. ~80% cheaper requests than Standard.</p>
+      <p class="meta">Fastest S3 | single AZ | "directory buckets" | latency-critical workloads</p>
+      <p class="price-tag">💵 <strong>~$0.11 per GB / month</strong> → about <strong>$11/mo</strong> for 100 GB (~<strong>5× Standard</strong> to store) — but requests are ~80% cheaper. Only worth it for latency-critical, very-high-request workloads.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3 class="section-title">S3 Express One Zone — The New Speed Tier (don't skip this for the exam)</h3>
+    <div class="prose">
+      <p>This class is new — it launched in late 2023 — and the exam loves new services. So it's worth a proper look.</p>
+      <p>Every other storage class spreads your data across 3+ Availability Zones for safety. Express One Zone deliberately does the opposite.</p>
+      <p>It keeps your data in a <strong>single AZ that you choose</strong>, sitting right next to your compute (your EC2, EKS, or ECS workload).</p>
+      <p>Why give up the multi-AZ safety net? One word: <strong>speed.</strong></p>
+      <p>Because the data and the compute are in the same zone, it delivers <strong>consistent single-digit-millisecond</strong> access and scales to <strong>millions of requests per second</strong> — at roughly <strong>80% lower request cost</strong> than Standard.</p>
+      <p>It uses a special bucket type called a <strong>directory bucket</strong> (you'll spot the odd naming, like <code>my-bucket--euw1-az1--x-s3</code>). It's built for short-lived, latency-critical "hot" data — not for long-term storage.</p>
+    </div>
+
+    <div class="callout callout-exam">
+      <div class="callout-tag">📋 Exam Trigger</div>
+      <p>See <strong>"single-digit-millisecond latency,"</strong> <strong>"latency-critical,"</strong> or <strong>"co-located with compute"</strong> for object storage → the answer is <strong>S3 Express One Zone.</strong></p>
+      <p>If the question instead stresses <em>durability</em>, <em>multi-AZ resilience</em>, or <em>long-term archival</em>, it is <strong>not</strong> Express One Zone — remember, single AZ means lower durability.</p>
+    </div>
+
+    <div class="industry-spotlight">
+      <div class="industry-spotlight-tag">Real-World Use · Verified</div>
+      <h3>Pinterest runs on S3 Express One Zone</h3>
+      <p><strong>Pinterest</strong> (600M+ monthly users) adopted S3 Express One Zone for its data-processing pipelines and reported around a <strong>10× speed-up</strong> in data processing versus standard S3 — purely by keeping the hot working data in the same zone as the compute crunching it.</p>
+      <p>That's the whole point of the class: when you read the same data millions of times for analytics or machine learning, shaving milliseconds off every single read — and cutting the per-request cost — adds up to an enormous difference.</p>
     </div>
   </div>
 
@@ -1469,6 +1662,22 @@ s3://my-fenergo-bucket/<span class="key">audit-logs</span>/<span class="string">
     <p><strong>Rule 2 — Replication is NOT retroactive:</strong> When you enable replication, only NEW objects uploaded AFTER enabling it will be replicated. Existing objects are NOT copied. To replicate existing objects, you must use <strong>S3 Batch Replication</strong> separately.</p>
     <p><strong>Rule 3 — Delete markers are NOT replicated by default:</strong> If you delete an object in the source bucket, the delete marker is NOT automatically replicated to the destination. This is configurable. The reason: to protect against malicious or accidental deletions spreading to your backup.</p>
     <p><strong>Rule 4 — No chaining:</strong> If bucket A replicates to bucket B, and bucket B replicates to bucket C — an object added to A does NOT automatically go to C. Each replication rule is independent. A to B happens, but B to C is a separate replication rule triggered only if an object is directly added/modified in B.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Multi-Region Access Points (MRAP) — One Global Door to Many Buckets</h3>
+  <div class="prose">
+    <p>Replication gives you copies of a bucket in several Regions. But that creates a new question: <strong>which bucket should your app actually talk to?</strong></p>
+    <p>You don't want to hard-code "use Ireland, unless it's down, then use Frankfurt" into your application. That logic is fragile and easy to get wrong.</p>
+    <p>A <strong>Multi-Region Access Point</strong> (MRAP) fixes this. It's a <strong>single global endpoint</strong> — one address — that sits in front of buckets in multiple Regions.</p>
+    <p>Your app only ever talks to that one endpoint. AWS automatically routes each request to the <strong>nearest healthy</strong> Region, and if a Region fails, it fails over to another one for you.</p>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p><strong>"One global endpoint that automatically routes to the nearest / failover Region"</strong> → Multi-Region Access Point.</p>
+    <p>Pair it with <strong>CRR</strong> (which keeps the buckets in sync) to build an <strong>active-active, multi-Region</strong> setup. There's a small routing charge (~$0.0033/GB).</p>
   </div>
 </div>
 
@@ -1888,28 +2097,36 @@ aws s3api select-object-content \
       <div class="step-num">1</div>
       <div class="step-content">
         <h5>Block Public Access (Account-Level Safety Net)</h5>
-        <p>This is a master override. When enabled (it's ON by default for all new buckets since April 2023), it prevents any S3 bucket or object in your account from being made public — even if a bucket policy or ACL says "allow public access". Think of it as a circuit breaker. The exam answer for "ensure NO S3 data in this account is ever publicly accessible" is always: <strong>Enable Block Public Access at the account level</strong>. AWS now enables this by default on all new buckets.</p>
+        <p>This is a master override — a safety net for your whole account.</p>
+        <p>When it's on (and it's <strong>on by default</strong> for new buckets since April 2023), nothing in your account can be made public — even if a bucket policy or ACL tries to allow it. Think of it as a circuit breaker.</p>
+        <p><strong>Exam answer</strong> for "ensure NO S3 data in this account can ever be public" → enable <strong>Block Public Access at the account level</strong>.</p>
       </div>
     </div>
     <div class="step-item">
       <div class="step-num">2</div>
       <div class="step-content">
         <h5>IAM Policies (Identity-Based Control)</h5>
-        <p>Attached to IAM users, groups, or roles. Controls what those identities can do. Example: "Alice's IAM policy allows her to GET objects from the finance-reports bucket". IAM policies work great for controlling access within your own AWS account. For cross-account access, you still need a bucket policy on the destination bucket to grant trust to the external account. Key insight: IAM policies and bucket policies are evaluated together — both must allow access for a request to succeed.</p>
+        <p>These attach to <strong>identities</strong> — IAM users, groups, or roles — and control what that identity is allowed to do.</p>
+        <p>Example: "Alice's policy lets her GET objects from the finance-reports bucket." Great for controlling access <em>within</em> your own account.</p>
+        <p>For cross-account access you also need a bucket policy on the target bucket. Key rule: the IAM policy and bucket policy are checked <strong>together</strong> — both must allow it, and an explicit <em>Deny</em> in either one always wins.</p>
       </div>
     </div>
     <div class="step-item">
       <div class="step-num">3</div>
       <div class="step-content">
         <h5>Bucket Policies (Resource-Based, the Workhorse)</h5>
-        <p>JSON policies attached directly to the S3 bucket. The most powerful and commonly used access control mechanism. Can grant/deny access to specific AWS accounts, IAM users, roles, IP ranges, VPCs, and even anonymous (public) users. Bucket policies are how you grant cross-account access, enforce HTTPS-only, require specific encryption, allow public access for a static website, and much more. For any scenario where you need to control access based on who the caller is (not just what they're doing), bucket policy is your tool.</p>
+        <p>A JSON policy attached directly to the <strong>bucket</strong> itself. This is the most powerful and most-used access tool.</p>
+        <p>It can allow or deny access to specific accounts, IAM users, roles, IP ranges, VPCs — even anonymous (public) users.</p>
+        <p>It's how you do cross-account access, force HTTPS-only, require a specific encryption type, or make a static website public. When access depends on <em>who</em> the caller is, reach for a bucket policy.</p>
       </div>
     </div>
     <div class="step-item">
       <div class="step-num">4</div>
       <div class="step-content">
         <h5>ACLs — Access Control Lists (Legacy, Use Sparingly)</h5>
-        <p>Pre-IAM era access control. Coarse-grained (read/write/full control permissions per bucket or object). AWS now disables ACLs by default on new buckets. You may see ACL questions on the exam in legacy context, but the answer is almost always to use bucket policies instead. The one remaining ACL use case: granting AWS services like CloudFront or S3 replication permissions to access objects — though even this is being replaced by bucket policies and OAI/OAC.</p>
+        <p>The original, pre-IAM way to control access. Coarse-grained — read / write / full-control, per bucket or object.</p>
+        <p>AWS now <strong>disables ACLs by default</strong> on new buckets, and the modern answer is almost always "use a bucket policy instead."</p>
+        <p>The one lingering use was letting AWS services (like CloudFront or replication) reach objects — and even that is now handled by bucket policies and OAC.</p>
       </div>
     </div>
   </div>
@@ -2056,6 +2273,40 @@ aws s3 presign s3://fenergo-kyc-docs/<span class="string">client-12345/passport.
     <p>"Host a static website with no servers at minimum cost" → <strong>S3 Static Website + CloudFront</strong></p>
     <p>"Error 403 on static website" → Usually means Block Public Access is still on, or bucket policy doesn't allow public GetObject.</p>
   </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Locking a Bucket to CloudFront — OAC (and why OAI is the old way)</h3>
+  <div class="prose">
+    <p>Here's a problem. You put CloudFront (AWS's CDN) in front of your bucket for speed and HTTPS. But your bucket is still reachable directly at its own S3 URL.</p>
+    <p>That means people can <strong>bypass CloudFront</strong> and hit the bucket directly — skipping your caching, logging, and protections. You want to force <em>all</em> traffic to go through CloudFront.</p>
+    <p>The modern fix is <strong>OAC — Origin Access Control.</strong> It gives CloudFront a special identity, and you write a bucket policy that says: <em>"only allow reads from my CloudFront, nobody else."</em> The bucket stays fully private; only CloudFront can read it.</p>
+    <p>You may also see the older name <strong>OAI</strong> (Origin Access Identity). OAI is the legacy version — AWS now recommends OAC for all new setups.</p>
+  </div>
+
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ The #1 OAC vs OAI Exam Trap</div>
+    <p><strong>OAC works with SSE-KMS-encrypted objects. OAI does not.</strong></p>
+    <p>If your objects are encrypted with KMS (a customer-managed key), the old OAI literally cannot decrypt them, so CloudFront would fail. OAC can. So whenever a question combines <strong>CloudFront + a private S3 origin + KMS encryption</strong>, the answer is <strong>OAC</strong> — never OAI.</p>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-tag">📋 Exam Trigger</div>
+    <p><strong>"Serve S3 content only through CloudFront, keep the bucket private"</strong> → OAC.</p>
+    <p><strong>"…and the objects are KMS-encrypted"</strong> → OAC is the <em>only</em> correct choice (OAI is a distractor here).</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3 class="section-title">Newer S3 Bits — Just Know the One-Liner</h3>
+  <div class="prose">
+    <p>A few recent additions appear rarely on the exam. Knowing one line about each is plenty:</p>
+  </div>
+  <ul class="nice-list">
+    <li><strong>Mountpoint for S3</strong> — a tool that lets a Linux machine mount a bucket like an ordinary folder, so existing file-based apps can read/write S3 with no code changes (handy for large, read-heavy data and ML workloads).</li>
+    <li><strong>Bucket types</strong> — besides the normal <em>general-purpose</em> bucket, there are now <em>directory</em> buckets (used by Express One Zone), <em>table</em> buckets (managed Apache Iceberg for analytics), and <em>vector</em> buckets (for AI embeddings).</li>
+    <li><strong>S3 Access Grants</strong> — maps your company's directory users and groups (via IAM Identity Center) straight to S3 prefixes, so you grant access by real identity instead of writing ever-bigger bucket policies.</li>
+  </ul>
 </div>
 
 <div class="section">
@@ -2292,13 +2543,113 @@ aws s3 presign s3://fenergo-kyc-docs/<span class="string">client-12345/passport.
     <p><strong>Contrast with:</strong> AWS Config can also check S3 bucket compliance (encryption, versioning) but Config is rule-based and per-resource. Storage Lens is analytics-based, aggregated, and trend-oriented.</p>
   </div>
 </div>
+<div id="p-cost" class="part-header amber">
+  <div class="part-number">Part 11c</div>
+  <h2>💰 What S3 Actually Costs</h2>
+  <p>You can't pick a storage class or design a lifecycle policy without a feel for the bill. Anchored on us-east-1; eu-west-1 (Dublin) noted where it differs.</p>
+</div>
+
+<div class="section">
+  <div class="callout callout-why">
+    <div class="callout-tag">💰 What you're billed on</div>
+    <p>Four meters, and most people only think about the first one: <strong>(1) GB stored per month</strong> (priced per storage class), <strong>(2) requests</strong> (PUT/GET per 1,000), <strong>(3) retrieval fees + minimum durations</strong> on the cold classes, and <strong>(4) data transferred out</strong> to the internet. <strong>Upload (IN) is always free.</strong> The storage line looks tiny per-GB — the surprises live in requests, retrievals, and egress.</p>
+  </div>
+
+  <h3 class="section-title">The storage classes, cheapest job to dearest</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>Class</th><th>$/GB-month</th><th>Retrieval fee</th><th>Min duration</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>Standard</td><td>$0.023</td><td>—</td><td>—</td><td>hot, frequent</td></tr>
+        <tr><td>Intelligent-Tiering</td><td>$0.023 + $0.0025/1k obj monitor</td><td>— (auto-moves)</td><td>—</td><td>unknown/changing access</td></tr>
+        <tr><td>Standard-IA</td><td>$0.0125</td><td>$0.01/GB</td><td>30 days</td><td>infrequent, fast when needed</td></tr>
+        <tr><td>One Zone-IA</td><td>$0.010</td><td>$0.01/GB</td><td>30 days</td><td>re-creatable, single-AZ ok</td></tr>
+        <tr><td>Glacier Instant Retrieval</td><td>$0.004</td><td>$0.03/GB</td><td>90 days</td><td>archive, ms access</td></tr>
+        <tr><td>Glacier Flexible Retrieval</td><td>$0.0036</td><td>mins–12h tiers</td><td>90 days</td><td>archive, occasional</td></tr>
+        <tr><td><strong>Glacier Deep Archive</strong></td><td><strong>$0.00099</strong> (~$1/TB)</td><td>12–48h</td><td>180 days</td><td>compliance, "never" access</td></tr>
+        <tr><td>Express One Zone</td><td>$0.11 (storage)</td><td>cheap requests</td><td>—</td><td>ultra-low-latency, single-AZ</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Requests:</strong> PUT/COPY/POST/LIST $0.005 per 1,000 · GET/SELECT $0.0004 per 1,000. <strong>Data out to internet:</strong> first 100 GB/month free, then ~$0.09/GB. <strong>Storage price for Standard is the same in eu-west-1</strong> ($0.023); Deep Archive matches too (~$0.00099).</p>
+
+  <div class="callout callout-trap">
+    <div class="callout-tag">⚠️ The hidden costs that bite</div>
+    <p><strong>Cold classes aren't a free lunch.</strong> They charge <em>retrieval fees</em> ($0.01–$0.03/GB to read your own data back), <em>minimum storage durations</em> (delete a Glacier object after 10 days and you still pay for 90/180), and a <em>per-object overhead</em>. The classic mistake: dumping millions of tiny objects into Glacier — the per-object overhead can make it cost <strong>more</strong> than Standard. Cold storage is for big, rarely-touched objects.</p>
+  </div>
+
+  <h3 class="section-title">At scale — the 23× ratio that runs data lakes</h3>
+  <p>Deep Archive is roughly <strong>1/23rd</strong> the price of Standard. That single ratio is why every serious S3 design is really a <em>lifecycle</em> design. Here's the price ladder to scale:</p>
+
+  <div class="chart">
+    <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S3 storage class price ladder">
+      <text x="20" y="26" font-family="'Playfair Display',serif" font-size="17" font-weight="700" fill="#2a1f16">Storage price ladder — $ per GB / month</text>
+      <text x="20" y="44" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8a7a66">us-east-1 · linear scale · the bar length IS the cost</text>
+
+      <!-- rows: x bars start at 210, 100% = 470px wide -->
+      <!-- Standard 0.023 = 100% -->
+      <text x="200" y="74" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12.5" fill="#2a1f16">S3 Standard</text>
+      <rect x="210" y="63" width="470" height="20" rx="4" fill="#e8a84a"/>
+      <text x="688" y="78" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#2a1f16">$0.023</text>
+
+      <!-- Standard-IA 0.0125 = 54% = 254 -->
+      <text x="200" y="106" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12.5" fill="#2a1f16">Standard-IA</text>
+      <rect x="210" y="95" width="254" height="20" rx="4" fill="#d99a4e"/>
+      <text x="472" y="110" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#2a1f16">$0.0125</text>
+
+      <!-- One Zone-IA 0.010 = 43% = 204 -->
+      <text x="200" y="138" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12.5" fill="#2a1f16">One Zone-IA</text>
+      <rect x="210" y="127" width="204" height="20" rx="4" fill="#cf8f52"/>
+      <text x="422" y="142" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#2a1f16">$0.010</text>
+
+      <!-- Glacier Instant 0.004 = 17% = 82 -->
+      <text x="200" y="170" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12.5" fill="#2a1f16">Glacier Instant</text>
+      <rect x="210" y="159" width="82" height="20" rx="4" fill="#5a9bb0"/>
+      <text x="300" y="174" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#2a1f16">$0.004</text>
+
+      <!-- Glacier Flexible 0.0036 = 16% = 74 -->
+      <text x="200" y="202" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12.5" fill="#2a1f16">Glacier Flexible</text>
+      <rect x="210" y="191" width="74" height="20" rx="4" fill="#4d8a9e"/>
+      <text x="292" y="206" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#2a1f16">$0.0036</text>
+
+      <!-- Deep Archive 0.00099 = 4.3% = 20 -->
+      <text x="200" y="234" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12.5" fill="#2a1f16">Deep Archive</text>
+      <rect x="210" y="223" width="20" height="20" rx="4" fill="#3a7184"/>
+      <text x="238" y="238" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#2a1f16">$0.00099</text>
+
+      <!-- 23x annotation -->
+      <line x1="210" y1="256" x2="680" y2="256" stroke="#cbb89e" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="445" y="280" text-anchor="middle" font-family="'Playfair Display',serif" font-size="14" font-style="italic" fill="#7a4a10">Standard → Deep Archive = a ~23× drop. Lifecycle rules ride this ladder down.</text>
+    </svg>
+    <p class="chart-caption">Express One Zone sits <em>above</em> Standard at ~$0.11/GB (off the chart) — you pay more to store, less per request.</p>
+  </div>
+  <ul>
+    <li><strong>In the small prod app</strong> (the EC2 chapter's $240/mo stack): 100 GB Standard ≈ <strong>$3/mo</strong> — S3 is rarely the headline cost at small scale.</li>
+    <li><strong>Ryanair-scale data lake</strong> (petabytes, mixed classes): storage alone runs <strong>$10k–$50k+/month</strong> (estimate) — and lifecycle rules ageing cold data to Glacier/Deep Archive are what keep it from being 5–10× higher.</li>
+  </ul>
+
+  <div class="callout callout-tip">
+    <div class="callout-tag">🎯 The one cost lever</div>
+    <p><strong>Lifecycle policies that age data down the classes.</strong> Hot for 30 days → Standard-IA → Glacier → Deep Archive, on a schedule. Pair with <strong>Intelligent-Tiering</strong> when access patterns are unknown (it auto-moves objects, no retrieval fees). Get the lifecycle right and a petabyte lake costs a fraction of leaving everything in Standard.</p>
+  </div>
+</div>
+
 <div id="p12" class="industry-spotlight">
   <div class="industry-spotlight-tag">🏢 Dublin Industry Architecture — Real-World Deep Dive</div>
   <h3>Fenergo-Style KYC Document Platform in Dublin</h3>
   <p>Let's build the architecture of a real Dublin-based fintech company's KYC (Know Your Customer) document management system — the type of platform <strong>Fenergo</strong> (headquartered on Mayor Street, Dublin 1) builds for the world's largest banks. This is a concrete example of every S3 concept you've just learned, applied in production.</p>
 
   <h4>📋 The Business Context</h4>
-  <p>Fenergo helps financial institutions onboard corporate clients. When a bank onboards a new corporate client, it needs to collect and verify: a company's certificate of incorporation, directors' passport copies, proof of address, source of funds documentation, and audited financial statements. Under EU GDPR, Irish Central Bank rules, and MiFID II regulations, these documents must be: <strong>encrypted at rest, access-logged, retained for at least 7 years, non-deletable during retention period, and geographically restricted to the EU</strong>.</p>
+  <p>Fenergo helps banks onboard corporate clients — running the "Know Your Customer" (KYC) checks every bank is legally required to do.</p>
+  <p>To onboard one new corporate client, a bank must collect and verify documents like the certificate of incorporation, directors' passport copies, proof of address, source-of-funds paperwork, and audited financial statements.</p>
+  <p>Under EU GDPR, Central Bank of Ireland rules, and MiFID II, those documents must be:</p>
+  <ul class="nice-list">
+    <li><strong>encrypted at rest</strong>,</li>
+    <li><strong>access-logged</strong> (who opened what, and when),</li>
+    <li><strong>retained for at least 7 years</strong>,</li>
+    <li><strong>non-deletable</strong> during that retention period, and</li>
+    <li><strong>kept geographically inside the EU</strong>.</li>
+  </ul>
 
   <h4>🏗️ The S3 Architecture</h4>
   <div class="arch-grid">
@@ -2340,6 +2691,45 @@ aws s3 presign s3://fenergo-kyc-docs/<span class="string">client-12345/passport.
   <p>"We used <strong>SSE-KMS with customer-managed keys</strong> rather than SSE-S3 because the Central Bank of Ireland requires financial institutions to demonstrate key management control. We rotate the KMS keys annually and every key usage is logged in CloudTrail — giving us a full audit trail of who accessed which document with which key. We also enabled <strong>S3 Bucket Keys</strong> to avoid KMS throttling at scale, since we have ~50,000 document access events per day."</p>
   <p>"For disaster recovery, we configured <strong>CRR to Frankfurt</strong> specifically because some of our bank clients are domiciled in Germany under German regulatory jurisdiction. Having a German region replica satisfies their local compliance requirements without duplicating the operational stack. The replication is configured with <strong>Replication Time Control (RTC)</strong> which gives us a guaranteed 15-minute RPO with SLA, rather than the best-effort default replication."</p>
   <p>"The <strong>Object Lock in Compliance Mode</strong> was a non-negotiable. When the European Banking Authority audits a client bank, they need to verify that document records haven't been tampered with. Compliance Mode means that even if our own DBA account is compromised, those 7-year-locked documents cannot be deleted. That's the same guarantee as physical tape archiving, delivered in the cloud."</p>
+</div>
+
+<div class="industry-spotlight">
+  <div class="industry-spotlight-tag">🏢 Dublin Industry Architecture — Real-World Deep Dive #2</div>
+  <h3>Ryanair's S3 Data Lake</h3>
+  <p><strong>Ryanair</strong> — Europe's largest airline, headquartered in Swords, Dublin — runs all-in on AWS. At the centre of its data platform sits a <strong>company-wide data lake built on S3</strong>. It's a textbook example of the "S3 as the foundation of analytics" pattern the exam loves.</p>
+  <p>First, the term. A <strong>data lake</strong> is simply one central place where you dump <em>all</em> your raw data — booking events, website clicks, app logs, pricing — in its original form, cheaply, so any tool can analyse it later.</p>
+  <p>S3 is the natural home for a lake: effectively unlimited size, 11 nines of durability, and every AWS analytics tool can read straight from it.</p>
+
+  <h4>How the pieces fit together (verified)</h4>
+  <div class="arch-grid">
+    <div class="arch-item">
+      <div class="arch-label">Ingest — Kinesis</div>
+      <p>Real-time event streams (bookings, searches, app activity) flow in via Amazon Kinesis and land in the S3 lake continuously.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Store — S3</div>
+      <p>S3 is the single source of truth. Raw data lands in Standard, then lifecycle rules tier older data down to Glacier to save cost — the exact pattern from Part 3.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">ML — SageMaker</div>
+      <p>Models read from S3 to forecast demand per route — literally predicting how many paninis and coffees to stock on each flight.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Transform — S3 Object Lambda</div>
+      <p>During COVID, Ryanair used S3 Object Lambda (transform-on-GET) to power a travel-wallet feature — reshaping stored data on the fly, no duplicate copies.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Serve — CloudFront</div>
+      <p>CloudFront fronts the MyRyanair experience, caching content near users across Europe (the OAC pattern from Part 11 applies here).</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Backup — Storage Gateway</div>
+      <p>Ryanair replaced physical tape backup with AWS Storage Gateway (Tape Gateway) into S3/Glacier — cutting backup costs by ~65%.</p>
+    </div>
+  </div>
+
+  <h4>💬 What an Engineer Would Say in an Interview</h4>
+  <p>"Our data lake is just an <strong>S3 bucket as the source of truth</strong>. Kinesis streams events straight into it, lifecycle rules tier cold data down to Glacier to control cost, and every downstream tool — SageMaker for demand forecasting, Athena for ad-hoc SQL — reads directly from S3. We never move the data; we bring the compute to it. That's the whole philosophy of a lake: <strong>store once in S3, analyse with many tools.</strong>"</p>
 </div>
 
 <div class="divider"></div>
@@ -2453,5 +2843,290 @@ aws s3 presign s3://fenergo-kyc-docs/<span class="string">client-12345/passport.
   SAA-C03 Masterclass · Amazon S3 (Introduction + Advanced + Security) · Document 1 of 2 · Study Series by Sanky
 </footer>
 
+<!-- ─────────── PART TABS: group parts into one-at-a-time panels (added for readability) ─────────── -->
+<script id="mc-tabs-js">
+(function(){
+  var mc = document.querySelector('.main-content');
+  if(!mc) return;
+
+  // Short, scannable tab labels keyed by each part-header's id.
+  var LABELS = {
+    p1:'01 · Why S3', p2:'02 · Fundamentals', p3:'03 · Storage Classes',
+    p4:'04 · Lifecycle', p5:'05 · Versioning', p6:'06 · Replication',
+    p7:'07 · Performance', p8:'08 · Events', p9:'09 · Encryption',
+    p10:'10 · Access Control', p11:'11 · Advanced', p11b:'11b · Logging',
+    'p-cost':'💰 Cost', p12:'🏢 Dublin Industry'
+  };
+
+  // A new part begins at any .part-header (or the Dublin spotlight, which uses id p12).
+  function isBoundary(n){
+    return n.nodeType === 1 && (n.classList.contains('part-header') || n.id === 'p12');
+  }
+
+  // Walk the flat children of .main-content and bucket them into parts.
+  var parts = [], cur = null;
+  Array.prototype.slice.call(mc.childNodes).forEach(function(n){
+    if(isBoundary(n)){ cur = { head:n, nodes:[n] }; parts.push(cur); }
+    else if(cur){ cur.nodes.push(n); }
+  });
+  if(parts.length < 2) return;  // nothing meaningful to split — leave page as-is
+
+  // Wrap each part's nodes in a hideable panel.
+  parts.forEach(function(p, i){
+    var key = p.head.id || ('extra-' + i);
+    var label = LABELS[key];
+    if(!label){
+      var h2 = p.head.querySelector('h2');
+      var t = (h2 ? h2.textContent : '').trim();
+      label = /decision/i.test(t) ? '📋 Exam Tables' : (t || ('Part ' + (i + 1)));
+    }
+    var sec = document.createElement('section');
+    sec.className = 'tab-panel';
+    sec.id = 'panel-' + key;
+    p.nodes.forEach(function(n){ sec.appendChild(n); });
+    mc.appendChild(sec);
+    p.key = key; p.label = label; p.section = sec;
+  });
+
+  // Build the sticky top tab bar.
+  var nav = document.createElement('nav');
+  nav.className = 'mc-tabnav';
+  nav.setAttribute('aria-label', 'Parts');
+  parts.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'mc-tab'; b.textContent = p.label;
+    b.addEventListener('click', function(){ show(i, true); });
+    p.tab = b; nav.appendChild(b);
+  });
+  mc.parentNode.insertBefore(nav, mc);
+
+  // Add a Prev / progress / Next bar to the bottom of each panel.
+  parts.forEach(function(p, i){
+    var bar = document.createElement('div');
+    bar.className = 'mc-partnav';
+
+    var prev = document.createElement('button');
+    prev.type = 'button'; prev.className = 'mc-prev';
+    if(i > 0){
+      prev.innerHTML = '<span class="mc-pn-lbl">← Previous</span>' + parts[i-1].label;
+      prev.addEventListener('click', function(){ show(i-1, true); });
+    } else { prev.disabled = true; }
+
+    var prog = document.createElement('div');
+    prog.className = 'mc-progress';
+    prog.textContent = 'Part ' + (i+1) + ' of ' + parts.length;
+
+    var next = document.createElement('button');
+    next.type = 'button'; next.className = 'mc-next';
+    if(i < parts.length - 1){
+      next.innerHTML = '<span class="mc-pn-lbl">Next →</span>' + parts[i+1].label;
+      next.addEventListener('click', function(){ show(i+1, true); });
+    } else { next.disabled = true; }
+
+    bar.appendChild(prev); bar.appendChild(prog); bar.appendChild(next);
+    p.section.appendChild(bar);
+  });
+
+  // Natural Y of the tab bar (top of page) — scroll target so the hero tucks away.
+  var navAnchor = nav.getBoundingClientRect().top + window.pageYOffset;
+  var active = -1;
+
+  function show(i, doScroll){
+    if(i < 0 || i >= parts.length) return;
+    parts.forEach(function(p, j){
+      var on = (j === i);
+      p.section.classList.toggle('active', on);
+      p.tab.classList.toggle('active', on);
+    });
+    active = i;
+    if(history.replaceState) history.replaceState(null, '', '#' + parts[i].key);
+    if(doScroll) window.scrollTo({ top: navAnchor, behavior: 'smooth' });
+  }
+
+  function keyToIndex(key){
+    for(var i = 0; i < parts.length; i++) if(parts[i].key === key) return i;
+    return -1;
+  }
+
+  // Honour the URL hash (incl. legacy #p3-style deep links) on load and on change.
+  function fromHash(){
+    var h = (location.hash || '').replace('#', '');
+    return h ? keyToIndex(h) : -1;
+  }
+  var start = fromHash();
+  show(start >= 0 ? start : 0, false);
+
+  window.addEventListener('hashchange', function(){
+    var idx = fromHash();
+    if(idx >= 0 && idx !== active) show(idx, true);
+  });
+
+  // Left/Right arrows page through parts (ignored while typing or with modifiers).
+  document.addEventListener('keydown', function(e){
+    if(e.metaKey || e.ctrlKey || e.altKey) return;
+    if(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if(e.key === 'ArrowRight' && active < parts.length - 1) show(active + 1, true);
+    else if(e.key === 'ArrowLeft' && active > 0) show(active - 1, true);
+  });
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S3</div>
+<ul>
+<li class="cnav-current"><a href="S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

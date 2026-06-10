@@ -208,6 +208,26 @@
   </div>
 </header>
 
+<section style="max-width:1000px;margin:26px auto 0;padding:0 24px;">
+  <div style="background:var(--bg-alt);border:1px solid #2a2e3a;border-left:4px solid var(--accent);border-radius:14px;padding:22px 26px;">
+    <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-weight:700;">📊 Exam Weightage — IAM in SAA-C03</div>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.65;"><strong style="color:#fff;">IAM sits at the heart of the single biggest exam domain.</strong> Expect roughly <strong style="color:var(--green);">6–10 of the 65 questions</strong> to hinge on IAM concepts — and security ideas leak into many more. It is among the 2–3 most-tested service areas alongside S3 and VPC. <span style="color:#8a8f9c;">(AWS doesn't publish per-service counts; community estimate from 2024–25 pass reports.)</span></p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;">
+      <div style="background:#14161c;border:1px solid #2a2e3a;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:25px;font-weight:800;color:var(--accent);line-height:1;">30%</div><div style="font-size:12px;color:#8a8f9c;margin-top:6px;">Domain 1 — Secure Architectures (largest)</div></div>
+      <div style="background:#14161c;border:1px solid #2a2e3a;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:25px;font-weight:800;color:var(--green);line-height:1;">~6–10</div><div style="font-size:12px;color:#8a8f9c;margin-top:6px;">IAM questions per exam (est.)</div></div>
+      <div style="background:#14161c;border:1px solid #2a2e3a;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:25px;font-weight:800;color:#fff;line-height:1;">65</div><div style="font-size:12px;color:#8a8f9c;margin-top:6px;">Total questions (50 scored)</div></div>
+      <div style="background:#14161c;border:1px solid #2a2e3a;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:25px;font-weight:800;color:#fff;line-height:1;">720</div><div style="font-size:12px;color:#8a8f9c;margin-top:6px;">Pass score (of 1000)</div></div>
+    </div>
+    <div style="font-size:13px;color:#8a8f9c;margin-bottom:8px;">Highest-yield IAM topics on the exam:</div>
+    <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.75;color:#c4c9d4;">
+      <li><strong style="color:#fff;">Policy evaluation logic</strong> — explicit Deny always wins; SCP ∩ identity ∩ resource ∩ permission boundary ∩ session policy</li>
+      <li><strong style="color:#fff;">Roles &amp; STS</strong> — service-to-service access, cross-account AssumeRole, instance profiles (never static keys)</li>
+      <li><strong style="color:#fff;">Boundaries vs SCPs vs session policies</strong> — what limits whom, and where each applies</li>
+      <li><strong style="color:#fff;">Root user hardening, MFA, Identity Center (SSO), Access Analyzer, ABAC</strong></li>
+    </ul>
+  </div>
+</section>
+
 <div class="wire">
   <strong>How this file is wired to the masterclass.</strong> Every cheat section below carries a small chapter tag (e.g. <span class="chapref" style="margin:0">CH 09 · ROLES</span>) pointing back to where you learned it in Document 1. Each practice-question explanation ends with the same reference. The intent: you read the masterclass once for understanding, then this file re-fires those exact neurons under exam pressure — that repetition under a different framing is what builds durable memory.
 </div>
@@ -624,18 +644,18 @@
   <div class="q">
     <div class="q-num">QUESTION 01</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">A solutions architect has just created a new AWS account. According to AWS best practices, what should be done <strong>first</strong> with the root user?</div>
+    <div class="q-stem">An organisation has fully locked down its root user (strong password, MFA, no access keys) and runs all day-to-day administration through IAM Identity Center. Which task will STILL require them to sign in as the <strong>root user</strong>?</div>
     <ul class="q-opts">
-      <li>Generate access keys for the root user so automation scripts can manage the account</li>
-      <li data-correct>Enable MFA on the root user, delete any root access keys, and create an IAM admin identity for daily work</li>
-      <li>Attach the AdministratorAccess policy to the root user</li>
-      <li>Use the root user for all administrative tasks since it is the most powerful identity</li>
+      <li>Creating and attaching IAM policies to roles</li>
+      <li data-correct>Closing the AWS account</li>
+      <li>Launching EC2 instances and configuring VPCs</li>
+      <li>Rotating an IAM user's access keys</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
       <span class="ans-line">Correct: B</span>
-      The root user is all-powerful and cannot be restricted within its own account, so it must be locked down immediately: strong password, MFA, no access keys, and daily work moves to a scoped IAM/Identity Center identity.
-      <div class="why-wrong"><strong>A &amp; D</strong> use root for routine work — the single most dangerous AWS habit. <strong>C</strong> is meaningless: root already has full power; attaching a policy adds nothing and signals misunderstanding.</div>
+      A small set of tasks are <strong>root-only</strong> and cannot be delegated to any IAM principal — e.g. <em>closing the account</em>, changing the account name/email/root password, changing the AWS Support plan, restoring IAM permissions after a lockout, and a few billing/Marketplace actions. Everything else should be done with scoped IAM/Identity Center identities.
+      <div class="why-wrong"><strong>A, C, D</strong> are all ordinary, delegable IAM/admin actions — exactly the work that should <em>never</em> use root. The exam tests whether you know the short list of genuinely root-only tasks versus the everyday actions that merely <em>feel</em> privileged.</div>
       <span class="chref">↩ Masterclass Ch 02 — The Root User</span>
     </div>
   </div>
@@ -644,19 +664,19 @@
   <div class="q">
     <div class="q-num">QUESTION 02</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">An application running on an EC2 instance needs to read objects from an S3 bucket. What is the <strong>most secure</strong> way to grant this access?</div>
+    <div class="q-stem">An app on an EC2 instance in <strong>Account A</strong> must read from an S3 bucket owned by <strong>Account B</strong>. Both accounts are in the same AWS Organization. What is the <strong>most secure, lowest-maintenance</strong> design?</div>
     <ul class="q-opts">
-      <li>Create an IAM user, generate access keys, and store them in the application's config file</li>
-      <li>Embed the AWS account's root credentials in an environment variable on the instance</li>
-      <li data-correct>Create an IAM role with S3 read permissions and attach it to the EC2 instance</li>
-      <li>Make the S3 bucket public so the instance can read it without credentials</li>
+      <li>Create an IAM user in Account B, generate access keys, and store them on the instance in Account A</li>
+      <li data-correct>Give the instance an IAM role in Account A; in Account B, either grant the bucket to that role via a bucket policy, or have the instance role assume a cross-account role in Account B (trust + sts:AssumeRole)</li>
+      <li>Make the Account B bucket public and restrict it by the instance's source IP</li>
+      <li>Bake long-lived Account B access keys into the AMI so they aren't stored in a config file</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
-      <span class="ans-line">Correct: C</span>
-      Service-to-service access is always an IAM role. The instance receives auto-rotating temporary credentials via the metadata service; no long-lived secret ever lands on disk.
-      <div class="why-wrong"><strong>A</strong> puts long-lived keys on disk (leak/AMI risk). <strong>B</strong> is catastrophic — root creds on an instance. <strong>D</strong> exposes data to the entire internet to avoid an auth setup.</div>
-      <span class="chref">↩ Masterclass Ch 09 — IAM Roles</span>
+      <span class="ans-line">Correct: B</span>
+      Service-to-service access is always a role — and for <em>cross-account</em> access the instance role either assumes a role in Account B (cross-account trust + <code>sts:AssumeRole</code>) or is granted directly by Account B's bucket (resource) policy. No long-lived secret exists anywhere, and credentials auto-rotate.
+      <div class="why-wrong"><strong>A</strong> puts long-lived foreign-account keys on disk. <strong>D</strong> is the subtle trap — baking keys into an AMI is still static credentials, and they now leak with every copy of the image. <strong>C</strong> trades a clean auth design for public exposure; source-IP restriction is brittle and not "most secure."</div>
+      <span class="chref">↩ Masterclass Ch 09 — Roles &amp; Cross-Account Access</span>
     </div>
   </div>
 
@@ -804,18 +824,18 @@
   <div class="q">
     <div class="q-num">QUESTION 10</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">Which statement about Service Control Policies (SCPs) is <strong>true</strong>?</div>
+    <div class="q-stem">An OU's SCP allows only <code>ec2:*</code> and <code>s3:*</code>. A developer in a <strong>member account</strong> has an IAM policy granting <code>dynamodb:*</code> but can't use DynamoDB at all. Yet an admin in the <strong>management account</strong> with the same IAM policy uses DynamoDB fine. What explains BOTH facts?</div>
     <ul class="q-opts">
-      <li>SCPs grant permissions to users in member accounts</li>
-      <li>SCPs apply to the Organization's management account</li>
-      <li data-correct>SCPs define the maximum available permissions but never grant any permission by themselves</li>
-      <li>SCPs can be bypassed by a member account's root user</li>
+      <li>The member account's IAM policy is malformed</li>
+      <li>SCPs grant permissions, so the OU's SCP should have included DynamoDB</li>
+      <li data-correct>An SCP is a ceiling — an action needs BOTH an SCP allow AND an IAM allow, so the member's DynamoDB is blocked; and SCPs don't apply to the management account, so the admin is unaffected</li>
+      <li>DynamoDB is a global service and is exempt from SCPs</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
       <span class="ans-line">Correct: C</span>
-      SCPs are a ceiling. An action is only permitted if the SCP allows it AND an IAM policy grants it. SCP alone grants nothing.
-      <div class="why-wrong"><strong>A</strong> is the #1 SCP misconception. <strong>B</strong> false — the management account is exempt. <strong>D</strong> false — member-account root is bound by SCPs.</div>
+      Two SCP facts at once: (1) an SCP is a <strong>ceiling</strong> — it never grants; an action is allowed only if the SCP permits it <em>and</em> an IAM policy grants it, so the member's DynamoDB (absent from the SCP) is denied. (2) The <strong>management account is exempt</strong> from SCPs, so the same IAM policy works there.
+      <div class="why-wrong"><strong>A</strong> the policy is fine — the SCP is the gate. <strong>B</strong> SCPs never grant permissions. <strong>D</strong> not a real rule; the exemption is the management account, not "global services."</div>
       <span class="chref">↩ Masterclass Ch 14 — SCPs</span>
     </div>
   </div>
@@ -884,18 +904,18 @@
   <div class="q">
     <div class="q-num">QUESTION 14</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">An administrator wants a CSV listing every IAM user along with their MFA status, password age, and access-key last-used date. Which feature provides this?</div>
+    <div class="q-stem">An audit finding requires you to produce, for <strong>every</strong> IAM user in an account, their MFA status, password age, and each access key's last-used date — in one downloadable file, with <strong>no custom scripting</strong>. What is the fastest correct source?</div>
     <ul class="q-opts">
-      <li>CloudTrail event history</li>
-      <li>IAM Access Analyzer</li>
-      <li data-correct>IAM Credentials Report</li>
-      <li>AWS Config</li>
+      <li>Pull each user's activity from CloudTrail and assemble a spreadsheet</li>
+      <li>Run IAM Access Analyzer and export its findings</li>
+      <li data-correct>Generate the IAM Credentials Report — a ready-made CSV of every user's credential metadata</li>
+      <li>Enable AWS Config and build a custom rule to collect it</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
       <span class="ans-line">Correct: C</span>
-      The Credentials Report is a downloadable CSV of all users' credential metadata — the go-to for credential hygiene audits.
-      <div class="why-wrong"><strong>A</strong> CloudTrail logs API calls, not a credential roster. <strong>B</strong> Access Analyzer finds external exposure. <strong>D</strong> Config tracks resource configuration, not IAM credential ages.</div>
+      The <strong>IAM Credentials Report</strong> is a single downloadable CSV of every user's credential metadata (MFA, password age, key last-used) — built exactly for credential-hygiene audits, no scripting needed.
+      <div class="why-wrong"><strong>A</strong> is the trap — people reach for CloudTrail for "who/when", but it's per-event logs and would take huge manual effort to turn into a roster. <strong>B</strong> Access Analyzer finds <em>external exposure</em>, not credential ages. <strong>D</strong> Config tracks resource configuration/compliance, not a per-user credential roster.</div>
       <span class="chref">↩ Masterclass Ch 20 — Audit Toolkit</span>
     </div>
   </div>
@@ -904,18 +924,18 @@
   <div class="q">
     <div class="q-num">QUESTION 15</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">Which tool proactively identifies S3 buckets, IAM roles, or KMS keys that are accessible from <strong>outside</strong> your account or organisation?</div>
+    <div class="q-stem">Compliance wants <strong>continuous, automatic</strong> detection of any S3 bucket, IAM role, or KMS key that can be reached by a principal <strong>outside your AWS organization</strong> — flagged <em>before</em> an attacker finds it. Which service is purpose-built for this?</div>
     <ul class="q-opts">
-      <li>CloudTrail</li>
-      <li data-correct>IAM Access Analyzer</li>
-      <li>Policy Simulator</li>
-      <li>Trusted Advisor cost checks</li>
+      <li>Amazon Macie</li>
+      <li data-correct>IAM Access Analyzer (external-access findings)</li>
+      <li>IAM Policy Simulator</li>
+      <li>CloudTrail with a metric filter</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
       <span class="ans-line">Correct: B</span>
-      Access Analyzer continuously analyses resource policies to surface anything reachable by external principals — a proactive misconfiguration detector.
-      <div class="why-wrong"><strong>A</strong> is reactive event logging. <strong>C</strong> tests hypothetical permission outcomes, not external exposure. <strong>D</strong> is cost/perf advice, not access analysis.</div>
+      <strong>IAM Access Analyzer</strong> continuously analyses resource policies and surfaces anything reachable by an external principal — proactive, before-the-fact exposure detection.
+      <div class="why-wrong"><strong>A</strong> is the trap: <strong>Macie</strong> discovers and classifies sensitive <em>data</em> (PII) inside S3 — not who can access resources. <strong>C</strong> Policy Simulator tests hypothetical permissions for a principal you specify — not continuous external-exposure scanning. <strong>D</strong> CloudTrail is reactive logging after access already happened.</div>
       <span class="chref">↩ Masterclass Ch 20 — Access Analyzer</span>
     </div>
   </div>
@@ -964,19 +984,19 @@
   <div class="q">
     <div class="q-num">QUESTION 18</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">Which of the following best describes the difference between an IAM role's trust policy and its permission policy?</div>
+    <div class="q-stem">A role's <strong>permission policy</strong> clearly allows <code>s3:GetObject</code>, and an EC2 instance using the role reads S3 fine. But when a user in <strong>another account</strong> tries to assume the role they get <code>AccessDenied</code>. Which policy must be fixed, and why?</div>
     <ul class="q-opts">
-      <li>They are identical; the names are interchangeable</li>
-      <li data-correct>The trust policy defines who can assume the role; the permission policy defines what the role can do once assumed</li>
-      <li>The trust policy grants permissions; the permission policy restricts regions</li>
-      <li>Roles only have permission policies, not trust policies</li>
+      <li>The permission policy — add the other account's actions to it</li>
+      <li data-correct>The trust policy — it defines WHO may assume the role (the Principal); the permission policy only governs what the role can do <em>once assumed</em>, so it can't grant the ability to assume</li>
+      <li>Neither — you must create a separate role per account</li>
+      <li>The SCP attached to the EC2 instance</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
       <span class="ans-line">Correct: B</span>
-      Every role has two distinct policies answering two questions: trust = "who may wear this hat?" (resource-based, lists the Principal); permission = "what can the wearer do?" (identity-based).
-      <div class="why-wrong"><strong>A</strong> they serve completely different purposes. <strong>C</strong> reverses/confuses their roles. <strong>D</strong> false — the trust policy is mandatory on a role.</div>
-      <span class="chref">↩ Masterclass Ch 09 — Two policies on a role</span>
+      Every role has two distinct policies. The <strong>trust policy</strong> (resource-based, lists the <code>Principal</code>) answers "who may wear this hat?" — assuming the role from another account requires that account/principal to be trusted here. The <strong>permission policy</strong> only answers "what can the wearer do once they have it?" — it cannot grant the assume itself.
+      <div class="why-wrong"><strong>A</strong> permission policy governs post-assume actions, not who can assume. <strong>C</strong> unnecessary — one role can trust many principals. <strong>D</strong> an SCP on the instance is unrelated to a cross-account assume failure.</div>
+      <span class="chref">↩ Masterclass Ch 09 — Trust vs permission policy</span>
     </div>
   </div>
 
@@ -1044,18 +1064,18 @@
   <div class="q">
     <div class="q-num">QUESTION 22</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">For day-to-day administration, you should attach permission policies to an IAM ____ rather than to individual users, to simplify management.</div>
+    <div class="q-stem">A team adds ~10 engineers a month who all need the same permissions, and people frequently move between teams. An engineer proposes automating <em>per-user</em> policy attachment. What is the better design, and why?</div>
     <ul class="q-opts">
-      <li>role's trust policy</li>
-      <li data-correct>group</li>
-      <li>access key</li>
-      <li>nested sub-group</li>
+      <li>Keep attaching policies to each user — automation makes per-user management fine at scale</li>
+      <li data-correct>Attach the policies to an IAM group and just add/remove users — changes propagate to all members instantly, and a team move is one action; per-user attachment causes sprawl, drift, and hits the per-user policy limit</li>
+      <li>Create one IAM role per engineer and have each person assume their own role daily</li>
+      <li>Use nested groups so each team inherits from a parent group</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
       <span class="ans-line">Correct: B</span>
-      Attaching policies to groups means changes propagate to all members and onboarding is "add user to group." Per-user policies create sprawl.
-      <div class="why-wrong"><strong>A</strong> trust policies control assumption, not group permission management. <strong>C</strong> access keys aren't policy targets. <strong>D</strong> nested groups don't exist in IAM.</div>
+      <strong>Groups</strong> are the right tool for standing human permissions: attach policies once, manage membership, and onboarding/moves become "add/remove from group." Per-user attachment is what you're trying to avoid.
+      <div class="why-wrong"><strong>A</strong> per-user sprawl drifts and hits the managed-policies-per-user limit. <strong>C</strong> roles are for <em>temporary/assumed</em> access (services, cross-account, federation), not day-to-day standing team permissions. <strong>D</strong> is the trap — IAM has <strong>no nested groups</strong>; a group cannot contain another group.</div>
       <span class="chref">↩ Masterclass Ch 05 — Groups</span>
     </div>
   </div>
@@ -1184,19 +1204,19 @@
   <div class="q">
     <div class="q-num">QUESTION 29</div>
     <div class="q-type">Single response</div>
-    <div class="q-stem">A security team needs to determine exactly who deleted a critical S3 bucket and when. Which service provides this?</div>
+    <div class="q-stem">A critical S3 bucket was deleted <strong>~120 days ago</strong>. You must identify the exact human responsible — but the action was performed by an <strong>assumed role shared by many people</strong>. Which approach actually works?</div>
     <ul class="q-opts">
-      <li>IAM Access Analyzer</li>
-      <li>AWS Config</li>
-      <li data-correct>AWS CloudTrail</li>
-      <li>IAM Credentials Report</li>
+      <li>The IAM Credentials Report</li>
+      <li data-correct>Query CloudTrail logs stored in S3 (a configured trail, or CloudTrail Lake) — the event's <code>userIdentity</code> shows the role-session name / <code>sourceIdentity</code>, pinpointing the person</li>
+      <li>The CloudTrail console Event history</li>
+      <li>The AWS Config timeline for the bucket</li>
     </ul>
     <button class="reveal-btn" onclick="rev(this)">Reveal answer</button>
     <div class="explain">
-      <span class="ans-line">Correct: C</span>
-      CloudTrail records every API call with the identity, timestamp, and source — the authoritative "who did what, when" forensic source.
-      <div class="why-wrong"><strong>A</strong> finds external exposure, not historical actions. <strong>B</strong> Config tracks configuration state/compliance, not the actor of an API call. <strong>D</strong> the Credentials Report is a current credential snapshot, not an event log.</div>
-      <span class="chref">↩ Masterclass Ch 20 — CloudTrail</span>
+      <span class="ans-line">Correct: B</span>
+      CloudTrail is the "who did what, when" source — but two traps lurk. (1) The console <strong>Event history only keeps ~90 days</strong>, so a 120-day-old event survives only if a <strong>trail</strong> was saving events to S3 (or CloudTrail Lake). (2) For an assumed role, the actor is hidden behind the role — you identify the human from the <strong>role-session name / <code>sourceIdentity</code></strong> in the event.
+      <div class="why-wrong"><strong>A</strong> is a current credential snapshot, not an event log. <strong>C</strong> Event history can't reach back 120 days. <strong>D</strong> Config shows configuration/compliance state, not the API actor's identity.</div>
+      <span class="chref">↩ Masterclass Ch 20 — CloudTrail (retention + assumed-role identity)</span>
     </div>
   </div>
 
@@ -1381,5 +1401,162 @@
     });
   });
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">IAM</div>
+<ul>
+<li class=""><a href="01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class="cnav-current"><a href="02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

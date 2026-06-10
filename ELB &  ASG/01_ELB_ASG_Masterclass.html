@@ -41,7 +41,7 @@
   }
 
   .wrap {
-    max-width: 920px;
+    max-width: 760px;            /* comfortable reading measure, like the S3 masterclass */
     margin: 0 auto;
     padding: 60px 32px 120px;
   }
@@ -238,6 +238,19 @@
   .exam p:last-child { margin-bottom: 0; }
 
   /* ============== TABLES ============== */
+  .price-tag {
+    display: block;
+    margin: 22px 0;
+    padding: 11px 15px;
+    border-radius: 9px;
+    background: rgba(40, 40, 55, 0.05);
+    border: 1px solid rgba(40, 40, 55, 0.11);
+    border-left: 3px solid var(--accent, #1d7a6e);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink, #1b1b26);
+  }
+  .price-tag strong { font-weight: 700; }
   .tbl-wrap { overflow-x: auto; margin: 32px 0; }
   table {
     width: 100%;
@@ -453,6 +466,7 @@
     <li><a href="#s17">Lifecycle Hooks, Warm Pools, Instance Refresh</a></li>
     <li><a href="#s18">Mixed instances &amp; Spot inside ASG</a></li>
     <li><a href="#s19">ELB + ASG: the power couple in production</a></li>
+    <li><a href="#s-cost">💰 What it all costs</a></li>
     <li><a href="#s20">Industry patterns &amp; war stories</a></li>
     <li><a href="#s21">The mental model to take into the exam (and into Monday)</a></li>
   </ol>
@@ -693,6 +707,8 @@
 <h2 id="s7"><span class="num">Chapter Seven</span>Application Load Balancer (ALB) <span class="badge badge-l7">Layer 7</span></h2>
 
 <p>The ALB is the workhorse of AWS web architecture. If you're building a website, an API, a microservice, or anything HTTP — ALB is almost always the answer.</p>
+
+<p class="price-tag">💵 An ALB costs <strong>~$0.0225/hr ≈ $16/month even with zero traffic</strong> (the fixed hour charge), plus a usage charge (LCUs) on top — figure ~$20–30/mo for a busy small app. NLB is the same base; Gateway LB is cheaper (~$9/mo). Ireland ≈ +12%. <em>Idle load balancers in dev accounts are a classic waste.</em></p>
 
 <h3>What makes ALB special: it understands HTTP</h3>
 
@@ -970,6 +986,8 @@
 
 <p>The load balancer solves <em>distributing</em> traffic. But what about the supply side — having the right number of servers? That's the Auto Scaling Group's job.</p>
 
+<p class="price-tag">💵 The Auto Scaling Group itself is <strong>completely free — $0</strong>. It's a control loop, not a billed resource; you pay only for the EC2 instances it launches. That's <em>why</em> scaling in aggressively or scaling to zero overnight is pure saving — there's no penalty for the ASG, only for running boxes.</p>
+
 <h3>What an ASG is, in one sentence</h3>
 <p>An Auto Scaling Group is <strong>a manager that maintains a target number of identical EC2 instances, replaces unhealthy ones automatically, and grows or shrinks the fleet based on demand</strong>.</p>
 
@@ -1204,6 +1222,40 @@
   <li><strong>Cost-efficient</strong> — Mixed instance / Spot policy can cut compute costs 50-70%.</li>
 </ul>
 
+<!-- ============== SECTION COST ============== -->
+<h2 id="s-cost"><span class="num">💰 Cost</span>What it all costs</h2>
+
+<p>Before the war stories, price the power couple in your head. Anchored on us-east-1; eu-west-1 (Dublin) noted where it differs. Standard month = 730 hours.</p>
+
+<div class="insight">
+  <div class="tag">💰 What you're billed on</div>
+  <p>A load balancer has <strong>two meters</strong>: a <strong>fixed hourly charge</strong> (you pay it even with zero traffic) plus <strong>capacity units</strong> — LCUs for ALB, NLCUs for NLB — that meter new connections, active connections, processed bytes, and rule evaluations. The <strong>Auto Scaling Group itself is completely free</strong> — it's a control loop, not a billed resource. You only pay for the EC2 instances it launches.</p>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Resource</th><th>$/hour</th><th>≈ $/month base</th><th>+ capacity</th></tr></thead>
+    <tbody>
+      <tr><td>Application LB (ALB)</td><td>$0.0225</td><td>~$16.20</td><td>$0.008 / LCU-hr</td></tr>
+      <tr><td>Network LB (NLB)</td><td>$0.0225</td><td>~$16.20</td><td>$0.006 / NLCU-hr</td></tr>
+      <tr><td>Gateway LB (GWLB)</td><td>$0.0125</td><td>~$9.10</td><td>$0.004 / GLCU-hr</td></tr>
+      <tr><td>Classic LB (legacy)</td><td>$0.025</td><td>~$18.25</td><td>$0.008 / GB</td></tr>
+      <tr><td><strong>Auto Scaling Group</strong></td><td><strong>$0</strong></td><td><strong>free</strong></td><td>pay only for the EC2 it launches</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>In <strong>eu-west-1 (Dublin)</strong> the ALB is ~$0.0252/hr (~$18.40/mo, +~12%).</p>
+
+<div class="trap">
+  <div class="tag">⚠️ The hidden costs</div>
+  <p><strong>An idle ALB still costs ~$16/month</strong> — that fixed hourly charge runs whether one request hits it or none. Forgotten ALBs in dev accounts are a classic waste. And LCUs are driven by <em>processed bytes</em>, so a high-throughput app can pay far more in LCUs than in the base hour. On NLB, <strong>cross-zone load balancing bills inter-AZ data</strong> ($0.01/GB each way) — it's off by default for exactly that reason.</p>
+</div>
+
+<div class="exam">
+  <div class="tag">🎯 The one cost lever</div>
+  <p><strong>ASG being free is the whole game.</strong> Because you only pay for running instances, <em>scaling down to zero at night</em> (scheduled actions) or <em>scaling in aggressively</em> after a spike is pure saving — no penalty for the ASG itself. Stack that with <strong>Spot inside a mixed-instances policy</strong> (up to 90% off the elastic slice) and you cut the compute bill 50–70% while the load balancer line stays a flat ~$16–25/mo. In the small-prod-app reference stack, the ALB is just ~$24/mo of the ~$240 total — the instances are where the money (and the savings) live.</p>
+</div>
+
 <!-- ============== SECTION 20 ============== -->
 <h2 id="s20"><span class="num">Chapter Twenty</span>Industry patterns &amp; war stories</h2>
 
@@ -1230,6 +1282,12 @@
 
 <h3>War story: the slow startup</h3>
 <p>Auto-scaling fired during a flash sale. New instances took 4 minutes to launch and bootstrap. By the time they were ready, the spike was over and the original instances had crashed. Fix: pre-bake the AMI with everything installed, plus use Warm Pools to keep a buffer of pre-initialised instances ready to go in seconds.</p>
+
+<h3>🏭 Named Dublin example — Ryanair's 3-tier stack</h3>
+<p><strong>Ryanair</strong> (Europe's largest airline, HQ in Swords, Dublin) runs the textbook resilient web architecture for Ryanair.com — all-in on AWS: <strong>ALB → Auto Scaling group of EC2 → Aurora Multi-AZ + ElastiCache</strong>. Its serverless <strong>Ryanair Connect</strong> app sits behind an ALB protected by <strong>AWS WAF + AWS Shield Advanced</strong>. This is exactly the "ALB in public subnets, ASG of private-subnet instances, managed multi-AZ database behind it" pattern the exam rewards — and the model answer to "design a highly available, scalable web tier."</p>
+
+<h3>🏭 Named Dublin example — Intercom's hands-off Black Friday scaling</h3>
+<p><strong>Intercom</strong> (customer-messaging SaaS, EU customers served from Ireland) says it best: "Each year on Black Friday, as many of our customers hit their busiest period, our infrastructure scales to match <em>without human intervention</em>." That is <strong>target-tracking auto-scaling</strong> on their worker fleets — set a target (CPU, or a request/queue metric) and let the ASG add and remove instances automatically. <em>Exam mapping:</em> "automatically hold utilisation near a target / scale with no manual effort" → <strong>Target-Tracking</strong> policy; if the peak <em>time</em> is known in advance, add <strong>Scheduled</strong> scaling.</p>
 
 <!-- ============== SECTION 21 ============== -->
 <h2 id="s21"><span class="num">Chapter Twenty-One</span>The mental model to take into the exam</h2>
@@ -1300,5 +1358,162 @@
 </div>
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">ELB & ASG</div>
+<ul>
+<li class="cnav-current"><a href="01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

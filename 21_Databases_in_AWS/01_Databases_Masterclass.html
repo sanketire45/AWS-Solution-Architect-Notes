@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Databases in AWS — Choosing the Right One — Masterclass (SAA-C03)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#faf6f0;--warm-white:#fff9f2;--ink:#1a1208;--ink-soft:#3d2e1a;--ink-muted:#6b5744;
+    --accent-amber:#c97d2e;--accent-amber-light:#e8a84a;--accent-teal:#1d7a6e;--accent-teal-light:#2a9d8f;
+    --accent-rust:#b84c2a;--accent-rust-light:#d4693e;--accent-purple:#6b3fa0;--accent-blue:#1e5fa8;
+    --accent-blue-light:#2b7dd4;--accent-green:#2d7a3e;--border:#e8ddd0;--border-warm:#d4c4aa;
+    --shadow-warm:0 4px 24px rgba(100,70,30,0.12);--shadow-card:0 2px 12px rgba(100,70,30,0.08);
+    --accent:#1d7a6e;--paper:#fff9f2;--rule:#e8ddd0;--bg-alt:#f0e8dc;--ink-mute:#6b5744;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+  .hero{background:linear-gradient(135deg,#13231f 0%,#16302a 45%,#1a2438 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
+  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.18) 0%,transparent 70%);}
+  .hero-tag{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-amber-light);font-weight:700;margin-bottom:16px;}
+  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(36px,4.6vw,58px);line-height:1.06;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
+  .hero h1 span{color:var(--accent-amber-light);}
+  .hero-subtitle{font-size:19px;color:rgba(255,255,255,0.72);max-width:790px;font-weight:400;}
+  .hero-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px;}
+  .hero-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.85);padding:6px 15px;border-radius:100px;font-size:13px;font-weight:500;}
+  .svc-tabnav{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:8px;padding:14px 60px;background:rgba(250,246,240,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(100,70,30,0.06);}
+  .svc-tab{font:600 15.5px/1 'Inter',sans-serif;color:var(--ink-muted);background:var(--warm-white);border:1.5px solid var(--border);border-radius:12px;padding:11px 18px;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;gap:8px;}
+  .svc-tab:hover{color:var(--ink);border-color:var(--border-warm);}
+  .svc-tab.choose.active{color:#fff;background:var(--accent-amber);border-color:var(--accent-amber);box-shadow:0 3px 12px rgba(201,125,46,0.32);}
+  .svc-tab.rel.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
+  .svc-tab.nosql.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
+  .svc-tab.special.active{color:#fff;background:var(--accent-purple);border-color:var(--accent-purple);box-shadow:0 3px 12px rgba(107,63,160,0.32);}
+  .svc-panel{display:none;}.svc-panel.active{display:block;animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .main-content{max-width:1300px;margin:0 auto;padding:0 60px 80px;}
+  .svc-index{background:var(--warm-white);border:1px solid var(--border);border-radius:14px;margin:26px 0 4px;padding:18px 24px;box-shadow:var(--shadow-card);}
+  .svc-index-label{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:12px;}
+  .svc-index-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:3px 22px;}
+  .svc-index-inner a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink-soft);font-size:16px;padding:7px 10px;border-radius:8px;border-left:3px solid transparent;transition:all .15s ease;}
+  .svc-index-inner a:hover{background:#f0e8dc;color:var(--accent-rust);border-left-color:var(--accent-amber);}
+  .idx-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-amber);flex-shrink:0;}
+  .part-header{padding:20px 28px;border-radius:13px;margin:44px 0 6px;scroll-margin-top:86px;}
+  .part-header.blue{background:linear-gradient(135deg,#e0ecf8 0%,#cce0f5 100%);}
+  .part-header.teal{background:linear-gradient(135deg,#e0f4f1 0%,#c8eee9 100%);}
+  .part-header.purple{background:linear-gradient(135deg,#efe8f8 0%,#e2d4f0 100%);}
+  .part-header.rust{background:linear-gradient(135deg,#fce8e0 0%,#f8d8cc 100%);}
+  .part-header.amber{background:linear-gradient(135deg,#fdf0e0 0%,#fde8c8 100%);}
+  .part-number{font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-rust);margin-bottom:4px;}
+  .part-header h2{font-family:'Fraunces',serif;font-size:clamp(22px,2.1vw,28px);line-height:1.18;color:var(--ink);font-weight:700;}
+  .part-header p{font-size:15px;color:var(--ink-soft);margin-top:5px;line-height:1.45;}
+  .section{padding:26px 4px 8px;}
+  .prose p{margin-bottom:18px;color:var(--ink-soft);}
+  .prose .lead{font-size:20px;color:var(--ink);font-weight:500;}
+  .prose strong{color:var(--ink);font-weight:700;}
+  .prose em{color:var(--accent-rust);font-style:italic;}
+  code{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:0.86em;background:#f0e8dc;color:var(--accent-rust);padding:2px 7px;border-radius:5px;}
+  ul.nice-list{list-style:none;margin:16px 0;}
+  ul.nice-list li{padding:6px 0 6px 26px;position:relative;color:var(--ink-soft);}
+  ul.nice-list li::before{content:'▸';position:absolute;left:4px;color:var(--accent-amber);font-weight:700;}
+  .callout{border-radius:14px;padding:22px 26px;margin:24px 0;border:1px solid var(--border);}
+  .callout-tag{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .callout p{margin-bottom:10px;color:var(--ink-soft);}.callout p:last-child{margin-bottom:0;}
+  .callout-why{background:#fdf4e6;border-color:#f0d9b0;}.callout-why .callout-tag{color:var(--accent-amber);}
+  .callout-trap{background:#fcebe5;border-color:#f0c4b4;}.callout-trap .callout-tag{color:var(--accent-rust);}
+  .callout-key{background:#e6f3f0;border-color:#b4ddd4;}.callout-key .callout-tag{color:var(--accent-teal);}
+  .price-tag{background:#fff6e9;border-left:3px solid var(--accent-amber);border-radius:0 8px 8px 0;padding:12px 18px;margin:18px 0;font-size:16px;color:var(--ink-soft);}
+  .price-tag strong{color:var(--accent-rust);}
+  .table-wrap{overflow-x:auto;margin:22px 0;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-card);}
+  table.data{width:100%;border-collapse:collapse;font-size:15.5px;background:var(--warm-white);}
+  table.data thead tr{background:#f0e8dc;}
+  table.data th{padding:13px 16px;text-align:left;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:700;border-bottom:2px solid var(--border-warm);}
+  table.data td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--ink-soft);vertical-align:top;}
+  table.data tr:last-child td{border-bottom:none;}
+  table.data td strong{color:var(--ink);}
+  table.data tr:hover td{background:rgba(201,125,46,0.04);}
+  .trigger-box{background:#1a1208;color:#f0e6d6;border-radius:16px;padding:30px 34px;margin:30px 0;}
+  .trigger-box h3{font-family:'Fraunces',serif;color:var(--accent-amber-light);font-size:22px;margin-bottom:16px;}
+  .trigger-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .trigger-row:last-child{border-bottom:none;}
+  .trigger-kw{color:#e8a84a;font-weight:600;min-width:340px;flex-shrink:0;font-size:15.5px;}
+  .trigger-arrow{color:var(--accent-rust-light);flex-shrink:0;}
+  .trigger-ans{color:#f0e6d6;font-size:15.5px;}
+  @media(max-width:768px){
+    .hero{padding:40px 22px 36px;}.svc-tabnav{padding:12px 16px;}.svc-tab{font-size:13.5px;padding:9px 13px;}
+    .main-content{padding:0 18px 60px;}.part-header{padding:18px 20px;}.trigger-kw{min-width:100%;}.trigger-row{flex-direction:column;gap:4px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-tag">SAA-C03 Masterclass · Section 21 · Doc 1 of 2</div>
+  <h1>Databases in AWS — <span>Choosing the Right One</span></h1>
+  <p class="hero-subtitle">AWS has a <em>purpose-built</em> database for every data shape — relational, key-value, in-memory, graph, ledger, time-series, document, wide-column, and warehouse. The exam's favourite database question isn't "how does X work" — it's <em>"which database fits this scenario?"</em> Master the decision.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">Decision Framework</span><span class="hero-pill">Relational</span><span class="hero-pill">NoSQL &amp; Cache</span><span class="hero-pill">Purpose-Built</span>
+  </div>
+</header>
+
+<nav class="svc-tabnav">
+  <button class="svc-tab choose active" data-panel="choose">🧭 Choosing a DB</button>
+  <button class="svc-tab rel" data-panel="rel">🗃️ Relational</button>
+  <button class="svc-tab nosql" data-panel="nosql">⚡ NoSQL &amp; In-Memory</button>
+  <button class="svc-tab special" data-panel="special">🧬 Purpose-Built</button>
+</nav>
+
+<div class="main-content">
+
+<!-- ════ CHOOSE ════ -->
+<div id="panel-choose" class="svc-panel active">
+  <div class="svc-index">
+    <div class="svc-index-label">🧭 Choosing a DB — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#choose-p1"><span class="idx-dot"></span>Why Purpose-Built</a>
+      <a href="#choose-p2"><span class="idx-dot"></span>The Questions to Ask</a>
+      <a href="#choose-p3"><span class="idx-dot"></span>Master Decision Table</a>
+      <a href="#choose-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header amber" id="choose-p1">
+    <div class="part-number">Choosing · Part 1</div>
+    <h2>Why AWS Has So Many Databases</h2>
+    <p>For decades, one relational database did everything. AWS's bet: the <em>right tool for each data shape</em> beats one-size-fits-all.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">A relational database is brilliant for structured, related data with complex queries. But forcing <em>everything</em> into tables and JOINs breaks down at scale and for special shapes.</p>
+      <p>Graph relationships (who-knows-who), append-only ledgers (immutable audit trails), time-series (sensor readings over time), and petabyte analytics each have a database <strong>purpose-built</strong> to do them faster, cheaper, and simpler than a general-purpose RDBMS. As a Solution Architect, your job is to recognise the data shape and pick the matching engine.</p>
+    </div>
+  </div>
+
+  <div class="part-header amber" id="choose-p2">
+    <div class="part-number">Choosing · Part 2</div>
+    <h2>The Questions That Decide</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Structured &amp; relational with JOINs / transactions?</strong> → RDS / Aurora (SQL).</li>
+      <li><strong>Key-value, massive scale, single-digit ms, serverless?</strong> → DynamoDB.</li>
+      <li><strong>Need a cache / session store / sub-ms?</strong> → ElastiCache (or DAX for DynamoDB).</li>
+      <li><strong>Relationships are the data (social, fraud, recommendations)?</strong> → Neptune (graph).</li>
+      <li><strong>Immutable, cryptographically verifiable history?</strong> → QLDB (ledger).</li>
+      <li><strong>Time-stamped measurements at scale (IoT, metrics)?</strong> → Timestream.</li>
+      <li><strong>MongoDB / Cassandra compatibility?</strong> → DocumentDB / Keyspaces.</li>
+      <li><strong>Petabyte analytics / OLAP / BI dashboards?</strong> → Redshift (warehouse).</li>
+      <li><strong>Search &amp; log analytics?</strong> → OpenSearch.</li>
+    </ul>
+  </div>
+
+  <div class="part-header amber" id="choose-p3">
+    <div class="part-number">Choosing · Part 3</div>
+    <h2>The Master Decision Table</h2>
+    <p>Burn this into memory — it answers most database questions on the exam.</p>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Data shape / need</th><th>Service</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>Structured, JOINs, transactions, existing SQL apps</td><td><strong>RDS</strong> (MySQL/Postgres/Oracle/SQL Server/MariaDB)</td><td>Relational</td></tr>
+        <tr><td>Cloud-native relational, high performance, auto-scale, global</td><td><strong>Aurora</strong></td><td>Relational</td></tr>
+        <tr><td>Key-value, serverless, single-digit ms, any scale</td><td><strong>DynamoDB</strong></td><td>NoSQL key-value</td></tr>
+        <tr><td>In-memory cache, session store, leaderboards</td><td><strong>ElastiCache</strong> (Redis/Memcached/Valkey)</td><td>In-memory</td></tr>
+        <tr><td>Microsecond reads for DynamoDB</td><td><strong>DAX</strong></td><td>In-memory cache</td></tr>
+        <tr><td>Durable in-memory primary database</td><td><strong>MemoryDB</strong></td><td>In-memory</td></tr>
+        <tr><td>Highly connected data, relationship queries</td><td><strong>Neptune</strong></td><td>Graph</td></tr>
+        <tr><td>Immutable, verifiable transaction log</td><td><strong>QLDB</strong></td><td>Ledger</td></tr>
+        <tr><td>Time-stamped data at scale (IoT/metrics)</td><td><strong>Timestream</strong></td><td>Time-series</td></tr>
+        <tr><td>MongoDB-compatible documents</td><td><strong>DocumentDB</strong></td><td>Document</td></tr>
+        <tr><td>Apache Cassandra-compatible wide-column</td><td><strong>Keyspaces</strong></td><td>Wide-column</td></tr>
+        <tr><td>Petabyte analytics / data warehouse / BI</td><td><strong>Redshift</strong></td><td>Warehouse (OLAP)</td></tr>
+        <tr><td>Full-text search &amp; log analytics</td><td><strong>OpenSearch</strong></td><td>Search</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="trigger-box" id="choose-triggers">
+    <h3>⚡ Purpose-Built — Trigger Words</h3>
+    <div class="trigger-row"><div class="trigger-kw">"relationships / social graph / fraud / recommendations"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Neptune</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"immutable / cryptographically verifiable ledger"</div><div class="trigger-arrow">→</div><div class="trigger-ans">QLDB</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"time-series / IoT sensor data over time"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Timestream</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"MongoDB-compatible / Cassandra-compatible"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DocumentDB / Keyspaces</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"petabyte analytics / OLAP / BI dashboards"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Redshift</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"full-text search / log analytics"</div><div class="trigger-arrow">→</div><div class="trigger-ans">OpenSearch</div></div>
+  </div>
+</div>
+
+<!-- ════ RELATIONAL ════ -->
+<div id="panel-rel" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">🗃️ Relational — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#rel-p1"><span class="idx-dot"></span>RDS</a>
+      <a href="#rel-p2"><span class="idx-dot"></span>Aurora</a>
+      <a href="#rel-p3"><span class="idx-dot"></span>Multi-AZ vs Read Replicas</a>
+      <a href="#rel-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="rel-p1">
+    <div class="part-number">Relational · Part 1</div>
+    <h2>Amazon RDS — Managed SQL Engines</h2>
+    <p>(Covered in depth in the RDS/Aurora/ElastiCache topic — here's the selection-level recap.)</p>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li>Managed <strong>MySQL, PostgreSQL, MariaDB, Oracle, SQL Server</strong> — AWS handles patching, backups, failover.</li>
+      <li>Pick RDS for <strong>complex queries, JOINs, transactions, and existing SQL apps</strong> (lift-and-shift Oracle/SQL Server → RDS).</li>
+      <li><strong>Multi-AZ</strong> = synchronous standby for HA; <strong>Read Replicas</strong> = async copies to scale reads.</li>
+    </ul>
+  </div>
+
+  <div class="part-header blue" id="rel-p2">
+    <div class="part-number">Relational · Part 2</div>
+    <h2>Amazon Aurora — Cloud-Native Relational</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li>MySQL/PostgreSQL-compatible, ~5×/3× faster, AWS-engineered storage: <strong>6 copies across 3 AZs</strong>, self-healing.</li>
+      <li>Up to <strong>15 read replicas</strong> with a reader endpoint; <strong>Aurora Global Database</strong> for cross-region DR (&lt;1s replication).</li>
+      <li><strong>Aurora Serverless v2</strong> auto-scales (even to near-zero) for spiky/dev; <strong>Backtrack</strong> rewinds without restore.</li>
+      <li>"Minimal-admin MySQL/Postgres + read scaling + cloud-native HA" → Aurora.</li>
+    </ul>
+    <div class="price-tag">💵 Aurora ~$0.26/hr (r6g.large) + storage + I/O (or I/O-Optimized to remove per-I/O charges); Serverless v2 ~$0.12/ACU-hr scaling to near-zero. RDS db.t3.medium ~$50/mo single-AZ (~$100 Multi-AZ).</div>
+  </div>
+
+  <div class="part-header blue" id="rel-p3">
+    <div class="part-number">Relational · Part 3</div>
+    <h2>Multi-AZ vs Read Replicas — The Eternal Trap</h2>
+  </div>
+  <div class="section">
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ Don't confuse them</div>
+      <p><strong>Multi-AZ = High Availability</strong> (a synchronous standby in another AZ that auto-fails-over; the standby is <em>not</em> readable). <strong>Read Replicas = read scaling</strong> (async copies you send read traffic to; promotion is manual for DR). "Automatic failover / HA" → Multi-AZ. "Offload reporting / scale reads" → Read Replicas. "Cross-region DR database" → cross-region read replica or Aurora Global Database.</p>
+    </div>
+  </div>
+
+  <div class="trigger-box" id="rel-triggers">
+    <h3>⚡ Relational — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"complex JOINs / transactions / existing SQL"</div><div class="trigger-arrow">→</div><div class="trigger-ans">RDS / Aurora</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"lift-and-shift Oracle / SQL Server"</div><div class="trigger-arrow">→</div><div class="trigger-ans">RDS</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"cloud-native, auto-scale, global, minimal admin"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Aurora</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"automatic failover / HA"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Multi-AZ (NOT read replica)</div></div>
+  </div>
+</div>
+
+<!-- ════ NOSQL & IN-MEMORY ════ -->
+<div id="panel-nosql" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">⚡ NoSQL &amp; In-Memory — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#nosql-p1"><span class="idx-dot"></span>DynamoDB</a>
+      <a href="#nosql-p2"><span class="idx-dot"></span>ElastiCache</a>
+      <a href="#nosql-p3"><span class="idx-dot"></span>DAX vs ElastiCache vs MemoryDB</a>
+      <a href="#nosql-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="nosql-p1">
+    <div class="part-number">NoSQL · Part 1</div>
+    <h2>DynamoDB — Serverless Key-Value at Any Scale</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li>Single-digit ms, serverless, virtually unlimited scale; on-demand vs provisioned capacity.</li>
+      <li><strong>GSI</strong> (any key, anytime) vs <strong>LSI</strong> (same partition key, only at creation).</li>
+      <li><strong>Streams</strong> (CDC → Lambda), <strong>DAX</strong> (µs cache), <strong>Global Tables</strong> (multi-region active-active).</li>
+      <li>Pick for high-velocity, known access patterns, serverless apps.</li>
+    </ul>
+  </div>
+
+  <div class="part-header teal" id="nosql-p2">
+    <div class="part-number">NoSQL · Part 2</div>
+    <h2>ElastiCache — In-Memory Caching</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li>Managed <strong>Redis / Valkey</strong> (persistence, replication, pub/sub, sorted sets) or <strong>Memcached</strong> (simple, multi-threaded, no persistence).</li>
+      <li>Use for: <strong>cache hot DB reads, session stores, leaderboards, rate limiting</strong>.</li>
+      <li>"Cache with persistence + replication + pub/sub" → Redis/Valkey; "simple, multi-threaded cache" → Memcached.</li>
+    </ul>
+  </div>
+
+  <div class="part-header teal" id="nosql-p3">
+    <div class="part-number">NoSQL · Part 3</div>
+    <h2>DAX vs ElastiCache vs MemoryDB</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Service</th><th>What</th><th>Pick when</th></tr></thead>
+      <tbody>
+        <tr><td><strong>DAX</strong></td><td>Microsecond cache <em>for DynamoDB only</em></td><td>"µs reads for DynamoDB, no app cache code"</td></tr>
+        <tr><td><strong>ElastiCache</strong></td><td>General cache (Redis/Memcached) for any data source</td><td>Cache RDS reads, session store (custom cache logic)</td></tr>
+        <tr><td><strong>MemoryDB</strong></td><td>Durable, Redis-compatible <em>primary</em> database</td><td>In-memory speed AND durability as the system of record</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="trigger-box" id="nosql-triggers">
+    <h3>⚡ NoSQL &amp; In-Memory — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"serverless key-value, single-digit ms, massive scale"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DynamoDB</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"microsecond reads for DynamoDB"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DAX</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"cache RDS reads / session store"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ElastiCache</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"in-memory speed + durability as primary DB"</div><div class="trigger-arrow">→</div><div class="trigger-ans">MemoryDB</div></div>
+  </div>
+</div>
+
+<!-- ════ PURPOSE-BUILT ════ -->
+<div id="panel-special" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">🧬 Purpose-Built — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#special-p1"><span class="idx-dot"></span>Redshift (Warehouse)</a>
+      <a href="#special-p2"><span class="idx-dot"></span>Graph, Ledger, Time-Series</a>
+      <a href="#special-p3"><span class="idx-dot"></span>Document, Wide-Column, Search</a>
+      <a href="#special-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="special-p1">
+    <div class="part-number">Purpose-Built · Part 1</div>
+    <h2>Amazon Redshift — The Data Warehouse</h2>
+    <p>The one purpose-built database you'll see most: analytics at petabyte scale.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p><strong>Redshift</strong> is a <strong>columnar, OLAP data warehouse</strong> for running complex analytical queries over huge datasets (BI dashboards, reporting). It's <em>not</em> for high-velocity transactional (OLTP) lookups — that's DynamoDB/RDS. <strong>Redshift Spectrum</strong> queries data directly in S3; <strong>Redshift Serverless</strong> removes cluster management.</p>
+    </div>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ OLTP vs OLAP</div>
+      <p>"Millions of small transactions / lookups" = <strong>OLTP</strong> → DynamoDB/RDS. "Complex analytics / aggregations over big data for BI" = <strong>OLAP</strong> → Redshift. Don't use Redshift for an app's operational database, or RDS for petabyte analytics.</p>
+    </div>
+    <div class="price-tag">💵 Redshift from ~$0.25/hr (dc2.large) to large clusters; Serverless ~$0.36/RPU-hr. For occasional ad-hoc S3 queries, <strong>Athena</strong> (serverless, pay-per-TB-scanned) is often cheaper than a running Redshift cluster.</div>
+  </div>
+
+  <div class="part-header purple" id="special-p2">
+    <div class="part-number">Purpose-Built · Part 2</div>
+    <h2>Graph · Ledger · Time-Series</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Service</th><th>Data shape</th><th>Use cases / trigger</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Neptune</strong></td><td>Graph (nodes + relationships)</td><td>Social networks, fraud detection, recommendations, knowledge graphs — "relationships are the query"</td></tr>
+        <tr><td><strong>QLDB</strong></td><td>Ledger (immutable, append-only)</td><td>Cryptographically verifiable transaction history — finance, supply-chain audit, "immutable + verifiable"</td></tr>
+        <tr><td><strong>Timestream</strong></td><td>Time-series</td><td>IoT sensor data, application metrics, "measurements over time at scale"</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Ledger vs relational</div>
+      <p>You <em>could</em> build an audit log in a relational DB, but <strong>QLDB</strong> gives a built-in, immutable, cryptographically-verifiable history no one can tamper with — the reason it wins "prove the records were never altered" questions. (Note: AWS is phasing QLDB out, but it still appears on the exam.)</p>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="special-p3">
+    <div class="part-number">Purpose-Built · Part 3</div>
+    <h2>Document · Wide-Column · Search</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Service</th><th>Compatible with</th><th>Trigger</th></tr></thead>
+      <tbody>
+        <tr><td><strong>DocumentDB</strong></td><td>MongoDB</td><td>"Managed MongoDB / migrate MongoDB workload"</td></tr>
+        <tr><td><strong>Keyspaces</strong></td><td>Apache Cassandra</td><td>"Managed Cassandra / wide-column, serverless"</td></tr>
+        <tr><td><strong>OpenSearch</strong></td><td>Elasticsearch / OpenSearch</td><td>"Full-text search / log analytics / dashboards (Kibana)"</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 The "compatibility" pattern</div>
+      <p>When a question says "we already use <strong>MongoDB</strong> / <strong>Cassandra</strong> / <strong>Elasticsearch</strong> and want it managed on AWS with minimal change," map directly: MongoDB → <strong>DocumentDB</strong>, Cassandra → <strong>Keyspaces</strong>, Elasticsearch → <strong>OpenSearch</strong>.</p>
+    </div>
+  </div>
+
+  <div class="trigger-box" id="special-triggers">
+    <h3>⚡ Purpose-Built — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"petabyte analytics / OLAP / BI"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Redshift (ad-hoc S3 → Athena)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"social / fraud / recommendation graph"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Neptune</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"immutable, verifiable audit ledger"</div><div class="trigger-arrow">→</div><div class="trigger-ans">QLDB</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"IoT / metrics time-series"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Timestream</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"managed MongoDB / Cassandra / Elasticsearch"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DocumentDB / Keyspaces / OpenSearch</div></div>
+  </div>
+</div>
+
+</div><!-- end main-content -->
+
+<footer style="text-align:center;padding:30px 20px 50px;color:#6b5744;font-size:14px;">
+  SAA-C03 Masterclass · Section 21 — Databases in AWS · Document 1 of 2 · Study Series by Sanky
+</footer>
+
+<script id="svc-tabs-js">
+(function(){
+  var tabs = document.querySelectorAll('.svc-tab');
+  var keys = ['choose','rel','nosql','special'];
+  var panels = {};
+  keys.forEach(function(k){ panels[k] = document.getElementById('panel-'+k); });
+  function activate(key, doScroll){
+    tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.panel === key); });
+    keys.forEach(function(k){ if(panels[k]) panels[k].classList.toggle('active', k === key); });
+    if(doScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){
+    activate(t.dataset.panel, true);
+    if(history.replaceState) history.replaceState(null, '', '#' + t.dataset.panel);
+  }); });
+  var h = (location.hash || '').replace('#','');
+  if(h){
+    var key = null;
+    keys.forEach(function(k){ if(h === k || h.indexOf(k + '-') === 0) key = k; });
+    if(key){ activate(key, false); var el = document.getElementById(h); if(el) setTimeout(function(){ el.scrollIntoView(); }, 30); }
+  }
+})();
+</script>
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S21 · Databases in AWS</div>
+<ul>
+<li class="cnav-current"><a href="01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
+</body>
+</html>

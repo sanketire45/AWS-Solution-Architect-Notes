@@ -101,6 +101,8 @@
 
   /* ─── LAYOUT ────────────────────────────────────────── */
   .wrapper{max-width:1100px;margin:0 auto;padding:0 40px;}
+  /* comfortable reading measure for body prose — cards, tables, diagrams keep full width */
+  .section > p, .section > ul, .section > ol { max-width: 760px; }
 
   /* ─── TABLE OF CONTENTS ─────────────────────────────── */
   .toc{
@@ -230,6 +232,8 @@
   }
 
   /* ─── TABLES ─────────────────────────────────────────── */
+  .price-tag{display:block;margin:22px 0;padding:11px 15px;border-radius:9px;background:rgba(40,40,55,.05);border:1px solid rgba(40,40,55,.11);border-left:3px solid #1d7a6e;font-size:15px;line-height:1.55;color:var(--ink,#1b1b26);}
+  .price-tag strong{font-weight:700;}
   .table-wrap{overflow-x:auto;margin:24px 0;}
   table{width:100%;border-collapse:collapse;font-size:16px;}
   thead{background:var(--surface3);}
@@ -460,13 +464,14 @@
     <a href="#s4" class="toc-item"><div class="toc-num">4</div>Hosted Zones (Public vs Private)</a>
     <a href="#s5" class="toc-item"><div class="toc-num">5</div>TTL — The "Cache Timer"</div></a>
     <a href="#s6" class="toc-item"><div class="toc-num">6</div>Alias Records vs CNAME</a>
-    <a href="#s7" class="toc-item"><div class="toc-num">7</div>All 7 Routing Policies</a>
+    <a href="#s7" class="toc-item"><div class="toc-num">7</div>All 8 Routing Policies</a>
     <a href="#s8" class="toc-item"><div class="toc-num">8</div>Health Checks Explained</a>
     <a href="#s9" class="toc-item"><div class="toc-num">9</div>Real-World Architectures</a>
     <a href="#s10" class="toc-item"><div class="toc-num">10</div>Domain Registration</a>
     <a href="#s11" class="toc-item"><div class="toc-num">11</div>Hybrid DNS (On-Prem)</a>
     <a href="#s12" class="toc-item"><div class="toc-num">12</div>DNSSEC & Security</a>
     <a href="#s13" class="toc-item"><div class="toc-num">13</div>Key Comparisons & Traps</a>
+    <a href="#s-cost" class="toc-item"><div class="toc-num">💰</div>What It All Costs</a>
     <a href="#s14" class="toc-item" style="border-color:rgba(249,115,22,.5);background:rgba(249,115,22,.04);">
       <div class="toc-num" style="background:rgba(249,115,22,.2);color:#fdba74;">14</div>
       🇮🇪 Dublin Company — Real Architecture
@@ -978,6 +983,8 @@ www.example.com.   A   TTL=300   1.2.3.4
 
   <p>This is one of the most important and most-tested distinctions in Route 53. Let's nail it perfectly.</p>
 
+  <p class="price-tag">💵 There's a <em>money</em> angle too: an <strong>Alias query to an AWS target (ALB, CloudFront, S3) is FREE</strong>, but a <strong>CNAME to the same target is billed</strong> (~$0.40 per million queries). Same result, different bill — which is one more reason Alias wins. A whole 1-zone app serving 10M queries via Alias costs ≈ <strong>$0.50/month total</strong> (just the hosted zone). DNS is almost never your headline cost.</p>
+
   <h3>The Problem with CNAME</h3>
   <p>
     CNAME just points a name to another name. For example: <code>app.example.com CNAME → my-alb-1234.us-east-1.elb.amazonaws.com</code>
@@ -1053,7 +1060,7 @@ www.example.com.   A   TTL=300   1.2.3.4
     <div class="section-icon icon-blue">🚦</div>
     <div>
       <span class="section-num">Section 07</span>
-      <h2>The 7 Routing Policies — Route 53's Superpowers</h2>
+      <h2>The 8 Routing Policies — Route 53's Superpowers</h2>
     </div>
   </div>
 
@@ -1074,7 +1081,7 @@ www.example.com.   A   TTL=300   1.2.3.4
     Imagine you're a GPS routing cars through a city. You might use different strategies: "Take everyone to the same destination (Simple)," "Send 70% on Highway A, 30% on Highway B for testing (Weighted)," "Find the fastest route for each driver (Latency)," "If the main road is closed, take the backup (Failover)," "Route based on the driver's starting city (Geolocation)." Route 53 routing policies work exactly like different GPS navigation strategies.
   </div>
 
-  <p style="margin-bottom:30px;">Route 53 has <strong>7 routing policies</strong>. Each one is a different strategy for deciding which IP address to return when someone queries your domain. Let's master each one:</p>
+  <p style="margin-bottom:30px;">Route 53 has <strong>8 routing policies</strong>. Each one is a different strategy for deciding which IP address to return when someone queries your domain. Let's master each one:</p>
 
   <!-- SIMPLE -->
   <div class="policy-card" id="simple-policy" style="margin-bottom:24px;">
@@ -1364,8 +1371,33 @@ www.example.com.   A   TTL=300   1.2.3.4
     </div>
   </div>
 
+  <!-- IP-BASED -->
+  <div class="policy-card" style="margin-bottom:24px;">
+    <div class="policy-header" style="background:rgba(139,92,246,0.10);">
+      <div class="policy-emoji">📍</div>
+      <div>
+        <div class="policy-name">8. IP-Based Routing</div>
+        <div style="font-size:13px;color:var(--text-muted);">Route by the user's IP address range</div>
+      </div>
+      <div class="policy-badge pill-gold">Advanced</div>
+    </div>
+    <div class="policy-body">
+      <p><strong>What it does:</strong> You define lists of IP address ranges — written as <strong>CIDR blocks</strong> (a shorthand for "all IPs in this range," like <code>203.0.113.0/24</code>) — and tell Route 53 which endpoint to return for each range. When a query arrives, Route 53 checks the user's IP and answers based on which range it falls into.</p>
+      <p><strong>Why it exists:</strong> Sometimes <em>you</em> already know which network should go where. For example, an Internet Service Provider (ISP) you have a peering deal with, or a corporate office whose IP range should always reach one specific region. Latency routing decides for you by speed; IP-Based routing lets you decide, per network.</p>
+      <p>You group the ranges into a <strong>CIDR collection</strong>, then map each group to an answer. It was added in 2022 — which is why older notes (and "7 policies" lists) often leave it out.</p>
+      <div class="callout warning" style="margin-top:12px;">
+        <div class="callout-title">⚠️ Don't confuse the three "location" policies</div>
+        <strong>IP-Based</strong> = route by the user's actual IP/CIDR (you control the mapping). <strong>Geolocation</strong> = route by the user's country/continent. <strong>Latency</strong> = route by measured network speed. Three different signals.
+      </div>
+      <div class="exam-trigger" style="margin-top:12px;">
+        <div class="et-title">🎯 Exam Trigger</div>
+        "Route based on the user's <strong>IP address / known CIDR ranges</strong>," "send a specific ISP or office network to a specific endpoint" → <strong>IP-Based Routing</strong>.
+      </div>
+    </div>
+  </div>
+
   <!-- Routing Summary Table -->
-  <h3>All 7 Routing Policies — Quick Reference</h3>
+  <h3>All 8 Routing Policies — Quick Reference</h3>
   <div class="table-wrap">
     <table>
       <thead>
@@ -1384,6 +1416,7 @@ www.example.com.   A   TTL=300   1.2.3.4
         <tr><td><strong>Geolocation</strong></td><td>"Country," "continent," "GDPR," "regional content"</td><td class="td-yes">Optional</td><td>Compliance, localization</td></tr>
         <tr><td><strong>Geoproximity</strong></td><td>"Distance," "bias," "shift traffic," "Traffic Flow"</td><td class="td-yes">Optional</td><td>Proximity-based tuning</td></tr>
         <tr><td><strong>Multi-Value</strong></td><td>"Multiple healthy IPs," "remove unhealthy"</td><td class="td-yes">Required</td><td>Client-side distribution</td></tr>
+        <tr><td><strong>IP-Based</strong></td><td>"Route by user IP / CIDR," "specific ISP or office → specific endpoint"</td><td class="td-yes">Optional</td><td>Per-network routing (ISP deals)</td></tr>
       </tbody>
     </table>
   </div>
@@ -2126,6 +2159,48 @@ Week 4:  Blue=0   Green=100  (Full rollout. Blue becomes standby.)</pre>
 
 <div class="divider"></div>
 
+<!-- ═══ S-COST: WHAT IT COSTS ═══ -->
+<section class="section" id="s-cost">
+  <div class="section-header">
+    <div class="section-icon icon-gold">💰</div>
+    <div>
+      <span class="section-num">💰 Cost</span>
+      <h2>What Route 53 Actually Costs</h2>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">💰 What you're billed on</div>
+    <p>Three meters: <strong>(1) hosted zones</strong> per month, <strong>(2) DNS queries answered</strong> (priced by routing-policy type), and <strong>(3) health checks</strong>. The crucial freebie: <strong>Alias queries pointed at AWS resources</strong> (ALB, CloudFront, S3 website, API Gateway) are <strong>$0</strong>. Route 53 is <strong>global</strong> — the same price worldwide, so there's no eu-west-1 delta to track.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Price</th></tr></thead>
+      <tbody>
+        <tr><td>Hosted zone</td><td>$0.50/mo (first 25), $0.10/mo after</td></tr>
+        <tr><td>Standard queries</td><td>$0.40 / million (first 1B), $0.20 after</td></tr>
+        <tr><td>Latency-based queries</td><td>$0.60 / million</td></tr>
+        <tr><td>Geolocation / geoproximity queries</td><td>$0.70 / million</td></tr>
+        <tr><td>Health check (AWS endpoint)</td><td>$0.50/mo (first 50 free)</td></tr>
+        <tr><td>Health check (external endpoint)</td><td>$0.75/mo + optional features</td></tr>
+        <tr><td><strong>Alias query → ALB / CloudFront / S3</strong></td><td><strong>FREE</strong></td></tr>
+        <tr><td>Domain registration (.com)</td><td>~$9–15 / year</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warning">
+    <div class="callout-title">⚠️ The hidden costs</div>
+    <p>Three quiet ones. <strong>(1)</strong> The fancy routing policies cost more per query — <em>latency</em> and <em>geolocation</em> are 1.5–1.75× standard, so a high-traffic geo-routed app pays a premium. <strong>(2)</strong> A <strong>CNAME</strong> to an AWS resource is a <em>billed</em> query, whereas an <strong>Alias</strong> to the same resource is <em>free</em> — same result, different bill. <strong>(3)</strong> Health checks with extra features (string matching, fast interval, calculated checks) cost more than the base $0.50.</p>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-title">🎯 The one cost lever (and a reality check)</div>
+    <p><strong>Always use Alias records for AWS targets, never CNAMEs</strong> — the queries are free, and Alias also works at the zone apex (a CNAME can't). But the honest reality check: Route 53 is <strong>cheap</strong>. Even a busy site is usually a few dollars a month in DNS — a 1-zone app serving 10M queries to an ALB via Alias is <strong>$0.50 (zone) + $0 (alias queries) ≈ $0.50/mo</strong>. DNS is almost never your headline cost; it's the <em>routing decisions</em> it enables (latency, failover, weighted) that save real money elsewhere in the stack.</p>
+  </div>
+</section>
+
 <!-- ═══ S14: DUBLIN COMPANY ARCHITECTURE ═══ -->
 <section class="section" id="s14">
   <div class="section-header">
@@ -2304,12 +2379,12 @@ redis.payfast.internal             CNAME      payfast-cache.xyz.euw1.cache.amazo
   <div style="font-size:28px;margin-bottom:16px;">🎓</div>
   <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--heading);margin-bottom:12px;">You've completed the Route 53 Masterclass</div>
   <p style="max-width:600px;margin:0 auto 24px;font-size:15px;color:var(--text-muted);">
-    You now understand DNS from first principles, every Route 53 feature, all 7 routing policies with their use cases, real-world architectures, hybrid DNS, security, and all the common traps. 
+    You now understand DNS from first principles, every Route 53 feature, all 8 routing policies with their use cases, real-world architectures, hybrid DNS, security, and all the common traps.
     <br><br>Next: study the <strong>SAA Exam-Focused document</strong> to apply this knowledge to actual exam questions.
   </p>
   <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
     <span class="pill pill-blue">Route 53 ✓</span>
-    <span class="pill pill-gold">7 Routing Policies ✓</span>
+    <span class="pill pill-gold">8 Routing Policies ✓</span>
     <span class="pill pill-green">Health Checks ✓</span>
     <span class="pill pill-purple">Hybrid DNS ✓</span>
     <span class="pill" style="background:rgba(20,184,166,0.2);color:var(--teal2);">Domain Registration ✓</span>
@@ -2317,5 +2392,162 @@ redis.payfast.internal             CNAME      payfast-cache.xyz.euw1.cache.amazo
   <p style="margin-top:32px;font-size:13px;color:var(--text-dim);">AWS Solutions Architect Associate · SAA-C03 · Route 53 Masterclass</p>
 </footer>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">Route 53</div>
+<ul>
+<li class="cnav-current"><a href="route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

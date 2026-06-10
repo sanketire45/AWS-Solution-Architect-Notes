@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Containers on AWS: ECS, Fargate, ECR & EKS — Masterclass (SAA-C03)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#faf6f0;--warm-white:#fff9f2;--ink:#1a1208;--ink-soft:#3d2e1a;--ink-muted:#6b5744;
+    --accent-amber:#c97d2e;--accent-amber-light:#e8a84a;--accent-teal:#1d7a6e;--accent-teal-light:#2a9d8f;
+    --accent-rust:#b84c2a;--accent-rust-light:#d4693e;--accent-purple:#6b3fa0;--accent-blue:#1e5fa8;
+    --accent-blue-light:#2b7dd4;--accent-green:#2d7a3e;--border:#e8ddd0;--border-warm:#d4c4aa;
+    --shadow-warm:0 4px 24px rgba(100,70,30,0.12);--shadow-card:0 2px 12px rgba(100,70,30,0.08);
+    --accent:#1e5fa8;--paper:#fff9f2;--rule:#e8ddd0;--bg-alt:#f0e8dc;--ink-mute:#6b5744;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+  .hero{background:linear-gradient(135deg,#12233a 0%,#163049 45%,#0e2733 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
+  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(43,125,212,0.16) 0%,transparent 70%);}
+  .hero-tag{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-amber-light);font-weight:700;margin-bottom:16px;}
+  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(36px,4.6vw,58px);line-height:1.06;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
+  .hero h1 span{color:var(--accent-amber-light);}
+  .hero-subtitle{font-size:19px;color:rgba(255,255,255,0.72);max-width:780px;font-weight:400;}
+  .hero-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px;}
+  .hero-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.85);padding:6px 15px;border-radius:100px;font-size:13px;font-weight:500;}
+  .svc-tabnav{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:8px;padding:14px 60px;background:rgba(250,246,240,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(100,70,30,0.06);}
+  .svc-tab{font:600 15.5px/1 'Inter',sans-serif;color:var(--ink-muted);background:var(--warm-white);border:1.5px solid var(--border);border-radius:12px;padding:11px 18px;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;gap:8px;}
+  .svc-tab:hover{color:var(--ink);border-color:var(--border-warm);}
+  .svc-tab.ecs.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
+  .svc-tab.far.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
+  .svc-tab.ecr.active{color:#fff;background:var(--accent-purple);border-color:var(--accent-purple);box-shadow:0 3px 12px rgba(107,63,160,0.32);}
+  .svc-tab.eks.active{color:#fff;background:var(--accent-rust);border-color:var(--accent-rust);box-shadow:0 3px 12px rgba(184,76,42,0.32);}
+  .svc-panel{display:none;}.svc-panel.active{display:block;animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .main-content{max-width:1300px;margin:0 auto;padding:0 60px 80px;}
+  .svc-index{background:var(--warm-white);border:1px solid var(--border);border-radius:14px;margin:26px 0 4px;padding:18px 24px;box-shadow:var(--shadow-card);}
+  .svc-index-label{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:12px;}
+  .svc-index-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:3px 22px;}
+  .svc-index-inner a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink-soft);font-size:16px;padding:7px 10px;border-radius:8px;border-left:3px solid transparent;transition:all .15s ease;}
+  .svc-index-inner a:hover{background:#f0e8dc;color:var(--accent-rust);border-left-color:var(--accent-amber);}
+  .idx-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-amber);flex-shrink:0;}
+  .part-header{padding:20px 28px;border-radius:13px;margin:44px 0 6px;scroll-margin-top:86px;}
+  .part-header.blue{background:linear-gradient(135deg,#e0ecf8 0%,#cce0f5 100%);}
+  .part-header.teal{background:linear-gradient(135deg,#e0f4f1 0%,#c8eee9 100%);}
+  .part-header.purple{background:linear-gradient(135deg,#efe8f8 0%,#e2d4f0 100%);}
+  .part-header.rust{background:linear-gradient(135deg,#fce8e0 0%,#f8d8cc 100%);}
+  .part-header.amber{background:linear-gradient(135deg,#fdf0e0 0%,#fde8c8 100%);}
+  .part-number{font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-rust);margin-bottom:4px;}
+  .part-header h2{font-family:'Fraunces',serif;font-size:clamp(22px,2.1vw,28px);line-height:1.18;color:var(--ink);font-weight:700;}
+  .part-header p{font-size:15px;color:var(--ink-soft);margin-top:5px;line-height:1.45;}
+  .section{padding:26px 4px 8px;}
+  .section-title{font-family:'Fraunces',serif;font-size:25px;font-weight:600;color:var(--ink);margin:30px 0 14px;line-height:1.2;}
+  .prose p{margin-bottom:18px;color:var(--ink-soft);}
+  .prose .lead{font-size:20px;color:var(--ink);font-weight:500;}
+  .prose strong{color:var(--ink);font-weight:700;}
+  .prose em{color:var(--accent-rust);font-style:italic;}
+  code{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:0.86em;background:#f0e8dc;color:var(--accent-rust);padding:2px 7px;border-radius:5px;}
+  ul.nice-list{list-style:none;margin:16px 0;}
+  ul.nice-list li{padding:6px 0 6px 26px;position:relative;color:var(--ink-soft);}
+  ul.nice-list li::before{content:'▸';position:absolute;left:4px;color:var(--accent-amber);font-weight:700;}
+  .callout{border-radius:14px;padding:22px 26px;margin:24px 0;border:1px solid var(--border);}
+  .callout-tag{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .callout p{margin-bottom:10px;color:var(--ink-soft);}.callout p:last-child{margin-bottom:0;}
+  .callout-why{background:#fdf4e6;border-color:#f0d9b0;}.callout-why .callout-tag{color:var(--accent-amber);}
+  .callout-trap{background:#fcebe5;border-color:#f0c4b4;}.callout-trap .callout-tag{color:var(--accent-rust);}
+  .callout-key{background:#e6f3f0;border-color:#b4ddd4;}.callout-key .callout-tag{color:var(--accent-teal);}
+  .callout-price{background:#fff6e9;border-color:#f0dcb8;}.callout-price .callout-tag{color:var(--accent-amber);}
+  .price-tag{background:#fff6e9;border-left:3px solid var(--accent-amber);border-radius:0 8px 8px 0;padding:12px 18px;margin:18px 0;font-size:16px;color:var(--ink-soft);}
+  .price-tag strong{color:var(--accent-rust);}
+  .comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin:24px 0;}
+  .comp-card{background:var(--warm-white);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-card);}
+  .comp-card-tag{font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:10px;}
+  .comp-card h4{font-size:18px;color:var(--ink);margin-bottom:10px;font-weight:700;}
+  .comp-card ul{list-style:none;}
+  .comp-card ul li{padding:4px 0 4px 20px;position:relative;font-size:15.5px;color:var(--ink-muted);}
+  .comp-card ul li::before{content:'•';position:absolute;left:4px;color:var(--accent-rust);}
+  .table-wrap{overflow-x:auto;margin:22px 0;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-card);}
+  table.data{width:100%;border-collapse:collapse;font-size:15.5px;background:var(--warm-white);}
+  table.data thead tr{background:#f0e8dc;}
+  table.data th{padding:13px 16px;text-align:left;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:700;border-bottom:2px solid var(--border-warm);}
+  table.data td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--ink-soft);vertical-align:top;}
+  table.data tr:last-child td{border-bottom:none;}
+  table.data td strong{color:var(--ink);}
+  table.data tr:hover td{background:rgba(201,125,46,0.04);}
+  .diagram{background:var(--warm-white);border:1px solid var(--border);border-radius:16px;padding:26px;margin:26px 0;text-align:center;box-shadow:var(--shadow-card);}
+  .diagram svg{max-width:100%;height:auto;}
+  .diagram-caption{font-size:14px;color:var(--ink-muted);margin-top:14px;font-style:italic;}
+  .industry-spotlight{background:linear-gradient(135deg,#1b2438 0%,#142a36 100%);color:#e8eef5;border-radius:18px;padding:34px 38px;margin:34px 0;scroll-margin-top:86px;}
+  .industry-spotlight-tag{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:14px;}
+  .industry-spotlight h3{font-family:'Fraunces',serif;font-size:24px;color:#fff;margin-bottom:14px;font-weight:600;line-height:1.25;}
+  .industry-spotlight p{color:rgba(232,238,245,0.82);margin-bottom:14px;}
+  .industry-spotlight strong{color:#fff;}
+  .arch-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px 18px;margin:10px 0;}
+  .arch-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:5px;}
+  .arch-item p{margin:0;font-size:15.5px;}
+  .trigger-box{background:#1a1208;color:#f0e6d6;border-radius:16px;padding:30px 34px;margin:30px 0;}
+  .trigger-box h3{font-family:'Fraunces',serif;color:var(--accent-amber-light);font-size:22px;margin-bottom:16px;}
+  .trigger-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .trigger-row:last-child{border-bottom:none;}
+  .trigger-kw{color:#e8a84a;font-weight:600;min-width:330px;flex-shrink:0;font-size:15.5px;}
+  .trigger-arrow{color:var(--accent-rust-light);flex-shrink:0;}
+  .trigger-ans{color:#f0e6d6;font-size:15.5px;}
+  @media(max-width:768px){
+    .hero{padding:40px 22px 36px;}.svc-tabnav{padding:12px 16px;}.svc-tab{font-size:13.5px;padding:9px 13px;}
+    .main-content{padding:0 18px 60px;}.part-header{padding:18px 20px;}.industry-spotlight{padding:26px 20px;}
+    .trigger-kw{min-width:100%;}.trigger-row{flex-direction:column;gap:4px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-tag">SAA-C03 Masterclass · Section 18 · Doc 1 of 2</div>
+  <h1>Containers on AWS — <span>ECS · Fargate · ECR · EKS</span></h1>
+  <p class="hero-subtitle">How modern apps are packaged and run at scale. Learn what a container is, the two AWS ways to orchestrate them (ECS &amp; EKS), the serverless engine that runs them (Fargate), where the images live (ECR) — and exactly which to pick on the exam.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">Containers 101</span><span class="hero-pill">ECS Orchestration</span><span class="hero-pill">Fargate Serverless</span><span class="hero-pill">ECR Registry</span><span class="hero-pill">EKS Kubernetes</span>
+  </div>
+</header>
+
+<nav class="svc-tabnav">
+  <button class="svc-tab ecs active" data-panel="ecs">🚀 ECS</button>
+  <button class="svc-tab far" data-panel="far">☁️ Fargate</button>
+  <button class="svc-tab ecr" data-panel="ecr">📦 ECR</button>
+  <button class="svc-tab eks" data-panel="eks">⎈ EKS</button>
+</nav>
+
+<div class="main-content">
+
+<!-- ════ ECS ════ -->
+<div id="panel-ecs" class="svc-panel active">
+  <div class="svc-index">
+    <div class="svc-index-label">🚀 ECS — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#ecs-p1"><span class="idx-dot"></span>What's a Container?</a>
+      <a href="#ecs-p2"><span class="idx-dot"></span>Why ECS</a>
+      <a href="#ecs-p3"><span class="idx-dot"></span>Task Defs, Tasks &amp; Services</a>
+      <a href="#ecs-p4"><span class="idx-dot"></span>Launch Types: EC2 vs Fargate</a>
+      <a href="#ecs-p5"><span class="idx-dot"></span>Scaling, ALB &amp; IAM Roles</a>
+      <a href="#ecs-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="ecs-p1">
+    <div class="part-number">ECS · Part 1</div>
+    <h2>First — What Even Is a Container?</h2>
+    <p>Before ECS makes sense, you need the one idea it orchestrates.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">"It works on my machine" is the oldest excuse in software. A <strong>container</strong> kills it.</p>
+      <p>A container packages your application <strong>together with everything it needs to run</strong> — the code, the runtime, libraries, settings — into one standard unit (an <strong>image</strong>, usually built with <strong>Docker</strong>). That image runs <em>identically</em> on a laptop, a test server, or a thousand production machines. No more "missing dependency" surprises.</p>
+      <p>Containers are like <strong>lightweight virtual machines</strong>, but instead of each carrying a full operating system, they <strong>share the host's OS kernel</strong>. That makes them tiny, fast to start (seconds), and dense — you can pack many containers on one server. Perfect for microservices.</p>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 The vocabulary</div>
+      <p><strong>Image</strong> = the immutable package (a recipe). <strong>Container</strong> = a running instance of an image. <strong>Registry</strong> = where images are stored (AWS's is ECR). <strong>Orchestrator</strong> = the system that runs, schedules, scales, heals, and networks your containers across a fleet (AWS gives you ECS and EKS).</p>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="ecs-p2">
+    <div class="part-number">ECS · Part 2</div>
+    <h2>Why ECS — Running Containers at Scale, the AWS Way</h2>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p>Running one container is easy. Running <em>hundreds</em> across many servers — deciding which server has room, restarting crashed ones, rolling out new versions, load-balancing traffic — is hard. That job is <strong>orchestration</strong>.</p>
+      <p><strong>Amazon ECS (Elastic Container Service) is AWS's own container orchestrator.</strong> You tell it "run 10 copies of this container and keep them healthy behind a load balancer," and ECS handles placement, health, scaling, and recovery. It's deeply integrated with AWS (IAM, ALB, CloudWatch, VPC) and simpler than Kubernetes — no control plane to learn.</p>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="ecs-p3">
+    <div class="part-number">ECS · Part 3</div>
+    <h2>Task Definitions, Tasks &amp; Services</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Task Definition</strong> — the blueprint (JSON): which image, how much CPU/memory, ports, environment variables, the IAM <em>task role</em>, logging. Like a recipe for one unit of your app.</li>
+      <li><strong>Task</strong> — a running instance of a task definition (one or more containers running together).</li>
+      <li><strong>Service</strong> — keeps a desired number of tasks running, replaces failed ones, and registers them with an <strong>ALB</strong> target group. This is how you run a long-lived web service.</li>
+      <li><strong>Cluster</strong> — the logical group of compute (EC2 instances or Fargate) your tasks run on.</li>
+    </ul>
+  </div>
+
+  <div class="part-header blue" id="ecs-p4">
+    <div class="part-number">ECS · Part 4</div>
+    <h2>Launch Types — EC2 vs Fargate</h2>
+    <p>The single biggest ECS decision: who manages the servers?</p>
+  </div>
+  <div class="section">
+    <div class="comparison-grid">
+      <div class="comp-card">
+        <div class="comp-card-tag">EC2 Launch Type</div>
+        <h4>You manage the nodes</h4>
+        <ul>
+          <li>You provision &amp; patch a fleet of EC2 instances</li>
+          <li>More control; can use Spot, special instance types, GPUs</li>
+          <li>Cheaper per unit at <strong>steady high utilization</strong></li>
+          <li>More operational work</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-tag">Fargate Launch Type</div>
+        <h4>Serverless — no nodes</h4>
+        <ul>
+          <li><strong>No EC2 to manage</strong> — AWS runs the compute</li>
+          <li>Pay per vCPU + memory your task uses</li>
+          <li>Great for spiky/variable or low-density workloads</li>
+          <li>"No infrastructure to manage" → Fargate</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 The default exam answer</div>
+      <p><strong>"Run containers with no infrastructure to manage, no Kubernetes requirement"</strong> → <strong>ECS on Fargate</strong>. It's the lowest-operational-overhead way to run containers on AWS. (Full Fargate detail in the next tab.)</p>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="ecs-p5">
+    <div class="part-number">ECS · Part 5</div>
+    <h2>Scaling, Load Balancing &amp; IAM Roles</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Service Auto Scaling</strong> — target-tracking on CPU, memory, or <strong>ALB request count per target</strong>; ECS adds/removes tasks automatically. (On EC2 launch type, Cluster Capacity Providers also scale the EC2 layer.)</li>
+      <li><strong>ALB integration</strong> — the Service registers tasks with a target group; dynamic port mapping lets many tasks share a host.</li>
+      <li><strong>Task Role</strong> (the important one) — IAM permissions for <em>your app</em> inside the container (e.g. read an S3 bucket). The right way to give containers AWS access — never bake credentials into the image.</li>
+      <li><strong>Task Execution Role</strong> — lets ECS pull the image from ECR and push logs to CloudWatch.</li>
+    </ul>
+    <div class="price-tag">💵 <strong>ECS itself is free</strong> — you pay only for the EC2 or Fargate underneath. A small Fargate task (1 vCPU + 2 GB) running 24/7 ≈ <strong>$36/month</strong>; the same on Fargate Spot is ~70% less.</div>
+  </div>
+
+  <div class="trigger-box" id="ecs-triggers">
+    <h3>⚡ ECS — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Run containers, no K8s needed, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECS on Fargate</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Give a container permission to call AWS APIs"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECS Task Role (not creds in image)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Scale containers on ALB request count"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECS Service Auto Scaling</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Maximum control / Spot / GPU nodes, steady load"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECS on EC2 launch type</div></div>
+  </div>
+</div>
+
+<!-- ════ FARGATE ════ -->
+<div id="panel-far" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">☁️ Fargate — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#far-p1"><span class="idx-dot"></span>Why Fargate</a>
+      <a href="#far-p2"><span class="idx-dot"></span>How It Works &amp; Cost</a>
+      <a href="#far-p3"><span class="idx-dot"></span>Fargate vs EC2 Launch Type</a>
+      <a href="#far-p4"><span class="idx-dot"></span>Lambda vs Fargate</a>
+      <a href="#far-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="far-p1">
+    <div class="part-number">Fargate · Part 1</div>
+    <h2>Why Fargate — Containers Without Servers</h2>
+    <p>Even with ECS, the EC2 launch type still leaves you babysitting a fleet of instances. Fargate removes them.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">With the EC2 launch type you still have to provision the cluster, patch the OS, right-size the instances, and worry about utilization. That's undifferentiated heavy lifting.</p>
+      <p><strong>AWS Fargate is a serverless compute engine for containers.</strong> You hand AWS a task definition and it runs your container — <strong>no EC2 instances to provision, patch, or scale</strong>. You don't see servers at all; you just specify how much vCPU and memory each task needs, and pay for exactly that, per second, while it runs. Fargate works with <em>both</em> ECS and EKS.</p>
+    </div>
+    <div class="callout callout-why">
+      <div class="callout-tag">💡 The point</div>
+      <p>Fargate is to containers what Lambda is to functions: the infrastructure disappears. It's the answer whenever a scenario says <strong>"no servers/infrastructure to manage," "fully managed," "least operational overhead"</strong> for containers.</p>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="far-p2">
+    <div class="part-number">Fargate · Part 2</div>
+    <h2>How It Works &amp; What It Costs</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li>Pick the <strong>vCPU + memory</strong> for each task; Fargate provisions isolated compute for it on demand.</li>
+      <li>Each task runs in its own kernel-isolated environment (strong security boundary between tasks).</li>
+      <li><strong>Fargate Spot</strong> runs interruptible tasks at <strong>up to ~70% off</strong>; <strong>Graviton (ARM)</strong> Fargate is ~20% cheaper.</li>
+      <li>Scales precisely with your tasks — no idle EC2 capacity to pay for.</li>
+    </ul>
+    <div class="price-tag">💵 Fargate ≈ <strong>$0.04048 / vCPU-hour + $0.004445 / GB-hour</strong> (per-second billing). A 0.5 vCPU + 1 GB microservice 24/7 ≈ <strong>$18/month</strong>; a 1 vCPU + 2 GB task ≈ <strong>$36/month</strong>. At steady, high, predictable load, raw EC2 can beat it per-unit — which is the core trade-off.</div>
+  </div>
+
+  <div class="part-header teal" id="far-p3">
+    <div class="part-number">Fargate · Part 3</div>
+    <h2>Fargate vs EC2 Launch Type — When to Switch</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th></th><th>Fargate</th><th>EC2 launch type</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Server management</strong></td><td>None (serverless)</td><td>You patch/scale the fleet</td></tr>
+        <tr><td><strong>Billing</strong></td><td>Per task vCPU+memory/sec</td><td>Per EC2 instance-hour</td></tr>
+        <tr><td><strong>Best for</strong></td><td>Spiky/variable, low-density, least ops, small teams</td><td>Steady high utilization, cost control at scale, GPUs/special instances</td></tr>
+        <tr><td><strong>Cost shape</strong></td><td>Pay only for running tasks</td><td>Cheaper per-unit if you keep instances busy</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="part-header teal" id="far-p4">
+    <div class="part-number">Fargate · Part 4</div>
+    <h2>Lambda vs Fargate — the other serverless choice</h2>
+  </div>
+  <div class="section">
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 When Fargate beats Lambda</div>
+      <p>Both are serverless, but <strong>Lambda</strong> is for short, event-driven functions (max <strong>15 minutes</strong>, 10 GB RAM, package limits). Reach for <strong>Fargate</strong> when the workload needs: a runtime <strong>longer than 15 minutes</strong>, <strong>more than 10 GB RAM</strong>, a <strong>GPU</strong>, <strong>persistent/long-lived connections</strong>, a large container image (&gt;10 GB), or steady high utilization. "Long-running containerized service, no servers" → Fargate; "short event-driven function" → Lambda.</p>
+    </div>
+  </div>
+
+  <div class="trigger-box" id="far-triggers">
+    <h3>⚡ Fargate — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Containers, no infrastructure/servers to manage"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Fargate (on ECS or EKS)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Least operational overhead for containers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECS on Fargate</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Interruptible tasks, cut cost ~70%"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Fargate Spot</div></div>
+    <div class="trigger-row"><div class="trigger-kw">">15 min / >10 GB RAM / GPU / persistent conns"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Fargate (not Lambda)</div></div>
+  </div>
+</div>
+
+<!-- ════ ECR ════ -->
+<div id="panel-ecr" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">📦 ECR — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#ecr-p1"><span class="idx-dot"></span>Why ECR</a>
+      <a href="#ecr-p2"><span class="idx-dot"></span>How It Works</a>
+      <a href="#ecr-p3"><span class="idx-dot"></span>Scanning, Lifecycle &amp; Replication</a>
+      <a href="#ecr-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="ecr-p1">
+    <div class="part-number">ECR · Part 1</div>
+    <h2>Why ECR — Where Your Images Live</h2>
+    <p>Containers run from images. Those images need a secure, managed home that ECS/EKS can pull from.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">You build a Docker image. Now where do you store it so your AWS compute can pull and run it — privately, securely, and fast?</p>
+      <p><strong>Amazon ECR (Elastic Container Registry) is AWS's fully-managed Docker container registry.</strong> You push images to it; ECS, EKS, and Fargate pull from it. It's private by default (secured with IAM), encrypted, highly available, and tightly integrated with the rest of AWS — no registry servers to run. (ECR also offers a public gallery.)</p>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="ecr-p2">
+    <div class="part-number">ECR · Part 2</div>
+    <h2>How It Works</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Push:</strong> <code>docker push</code> to your private ECR repo (auth via IAM token).</li>
+      <li><strong>Pull:</strong> ECS/EKS task execution role pulls the image at launch.</li>
+      <li>Access controlled by <strong>IAM</strong> (and repo policies); images encrypted at rest (KMS optional).</li>
+      <li>Integrates with the whole CI/CD chain (CodeBuild/CodePipeline, GitHub Actions, etc.).</li>
+    </ul>
+  </div>
+
+  <div class="part-header purple" id="ecr-p3">
+    <div class="part-number">ECR · Part 3</div>
+    <h2>Scanning, Lifecycle Policies &amp; Replication</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Image scanning</strong> — basic scanning, or <strong>enhanced scanning powered by Amazon Inspector</strong> to find CVEs in OS packages and language dependencies. "Scan container images for vulnerabilities" → ECR enhanced scanning (Inspector).</li>
+      <li><strong>Lifecycle policies</strong> — automatically expire old/untagged images to control storage cost.</li>
+      <li><strong>Cross-region / cross-account replication</strong> — keep images close to where they run, or share across accounts.</li>
+    </ul>
+    <div class="price-tag">💵 ECR is <strong>$0.10 per GB-month</strong> of stored images, plus data transfer out. Lifecycle policies that prune stale images keep this small.</div>
+  </div>
+
+  <div class="trigger-box" id="ecr-triggers">
+    <h3>⚡ ECR — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Private managed Docker registry on AWS"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon ECR</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Scan container images for vulnerabilities"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECR enhanced scanning (Inspector)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Auto-delete old images / control registry cost"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECR lifecycle policies</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Images close to multiple regions"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECR cross-region replication</div></div>
+  </div>
+</div>
+
+<!-- ════ EKS ════ -->
+<div id="panel-eks" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">⎈ EKS — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#eks-p1"><span class="idx-dot"></span>Why EKS (Kubernetes)</a>
+      <a href="#eks-p2"><span class="idx-dot"></span>How It Works (nodes, Fargate)</a>
+      <a href="#eks-p3"><span class="idx-dot"></span>IRSA / Pod Identity</a>
+      <a href="#eks-p4"><span class="idx-dot"></span>ECS vs EKS — The Decision</a>
+      <a href="#eks-industry"><span class="idx-dot"></span>Industry &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header rust" id="eks-p1">
+    <div class="part-number">EKS · Part 1</div>
+    <h2>Why EKS — Managed Kubernetes</h2>
+    <p>ECS is AWS-only. Kubernetes is the open-source standard the whole industry uses. EKS gives you Kubernetes, managed.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead"><strong>Kubernetes (K8s)</strong> is the dominant open-source container orchestrator. Teams want it for its huge ecosystem, portability across clouds, and existing skills/tooling — but running the Kubernetes control plane yourself is famously complex.</p>
+      <p><strong>Amazon EKS (Elastic Kubernetes Service) is managed Kubernetes.</strong> AWS runs and scales the K8s control plane (the brain) for you across multiple AZs; you run your workloads on worker nodes. You get standard Kubernetes (same APIs, <code>kubectl</code>, Helm charts, operators) without operating the control plane.</p>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 When to pick EKS over ECS</div>
+      <p>Choose EKS only when a scenario <strong>explicitly mentions Kubernetes, the K8s API, multi-cloud portability, or an existing K8s investment</strong>. If it just says "run containers, least ops, no K8s requirement," that's <strong>ECS on Fargate</strong> — simpler and with no control-plane fee.</p>
+    </div>
+  </div>
+
+  <div class="part-header rust" id="eks-p2">
+    <div class="part-number">EKS · Part 2</div>
+    <h2>How It Works — Nodes &amp; Fargate</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Control plane</strong> — managed by AWS, multi-AZ, ~$0.10/hour per cluster.</li>
+      <li><strong>Worker nodes</strong> — your pods run on either <strong>EC2 nodes</strong> (self-managed or <strong>Managed Node Groups</strong>) or <strong>Fargate</strong> (serverless pods via <strong>Fargate profiles</strong> — "Kubernetes + no node management").</li>
+      <li><strong>Node autoscaling</strong> — Cluster Autoscaler or <strong>Karpenter</strong> (fast, flexible, cost-aware node provisioning).</li>
+      <li>Integrates with ALB (AWS Load Balancer Controller), VPC CNI networking, CloudWatch, and ECR.</li>
+    </ul>
+  </div>
+
+  <div class="part-header rust" id="eks-p3">
+    <div class="part-number">EKS · Part 3</div>
+    <h2>IRSA / Pod Identity — Securely Giving Pods AWS Access</h2>
+  </div>
+  <div class="section">
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Tested security pattern</div>
+      <p>The <strong>most secure way to give a Kubernetes pod permission to call AWS APIs</strong> is <strong>IRSA (IAM Roles for Service Accounts)</strong> — or the newer <strong>EKS Pod Identity</strong> — which maps a fine-grained IAM role to a specific pod's service account. <strong>NOT</strong> the node instance role (which would give <em>every</em> pod on that node the same broad permissions). "Least-privilege AWS access for specific pods" → IRSA / Pod Identity.</p>
+    </div>
+  </div>
+
+  <div class="part-header amber" id="eks-p4">
+    <div class="part-number">Section 18 · The Big Decision</div>
+    <h2>ECS vs EKS vs Fargate vs Lambda</h2>
+    <p>The whole section in one decision table.</p>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>You want…</th><th>Pick</th></tr></thead>
+      <tbody>
+        <tr><td>Run containers, no Kubernetes need, least operational overhead</td><td><strong>ECS on Fargate</strong></td></tr>
+        <tr><td>Kubernetes (K8s API, portability, ecosystem) — managed</td><td><strong>EKS</strong></td></tr>
+        <tr><td>Kubernetes but no node management</td><td><strong>EKS on Fargate</strong> (Fargate profiles)</td></tr>
+        <tr><td>Max control / Spot / GPU / steady high utilization, lowest unit cost</td><td><strong>ECS or EKS on EC2</strong></td></tr>
+        <tr><td>Short, event-driven function (&lt;15 min)</td><td><strong>Lambda</strong></td></tr>
+        <tr><td>Long-running container, &gt;15 min / &gt;10 GB / GPU / persistent conns</td><td><strong>Fargate</strong></td></tr>
+        <tr><td>Store the container images</td><td><strong>ECR</strong></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="industry-spotlight" id="eks-industry">
+    <div class="industry-spotlight-tag">🏢 Industry — Verified</div>
+    <h3>Coinbase &amp; Flutter run thousands of services on EKS + Graviton + Karpenter</h3>
+    <p><strong>Coinbase</strong> migrated <strong>3,500 services from EC2 to EKS</strong> on <strong>Graviton</strong> with <strong>Karpenter</strong> for node provisioning — AWS reports it "scales 50% faster and cuts costs 62%," with Graviton giving ~20% lower cost and Karpenter ~10% more compute savings. <strong>Flutter/PokerStars</strong> (Dublin) migrated <strong>1,100 applications and 3 PB</strong> to EKS + MSK + Cloud WAN, cutting TCO ~20% and speeding deployments 40%.</p>
+    <div class="arch-item"><div class="arch-label">Why EKS-on-EC2 here, not Fargate</div><p>At thousands-of-services scale with steady utilization, self-managed EC2 nodes (Spot + Graviton + Karpenter bin-packing) are dramatically cheaper per unit than per-task Fargate — the textbook "control &amp; cost at scale" trade-off.</p></div>
+    <div class="arch-item"><div class="arch-label">Why Kubernetes at all</div><p>Both want the portable K8s ecosystem (Helm, operators, existing skills) across a massive microservice estate — exactly the case where EKS beats ECS.</p></div>
+  </div>
+
+  <div class="trigger-box">
+    <h3>⚡ EKS — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Kubernetes / K8s API / portability / existing K8s"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon EKS</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Kubernetes with no node management"</div><div class="trigger-arrow">→</div><div class="trigger-ans">EKS on Fargate (Fargate profiles)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Most secure AWS access for specific pods"</div><div class="trigger-arrow">→</div><div class="trigger-ans">IRSA / EKS Pod Identity</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Just run containers, no K8s, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECS on Fargate (NOT EKS)</div></div>
+  </div>
+</div>
+
+</div><!-- end main-content -->
+
+<footer style="text-align:center;padding:30px 20px 50px;color:#6b5744;font-size:14px;">
+  SAA-C03 Masterclass · Section 18 — Containers: ECS, Fargate, ECR &amp; EKS · Document 1 of 2 · Study Series by Sanky
+</footer>
+
+<script id="svc-tabs-js">
+(function(){
+  var tabs = document.querySelectorAll('.svc-tab');
+  var keys = ['ecs','far','ecr','eks'];
+  var panels = {};
+  keys.forEach(function(k){ panels[k] = document.getElementById('panel-'+k); });
+  function activate(key, doScroll){
+    tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.panel === key); });
+    keys.forEach(function(k){ if(panels[k]) panels[k].classList.toggle('active', k === key); });
+    if(doScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){
+    activate(t.dataset.panel, true);
+    if(history.replaceState) history.replaceState(null, '', '#' + t.dataset.panel);
+  }); });
+  var h = (location.hash || '').replace('#','');
+  if(h){
+    var key = null;
+    keys.forEach(function(k){ if(h === k || h.indexOf(k + '-') === 0) key = k; });
+    if(key){ activate(key, false); var el = document.getElementById(h); if(el) setTimeout(function(){ el.scrollIntoView(); }, 30); }
+  }
+})();
+</script>
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class="cnav-current"><a href="01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Databases in AWS — Exam Cracker (SAA-C03)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111318;--bg-2:#171a22;--bg-3:#1d2030;--bg-card:#1a1d26;--bg-hover:#222638;
+  --border:rgba(255,255,255,0.07);--border-2:rgba(255,255,255,0.12);
+  --text:#e2ddd6;--text-soft:#9a9590;--text-muted:#6a6560;
+  --amber:#f5a623;--amber-dim:rgba(245,166,35,0.12);--teal:#34c5b0;--teal-dim:rgba(52,197,176,0.12);
+  --blue:#5b9cf6;--blue-dim:rgba(91,156,246,0.12);--green:#4ade80;--green-dim:rgba(74,222,128,0.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,0.12);--purple:#c084fc;--purple-dim:rgba(192,132,252,0.12);
+  --rust:#f08a5d;--rust-dim:rgba(240,138,93,0.12);
+  --accent:#34c5b0;--paper:#1a1d26;--rule:rgba(255,255,255,0.1);--ink:#e2ddd6;--ink-soft:#9a9590;--ink-mute:#6a6560;--bg-alt:#222638;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:17.5px;line-height:1.8;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+.hero{background:linear-gradient(135deg,#0a0c12 0%,#10221d 50%,#0e1420 100%);padding:60px 60px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(52,197,176,0.07) 0%,transparent 70%);}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
+.hero h1{font-family:'Lora',Georgia,serif;font-size:clamp(32px,4vw,52px);font-weight:700;line-height:1.08;color:#fff;margin-bottom:14px;}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{font-size:17px;color:rgba(226,221,214,0.65);max-width:680px;margin-bottom:26px;font-weight:300;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(226,221,214,0.8);padding:5px 14px;border-radius:100px;font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+.score-bar{background:var(--bg-2);border-bottom:1px solid var(--border);padding:12px 60px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.5);}
+.score-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-soft);letter-spacing:1px;}
+.score-nums{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--amber);}
+.score-detail{font-size:13px;color:var(--text-muted);}
+.progress-track{flex:1;min-width:120px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--teal));border-radius:2px;transition:width 0.5s ease;width:0%;}
+.score-actions{display:flex;gap:8px;margin-left:auto;}
+.btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.2s;}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-soft);border:1px solid var(--border);}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text);}
+.tab-nav{background:var(--bg-2);border-bottom:1px solid var(--border);padding:0 60px;display:flex;gap:4px;position:sticky;top:49px;z-index:190;}
+.tab{padding:14px 20px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.main{max-width:1150px;margin:0 auto;padding:34px 60px 80px;}
+.sec-header{margin:0 0 26px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.sec-header h2{font-family:'Lora',serif;font-size:27px;font-weight:700;color:#fff;margin-bottom:6px;}
+.sec-header p{font-size:15px;color:var(--text-soft);}
+.cheat-table-wrap{overflow-x:auto;margin-bottom:36px;border-radius:12px;border:1px solid var(--border);}
+.cheat-table{width:100%;border-collapse:collapse;font-size:15.5px;}
+.cheat-table thead tr{background:rgba(255,255,255,0.04);}
+.cheat-table th{padding:12px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);}
+.cheat-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text-soft);vertical-align:top;line-height:1.5;}
+.cheat-table tr:last-child td{border-bottom:none;}
+.cheat-table tr:hover td{background:rgba(255,255,255,0.02);}
+.cheat-table td strong{color:var(--text);font-weight:600;}
+.q-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:18px;transition:border-color 0.2s;}
+.q-card:hover{border-color:var(--border-2);}
+.q-card.answered-correct{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);}
+.q-card.answered-wrong{border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.03);}
+.q-card.marked{border-color:rgba(245,166,35,0.4);}
+.q-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);background:var(--amber-dim);padding:3px 10px;border-radius:6px;}
+.q-topic-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;background:var(--teal-dim);color:var(--teal);}
+.q-diff{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--green);}
+.diff-medium{background:rgba(245,166,35,0.1);color:var(--amber);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--red);}
+.q-mark-btn{margin-left:auto;background:none;border:none;cursor:pointer;font-size:18px;opacity:0.4;transition:opacity 0.2s,transform 0.2s;color:var(--amber);}
+.q-mark-btn:hover{opacity:1;transform:scale(1.1);}.q-mark-btn.marked{opacity:1;}
+.q-type-badge{font-size:11px;color:var(--text-muted);font-style:italic;}
+.q-text{font-family:'Lora',Georgia,serif;font-size:19px;line-height:1.8;color:var(--text);margin-bottom:22px;font-weight:400;}
+.q-text strong{color:#fff;font-weight:600;}
+.options-list{list-style:none;padding:0;}
+.option{display:flex;align-items:flex-start;gap:14px;padding:13px 18px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.18s;font-size:17px;line-height:1.65;color:var(--text-soft);user-select:none;}
+.option:hover:not(.disabled){background:rgba(255,255,255,0.06);border-color:var(--border-2);color:var(--text);}
+.option.disabled{cursor:default;}
+.option-letter{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;width:24px;height:24px;min-width:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);color:var(--text-muted);flex-shrink:0;margin-top:1px;transition:all 0.18s;}
+.option.multi .option-letter{border-radius:4px;}
+.option.selected .option-letter{background:var(--amber);color:#111;}
+.option.selected{border-color:var(--amber);color:var(--text);}
+.option.correct-reveal{background:var(--green-dim);border-color:rgba(74,222,128,0.5);color:var(--text);}
+.option.correct-reveal .option-letter{background:var(--green);color:#111;}
+.option.wrong-reveal{background:var(--red-dim);border-color:rgba(248,113,113,0.5);color:var(--text);}
+.option.wrong-reveal .option-letter{background:var(--red);color:#fff;}
+.explanation{margin-top:18px;padding:18px 20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;display:none;}
+.explanation.show{display:block;animation:fadeSlide 0.3s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.exp-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+.exp-correct-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--green);margin-bottom:10px;}
+.exp-wrong-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--red);margin-bottom:10px;}
+.explanation p{font-size:16px;line-height:1.8;color:var(--text-soft);}
+.explanation p strong{color:var(--text);font-weight:600;}
+.correct-ans{margin-top:10px;padding:10px 14px;background:var(--green-dim);border-radius:8px;font-size:13px;color:var(--green);font-weight:500;}
+.submit-btn{display:block;margin-top:18px;padding:11px 24px;border-radius:10px;cursor:pointer;background:var(--bg-3);color:var(--text-soft);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border:1px solid var(--border);transition:all 0.2s;}
+.submit-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border-2);}
+.submit-btn.hide{display:none;}
+@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.tab-nav{padding:0 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-eyebrow">SAA-C03 · Section 21 · Document 2 of 2</div>
+  <h1>Databases <em>Exam Cracker</em></h1>
+  <p>The decision cheat-sheet plus 18 "which database?" scenario questions — the single most common style of database question on the exam.</p>
+  <div class="pill-row">
+    <span class="pill">Decision Cheat Sheet</span><span class="pill">18 Questions</span><span class="pill">Purpose-Built DBs</span><span class="pill">Score Tracker</span>
+  </div>
+</header>
+
+<div class="score-bar">
+  <span class="score-label">SCORE</span>
+  <span class="score-nums" id="scoreDisplay">0 / 0</span>
+  <span class="score-detail" id="scorePercent">—</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="score-actions">
+    <button class="btn btn-ghost" onclick="resetAll()">↺ Reset</button>
+    <button class="btn btn-ghost" onclick="revealAll()">Reveal All</button>
+  </div>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab active" onclick="switchTab('cheat',this)">📋 Decision Cheat Sheet</button>
+  <button class="tab" onclick="switchTab('questions',this)">🎯 Practice Questions</button>
+</nav>
+
+<div class="main">
+
+<div id="tab-cheat" class="tab-content active">
+  <div class="sec-header"><h2>The Database Decision Cheat Sheet</h2><p>Match the scenario clue to the database. This table answers most exam DB questions.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>Clue in the question</th><th>Pick</th></tr></thead>
+    <tbody>
+      <tr><td>Structured, JOINs, transactions, existing SQL</td><td><strong>RDS</strong></td></tr>
+      <tr><td>Lift-and-shift Oracle / SQL Server</td><td><strong>RDS</strong> (that engine)</td></tr>
+      <tr><td>Cloud-native relational, auto-scale, global, minimal admin</td><td><strong>Aurora</strong></td></tr>
+      <tr><td>Automatic failover / HA</td><td><strong>Multi-AZ</strong> (not read replica)</td></tr>
+      <tr><td>Offload reads / reporting</td><td><strong>Read Replicas</strong></td></tr>
+      <tr><td>Serverless key-value, single-digit ms, massive scale</td><td><strong>DynamoDB</strong></td></tr>
+      <tr><td>Multi-region active-active database</td><td><strong>DynamoDB Global Tables</strong> (relational → Aurora Global)</td></tr>
+      <tr><td>Microsecond reads for DynamoDB</td><td><strong>DAX</strong></td></tr>
+      <tr><td>Cache RDS reads / session store</td><td><strong>ElastiCache</strong> (Redis/Memcached)</td></tr>
+      <tr><td>In-memory speed + durability as primary DB</td><td><strong>MemoryDB</strong></td></tr>
+      <tr><td>Relationships / social / fraud / recommendations</td><td><strong>Neptune</strong> (graph)</td></tr>
+      <tr><td>Immutable, cryptographically verifiable ledger</td><td><strong>QLDB</strong></td></tr>
+      <tr><td>Time-series / IoT / metrics</td><td><strong>Timestream</strong></td></tr>
+      <tr><td>Managed MongoDB</td><td><strong>DocumentDB</strong></td></tr>
+      <tr><td>Managed Cassandra (wide-column)</td><td><strong>Keyspaces</strong></td></tr>
+      <tr><td>Petabyte analytics / OLAP / BI</td><td><strong>Redshift</strong></td></tr>
+      <tr><td>Ad-hoc SQL on S3 data, serverless, pay-per-query</td><td><strong>Athena</strong></td></tr>
+      <tr><td>Full-text search / log analytics</td><td><strong>OpenSearch</strong></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-questions" class="tab-content">
+  <div class="sec-header"><h2>Practice Questions</h2><p>Select your answer, then <strong>Check Answer</strong> for the explanation.</p></div>
+  <div id="qlist"></div>
+</div>
+
+</div>
+
+<footer style="text-align:center;padding:30px 20px 50px;color:#6a6560;font-size:14px;">
+  SAA-C03 Exam Cracker · Section 21 — Databases in AWS · Document 2 of 2 · Study Series by Sanky
+</footer>
+
+<script>
+const questions = [
+  {id:1,topic:'OLAP',diff:'medium',q:'A retailer needs to run <strong>complex analytical queries and BI dashboards</strong> over years of sales data (terabytes). Which database is BEST?',
+   opts:['Amazon DynamoDB','Amazon Redshift','Amazon RDS MySQL','Amazon ElastiCache'],correct:1,
+   exp:'<strong>Redshift</strong> is a columnar OLAP data warehouse built for complex analytics/aggregations over huge datasets — the BI/reporting use case. DynamoDB (A) and RDS (C) are operational (OLTP), not analytics-at-scale; ElastiCache (D) is a cache.'},
+  {id:2,topic:'Graph',diff:'hard',q:'A social app must answer queries like "friends of friends who like X" and power a <strong>recommendation engine based on relationships</strong>. Which database fits?',
+   opts:['Amazon Neptune','Amazon DynamoDB','Amazon Redshift','Amazon RDS'],correct:0,
+   exp:'<strong>Neptune</strong> is a purpose-built graph database optimized for traversing relationships (social graphs, recommendations, fraud rings). Modeling deep relationship traversals in DynamoDB/RDS (B, D) is slow and awkward; Redshift (C) is analytics.'},
+  {id:3,topic:'Ledger',diff:'hard',q:'A bank must keep an <strong>immutable, cryptographically verifiable</strong> history of all account transactions that can prove records were never altered. Which database?',
+   opts:['Amazon Aurora with audit triggers','Amazon QLDB','Amazon DynamoDB with Streams','Amazon Timestream'],correct:1,
+   exp:'<strong>QLDB</strong> is a ledger database providing an immutable, append-only, cryptographically verifiable transaction log — purpose-built for tamper-proof audit history. Aurora triggers (A) can be altered by a privileged user; DynamoDB Streams (C) is CDC, not an immutable ledger; Timestream (D) is time-series.'},
+  {id:4,topic:'TimeSeries',diff:'medium',q:'An IoT platform ingests millions of <strong>time-stamped sensor measurements</strong> and queries them by time windows. Which database is purpose-built for this?',
+   opts:['Amazon Timestream','Amazon DynamoDB','Amazon Redshift','Amazon Neptune'],correct:0,
+   exp:'<strong>Timestream</strong> is a purpose-built time-series database optimized for time-stamped data (IoT, metrics) with time-based queries and lifecycle tiering. DynamoDB (B) can store it but isn\'t optimized for time-series analytics; Redshift (C) is a warehouse; Neptune (D) is graph.'},
+  {id:5,topic:'Document',diff:'medium',q:'A team running <strong>MongoDB</strong> on-prem wants a fully-managed, MongoDB-compatible database on AWS with minimal application change. Which service?',
+   opts:['Amazon DynamoDB','Amazon DocumentDB','Amazon Keyspaces','Amazon RDS'],correct:1,
+   exp:'<strong>Amazon DocumentDB</strong> is MongoDB-compatible and managed, so existing MongoDB apps migrate with minimal change. DynamoDB (A) is a different (key-value) model requiring rewrites; Keyspaces (C) is Cassandra-compatible; RDS (D) is relational.'},
+  {id:6,topic:'WideColumn',diff:'medium',q:'A company uses <strong>Apache Cassandra</strong> and wants a serverless, managed, Cassandra-compatible option on AWS. Which service?',
+   opts:['Amazon Keyspaces','Amazon DocumentDB','Amazon DynamoDB','Amazon MemoryDB'],correct:0,
+   exp:'<strong>Amazon Keyspaces</strong> is a managed, serverless, Apache Cassandra-compatible (CQL) wide-column database — drop-in for Cassandra workloads. DocumentDB (B) is MongoDB; DynamoDB (C) is key-value (not CQL-compatible); MemoryDB (D) is in-memory Redis.'},
+  {id:7,topic:'Cache',diff:'medium',q:'An application\'s RDS database is overwhelmed by repeated identical read queries. The team wants to <strong>cache hot results in memory</strong> with replication and pub/sub support. Which service?',
+   opts:['Amazon ElastiCache for Redis','Amazon DAX','Amazon DynamoDB','Read Replicas only'],correct:0,
+   exp:'<strong>ElastiCache for Redis</strong> provides an in-memory cache (with persistence, replication, pub/sub) to absorb repeated reads in front of RDS. DAX (B) caches DynamoDB only, not RDS. DynamoDB (C) is a different database. Read replicas (D) help but don\'t give sub-ms in-memory caching of hot queries.'},
+  {id:8,topic:'DAX',diff:'medium',q:'A DynamoDB workload needs <strong>microsecond</strong> read latency for an extremely hot dataset, with no application-side cache code. Which service?',
+   opts:['ElastiCache for Memcached','DynamoDB Accelerator (DAX)','A Global Secondary Index','MemoryDB'],correct:1,
+   exp:'<strong>DAX</strong> is a DynamoDB-native, in-memory cache delivering microsecond reads with API compatibility (no custom cache logic). ElastiCache (A) requires application cache management; a GSI (C) is for querying other attributes; MemoryDB (D) is a primary database, not a DynamoDB cache.'},
+  {id:9,topic:'Relational',diff:'medium',q:'A company is migrating an <strong>Oracle</strong> database to AWS with minimal changes and wants AWS to manage patching/backups. Which is the simplest fit?',
+   opts:['Amazon DynamoDB','Amazon RDS for Oracle','Amazon Redshift','Amazon Aurora MySQL'],correct:1,
+   exp:'<strong>RDS for Oracle</strong> runs the Oracle engine managed by AWS — the minimal-change lift-and-shift. DynamoDB (A) and Redshift (C) are different data models; Aurora MySQL (D) would require an engine migration (schema conversion), not minimal change.'},
+  {id:10,topic:'HA',diff:'medium',q:'An RDS database must <strong>automatically fail over to a standby</strong> within another AZ if the primary fails. Which feature provides this?',
+   opts:['Read Replicas','Multi-AZ deployment','A larger instance','DynamoDB Global Tables'],correct:1,
+   exp:'<strong>Multi-AZ</strong> maintains a synchronous standby in another AZ and fails over automatically — high availability. Read Replicas (A) are async and require manual promotion (read scaling/DR, not automatic HA). Instance size (C) is unrelated; Global Tables (D) is a DynamoDB feature.'},
+  {id:11,topic:'Aurora',diff:'hard',q:'A globally distributed app needs a <strong>relational</strong> database with cross-region disaster recovery and sub-second replication to a secondary region. Which is BEST?',
+   opts:['DynamoDB Global Tables','Aurora Global Database','RDS Multi-AZ','ElastiCache Global Datastore'],correct:1,
+   exp:'<strong>Aurora Global Database</strong> provides cross-region replication (typically &lt;1s) with fast regional failover for <em>relational</em> workloads. DynamoDB Global Tables (A) is the NoSQL equivalent (wrong data model here). RDS Multi-AZ (C) is single-region HA. ElastiCache (D) is a cache, not the system of record.'},
+  {id:12,topic:'OLTP',diff:'hard',q:'A high-traffic app records <strong>millions of small key-based reads/writes per second</strong> with single-digit-ms latency and unpredictable spikes, fully serverless. Which database?',
+   opts:['Amazon Redshift','Amazon DynamoDB (on-demand)','Amazon RDS','Amazon Athena'],correct:1,
+   exp:'<strong>DynamoDB on-demand</strong> handles millions of key-based ops/sec at single-digit ms with no capacity planning — the serverless OLTP fit. Redshift (A) and Athena (D) are analytics (OLAP); RDS (C) doesn\'t scale horizontally to that write volume as easily. This is OLTP, not OLAP.'},
+  {id:13,topic:'Athena',diff:'medium',q:'A team needs to run <strong>occasional ad-hoc SQL queries directly on data in S3</strong> with no servers and pay only per query. Which is most cost-effective?',
+   opts:['Load it into Redshift','Amazon Athena','Amazon RDS','Amazon DynamoDB'],correct:1,
+   exp:'<strong>Athena</strong> is serverless and queries S3 data in place, charging per TB scanned — ideal for occasional ad-hoc analysis without running a cluster. Standing up Redshift (A) is overkill/costly for occasional queries. RDS/DynamoDB (C, D) aren\'t for querying raw S3 data.'},
+  {id:14,topic:'Search',diff:'medium',q:'An application needs <strong>full-text search and log analytics with dashboards</strong> over large volumes of semi-structured data. Which service fits?',
+   opts:['Amazon OpenSearch Service','Amazon Redshift','Amazon Neptune','Amazon RDS'],correct:0,
+   exp:'<strong>OpenSearch Service</strong> (Elasticsearch-compatible) is purpose-built for full-text search and log analytics with visualization dashboards. Redshift (B) is structured OLAP analytics; Neptune (C) is graph; RDS (D) is relational and weak at full-text search at scale.'},
+  {id:15,topic:'MemoryDB',diff:'hard',q:'A team wants Redis-level in-memory performance but needs the data store to be <strong>durable and act as the primary database</strong> (not just a cache). Which service?',
+   opts:['ElastiCache for Redis','Amazon MemoryDB','DynamoDB with DAX','Amazon RDS'],correct:1,
+   exp:'<strong>MemoryDB</strong> is a durable, Redis-compatible <em>primary</em> database — microsecond reads, single-digit-ms writes, with multi-AZ durability. ElastiCache (A) is a cache (data can be lost). DynamoDB+DAX (C) is key-value + cache, not Redis-compatible. RDS (D) isn\'t in-memory.'},
+  {id:16,topic:'Cache',diff:'medium',q:'Which caching choice is correct: a workload needs a <strong>simple, multi-threaded cache with no persistence or replication</strong>?',
+   opts:['ElastiCache for Memcached','ElastiCache for Redis','DAX','MemoryDB'],correct:0,
+   exp:'<strong>Memcached</strong> is simple and multi-threaded with no persistence/replication — fits "simple cache, scale horizontally." <strong>Redis/Valkey (B)</strong> adds persistence, replication, pub/sub, and data structures (pick it when those are needed). DAX (C) is DynamoDB-specific; MemoryDB (D) is a durable primary DB.'},
+  {id:17,topic:'OLTP',diff:'medium',q:'A startup needs a relational database for a new app with <strong>complex JOINs and ACID transactions</strong>, prefers a cloud-native engine with high performance and minimal management. Which is BEST?',
+   opts:['DynamoDB','Amazon Aurora','Redshift','Neptune'],correct:1,
+   exp:'<strong>Aurora</strong> gives cloud-native relational (MySQL/PostgreSQL-compatible) performance with ACID transactions and JOINs, plus auto-scaling storage and minimal management. DynamoDB (A) lacks rich JOINs/ad-hoc SQL; Redshift (C) is analytics; Neptune (D) is graph.'},
+  {id:18,topic:'Choose',diff:'hard',q:'A logistics company needs: (a) an operational store for millions of package-status updates/sec, and (b) BI analytics over historical shipments. What is the BEST pairing?',
+   opts:['Redshift for both','DynamoDB for operational updates + Redshift for analytics','RDS for both','Neptune + Timestream'],correct:1,
+   exp:'Use the right tool for each shape: <strong>DynamoDB</strong> for the high-velocity operational (OLTP) updates, and <strong>Redshift</strong> for the analytical (OLAP) BI workload — often loaded from DynamoDB/S3. Redshift-for-both (A) fails the OLTP write rate; RDS-for-both (C) struggles at that scale; Neptune/Timestream (D) don\'t match these shapes (graph/time-series).'},
+];
+
+let state = {};
+let correctCount = 0, answeredCount = 0;
+function initState(){ questions.forEach(q => state[q.id] = {answered:false,correct:false,marked:false,selected:[]}); correctCount=0; answeredCount=0; }
+initState();
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active'); btn.classList.add('active');
+}
+function updateScore(){
+  document.getElementById('scoreDisplay').textContent = correctCount + ' / ' + answeredCount;
+  if(answeredCount > 0){ document.getElementById('scorePercent').textContent = Math.round((correctCount/answeredCount)*100) + '% correct';
+    document.getElementById('progressFill').style.width = Math.round((answeredCount/questions.length)*100) + '%';
+  } else { document.getElementById('scorePercent').textContent = '—'; document.getElementById('progressFill').style.width = '0%'; }
+}
+function renderQuestion(q){
+  const s = state[q.id]; const isMulti = Array.isArray(q.correct);
+  const cardClass = s.answered ? (s.correct ? 'answered-correct' : 'answered-wrong') : '';
+  const optionsHTML = q.opts.map((opt,i) => {
+    let cls = 'option'; if(isMulti) cls += ' multi';
+    if(s.answered){ cls += ' disabled'; const ca = Array.isArray(q.correct)?q.correct:[q.correct];
+      if(ca.includes(i)) cls += ' correct-reveal'; else if(s.selected.includes(i)) cls += ' wrong-reveal';
+    } else if(s.selected.includes(i)) cls += ' selected';
+    return `<li class="${cls}" onclick="selectOption(${q.id},${i})"><span class="option-letter">${String.fromCharCode(65+i)}</span><span>${opt}</span></li>`;
+  }).join('');
+  const ca = Array.isArray(q.correct)?q.correct:[q.correct];
+  const correctLabels = ca.map(i => String.fromCharCode(65+i)+'. '+q.opts[i]).join(' | ');
+  const resultTag = s.answered ? (s.correct ? '<div class="exp-correct-tag">✅ Correct</div>' : `<div class="exp-wrong-tag">❌ Incorrect</div><div class="correct-ans">✓ Correct: ${correctLabels}</div>`) : '';
+  const typeHint = isMulti ? '<span class="q-type-badge">— select two</span>' : '';
+  return `<div class="q-card ${cardClass} ${s.marked?'marked':''}" id="qcard-${q.id}">
+    <div class="q-meta"><span class="q-num">Q${q.id}</span><span class="q-topic-tag">${q.topic}</span>
+      <span class="q-diff diff-${q.diff}">${q.diff}</span>${typeHint}
+      <button class="q-mark-btn ${s.marked?'marked':''}" onclick="toggleMark(${q.id})" title="Mark for review">${s.marked?'★':'☆'}</button></div>
+    <div class="q-text">${q.q}</div>
+    <ul class="options-list">${optionsHTML}</ul>
+    <button class="submit-btn ${s.answered?'hide':''}" onclick="checkAnswer(${q.id})">Check Answer</button>
+    <div class="explanation ${s.answered?'show':''}" id="exp-${q.id}"><div class="exp-label">Explanation</div>${resultTag}<p>${q.exp}</p></div>
+  </div>`;
+}
+function renderAll(){ document.getElementById('qlist').innerHTML = questions.map(renderQuestion).join(''); }
+function rerenderCard(qid){ const q = questions.find(q => q.id===qid); const el = document.getElementById('qcard-'+qid); if(el&&q) el.outerHTML = renderQuestion(q); }
+function selectOption(qid, idx){ const s = state[qid]; if(s.answered) return; const q = questions.find(q=>q.id===qid);
+  if(Array.isArray(q.correct)){ if(s.selected.includes(idx)) s.selected = s.selected.filter(i=>i!==idx); else s.selected.push(idx); } else s.selected = [idx];
+  rerenderCard(qid); }
+function checkAnswer(qid){ const s = state[qid]; if(s.answered || s.selected.length===0) return; const q = questions.find(q=>q.id===qid);
+  const cs = Array.isArray(q.correct)?q.correct.slice().sort().join(','):String(q.correct);
+  const ss = Array.isArray(q.correct)?s.selected.slice().sort().join(','):String(s.selected[0]);
+  s.answered = true; s.correct = (cs===ss); answeredCount++; if(s.correct) correctCount++;
+  updateScore(); rerenderCard(qid);
+  setTimeout(()=>{ const e=document.getElementById('exp-'+qid); if(e) e.scrollIntoView({behavior:'smooth',block:'nearest'}); },100); }
+function toggleMark(qid){ state[qid].marked = !state[qid].marked; rerenderCard(qid); }
+function resetAll(){ if(!confirm('Reset all answers and scores?')) return; initState(); updateScore(); renderAll(); }
+function revealAll(){ if(!confirm('Reveal answers for all questions?')) return;
+  questions.forEach(q => { const s = state[q.id]; if(!s.answered){ s.answered=true; s.selected=Array.isArray(q.correct)?q.correct:[q.correct]; s.correct=true; answeredCount++; correctCount++; } });
+  updateScore(); renderAll(); }
+document.addEventListener('DOMContentLoaded', () => { renderAll(); updateScore(); });
+</script>
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class="cnav-current"><a href="02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
+</body>
+</html>

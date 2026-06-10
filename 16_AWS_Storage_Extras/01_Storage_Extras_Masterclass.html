@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Storage Extras — Masterclass (SAA-C03)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:#faf6f0; --warm-white:#fff9f2; --ink:#1a1208; --ink-soft:#3d2e1a; --ink-muted:#6b5744;
+    --accent-amber:#c97d2e; --accent-amber-light:#e8a84a; --accent-teal:#1d7a6e; --accent-teal-light:#2a9d8f;
+    --accent-rust:#b84c2a; --accent-rust-light:#d4693e; --accent-purple:#6b3fa0; --accent-blue:#1e5fa8;
+    --accent-blue-light:#2b7dd4; --accent-green:#2d7a3e; --border:#e8ddd0; --border-warm:#d4c4aa;
+    --shadow-warm:0 4px 24px rgba(100,70,30,0.12); --shadow-card:0 2px 12px rgba(100,70,30,0.08);
+    --accent:#1d7a6e; --paper:#fff9f2; --rule:#e8ddd0; --bg-alt:#f0e8dc; --ink-mute:#6b5744;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+
+  .hero{background:linear-gradient(135deg,#13231f 0%,#16302a 45%,#1a2b38 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
+  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(42,157,143,0.18) 0%,transparent 70%);}
+  .hero-tag{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-amber-light);font-weight:700;margin-bottom:16px;}
+  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(38px,5vw,62px);line-height:1.05;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
+  .hero h1 span{color:var(--accent-amber-light);}
+  .hero-subtitle{font-size:19px;color:rgba(255,255,255,0.72);max-width:760px;font-weight:400;}
+  .hero-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px;}
+  .hero-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.85);padding:6px 15px;border-radius:100px;font-size:13px;font-weight:500;}
+
+  .svc-tabnav{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:8px;padding:14px 60px;background:rgba(250,246,240,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(100,70,30,0.06);}
+  .svc-tab{font:600 15.5px/1 'Inter',sans-serif;color:var(--ink-muted);background:var(--warm-white);border:1.5px solid var(--border);border-radius:12px;padding:11px 18px;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;gap:8px;}
+  .svc-tab:hover{color:var(--ink);border-color:var(--border-warm);}
+  .svc-tab.snow.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
+  .svc-tab.sg.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
+  .svc-tab.fsx.active{color:#fff;background:var(--accent-purple);border-color:var(--accent-purple);box-shadow:0 3px 12px rgba(107,63,160,0.32);}
+  .svc-tab.dt.active{color:#fff;background:var(--accent-rust);border-color:var(--accent-rust);box-shadow:0 3px 12px rgba(184,76,42,0.32);}
+  .svc-panel{display:none;}
+  .svc-panel.active{display:block;animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  .main-content{max-width:1300px;margin:0 auto;padding:0 60px 80px;}
+
+  .svc-index{background:var(--warm-white);border:1px solid var(--border);border-radius:14px;margin:26px 0 4px;padding:18px 24px;box-shadow:var(--shadow-card);}
+  .svc-index-label{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:12px;}
+  .svc-index-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:3px 22px;}
+  .svc-index-inner a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink-soft);font-size:16px;padding:7px 10px;border-radius:8px;border-left:3px solid transparent;transition:all .15s ease;}
+  .svc-index-inner a:hover{background:#f0e8dc;color:var(--accent-rust);border-left-color:var(--accent-amber);}
+  .idx-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-amber);flex-shrink:0;}
+
+  .part-header{padding:20px 28px;border-radius:13px;margin:44px 0 6px;scroll-margin-top:86px;}
+  .part-header.blue{background:linear-gradient(135deg,#e0ecf8 0%,#cce0f5 100%);}
+  .part-header.teal{background:linear-gradient(135deg,#e0f4f1 0%,#c8eee9 100%);}
+  .part-header.purple{background:linear-gradient(135deg,#efe8f8 0%,#e2d4f0 100%);}
+  .part-header.rust{background:linear-gradient(135deg,#fce8e0 0%,#f8d8cc 100%);}
+  .part-header.amber{background:linear-gradient(135deg,#fdf0e0 0%,#fde8c8 100%);}
+  .part-number{font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-rust);margin-bottom:4px;}
+  .part-header h2{font-family:'Fraunces',serif;font-size:clamp(22px,2.1vw,28px);line-height:1.18;color:var(--ink);font-weight:700;}
+  .part-header p{font-size:15px;color:var(--ink-soft);margin-top:5px;line-height:1.45;}
+
+  .section{padding:26px 4px 8px;}
+  .section-title{font-family:'Fraunces',serif;font-size:25px;font-weight:600;color:var(--ink);margin:30px 0 14px;line-height:1.2;}
+  .prose p{margin-bottom:18px;color:var(--ink-soft);}
+  .prose .lead{font-size:20px;color:var(--ink);font-weight:500;}
+  .prose strong{color:var(--ink);font-weight:700;}
+  .prose em{color:var(--accent-rust);font-style:italic;}
+  code{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:0.86em;background:#f0e8dc;color:var(--accent-rust);padding:2px 7px;border-radius:5px;}
+  ul.nice-list{list-style:none;margin:16px 0;}
+  ul.nice-list li{padding:6px 0 6px 26px;position:relative;color:var(--ink-soft);}
+  ul.nice-list li::before{content:'▸';position:absolute;left:4px;color:var(--accent-amber);font-weight:700;}
+
+  .callout{border-radius:14px;padding:22px 26px;margin:24px 0;border:1px solid var(--border);}
+  .callout-tag{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .callout p{margin-bottom:10px;color:var(--ink-soft);}
+  .callout p:last-child{margin-bottom:0;}
+  .callout-why{background:#fdf4e6;border-color:#f0d9b0;}.callout-why .callout-tag{color:var(--accent-amber);}
+  .callout-trap{background:#fcebe5;border-color:#f0c4b4;}.callout-trap .callout-tag{color:var(--accent-rust);}
+  .callout-key{background:#e6f3f0;border-color:#b4ddd4;}.callout-key .callout-tag{color:var(--accent-teal);}
+  .callout-price{background:#fff6e9;border-color:#f0dcb8;}.callout-price .callout-tag{color:var(--accent-amber);}
+  .price-tag{background:#fff6e9;border-left:3px solid var(--accent-amber);border-radius:0 8px 8px 0;padding:12px 18px;margin:18px 0;font-size:16px;color:var(--ink-soft);}
+  .price-tag strong{color:var(--accent-rust);}
+
+  .comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin:24px 0;}
+  .comp-card{background:var(--warm-white);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-card);}
+  .comp-card-tag{font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:10px;}
+  .comp-card h4{font-size:18px;color:var(--ink);margin-bottom:10px;font-weight:700;}
+  .comp-card ul{list-style:none;}
+  .comp-card ul li{padding:4px 0 4px 20px;position:relative;font-size:15.5px;color:var(--ink-muted);}
+  .comp-card ul li::before{content:'•';position:absolute;left:4px;color:var(--accent-rust);}
+
+  .table-wrap{overflow-x:auto;margin:22px 0;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-card);}
+  table.data{width:100%;border-collapse:collapse;font-size:15.5px;background:var(--warm-white);}
+  table.data thead tr{background:#f0e8dc;}
+  table.data th{padding:13px 16px;text-align:left;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:700;border-bottom:2px solid var(--border-warm);}
+  table.data td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--ink-soft);vertical-align:top;}
+  table.data tr:last-child td{border-bottom:none;}
+  table.data td strong{color:var(--ink);}
+  table.data tr:hover td{background:rgba(201,125,46,0.04);}
+
+  .diagram{background:var(--warm-white);border:1px solid var(--border);border-radius:16px;padding:26px;margin:26px 0;text-align:center;box-shadow:var(--shadow-card);}
+  .diagram svg{max-width:100%;height:auto;}
+  .diagram-caption{font-size:14px;color:var(--ink-muted);margin-top:14px;font-style:italic;}
+
+  .industry-spotlight{background:linear-gradient(135deg,#1b2438 0%,#142a36 100%);color:#e8eef5;border-radius:18px;padding:34px 38px;margin:34px 0;scroll-margin-top:86px;}
+  .industry-spotlight-tag{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:14px;}
+  .industry-spotlight h3{font-family:'Fraunces',serif;font-size:24px;color:#fff;margin-bottom:14px;font-weight:600;line-height:1.25;}
+  .industry-spotlight p{color:rgba(232,238,245,0.82);margin-bottom:14px;}
+  .industry-spotlight strong{color:#fff;}
+  .arch-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px 18px;margin:10px 0;}
+  .arch-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:5px;}
+  .arch-item p{margin:0;font-size:15.5px;}
+
+  .trigger-box{background:#1a1208;color:#f0e6d6;border-radius:16px;padding:30px 34px;margin:30px 0;}
+  .trigger-box h3{font-family:'Fraunces',serif;color:var(--accent-amber-light);font-size:22px;margin-bottom:16px;}
+  .trigger-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .trigger-row:last-child{border-bottom:none;}
+  .trigger-kw{color:#e8a84a;font-weight:600;min-width:330px;flex-shrink:0;font-size:15.5px;}
+  .trigger-arrow{color:var(--accent-rust-light);flex-shrink:0;}
+  .trigger-ans{color:#f0e6d6;font-size:15.5px;}
+
+  @media(max-width:768px){
+    .hero{padding:40px 22px 36px;}.svc-tabnav{padding:12px 16px;}.svc-tab{font-size:13.5px;padding:9px 13px;}
+    .main-content{padding:0 18px 60px;}.part-header{padding:18px 20px;}.industry-spotlight{padding:26px 20px;}
+    .trigger-kw{min-width:100%;}.trigger-row{flex-direction:column;gap:4px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-tag">SAA-C03 Masterclass · Section 16 · Doc 1 of 2</div>
+  <h1>AWS <span>Storage Extras</span></h1>
+  <p class="hero-subtitle">Beyond S3 and EBS: the family of services for <em>hybrid</em> storage, <em>specialised</em> file systems, and <em>moving data</em> in and out of AWS. Master when each one is the right answer — the exam loves making you choose between them.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">Snow Family</span><span class="hero-pill">Storage Gateway</span><span class="hero-pill">FSx (4 flavours)</span><span class="hero-pill">DataSync</span><span class="hero-pill">Transfer Family</span><span class="hero-pill">Migration Decisions</span>
+  </div>
+</header>
+
+<nav class="svc-tabnav">
+  <button class="svc-tab snow active" data-panel="snow">❄️ Snow Family</button>
+  <button class="svc-tab sg" data-panel="sg">🏢 Storage Gateway</button>
+  <button class="svc-tab fsx" data-panel="fsx">📁 FSx</button>
+  <button class="svc-tab dt" data-panel="dt">🔄 DataSync &amp; Transfer</button>
+</nav>
+
+<div class="main-content">
+
+<!-- ══════════════ SNOW FAMILY ══════════════ -->
+<div id="panel-snow" class="svc-panel active">
+  <div class="svc-index">
+    <div class="svc-index-label">❄️ Snow Family — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#snow-p1"><span class="idx-dot"></span>Why Snow (the bandwidth wall)</a>
+      <a href="#snow-p2"><span class="idx-dot"></span>The Devices</a>
+      <a href="#snow-p3"><span class="idx-dot"></span>How a Job Works</a>
+      <a href="#snow-p4"><span class="idx-dot"></span>DataSync vs Snowball</a>
+      <a href="#snow-triggers"><span class="idx-dot"></span>Cost &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="snow-p1">
+    <div class="part-number">Snow Family · Part 1</div>
+    <h2>Why Snow Exists — The Bandwidth Wall</h2>
+    <p>Sometimes the fastest way to move 100 terabytes is not the internet — it's a truck.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">You have <strong>500 TB</strong> of video archives on-premises and you want them in S3. The obvious plan: upload them. Let's do the maths.</p>
+      <p>Even on a fast, dedicated <strong>1 Gbps</strong> link running flat-out, you move roughly <strong>~10 TB per day</strong> in the real world. 500 TB would take <strong>~7 weeks</strong> of saturated bandwidth — during which nobody else can use that link, and any blip restarts your pain. For a petabyte, it's months.</p>
+      <p>This is the <strong>bandwidth wall</strong>: past a certain data size, the network is simply too slow (and too expensive in egress/time) to be practical. Physics beats fibre.</p>
+    </div>
+    <div class="callout callout-why">
+      <div class="callout-tag">💡 Why the Snow Family Was Built</div>
+      <p><strong>AWS ships you a rugged physical device, you copy your data onto it locally (at LAN speed), and you ship it back. AWS plugs it in and imports your data into S3.</strong> No internet bottleneck, no egress fees for the inbound transfer. A Snowball Edge holds ~80 TB; you can run several in parallel. What took weeks over the wire takes <em>days</em> by courier.</p>
+      <p>Bonus: these devices also do <strong>edge computing</strong> — run EC2 instances or Lambda functions <em>on the device</em> at a remote site (a ship, a factory, a war zone) with no connectivity, then ship the results back.</p>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="snow-p2">
+    <div class="part-number">Snow Family · Part 2</div>
+    <h2>The Devices</h2>
+    <p>Three sizes — from a tissue-box edge device to (the now-retired) shipping-container truck.</p>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Device</th><th>Capacity</th><th>Use for</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Snowcone</strong></td><td>~8 TB (HDD) / 14 TB (SSD)</td><td>Small / edge / space-constrained</td><td>Tiny, rugged, portable; can run a DataSync agent; battery-friendly</td></tr>
+        <tr><td><strong>Snowball Edge — Storage Optimized</strong></td><td>~80 TB usable</td><td>Large data migration (the workhorse)</td><td>Most common answer for "tens of TB offline"</td></tr>
+        <tr><td><strong>Snowball Edge — Compute Optimized</strong></td><td>~80 TB + more vCPU/GPU</td><td>Edge compute / ML inference at remote sites</td><td>Run EC2/Lambda on-device</td></tr>
+        <tr><td><strong>Snowmobile</strong></td><td>up to 100 PB (a 45-ft truck)</td><td>Exabyte-scale data-centre evacuation</td><td><strong>Retired by AWS</strong> — may still appear as a distractor for "100 PB"</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Facts the exam checks</div>
+      <p>Snow data <strong>lands in S3 only</strong> (then you lifecycle/integrate from there — it can't import straight to EFS/FSx/EBS/Glacier vault). Devices encrypt everything with <strong>KMS</strong>, use a tamper-evident enclosure, and carry an <strong>E-Ink shipping label</strong> that auto-updates the return address. The whole job is tracked and managed from the AWS console.</p>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="snow-p3">
+    <div class="part-number">Snow Family · Part 3</div>
+    <h2>How a Job Works</h2>
+    <p>Order → receive → load → return → AWS imports. A courier round-trip, not a download.</p>
+  </div>
+  <div class="section">
+    <div class="diagram">
+      <svg viewBox="0 0 720 130" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+        <g font-size="12" fill="#1a1208" text-anchor="middle">
+        <rect x="10" y="40" width="120" height="50" rx="10" fill="#e0ecf8" stroke="#1e5fa8" stroke-width="2"/><text x="70" y="60">1 · Order job</text><text x="70" y="78" font-size="10" fill="#6b5744">in AWS console</text>
+        <rect x="160" y="40" width="120" height="50" rx="10" fill="#e0ecf8" stroke="#1e5fa8" stroke-width="2"/><text x="220" y="60">2 · Load data</text><text x="220" y="78" font-size="10" fill="#6b5744">local LAN speed</text>
+        <rect x="310" y="40" width="120" height="50" rx="10" fill="#e0ecf8" stroke="#1e5fa8" stroke-width="2"/><text x="370" y="60">3 · Ship back</text><text x="370" y="78" font-size="10" fill="#6b5744">E-Ink label</text>
+        <rect x="460" y="40" width="130" height="50" rx="10" fill="#e0f4f1" stroke="#1d7a6e" stroke-width="2"/><text x="525" y="60">4 · AWS imports</text><text x="525" y="78" font-size="10" fill="#6b5744">→ your S3 bucket</text>
+        <rect x="620" y="40" width="90" height="50" rx="10" fill="#fdf0e0" stroke="#c97d2e" stroke-width="2"/><text x="665" y="64">5 · Done</text>
+        </g>
+        <g stroke="#c97d2e" stroke-width="2" marker-end="url(#sa)"><line x1="132" y1="65" x2="158" y2="65"/><line x1="282" y1="65" x2="308" y2="65"/><line x1="432" y1="65" x2="458" y2="65"/><line x1="592" y1="65" x2="618" y2="65"/></g>
+        <defs><marker id="sa" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="#c97d2e"/></marker></defs>
+      </svg>
+      <div class="diagram-caption">Inbound data transfer to AWS is free — you pay for the box and the days you keep it, not per-GB.</div>
+    </div>
+  </div>
+
+  <div class="part-header blue" id="snow-p4">
+    <div class="part-number">Snow Family · Part 4</div>
+    <h2>DataSync vs Snowball — the decision</h2>
+    <p>The single most-tested Snow question: network or courier?</p>
+  </div>
+  <div class="section">
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 The rule (do the bandwidth math)</div>
+      <p><strong>If the data fits down your link inside the deadline → DataSync (online).</strong> Rough guide: up to ~tens of TB with decent bandwidth. <strong>If it's too big, the bandwidth is too small, or there's a hard deadline the network can't meet → Snowball (offline).</strong> The exam often gives you a size + a bandwidth + a deadline and wants you to realise the network can't make it — pick Snowball.</p>
+    </div>
+    <div class="price-tag">💵 A Snowball Edge Storage-Optimized job is <strong>~$300</strong> (includes ~10 days of use), <strong>+~$30/day</strong> after, plus shipping. <strong>Inbound data transfer is free.</strong> DataSync is <strong>$0.0125/GB</strong> moved — so 100 TB ≈ $1,250 over the wire <em>if</em> your bandwidth can carry it in time.</p>
+  </div>
+
+  <div class="industry-spotlight" id="snow-industry">
+    <div class="industry-spotlight-tag">🏢 Industry — Snow in the wild</div>
+    <h3>Media archives, remote sites, and "no bandwidth" migrations</h3>
+    <p>Media companies use Snowball to seed their initial S3 data lake (decades of footage) without saturating their link for months. Remote/edge operations — ships, mines, defence, field research — use Snowcone/Snowball <strong>Compute Optimized</strong> to run inference locally where there's <em>no</em> connectivity, then ship results home. The recurring theme: when physics or geography beats the network, you send a box.</p>
+  </div>
+
+  <div class="trigger-box" id="snow-triggers">
+    <h3>⚡ Snow Family — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"PB-scale / no bandwidth / offline transfer"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowball Edge</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Migrate X TB in Y days, limited bandwidth (won't fit)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowball (do the math first)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Edge compute at a disconnected site"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowball Edge Compute Optimized / Snowcone</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Small/portable edge device, few TB"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowcone</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Where does Snow data land?"</div><div class="trigger-arrow">→</div><div class="trigger-ans">S3 only (then lifecycle/integrate)</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ STORAGE GATEWAY ══════════════ -->
+<div id="panel-sg" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">🏢 Storage Gateway — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#sg-p1"><span class="idx-dot"></span>Why (the hybrid bridge)</a>
+      <a href="#sg-p2"><span class="idx-dot"></span>File Gateway</a>
+      <a href="#sg-p3"><span class="idx-dot"></span>Volume Gateway</a>
+      <a href="#sg-p4"><span class="idx-dot"></span>Tape Gateway</a>
+      <a href="#sg-industry"><span class="idx-dot"></span>Ryanair &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="sg-p1">
+    <div class="part-number">Storage Gateway · Part 1</div>
+    <h2>Why Storage Gateway — The Hybrid Bridge</h2>
+    <p>Keep your on-prem apps exactly as they are, but quietly back them with unlimited cloud storage.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">Not every company can move everything to the cloud overnight. Old apps expect a local file share, an iSCSI disk, or a tape drive. Ripping those out is risky and expensive.</p>
+      <p><strong>Storage Gateway is a small virtual appliance (a VM, or a hardware box) that runs in your data centre and presents familiar local storage interfaces — NFS/SMB file shares, iSCSI block volumes, or a virtual tape library — while transparently storing the data in S3, Glacier, or EBS snapshots behind the scenes.</strong> Your apps think they're talking to local storage; really, the cloud is the backend, with a local <em>cache</em> for hot data.</p>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Storage Gateway vs DataSync — don't mix them up</div>
+      <p><strong>Storage Gateway = ongoing hybrid access</strong> (your on-prem apps keep using cloud-backed storage day after day, with a local cache). <strong>DataSync = a one-time/scheduled bulk migration</strong> (move the data, then you're done). "Hybrid, cached, on-prem app keeps running" → Gateway. "Migrate this dataset over the network" → DataSync.</p>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="sg-p2">
+    <div class="part-number">Storage Gateway · Part 2</div>
+    <h2>File Gateway — NFS/SMB → S3</h2>
+  </div>
+  <div class="section">
+    <div class="prose"><p>Presents <strong>NFS or SMB</strong> file shares to your on-prem servers; files are stored as <strong>objects in S3</strong>. Recently-used files are cached locally for low latency. You can lifecycle them to S3-IA/Glacier and integrate with S3 features. There's also an <strong>FSx File Gateway</strong> variant that gives low-latency on-prem access to an <strong>FSx for Windows</strong> file system.</p></div>
+    <ul class="nice-list">
+      <li><strong>Trigger:</strong> "on-prem app needs an NFS/SMB share, but store the data in S3" → File Gateway.</li>
+      <li>Each file = an S3 object you can see and use natively in the bucket.</li>
+    </ul>
+  </div>
+
+  <div class="part-header teal" id="sg-p3">
+    <div class="part-number">Storage Gateway · Part 3</div>
+    <h2>Volume Gateway — iSCSI block, cached vs stored</h2>
+  </div>
+  <div class="section">
+    <div class="prose"><p>Presents <strong>iSCSI block volumes</strong> to your servers, backed by S3, with point-in-time backups as <strong>EBS snapshots</strong>. Two modes — and the exam loves the difference:</p></div>
+    <div class="comparison-grid">
+      <div class="comp-card">
+        <div class="comp-card-tag">Cached Volumes</div>
+        <h4>Primary data in S3</h4>
+        <ul>
+          <li>The <strong>full dataset lives in S3</strong>; only hot data cached locally</li>
+          <li>Local storage stays small</li>
+          <li>Use when: you want most data in the cloud, low on-prem footprint</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-tag">Stored Volumes</div>
+        <h4>Primary data on-prem</h4>
+        <ul>
+          <li>The <strong>full dataset lives locally</strong> (low latency to all of it)</li>
+          <li>Asynchronously backed up to S3 as EBS snapshots</li>
+          <li>Use when: you need fast local access to <em>everything</em> + cloud backup/DR</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="sg-p4">
+    <div class="part-number">Storage Gateway · Part 4</div>
+    <h2>Tape Gateway — kill the physical tape robot</h2>
+  </div>
+  <div class="section">
+    <div class="prose"><p>Presents a <strong>Virtual Tape Library (VTL)</strong> over iSCSI. Your existing backup software (Veeam, NetBackup, Commvault…) thinks it's writing to physical tapes; really the "tapes" are stored in S3 and archived to <strong>Glacier / Glacier Deep Archive</strong>. You keep your backup app and workflows, but ditch the physical tape robots, off-site couriers, and tape rot.</p></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Trigger</div>
+      <p>"Replace physical tape backups <em>but keep the existing backup application</em>" → <strong>Tape Gateway</strong>. (Writing to S3/Glacier <em>directly</em> is the trap — the legacy backup app expects a VTL, not an object API.)</p>
+    </div>
+  </div>
+
+  <div class="industry-spotlight" id="sg-industry">
+    <div class="industry-spotlight-tag">🏢 Dublin Industry — Verified</div>
+    <h3>Ryanair replaced physical tape backup with Tape Gateway — 65% savings</h3>
+    <p><strong>Ryanair</strong> (Dublin) migrated its backup estate from physical tape to <strong>Storage Gateway Tape Gateway</strong>, reported by their engineering team as <strong>driving ~65% savings</strong> — no more tape hardware, courier rotations, or off-site vaulting, while keeping their existing backup application and writing the virtual tapes to S3/Glacier. It's the archetypal "modernise the backend without rewriting the app" hybrid story.</p>
+    <div class="arch-item"><div class="arch-label">Exam mapping</div><p>"Replace unreliable physical tape backup, keep the backup software, cut cost" → Tape Gateway → S3/Glacier Deep Archive. This exact scenario shows up regularly.</p></div>
+  </div>
+
+  <div class="trigger-box">
+    <h3>⚡ Storage Gateway — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"On-prem NFS/SMB share, data stored in S3"</div><div class="trigger-arrow">→</div><div class="trigger-ans">File Gateway</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"iSCSI block, keep ALL data local + cloud backup"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Volume Gateway — Stored</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"iSCSI block, most data in cloud, small local cache"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Volume Gateway — Cached</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Replace physical tape, keep backup app"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Tape Gateway → S3/Glacier</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Ongoing hybrid cached access (not a migration)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Storage Gateway (not DataSync)</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ FSX ══════════════ -->
+<div id="panel-fsx" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">📁 FSx — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#fsx-p1"><span class="idx-dot"></span>Why FSx (managed file systems)</a>
+      <a href="#fsx-p2"><span class="idx-dot"></span>The 4 Flavours</a>
+      <a href="#fsx-p3"><span class="idx-dot"></span>FSx for Windows</a>
+      <a href="#fsx-p4"><span class="idx-dot"></span>FSx for Lustre</a>
+      <a href="#fsx-p5"><span class="idx-dot"></span>ONTAP &amp; OpenZFS</a>
+      <a href="#fsx-industry"><span class="idx-dot"></span>Cost &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="fsx-p1">
+    <div class="part-number">FSx · Part 1</div>
+    <h2>Why FSx — Managed, Specialised File Systems</h2>
+    <p>EFS is great Linux NFS. But what if you need Windows SMB, a supercomputer file system, or NetApp features?</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead">Amazon <strong>EFS</strong> gives you a managed, elastic <strong>Linux NFS</strong> file system shared across many EC2 instances. But the world runs on more than Linux NFS.</p>
+      <p>Windows apps want <strong>SMB</strong> shares with Active Directory and Windows ACLs. HPC and ML teams want a <strong>parallel file system</strong> delivering hundreds of GB/s at sub-millisecond latency. NetApp shops want <strong>ONTAP</strong> features (snapshots, clones, multi-protocol). <strong>Amazon FSx is a family of fully-managed file systems</strong> that give you exactly those specialised technologies, without running the storage servers yourself.</p>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="fsx-p2">
+    <div class="part-number">FSx · Part 2</div>
+    <h2>The 4 Flavours — Pick the Right One</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Flavour</th><th>Protocol</th><th>Pick when…</th></tr></thead>
+      <tbody>
+        <tr><td><strong>FSx for Windows File Server</strong></td><td>SMB</td><td>Windows apps, Active Directory, Windows ACLs, DFS, home directories</td></tr>
+        <tr><td><strong>FSx for Lustre</strong></td><td>Lustre (POSIX)</td><td>HPC / ML / analytics — sub-ms, hundreds of GB/s, <strong>S3-integrated</strong></td></tr>
+        <tr><td><strong>FSx for NetApp ONTAP</strong></td><td>NFS + SMB + iSCSI</td><td>NetApp migration, multi-protocol, SnapMirror, clones, auto-tiering</td></tr>
+        <tr><td><strong>FSx for OpenZFS</strong></td><td>NFS</td><td>ZFS workloads, snapshots/clones, low-latency NFS</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ The most common FSx trap</div>
+      <p><strong>Sub-millisecond / HPC / ML / "parallel file system" → FSx for Lustre, NEVER EFS.</strong> EFS is millisecond-class Linux NFS — good for shared web/app data, not high-performance computing. And <strong>"Windows SMB + AD" → FSx for Windows, never EFS</strong> (EFS is Linux/NFS only).</p>
+    </div>
+  </div>
+
+  <div class="part-header purple" id="fsx-p3">
+    <div class="part-number">FSx · Part 3</div>
+    <h2>FSx for Windows File Server</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li>Fully-managed <strong>SMB</strong> file shares — exactly what Windows apps expect.</li>
+      <li>Integrates with <strong>Active Directory</strong>; enforces <strong>Windows ACLs</strong>; supports <strong>DFS Namespaces</strong> for scale-out.</li>
+      <li>Single-AZ or <strong>Multi-AZ</strong> (synchronous standby) for high availability.</li>
+      <li>Built on SSD or HDD; supports dedup, shadow copies (user-restorable snapshots), and backups.</li>
+    </ul>
+    <div class="price-tag">💵 ~<strong>$0.13/GB-month (SSD)</strong> — a 1 TB share ≈ $130/mo; HDD is ~10× cheaper (~$0.013/GB-mo). Multi-AZ roughly doubles it.</div>
+  </div>
+
+  <div class="part-header purple" id="fsx-p4">
+    <div class="part-number">FSx · Part 4</div>
+    <h2>FSx for Lustre — the HPC/ML speed monster</h2>
+  </div>
+  <div class="section">
+    <div class="prose"><p>Lustre is the file system that powers supercomputers. FSx makes it a managed service: <strong>sub-millisecond latency, hundreds of GB/s throughput, millions of IOPS</strong> — for ML training, genomics, financial modelling, video rendering.</p></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 S3 integration (tested)</div>
+      <p>FSx for Lustre <strong>links to an S3 bucket</strong>: it <em>lazy-loads</em> objects from S3 on first access and can <em>write results back</em> to S3. So you keep your data lake in cheap S3, spin up a blazing-fast Lustre scratch file system for a compute burst, then tear it down. Two deployment types: <strong>Scratch</strong> (temporary, cheapest, no replication — for short-lived processing) and <strong>Persistent</strong> (durable, replicated within an AZ — for longer-running workloads).</p>
+    </div>
+    <div class="price-tag">💵 Scratch Lustre ~<strong>$0.14/GB-month</strong>; Persistent is priced by throughput tier. Pair with S3 so you only pay for the fast tier during the compute burst.</div>
+  </div>
+
+  <div class="part-header purple" id="fsx-p5">
+    <div class="part-number">FSx · Part 5</div>
+    <h2>FSx for NetApp ONTAP &amp; OpenZFS</h2>
+  </div>
+  <div class="section">
+    <div class="comparison-grid">
+      <div class="comp-card">
+        <div class="comp-card-tag">NetApp ONTAP</div>
+        <h4>Multi-protocol &amp; NetApp features</h4>
+        <ul>
+          <li><strong>NFS + SMB + iSCSI</strong> from one file system</li>
+          <li>NetApp-native: <strong>SnapMirror</strong> replication, instant clones, snapshots</li>
+          <li>Auto data-tiering (hot on SSD, cold to a cheap capacity pool)</li>
+          <li>Trigger: "migrate on-prem NetApp / need multi-protocol"</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-tag">OpenZFS</div>
+        <h4>ZFS on NFS</h4>
+        <ul>
+          <li>Managed <strong>OpenZFS</strong> over <strong>NFS</strong></li>
+          <li>Cheap, instant <strong>snapshots &amp; clones</strong></li>
+          <li>Low-latency, high-IOPS NFS workloads</li>
+          <li>Trigger: "ZFS / move Linux NFS workloads with snapshots"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="industry-spotlight" id="fsx-industry">
+    <div class="industry-spotlight-tag">🏢 Industry — FSx in the wild</div>
+    <h3>HPC, ML training, and Windows enterprise file shares</h3>
+    <p>ML and analytics teams pair <strong>FSx for Lustre + S3 + GPU EC2</strong>: the training data sits in S3, Lustre lazy-loads it at hundreds of GB/s so the expensive GPUs never wait on storage, then results write back to S3. Enterprises lift-and-shift Windows file servers to <strong>FSx for Windows</strong> with AD integration so existing apps and permissions just work. NetApp customers use <strong>FSx for ONTAP</strong> to migrate with SnapMirror and keep their tooling.</p>
+  </div>
+
+  <div class="trigger-box">
+    <h3>⚡ FSx — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Windows / SMB / Active Directory file share"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for Windows</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"HPC / ML / sub-ms / parallel / S3-linked"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for Lustre</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Multi-protocol / NetApp / SnapMirror"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for NetApp ONTAP</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"ZFS snapshots / low-latency NFS"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for OpenZFS</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Shared Linux NFS for many EC2 (not HPC)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">EFS (not FSx)</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ DATASYNC & TRANSFER ══════════════ -->
+<div id="panel-dt" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">🔄 DataSync &amp; Transfer — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#dt-p1"><span class="idx-dot"></span>DataSync</a>
+      <a href="#dt-p2"><span class="idx-dot"></span>Transfer Family</a>
+      <a href="#dt-p3"><span class="idx-dot"></span>AWS Backup</a>
+      <a href="#dt-p4"><span class="idx-dot"></span>The Big Decision Matrix</a>
+      <a href="#dt-industry"><span class="idx-dot"></span>Industry &amp; Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header rust" id="dt-p1">
+    <div class="part-number">DataSync &amp; Transfer · Part 1</div>
+    <h2>AWS DataSync — Fast, Managed Data Movement</h2>
+    <p>Move large datasets over the network, on a schedule, up to ~10× faster than DIY tools.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead"><strong>DataSync</strong> is a managed service for moving large amounts of file/object data <em>over the network</em> — on-prem ↔ AWS, or between AWS storage services.</p>
+      <p>You run a lightweight <strong>agent</strong> on-prem (a VM) that reads your NFS/SMB/HDFS/object source and pushes to AWS — and it does so <strong>up to 10× faster</strong> than open-source copy tools, with built-in scheduling, retries, encryption, and <strong>data-integrity validation</strong>. It <strong>preserves file metadata</strong> (permissions, timestamps).</p>
+    </div>
+    <ul class="nice-list">
+      <li><strong>Targets:</strong> S3, EFS, FSx (all flavours) — unlike Snow, DataSync can land directly in EFS/FSx, not just S3.</li>
+      <li><strong>Use for:</strong> one-time or <strong>scheduled, recurring</strong> bulk migration/replication over the wire.</li>
+      <li><strong>Not for:</strong> ongoing low-latency hybrid access (that's Storage Gateway) or petabytes with no bandwidth (that's Snowball).</li>
+    </ul>
+    <div class="price-tag">💵 <strong>$0.0125 per GB</strong> copied — a 50 TB migration ≈ $640, plus your normal bandwidth. Cheap and simple <em>if</em> the network can carry it in time.</div>
+  </div>
+
+  <div class="part-header rust" id="dt-p2">
+    <div class="part-number">DataSync &amp; Transfer · Part 2</div>
+    <h2>AWS Transfer Family — Managed SFTP/FTPS/FTP/AS2</h2>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p>Plenty of businesses still exchange files with partners over <strong>SFTP, FTPS, FTP, or AS2</strong> (the B2B EDI protocol). Running and securing your own SFTP servers is a chore. <strong>Transfer Family is a fully-managed file-transfer service</strong> that speaks those protocols and lands the files straight into <strong>S3 or EFS</strong> — with IAM/Directory-based auth, scaling, and no servers to patch.</p>
+    </div>
+    <ul class="nice-list">
+      <li>Keep your partners' existing SFTP/FTPS/AS2 workflows; just point them at a managed endpoint.</li>
+      <li>Files land in S3/EFS → trigger Lambda, analytics, etc.</li>
+    </ul>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ Cost trap</div>
+      <p>Transfer Family bills <strong>~$0.30 per protocol-endpoint per hour (~$216/month)</strong> <em>whether or not anyone connects</em> — plus ~$0.04/GB transferred. That always-on endpoint fee surprises people (like an idle ALB). Don't leave dev SFTP endpoints running.</p>
+    </div>
+  </div>
+
+  <div class="part-header rust" id="dt-p3">
+    <div class="part-number">DataSync &amp; Transfer · Part 3</div>
+    <h2>AWS Backup — Centralised, Cross-Service Backup</h2>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p>Instead of scripting snapshots per service, <strong>AWS Backup</strong> centrally manages backups across <strong>EBS, EFS, FSx, RDS, Aurora, DynamoDB, S3, Storage Gateway</strong> and more — with <strong>backup plans</strong> (schedules + retention), <strong>cross-region &amp; cross-account</strong> copy, point-in-time recovery, and <strong>Backup Vault Lock</strong> for immutable WORM compliance.</p>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Triggers</div>
+      <p>"Retain backups beyond RDS's 35-day automated limit," "centralised cross-service / cross-region backup policy," "immutable compliance backups" → <strong>AWS Backup</strong> (with Vault Lock for WORM).</p>
+    </div>
+  </div>
+
+  <div class="part-header amber" id="dt-p4">
+    <div class="part-number">Section 16 · The Big Decision</div>
+    <h2>Moving Data Into AWS — The Decision Matrix</h2>
+    <p>The whole section distilled: pick the right data-movement tool for the scenario.</p>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Scenario</th><th>Answer</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Ongoing hybrid: on-prem app keeps using cloud-backed storage with local cache</td><td><strong>Storage Gateway</strong></td><td>Not a migration — continuous cached access</td></tr>
+        <tr><td>One-time / scheduled bulk migration over the network</td><td><strong>DataSync</strong></td><td>Fast, validated, lands in S3/EFS/FSx</td></tr>
+        <tr><td>Tens of PB, or no/low bandwidth, hard deadline</td><td><strong>Snowball Edge</strong></td><td>Network can't carry it — ship a box</td></tr>
+        <tr><td>Partners send files via SFTP/FTPS/AS2 into S3</td><td><strong>Transfer Family</strong></td><td>Managed protocol endpoints → S3/EFS</td></tr>
+        <tr><td>Migrate a <em>database</em> (schema + data, minimal downtime)</td><td><strong>DMS (+ SCT)</strong></td><td>DataSync/Snow are for files, not live DBs</td></tr>
+        <tr><td>Centralised, cross-service, cross-region backups</td><td><strong>AWS Backup</strong></td><td>One policy across EBS/EFS/RDS/Dynamo/…</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="industry-spotlight" id="dt-industry">
+    <div class="industry-spotlight-tag">🏢 Industry — Verified</div>
+    <h3>Workday moved 8+ PB with DataSync; Dublin fintechs run on Transfer Family</h3>
+    <p><strong>Workday</strong> (EMEA HQ in Dublin) used <strong>DataSync to move 8+ petabytes</strong> into an observability data lake on AWS — scheduled, validated, hands-off bulk movement at scale. Dublin B2B payments firms like <strong>AccessPay</strong> rely on <strong>Transfer Family (SFTP)</strong> to exchange payment files with banks securely into S3, where SQS/Lambda pick them up for PCI-compliant processing. The pattern: DataSync for big internal migrations, Transfer Family for partner file exchange.</p>
+  </div>
+
+  <div class="trigger-box">
+    <h3>⚡ DataSync / Transfer / Backup — Exam Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"Migrate data over network, scheduled, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DataSync</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Managed SFTP/FTPS/AS2 into S3/EFS"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Transfer Family</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Retain backups > 35 days / cross-service / cross-region"</div><div class="trigger-arrow">→</div><div class="trigger-ans">AWS Backup</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Immutable / WORM compliance backups"</div><div class="trigger-arrow">→</div><div class="trigger-ans">AWS Backup + Vault Lock</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"Migrate a database with minimal downtime"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DMS + SCT (not DataSync)</div></div>
+  </div>
+</div>
+
+</div><!-- end main-content -->
+
+<footer style="text-align:center;padding:30px 20px 50px;color:#6b5744;font-size:14px;">
+  SAA-C03 Masterclass · Section 16 — AWS Storage Extras · Document 1 of 2 · Study Series by Sanky
+</footer>
+
+<script id="svc-tabs-js">
+(function(){
+  var tabs = document.querySelectorAll('.svc-tab');
+  var keys = ['snow','sg','fsx','dt'];
+  var panels = {};
+  keys.forEach(function(k){ panels[k] = document.getElementById('panel-'+k); });
+  function activate(key, doScroll){
+    tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.panel === key); });
+    keys.forEach(function(k){ if(panels[k]) panels[k].classList.toggle('active', k === key); });
+    if(doScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){
+    activate(t.dataset.panel, true);
+    if(history.replaceState) history.replaceState(null, '', '#' + t.dataset.panel);
+  }); });
+  var h = (location.hash || '').replace('#','');
+  if(h){
+    var key = null;
+    keys.forEach(function(k){ if(h === k || h.indexOf(k + '-') === 0) key = k; });
+    if(key){
+      activate(key, false);
+      var el = document.getElementById(h);
+      if(el) setTimeout(function(){ el.scrollIntoView(); }, 30);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">S16 · AWS Storage Extras</div>
+<ul>
+<li class="cnav-current"><a href="01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
+</body>
+</html>

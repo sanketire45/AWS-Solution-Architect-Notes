@@ -376,10 +376,45 @@
   <h1>Route 53 — <span>Exam Cracker</span></h1>
   <div class="topbar-right">
     <span class="score-pill easy">Exam Weight: High</span>
-    <span class="score-pill medium">Questions: 18</span>
+    <span class="score-pill medium">Questions: 21</span>
     <span class="score-pill hard">Domain: Networking + DR</span>
   </div>
 </header>
+
+<!-- ─── EXAM WEIGHTAGE ─── -->
+<section style="max-width:1000px;margin:26px auto 0;padding:0 24px;">
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:4px solid var(--gold);border-radius:14px;padding:22px 26px;">
+    <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:700;">📊 Exam Weightage — Route 53 in SAA-C03</div>
+    <p style="margin:0 0 16px;color:var(--text);font-size:16px;line-height:1.65;">Route 53 appears on <strong style="color:#fff;">virtually every exam</strong>, but as a focused set — expect roughly <strong style="color:var(--green2);">2–4 of the 65 questions</strong>. It rarely stands alone; it usually shows up <em>inside</em> disaster-recovery, multi-region, and "global routing" scenarios. <span style="color:#7a8499;">(AWS does not publish per-service counts; this is a community estimate from 2024–25 pass reports.)</span></p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:25px;font-weight:800;color:var(--green2);line-height:1;">~2–4</div>
+        <div style="font-size:12px;color:#8a95a8;margin-top:6px;">R53 questions per exam (est.)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:25px;font-weight:800;color:var(--gold2);line-height:1;">Almost<br>every exam</div>
+        <div style="font-size:12px;color:#8a95a8;margin-top:6px;">Appearance frequency</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:25px;font-weight:800;color:var(--text);line-height:1;">65</div>
+        <div style="font-size:12px;color:#8a95a8;margin-top:6px;">Total questions (50 scored)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:25px;font-weight:800;color:var(--text);line-height:1;">720</div>
+        <div style="font-size:12px;color:#8a95a8;margin-top:6px;">Pass score (of 1000)</div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;color:#8a95a8;margin-bottom:8px;">Where Route 53 earns points across the exam domains:</div>
+    <ul style="margin:0;padding-left:18px;color:#aeb8c9;font-size:14px;line-height:1.75;">
+      <li><strong style="color:#fff;">Resilient — 26%:</strong> Failover routing + health checks (active-passive DR), multi-region failover</li>
+      <li><strong style="color:#fff;">High-Performing — 24%:</strong> Latency-based routing, Geoproximity, the Route 53 vs CloudFront vs Global Accelerator comparison</li>
+      <li><strong style="color:#fff;">Secure — 30%:</strong> Geolocation for GDPR data residency, DNSSEC, Route 53 Resolver DNS Firewall</li>
+      <li><strong style="color:#fff;">Highest-yield recall:</strong> routing-policy trigger words · Alias vs CNAME at the zone apex · Latency vs Geolocation vs Geoproximity</li>
+    </ul>
+  </div>
+</section>
 
 <!-- ─── SCORE TRACKER ─── -->
 <div class="score-bar" id="scoreBar">
@@ -757,7 +792,7 @@
 <div class="sec-head">
   <div class="label">Part 02</div>
   <h2>Practice Questions — Exam Style</h2>
-  <p>18 questions mirroring the style and difficulty of real SAA-C03. Click <strong>"Reveal Answer"</strong> after you choose.</p>
+  <p>21 questions — many pitched at or above real SAA-C03 difficulty (two plausible answers decided by a buried constraint). Click <strong>"Reveal Answer"</strong> after you choose.</p>
 </div>
 
 <div class="box note" style="margin-bottom:28px;">
@@ -804,31 +839,29 @@
   <div class="qcard-head">
     <div class="q-num">2</div>
     <span class="q-type t-single">Single Answer</span>
-    <div style="margin-left:8px;"><strong style="font-size:14px;">Routing Policy — Canary Deployment</strong></div>
-    <span class="q-diff easy">Easy</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Canary Deployment — Instant Rollback</strong></div>
+    <span class="q-diff hard">Hard</span>
   </div>
   <div class="qcard-body">
     <div class="q-scenario">
-      A development team is deploying a new version of their web application. They want to send 5% of user traffic to the new version while keeping 95% of traffic on the current stable version. If the new version has issues, they need to be able to quickly revert to 0% traffic.
+      A team wants to send 5% of traffic to a new version of a web app behind a single Application Load Balancer, keeping 95% on the stable version. Critically, if error rates spike they must be able to pull the new version back to <strong>0% within seconds</strong>. Which approach gives the MOST reliable near-instant control over the split?
     </div>
-    <p class="q-text">Which Route 53 routing policy should the solutions architect configure?</p>
+    <p class="q-text">Which design should the solutions architect choose?</p>
     <ul class="options">
-      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">A</div><div class="opt-text">Latency-based routing</div></li>
-      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">B</div><div class="opt-text">Failover routing</div></li>
-      <li class="option" onclick="choose(this,true,2)"><div class="opt-letter">C</div><div class="opt-text">Weighted routing</div></li>
-      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">D</div><div class="opt-text">Geolocation routing</div></li>
+      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">A</div><div class="opt-text">Route 53 Weighted routing across two records (v1=95, v2=5); set v2's weight to 0 to roll back.</div></li>
+      <li class="option" onclick="choose(this,true,2)"><div class="opt-letter">B</div><div class="opt-text">ALB weighted target groups (forward rule splitting to v1/v2 target groups); shift weights at the load balancer.</div></li>
+      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">C</div><div class="opt-text">Route 53 Weighted routing with a very low TTL (e.g., 1 second).</div></li>
+      <li class="option" onclick="choose(this,false,2)"><div class="opt-letter">D</div><div class="opt-text">Route 53 Failover routing between v1 and v2.</div></li>
     </ul>
     <button class="reveal-btn" onclick="reveal(2)">Reveal Answer</button>
     <div class="explanation" id="exp-2">
       <div class="exp-title">✅ Correct Answer</div>
-      <div class="exp-answer">C — Weighted Routing</div>
-      <p>Weighted routing allows you to assign weights to records (e.g., v1=95, v2=5) so Route 53 distributes traffic proportionally. To revert, simply set the new version's weight to <strong>0</strong> — Route 53 stops sending traffic to it without deleting the record.</p>
+      <div class="exp-answer">B — ALB weighted target groups</div>
+      <p>Because there is already a single ALB, splitting at the <strong>load balancer</strong> changes the traffic ratio <em>instantly</em> for every request — rollback to 0% is immediate. This is the right tool when the requirement is near-instant control.</p>
       <div class="why-wrong">
-        <strong>Why A is wrong:</strong> Latency routing picks the fastest region — it doesn't split traffic by percentage.<br><br>
-        <strong>Why B is wrong:</strong> Failover routes to the secondary only when primary fails — it's for DR, not for canary deploys.<br><br>
-        <strong>Why D is wrong:</strong> Geolocation routes by user country/continent — not by percentage.
+        <strong>Why A is the trap:</strong> Route 53 Weighted routing <em>does</em> split by percentage, and "5% of traffic" reflexively points there — but DNS answers are <strong>cached by resolvers and clients for the TTL</strong>. After you set the weight to 0, cached clients keep hitting v2 until their cache expires, so rollback is <em>not</em> within seconds. <strong>(C)</strong> A 1-second TTL reduces the window but many resolvers ignore tiny TTLs, and it hammers DNS — still not reliable instant control. <strong>(D)</strong> Failover is all-or-nothing on health, not a 5/95 split.
       </div>
-      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Canary = Weight." Any time you see "X% of traffic" → Weighted. Weight=0 is the emergency stop valve.</div>
+      <div class="memory-hook">🎯 <strong>How to discriminate:</strong> "Split by %" alone → Route 53 Weighted is fine. Add "<em>instant</em> rollback / within seconds" and DNS TTL caching disqualifies DNS-level splitting → shift the split to the <strong>load balancer</strong> (ALB weighted target groups) or a deployment tool (CodeDeploy).</div>
     </div>
   </div>
 </div>
@@ -1211,31 +1244,31 @@
   <div class="qcard-head">
     <div class="q-num">14</div>
     <span class="q-type t-single">Single Answer</span>
-    <div style="margin-left:8px;"><strong style="font-size:14px;">Public vs Private Hosted Zone</strong></div>
-    <span class="q-diff easy">Easy</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Private Hosted Zone — Not Resolving</strong></div>
+    <span class="q-diff hard">Hard</span>
   </div>
   <div class="qcard-body">
     <div class="q-scenario">
-      A company wants internal microservices inside their AWS VPC to discover each other using human-readable DNS names like <code>payment-service.internal</code> and <code>auth-service.internal</code>. These names should NOT be resolvable from the public internet.
+      For internal service discovery, a team created a <strong>private hosted zone</strong> <code>internal</code>, added records like <code>payment-service.internal</code>, and associated the zone with their VPC. Yet EC2 instances in that VPC still get <code>NXDOMAIN</code> (no answer) when resolving the names. What is the MOST likely cause?
     </div>
-    <p class="q-text">What type of Route 53 hosted zone should be created?</p>
+    <p class="q-text">Which must be true for the private zone to resolve inside the VPC?</p>
     <ul class="options">
-      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">A</div><div class="opt-text">A public hosted zone for <code>internal</code> domain</div></li>
-      <li class="option" onclick="choose(this,true,14)"><div class="opt-letter">B</div><div class="opt-text">A private hosted zone associated with the VPC</div></li>
-      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">C</div><div class="opt-text">A public hosted zone with IAM policies to restrict public access</div></li>
-      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">D</div><div class="opt-text">A private hosted zone with NACLs to block external DNS queries</div></li>
+      <li class="option" onclick="choose(this,true,14)"><div class="opt-letter">A</div><div class="opt-text">The VPC must have <strong>both</strong> <code>enableDnsSupport</code> and <code>enableDnsHostnames</code> enabled.</div></li>
+      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">B</div><div class="opt-text">The instances need public IP addresses to query Route 53.</div></li>
+      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">C</div><div class="opt-text">An internet gateway must be attached to the VPC for DNS to work.</div></li>
+      <li class="option" onclick="choose(this,false,14)"><div class="opt-letter">D</div><div class="opt-text">A private hosted zone cannot use a custom TLD like <code>.internal</code>; it must be a real domain.</div></li>
     </ul>
     <button class="reveal-btn" onclick="reveal(14)">Reveal Answer</button>
     <div class="explanation" id="exp-14">
       <div class="exp-title">✅ Correct Answer</div>
-      <div class="exp-answer">B — Private Hosted Zone</div>
-      <p>A <strong>Private Hosted Zone</strong> is only resolvable from within the VPCs it's associated with. It's the standard AWS pattern for internal service discovery — microservices call each other by name (<code>payment-service.internal</code>), and only VPC resources can resolve those names. The public internet gets no answer.</p>
+      <div class="exp-answer">A — Enable both VPC DNS attributes</div>
+      <p>Private hosted zones are resolved by the <strong>VPC's built-in Route 53 Resolver</strong> (the <code>.2</code> address in the VPC range). For that to work, the VPC must have <strong>both</strong> <code>enableDnsSupport</code> (use the resolver) and <code>enableDnsHostnames</code> (assign DNS names) turned on. If a private zone "isn't resolving," these attributes are the first thing to check.</p>
       <div class="why-wrong">
-        <strong>Why A is wrong:</strong> A public hosted zone is visible worldwide. IAM doesn't restrict DNS resolution — IAM controls API/console access, not DNS query access.<br><br>
-        <strong>Why C is wrong:</strong> Same reason — IAM policies cannot restrict DNS queries from the public internet.<br><br>
-        <strong>Why D is wrong:</strong> NACLs control network traffic to/from instances — they don't affect DNS query resolution at the Route 53 level.
+        <strong>Why B is wrong:</strong> Public IPs are irrelevant — private-zone resolution happens entirely inside the VPC via the .2 resolver, not over the internet.<br><br>
+        <strong>Why C is wrong:</strong> An internet gateway provides internet <em>routing</em>, not internal DNS resolution. The private zone needs no internet at all.<br><br>
+        <strong>Why D is wrong:</strong> Private hosted zones happily use custom TLDs like <code>.internal</code> — that's a common, supported pattern.
       </div>
-      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Internal names = Private HZ." Public HZ = the whole world can look it up. Private HZ = VPC-only.</div>
+      <div class="memory-hook">🎯 <strong>How to discriminate:</strong> "Private hosted zone associated but not resolving" → check the two VPC attributes: <code>enableDnsSupport</code> + <code>enableDnsHostnames</code>. Public IPs / IGW / custom-TLD answers are distractors — private-zone resolution is purely a VPC-resolver matter.</div>
     </div>
   </div>
 </div>
@@ -1383,6 +1416,108 @@
   </div>
 </div>
 
+<!-- ═══ Q19 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">19</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">IP-Based Routing — Known Networks</strong></div>
+    <span class="q-diff medium">Medium</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A SaaS company has a peering agreement with a large regional Internet Service Provider (ISP). They want all DNS queries that originate from that ISP's known IP address ranges (specific CIDR blocks) to be answered with the IP of a dedicated, co-located endpoint, while everyone else is routed normally. The mapping of networks to endpoints is something the company defines itself.
+    </div>
+    <p class="q-text">Which Route 53 routing policy meets this requirement?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,19)"><div class="opt-letter">A</div><div class="opt-text">Geolocation routing</div></li>
+      <li class="option" onclick="choose(this,false,19)"><div class="opt-letter">B</div><div class="opt-text">Latency-based routing</div></li>
+      <li class="option" onclick="choose(this,true,19)"><div class="opt-letter">C</div><div class="opt-text">IP-based routing</div></li>
+      <li class="option" onclick="choose(this,false,19)"><div class="opt-letter">D</div><div class="opt-text">Geoproximity routing</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(19)">Reveal Answer</button>
+    <div class="explanation" id="exp-19">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">C — IP-Based Routing</div>
+      <p><strong>IP-based routing</strong> lets you map specific client IP ranges — defined as CIDR blocks grouped into a <strong>CIDR collection</strong> — to specific answers. That is exactly the "known ISP / known network → specific endpoint" use case, where <em>you</em> control the mapping. It was added in 2022, so it is missing from many older "7 routing policies" lists.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> Geolocation routes by the user's country or continent, not by the ISP's specific IP ranges.<br><br>
+        <strong>Why B is wrong:</strong> Latency routing picks the fastest region by measured network speed — it cannot target one ISP's network.<br><br>
+        <strong>Why D is wrong:</strong> Geoproximity routes by geographic distance (with an optional bias), again not by IP/CIDR ranges you define.
+      </div>
+      <div class="memory-hook">🧠 <strong>Memory Hook:</strong> "Known IP ranges / specific ISP → IP-Based. Country → Geolocation. Speed → Latency. Distance → Geoproximity."</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q20 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">20</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Split-Horizon DNS</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company needs the <em>same</em> hostname, <code>api.example.com</code>, to resolve to a <strong>private internal ALB</strong> when queried from inside their VPC, but to a <strong>different public endpoint</strong> when queried by external partners over the internet. How should they configure Route 53?
+    </div>
+    <p class="q-text">Which configuration achieves this?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,20)"><div class="opt-letter">A</div><div class="opt-text">One public hosted zone with two A records for <code>api.example.com</code> (the internal IP and the public IP).</div></li>
+      <li class="option" onclick="choose(this,true,20)"><div class="opt-letter">B</div><div class="opt-text">A public hosted zone for <code>example.com</code> (public endpoint) AND a private hosted zone for <code>example.com</code> associated with the VPC (internal ALB) — split-view DNS.</div></li>
+      <li class="option" onclick="choose(this,false,20)"><div class="opt-letter">C</div><div class="opt-text">A Route 53 Resolver inbound endpoint that rewrites the record based on the query source.</div></li>
+      <li class="option" onclick="choose(this,false,20)"><div class="opt-letter">D</div><div class="opt-text">A single private hosted zone, plus a NAT gateway so external partners can reach it.</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(20)">Reveal Answer</button>
+    <div class="explanation" id="exp-20">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">B — Public + Private hosted zone with the same name (split-view)</div>
+      <p>This is <strong>split-horizon (split-view) DNS</strong>. You create a <strong>private hosted zone</strong> for <code>example.com</code> associated with the VPC (resolving to the internal ALB) <em>and</em> a <strong>public hosted zone</strong> for the same domain (resolving to the public endpoint). Queries from inside the VPC hit the private zone first; everyone else gets the public zone.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> A single public zone with two A records hands <em>both</em> IPs to everyone — it leaks the internal address and gives external users an unreachable private IP. No isolation.<br><br>
+        <strong>Why C is wrong:</strong> Resolver <em>inbound</em> endpoints let on-prem systems query Route 53; they don't rewrite answers based on who's asking.<br><br>
+        <strong>Why D is wrong:</strong> A private hosted zone isn't visible outside the VPC at all, so external partners could never resolve it — a NAT gateway doesn't change DNS visibility.
+      </div>
+      <div class="memory-hook">🎯 <strong>How to discriminate:</strong> "Same name resolves differently <em>inside</em> the VPC vs <em>outside</em>" → split-view DNS: a private hosted zone (associated with the VPC) and a public hosted zone sharing the same domain name. The VPC always prefers the private zone.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q21 ═══ -->
+<div class="qcard">
+  <div class="qcard-head">
+    <div class="q-num">21</div>
+    <span class="q-type t-single">Single Answer</span>
+    <div style="margin-left:8px;"><strong style="font-size:14px;">Apex Domain + CloudFront + ACM</strong></div>
+    <span class="q-diff hard">Hard</span>
+  </div>
+  <div class="qcard-body">
+    <div class="q-scenario">
+      A company must serve its <strong>apex domain</strong> <code>example.com</code> (no <code>www</code>) over HTTPS through CloudFront, whose origin is an app in <code>eu-west-1</code>. Their first attempt fails: the Route 53 record won't validate and CloudFront refuses the ACM certificate. Which configuration is correct?
+    </div>
+    <p class="q-text">Which option fixes BOTH problems?</p>
+    <ul class="options">
+      <li class="option" onclick="choose(this,false,21)"><div class="opt-letter">A</div><div class="opt-text">A CNAME record for <code>example.com</code> → the CloudFront domain, with the ACM cert in <code>eu-west-1</code>.</div></li>
+      <li class="option" onclick="choose(this,true,21)"><div class="opt-letter">B</div><div class="opt-text">An Alias A record for <code>example.com</code> → the CloudFront distribution, with the ACM certificate requested in <code>us-east-1</code>.</div></li>
+      <li class="option" onclick="choose(this,false,21)"><div class="opt-letter">C</div><div class="opt-text">An Alias A record → CloudFront, with the ACM certificate in <code>eu-west-1</code> (same region as the origin).</div></li>
+      <li class="option" onclick="choose(this,false,21)"><div class="opt-letter">D</div><div class="opt-text">An A record containing CloudFront's IP addresses, with the ACM cert in <code>us-east-1</code>.</div></li>
+    </ul>
+    <button class="reveal-btn" onclick="reveal(21)">Reveal Answer</button>
+    <div class="explanation" id="exp-21">
+      <div class="exp-title">✅ Correct Answer</div>
+      <div class="exp-answer">B — Alias A record + ACM certificate in us-east-1</div>
+      <p>Two CloudFront gotchas are bundled here. (1) You can't use a CNAME at the <strong>zone apex</strong>, and CloudFront has no fixed IPs — so the apex must be an <strong>Alias A record</strong> pointing at the distribution. (2) For CloudFront, the ACM certificate <strong>must be in us-east-1 (N. Virginia)</strong>, regardless of where the origin runs.</p>
+      <div class="why-wrong">
+        <strong>Why A is wrong:</strong> CNAME is illegal at the apex (the apex rule), and the cert is in the wrong region — two failures.<br><br>
+        <strong>Why C is wrong:</strong> The Alias is right, but a eu-west-1 certificate will not attach to CloudFront. CloudFront only reads certs from us-east-1.<br><br>
+        <strong>Why D is wrong:</strong> CloudFront has no static IP addresses to hardcode in an A record — you must use an Alias.
+      </div>
+      <div class="memory-hook">🎯 <strong>How to discriminate:</strong> Apex + CloudFront over HTTPS = remember <em>two</em> rules at once — apex needs an <strong>Alias A record</strong> (CNAME illegal, no static IPs), and the CloudFront ACM cert <strong>must live in us-east-1</strong> no matter where your workload is.</div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ FINAL SCORE ═══ -->
 <div class="sec-head" style="text-align:center;padding-bottom:40px;">
   <div class="label">Results</div>
@@ -1400,7 +1535,7 @@
   const correct = {};
   let totalAnswered = 0;
   let totalCorrect = 0;
-  const total = 18;
+  const total = 21;
 
   // Mark which options are correct (tracked internally)
   function choose(el, isCorrect, qNum) {
@@ -1472,5 +1607,162 @@
   });
 </script>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel">EC2</div>
+<ul>
+<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">Route 53</div>
+<ul>
+<li class=""><a href="route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class="cnav-current"><a href="route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>

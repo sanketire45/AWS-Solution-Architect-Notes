@@ -284,11 +284,11 @@
   }
   .callout-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
+    font-size: 0.84rem;
+    letter-spacing: 0.13em;
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
+    margin-bottom: 0.55rem;
+    font-weight: 700;
   }
   .callout p:last-child { margin-bottom: 0; }
   .callout p { max-width: none; }
@@ -324,6 +324,32 @@
   .callout.tip .callout-label { color: var(--accent-green); }
 
   /* ─── TABLES ─── */
+  /* INLINE PRICE-TAG — plain-English cost bound to the concept */
+  .price-tag {
+    display: block;
+    margin: 1rem 0;
+    padding: 0.6rem 0.85rem;
+    border-radius: 9px;
+    background: rgba(35, 47, 62, 0.05);
+    border: 1px solid rgba(35, 47, 62, 0.10);
+    border-left: 3px solid var(--aws-orange, #ec7211);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--ink, #232f3e);
+  }
+  .price-tag strong { font-weight: 700; }
+  /* COST CHART (SVG bars) */
+  .chart {
+    background: #fff;
+    border: 1px solid var(--rule-soft, #e3e3e3);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem 1rem;
+    margin: 1.6rem 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart-caption { font-size: 0.85rem; color: #6b6b6b; font-style: italic; margin-top: 0.7rem; text-align: center; }
+
   .table-wrap {
     overflow-x: auto;
     margin: 2rem 0;
@@ -527,9 +553,17 @@
     <a href="#ch11"><span class="toc-num">11</span><span>Bootstrap, Metadata &amp; Access</span></a>
     <a href="#ch12"><span class="toc-num">12</span><span>Nitro, ENA, EFA &amp; Performance</span></a>
     <a href="#ch13"><span class="toc-num">13</span><span>Industry Patterns &amp; Best Practices</span></a>
+    <a href="#ch-cost"><span class="toc-num">💰</span><span>What It All Costs</span></a>
     <a href="#ch14"><span class="toc-num">14</span><span>How Real Companies Use EC2</span></a>
   </div>
 </nav>
+
+<div class="callout beginner">
+  <div class="callout-label">🧠 The one mental model to carry through this whole file</div>
+  <p>An <strong>EC2 instance is just a computer you rent by the second</strong> in AWS's data centre. Setting one up is really only <strong>five choices</strong>, and every chapter below is one of them:</p>
+  <p>① <strong>How big?</strong> → the <em>instance type</em> (CH 05) · ② <strong>What's pre-installed?</strong> → the <em>AMI</em> (CH 04) · ③ <strong>Where does it live?</strong> → <em>Region &amp; AZ</em> (CH 03) · ④ <strong>How do you pay?</strong> → <em>On-Demand / Spot / Reserved / Savings Plans</em> (CH 07) · ⑤ <strong>Where does its data go?</strong> → <em>EBS vs Instance Store</em> (CH 08).</p>
+  <p>Hold those five questions in your head and EC2 stops being a wall of features — it becomes a short checklist.</p>
+</div>
 
 <!-- ═══════════════════════════════════════════════════ CHAPTER 1 ═══════════════════════════════════════════════════ -->
 <section class="chapter" id="ch1">
@@ -817,6 +851,13 @@
     </div>
   </div>
 
+  <div class="callout beginner">
+    <div class="callout-label">💡 The problem it solves</div>
+    <p>Different jobs stress different hardware: a video encoder needs lots of <strong>CPU</strong>, an in-memory database needs lots of <strong>RAM</strong>, an ML job needs <strong>GPUs</strong>. If AWS sold only one "server", you'd either overpay (renting RAM you never use) or run too slowly. <strong>Instance families exist so you rent hardware shaped like your workload</strong> — and the cryptic names are just a code telling you <em>which shape</em> and <em>how big</em>.</p>
+  </div>
+
+  <p class="price-tag">💵 Rough cost if left on 24/7 (us-east-1): <strong>t3.micro ≈ $7.60/mo</strong> · t3.medium ≈ $30 · <strong>m5.large ≈ $70</strong> · c6i.large ≈ $62 · r6i.large ≈ $92. That's ~$2.30/day for an m5.large. Ireland (eu-west-1) ≈ +10%; Graviton (m7g) shaves ~10–20% off.</p>
+
   <p class="lead">EC2 offers <strong>over 750 different instance types</strong>. Names like <code>t3.micro</code>, <code>m5.large</code>, <code>c6i.4xlarge</code>, <code>r7g.16xlarge</code>, <code>p4d.24xlarge</code>. It looks like alphabet soup. But there's a clean, consistent naming convention that makes it easy.</p>
 
   <div class="diagram">
@@ -1065,6 +1106,13 @@
     </div>
   </div>
 
+  <div class="callout beginner">
+    <div class="callout-label">💡 The problem it solves</div>
+    <p>The <em>same</em> instance can cost wildly different amounts depending on how you commit to it — and that's deliberate, because workloads differ. Some run 24/7 forever, some are spiky and unpredictable, some can survive being interrupted. <strong>On-Demand</strong> (pay-as-you-go, zero commitment), <strong>Reserved / Savings Plans</strong> (commit 1–3 years for a big discount), and <strong>Spot</strong> (up to 90% off spare capacity, but AWS can reclaim it) each exist to match a different workload shape. Pick the wrong one and you either overpay or get interrupted at the worst moment.</p>
+  </div>
+
+  <p class="price-tag">💵 The <em>same</em> m5.large, four ways (per month, us-east-1): <strong>On-Demand ≈ $70</strong> · 1-yr Savings Plan ≈ $44 · 3-yr ≈ $27 · <strong>Spot ≈ $7–21</strong> (but reclaimable). Identical hardware — only the commitment changes. This single table is where architects save companies millions.</p>
+
   <p class="lead">EC2's biggest weapon is its pricing flexibility. You can pay full price (On-Demand) or take massive discounts in exchange for commitment (Reserved, Savings Plans) or interruptibility (Spot). Real cloud architects don't pick one — they orchestrate a portfolio. This is also one of the heaviest exam topics.</p>
 
   <div class="pullquote">If you put 100% of your EC2 fleet on On-Demand, you're a beginner. If you put 100% on Spot, you're reckless. Real architects mix.</div>
@@ -1220,6 +1268,13 @@
       <p class="chapter-tagline">EBS, Instance Store, EFS — and which to pick when.</p>
     </div>
   </div>
+
+  <div class="callout beginner">
+    <div class="callout-label">💡 The problem it solves</div>
+    <p>An instance needs somewhere to keep its data — but <em>where</em> depends on whether the data must survive. <strong>Instance Store</strong> is physically-attached local SSD: blazing fast, but wiped the instant the instance stops (ephemeral). <strong>EBS</strong> is a network-attached volume that lives independently of the instance — it survives stop/terminate, can be snapshotted, and re-attached elsewhere. Both exist because sometimes you want raw speed for throwaway scratch data, and sometimes durability for data you can't lose. Confusing the two is exactly how people lose production data.</p>
+  </div>
+
+  <p class="price-tag">💵 <strong>gp3 ≈ $0.08/GB a month</strong> → a 100 GB disk ≈ <strong>$8/mo</strong> (~27¢/day), and 3,000 IOPS + 125 MB/s are free. gp2 ≈ $0.10/GB; io2 ≈ $0.125/GB <em>plus</em> an IOPS charge. Instance Store costs nothing extra (it's bundled) — but it's wiped the moment the instance stops. Snapshots ≈ $0.05/GB-mo.</p>
 
   <p class="lead">An EC2 instance without storage is useless. AWS gives you three fundamentally different storage models for EC2 — and one of the most common architectural mistakes is picking the wrong one. By the end of this chapter, you'll always know which to use.</p>
 
@@ -1489,6 +1544,11 @@
     </div>
   </div>
 
+  <div class="callout beginner">
+    <div class="callout-label">💡 The problem it solves</div>
+    <p>Normally AWS decides where your instances physically sit and you don't care — but sometimes you do. HPC and trading apps want instances packed on the same rack for the lowest possible network latency (<strong>Cluster</strong>); critical instances want to be spread across separate racks so one hardware failure can't take them all down (<strong>Spread</strong>); big distributed databases want controlled rack groupings (<strong>Partition</strong>). Placement Groups exist to give you that physical-placement control for the rare cases where latency or failure-isolation genuinely matters.</p>
+  </div>
+
   <p class="lead">Normally, AWS decides where on its hardware to place your instances — randomly across racks, hosts, etc. For most workloads, that's fine. But sometimes you want <em>specific control</em>: pack them tight for speed, or spread them out for resilience. That's a Placement Group.</p>
 
   <div class="diagram">
@@ -1747,6 +1807,11 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
     <p>By 2026, Graviton runs significant percentages of AWS's largest customers' fleets. AWS itself runs much of its own infrastructure on Graviton. If your workload is portable, switching to Graviton is one of the biggest cost wins available — often 20–40% off your bill with minimal code changes.</p>
   </div>
 
+  <div class="callout industry">
+    <div class="callout-label">🏭 Coinbase (Dublin) — the verified Graviton case</div>
+    <p>Coinbase migrated <strong>~3,500 services from EC2 to EKS on Graviton</strong> (AWS case study: "Scales 50% Faster, Cuts Costs 62%"). Graviton delivered roughly 20% lower compute cost, and adding <strong>Karpenter</strong> (just-in-time Kubernetes node provisioning) saved a further ~10%. Coinbase runs a significant engineering presence in Dublin. <em>Exam mapping:</em> "lower compute cost with minimal code change for a portable workload" → switch to <strong>Graviton (ARM)</strong>; "provision the right nodes just-in-time on EKS" → Karpenter.</p>
+  </div>
+
   <h3>Enhanced Networking &amp; SR-IOV</h3>
 
   <p>"Enhanced networking" is an umbrella term for low-overhead, high-throughput networking. On older instances this was achieved via SR-IOV; on Nitro instances it's the default via ENA. The exam may mention "Enhanced Networking" — it just means high-bandwidth, low-CPU networking, on by default for modern instances.</p>
@@ -1839,6 +1904,121 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
 </section>
 
 <!-- ═══════════════════════════════════════════════════ CHAPTER 14 ═══════════════════════════════════════════════════ -->
+<section class="chapter" id="ch-cost">
+  <div class="chapter-header">
+    <div class="chapter-num">💰</div>
+    <div>
+      <h2>What it all <em>costs</em>.</h2>
+      <p class="chapter-tagline">An architect prices the design in their head before they draw it.</p>
+    </div>
+  </div>
+
+  <p class="lead">You can't make a good architecture decision without a feel for the bill. Here's what EC2 actually costs — anchored on <strong>us-east-1</strong>, with the <strong>eu-west-1 (Ireland)</strong> delta noted, since that's where a Dublin role deploys. Standard month = <strong>730 hours</strong>.</p>
+
+  <div class="callout beginner">
+    <div class="callout-label">💰 What you're billed on</div>
+    <p>Three meters run at once: <strong>(1) instance-seconds × size</strong> (per-second billing, 60s minimum — the Linux OS is included, you don't pay extra for it), <strong>(2) the EBS volumes attached</strong> to it, and <strong>(3) data transferred out</strong>. Get the <em>dimensions</em> right and nothing surprises you; the instance hourly rate is usually the <em>smallest</em> part of a real bill.</p>
+  </div>
+
+  <h3>The headline numbers (Linux, On-Demand, us-east-1)</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instance</th><th>vCPU / RAM</th><th>$/hour</th><th>≈ $/month</th><th>eu-west-1</th></tr></thead>
+      <tbody>
+        <tr><td>t3.micro</td><td>2 / 1 GiB</td><td>$0.0104</td><td>~$7.60</td><td>+~10%</td></tr>
+        <tr><td>t3.medium</td><td>2 / 4 GiB</td><td>$0.0416</td><td>~$30</td><td>+~10%</td></tr>
+        <tr><td>m5.large / m6i.large</td><td>2 / 8 GiB</td><td>$0.096</td><td>~$70</td><td>+~11% ($0.107/hr)</td></tr>
+        <tr><td>c6i.large (compute)</td><td>2 / 4 GiB</td><td>$0.085</td><td>~$62</td><td>+~10%</td></tr>
+        <tr><td>r6i.large (memory)</td><td>2 / 16 GiB</td><td>$0.126</td><td>~$92</td><td>+~10%</td></tr>
+        <tr><td>m7g.large (Graviton)</td><td>2 / 8 GiB</td><td>~$0.0816</td><td>~$60</td><td>+~10%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Same hardware, different commitment</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Model</th><th>Discount vs On-Demand</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td>On-Demand</td><td>baseline</td><td>spiky / short / unknown duration</td></tr>
+        <tr><td>Savings Plan / Reserved (1-yr, no upfront)</td><td>~30–40% off</td><td>steady 24/7 baseline</td></tr>
+        <tr><td>Savings Plan / Reserved (3-yr, all upfront)</td><td>up to ~60–72% off</td><td>locked-in long-term core</td></tr>
+        <tr><td>Spot</td><td>up to <strong>90% off</strong></td><td>fault-tolerant, interruptible (batch, CI, stateless)</td></tr>
+        <tr><td>Graviton (ARM)</td><td>~10–20% cheaper + better perf/watt</td><td>anything with an ARM-compatible build</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart">
+    <svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One m5.large per month, four pricing models">
+      <text x="20" y="26" font-family="Georgia,serif" font-size="17" font-weight="700" fill="#232f3e">One m5.large for a month — four ways to pay</text>
+      <text x="20" y="44" font-family="monospace" font-size="11" fill="#888">us-east-1 · the bar length IS the monthly bill</text>
+
+      <!-- bars start x=180, On-Demand $70 = 480px -->
+      <text x="170" y="76" text-anchor="end" font-family="monospace" font-size="12.5" fill="#232f3e">On-Demand</text>
+      <rect x="180" y="65" width="480" height="22" rx="4" fill="#ec7211"/>
+      <text x="668" y="81" font-family="monospace" font-size="12.5" font-weight="700" fill="#232f3e">$70</text>
+
+      <text x="170" y="112" text-anchor="end" font-family="monospace" font-size="12.5" fill="#232f3e">Savings Plan 1-yr</text>
+      <rect x="180" y="101" width="302" height="22" rx="4" fill="#d98a3a"/>
+      <text x="490" y="117" font-family="monospace" font-size="12.5" font-weight="700" fill="#232f3e">$44</text>
+
+      <text x="170" y="148" text-anchor="end" font-family="monospace" font-size="12.5" fill="#232f3e">Savings Plan 3-yr</text>
+      <rect x="180" y="137" width="185" height="22" rx="4" fill="#5a9bb0"/>
+      <text x="373" y="153" font-family="monospace" font-size="12.5" font-weight="700" fill="#232f3e">$27</text>
+
+      <text x="170" y="184" text-anchor="end" font-family="monospace" font-size="12.5" fill="#232f3e">Spot (~80% off)</text>
+      <rect x="180" y="173" width="96" height="22" rx="4" fill="#3a7184"/>
+      <text x="284" y="189" font-family="monospace" font-size="12.5" font-weight="700" fill="#232f3e">~$14</text>
+
+      <line x1="180" y1="208" x2="660" y2="208" stroke="#ddd" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="420" y="232" text-anchor="middle" font-family="Georgia,serif" font-size="14" font-style="italic" fill="#b5651d">Same CPU, same RAM, same box — the only difference is how you commit.</text>
+    </svg>
+    <p class="chart-caption">Spot is reclaimable, so it suits fault-tolerant work; Savings Plans lock the steady baseline. Real fleets blend all four.</p>
+  </div>
+
+  <div class="callout trap">
+    <div class="callout-label">⚠️ The hidden costs that surprise people</div>
+    <ul>
+      <li><strong>EBS keeps billing after the instance stops or terminates</strong> if the volume isn't deleted — orphaned volumes + snapshots are a classic silent drain ($0.08/GB-mo gp3).</li>
+      <li><strong>Cross-AZ traffic</strong> is $0.01/GB <em>each direction</em> — chatty app↔DB across AZs adds up.</li>
+      <li><strong>Data transfer out to the internet:</strong> first 100 GB/mo free, then ~$0.09/GB.</li>
+      <li><strong>NAT Gateway</strong> (if instances sit in private subnets) is $0.045/hr <em>plus</em> $0.045/GB processed — the #1 bill-shock on this list.</li>
+    </ul>
+  </div>
+
+  <h3>Putting it together — a small production app</h3>
+
+  <p>A realistic 3-tier app (ALB → 2× EC2 in an ASG → Multi-AZ RDS, with S3 + a NAT Gateway), us-east-1:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>Spec</th><th>≈ $/month</th></tr></thead>
+      <tbody>
+        <tr><td>EC2</td><td>2 × t3.medium (On-Demand)</td><td>$60</td></tr>
+        <tr><td>ALB</td><td>base + light LCU</td><td>$24</td></tr>
+        <tr><td>RDS MySQL</td><td>db.t3.medium <strong>Multi-AZ</strong> + 100 GB</td><td>$111</td></tr>
+        <tr><td>S3</td><td>100 GB Standard</td><td>$3</td></tr>
+        <tr><td>NAT Gateway</td><td>base + modest data</td><td>$33+</td></tr>
+        <tr><td>Route 53</td><td>1 zone (Alias → ALB, free queries)</td><td>$0.50</td></tr>
+        <tr><td>Data out</td><td>~200 GB (100 free)</td><td>$9</td></tr>
+        <tr><td><strong>Total</strong></td><td></td><td><strong>≈ $240/mo (~$2,900/yr)</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The same stack in <strong>eu-west-1 (Dublin)</strong> runs <strong>≈ +10% ≈ $265/mo</strong>.</p>
+
+  <div class="pullquote">100% On-Demand = beginner. 100% Spot = reckless. Real fleets mix: On-Demand baseline + Spot for elastic capacity + Savings Plans on the steady core — and Graviton wherever the build allows.</div>
+
+  <div class="callout beginner">
+    <div class="callout-label">🎯 The one cost lever</div>
+    <p><strong>Match the commitment to the workload shape.</strong> Reserved/Savings Plans on the steady baseline cuts ~30–40%; Spot on any fault-tolerant elastic capacity cuts up to 90% on that slice; Graviton shaves another ~10–20% for free. That single mental model — <em>shape → commitment</em> — is what turns a $240/mo demo into a right-sized production bill.</p>
+  </div>
+</section>
+
 <section class="chapter" id="ch14">
   <div class="chapter-header">
     <div class="chapter-num">CH 14</div>
@@ -1973,5 +2153,162 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
   </div>
 </footer>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- CHAPTER_NAV_START -->
+
+<style id="cnav-style">
+.cnav-btn{position:fixed;top:16px;left:16px;z-index:9998;display:flex;align-items:center;justify-content:center;
+  font-size:19px;line-height:1;cursor:pointer;width:44px;height:44px;padding:0;
+  background:var(--accent,#8B2635);color:#fff;border:none;border-radius:11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);opacity:.9;transition:opacity .15s,transform .15s;}
+.cnav-btn:hover{opacity:1;transform:translateY(-1px);}
+.cnav-overlay{position:fixed;inset:0;background:rgba(20,16,10,.38);opacity:0;visibility:hidden;
+  transition:opacity .2s;z-index:9998;}
+body.cnav-open .cnav-overlay{opacity:1;visibility:visible;}
+.cnav-panel{position:fixed;top:0;left:0;height:100vh;width:312px;max-width:86vw;z-index:9999;
+  background:var(--paper,#fffcf5);color:var(--ink,#1b1b26);border-right:1px solid var(--rule,#d9cdb4);
+  box-shadow:6px 0 26px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;font-family:'Source Serif 4',Georgia,serif;}
+body.cnav-open .cnav-panel{transform:none;}
+.cnav-head{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 22px 16px;border-bottom:1px solid var(--rule,#d9cdb4);}
+.cnav-title{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;color:var(--accent,#8B2635);
+  letter-spacing:.01em;}
+.cnav-x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ink-mute,#6b6b7a);}
+.cnav-x:hover{color:var(--accent,#8B2635);}
+.cnav-group{padding:20px 14px 4px;}
+.cnav-glabel{font:700 19px/1.2 'Fraunces','Source Serif 4',serif;letter-spacing:.01em;
+  color:var(--accent,#8B2635);padding:0 10px 9px;}
+.cnav-glabel.cnav-gcurrent{background:var(--bg-alt,#efe7d6);border-radius:9px;
+  padding:7px 10px;margin-bottom:4px;box-shadow:inset 3px 0 0 var(--accent,#8B2635);}
+.cnav-panel ul{list-style:none;margin:0;padding:0;}
+.cnav-panel li{margin:1px 0;}
+.cnav-panel li a{display:block;text-decoration:none;color:var(--ink-soft,#3c3c4a);
+  font-size:14.5px;line-height:1.4;padding:7px 12px;border-radius:8px;border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;}
+.cnav-panel li a:hover{background:var(--bg-alt,#efe7d6);color:var(--accent,#8B2635);}
+.cnav-panel li.cnav-current a{background:var(--accent,#8B2635);border-left-color:var(--accent,#8B2635);
+  color:#fff;font-weight:700;}
+.cnav-foot{padding:16px 22px 30px;color:var(--ink-mute,#6b6b7a);
+  font:400 12.5px/1.4 'Inter',system-ui,sans-serif;}
+</style>
+<button class="cnav-btn" aria-label="Chapters" title="Chapters (\)">&#9776;</button>
+<div class="cnav-overlay"></div>
+<nav class="cnav-panel" aria-label="All chapters">
+<div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
+<div class="cnav-group">
+<div class="cnav-glabel cnav-gcurrent">EC2</div>
+<ul>
+<li class="cnav-current"><a href="EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">ELB & ASG</div>
+<ul>
+<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">IAM</div>
+<ul>
+<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<ul>
+<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">Route 53</div>
+<ul>
+<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S3</div>
+<ul>
+<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
+<ul>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/01_CloudFront_GlobalAccelerator_Masterclass.html">CloudFront GlobalAccelerator Masterclass</a></li>
+<li class=""><a href="../15_CloudFront_Global_Accelerator/02_CloudFront_GlobalAccelerator_ExamCracker.html">CloudFront GlobalAccelerator ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S16 · AWS Storage Extras</div>
+<ul>
+<li class=""><a href="../16_AWS_Storage_Extras/01_Storage_Extras_Masterclass.html">Storage Extras Masterclass</a></li>
+<li class=""><a href="../16_AWS_Storage_Extras/02_Storage_Extras_ExamCracker.html">Storage Extras ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S17 · Decoupling (SQS/SNS/Kinesis/MQ)</div>
+<ul>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/01_Decoupling_Masterclass.html">Decoupling Masterclass</a></li>
+<li class=""><a href="../17_Decoupling_SQS_SNS_Kinesis_MQ/02_Decoupling_ExamCracker.html">Decoupling ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S18 · Containers (ECS/Fargate/ECR/EKS)</div>
+<ul>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/01_Containers_Masterclass.html">Containers Masterclass</a></li>
+<li class=""><a href="../18_Containers_ECS_Fargate_ECR_EKS/02_Containers_ExamCracker.html">Containers ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S19 · Serverless (Lambda/DynamoDB/API GW/Cognito)</div>
+<ul>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/01_Serverless_Masterclass.html">Serverless Masterclass</a></li>
+<li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
+<ul>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S21 · Databases in AWS</div>
+<ul>
+<li class=""><a href="../21_Databases_in_AWS/01_Databases_Masterclass.html">Databases Masterclass</a></li>
+<li class=""><a href="../21_Databases_in_AWS/02_Databases_ExamCracker.html">Databases ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S22 · Data & Analytics</div>
+<ul>
+<li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
+<li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">30 chapters · press \ to toggle</div>
+</nav>
+<script id="cnav-js">
+(function(){
+  var open=function(){document.body.classList.add('cnav-open');};
+  var close=function(){document.body.classList.remove('cnav-open');};
+  var toggle=function(){document.body.classList.toggle('cnav-open');};
+  var b=document.querySelector('.cnav-btn'); if(b)b.addEventListener('click',toggle);
+  var o=document.querySelector('.cnav-overlay'); if(o)o.addEventListener('click',close);
+  var x=document.querySelector('.cnav-x'); if(x)x.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();
+    if(e.key==='\\'){e.preventDefault();toggle();}});
+})();
+</script>
+
+<!-- CHAPTER_NAV_END -->
 </body>
 </html>
