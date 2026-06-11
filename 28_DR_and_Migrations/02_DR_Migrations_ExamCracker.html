@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Serverless Architectures — Exam Cracker (SAA-C03)</title>
+<title>Disaster Recovery & Migrations — Exam Cracker (SAA-C03)</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -14,23 +14,19 @@
   --blue:#5b9cf6;--blue-dim:rgba(91,156,246,0.12);--green:#4ade80;--green-dim:rgba(74,222,128,0.12);
   --red:#f87171;--red-dim:rgba(248,113,113,0.12);--purple:#c084fc;--purple-dim:rgba(192,132,252,0.12);
   --rust:#f08a5d;--rust-dim:rgba(240,138,93,0.12);
-  --accent:#c084fc;--paper:#1a1d26;--rule:rgba(255,255,255,0.1);--ink:#e2ddd6;--ink-soft:#9a9590;--ink-mute:#6a6560;--bg-alt:#222638;
+  --accent:#f08a5d;--paper:#1a1d26;--rule:rgba(255,255,255,0.1);--ink:#e2ddd6;--ink-soft:#9a9590;--ink-mute:#6a6560;--bg-alt:#222638;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:17.5px;line-height:1.8;}
 ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
-.hero{background:linear-gradient(135deg,#0a0c12 0%,#1a1430 50%,#0e1420 100%);padding:60px 60px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(192,132,252,0.07) 0%,transparent 70%);}
+.hero{background:linear-gradient(135deg,#0a0c12 0%,#211410 50%,#0e1420 100%);padding:60px 60px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(240,138,93,0.07) 0%,transparent 70%);}
 .hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
 .hero h1{font-family:'Lora',Georgia,serif;font-size:clamp(32px,4vw,52px);font-weight:700;line-height:1.08;color:#fff;margin-bottom:14px;}
 .hero h1 em{color:var(--amber);font-style:normal;}
 .hero p{font-size:17px;color:rgba(226,221,214,0.65);max-width:680px;margin-bottom:26px;font-weight:300;}
 .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
 .pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(226,221,214,0.8);padding:5px 14px;border-radius:100px;font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
-.weight-wrap{max-width:1100px;margin:26px auto 0;padding:0 24px;}
-.weight-box{background:var(--bg-2);border:1px solid #2a2e3c;border-left:4px solid var(--amber);border-radius:14px;padding:24px 26px;}
-.weight-box .wlabel{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:700;}
-.weight-box p{margin:0;color:var(--text);font-size:16px;line-height:1.65;}
 .score-bar{background:var(--bg-2);border-bottom:1px solid var(--border);padding:12px 60px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.5);}
 .score-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-soft);letter-spacing:1px;}
 .score-nums{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--amber);}
@@ -41,10 +37,23 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.2s;}
 .btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-soft);border:1px solid var(--border);}
 .btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text);}
-.main{max-width:1100px;margin:0 auto;padding:34px 60px 80px;}
+.tab-nav{background:var(--bg-2);border-bottom:1px solid var(--border);padding:0 60px;display:flex;gap:4px;position:sticky;top:49px;z-index:190;}
+.tab{padding:14px 20px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.main{max-width:1150px;margin:0 auto;padding:34px 60px 80px;}
 .sec-header{margin:0 0 26px;padding-bottom:18px;border-bottom:1px solid var(--border);}
 .sec-header h2{font-family:'Lora',serif;font-size:27px;font-weight:700;color:#fff;margin-bottom:6px;}
 .sec-header p{font-size:15px;color:var(--text-soft);}
+.cheat-table-wrap{overflow-x:auto;margin-bottom:36px;border-radius:12px;border:1px solid var(--border);}
+.cheat-table{width:100%;border-collapse:collapse;font-size:15.5px;}
+.cheat-table thead tr{background:rgba(255,255,255,0.04);}
+.cheat-table th{padding:12px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);}
+.cheat-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text-soft);vertical-align:top;line-height:1.5;}
+.cheat-table tr:last-child td{border-bottom:none;}
+.cheat-table tr:hover td{background:rgba(255,255,255,0.02);}
+.cheat-table td strong{color:var(--text);font-weight:600;}
 .q-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:18px;transition:border-color 0.2s;}
 .q-card:hover{border-color:var(--border-2);}
 .q-card.answered-correct{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);}
@@ -52,7 +61,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .q-card.marked{border-color:rgba(245,166,35,0.4);}
 .q-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .q-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);background:var(--amber-dim);padding:3px 10px;border-radius:6px;}
-.q-topic-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;background:var(--purple-dim);color:var(--purple);}
+.q-topic-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;background:var(--rust-dim);color:var(--rust);}
 .q-diff{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;}
 .diff-easy{background:rgba(74,222,128,0.1);color:var(--green);}
 .diff-medium{background:rgba(245,166,35,0.1);color:var(--amber);}
@@ -86,26 +95,21 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .submit-btn{display:block;margin-top:18px;padding:11px 24px;border-radius:10px;cursor:pointer;background:var(--bg-3);color:var(--text-soft);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border:1px solid var(--border);transition:all 0.2s;}
 .submit-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border-2);}
 .submit-btn.hide{display:none;}
-@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}}
+.done-banner{background:linear-gradient(135deg,rgba(74,222,128,0.12),rgba(52,197,176,0.1));border:1px solid rgba(74,222,128,0.3);border-radius:14px;padding:22px 26px;margin-bottom:26px;color:var(--text);}
+.done-banner strong{color:var(--green);}
+@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.tab-nav{padding:0 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}}
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <div class="hero-eyebrow">SAA-C03 · Section 20 · Document 2 of 2</div>
-  <h1>Serverless Architectures <em>Exam Cracker</em></h1>
-  <p>14 architecture-design questions: given a scenario, choose the right serverless reference pattern. This is exactly how the exam tests "design a solution."</p>
+  <div class="hero-eyebrow">SAA-C03 · Section 28 · Document 2 of 2 · Final 🎓</div>
+  <h1>DR &amp; Migrations <em>Exam Cracker</em></h1>
+  <p>The final cheat-sheet plus 18 scenario questions on DR strategies and migration tooling — the syllabus finale.</p>
   <div class="pill-row">
-    <span class="pill">Design Scenarios</span><span class="pill">Reference Patterns</span><span class="pill">14 Questions</span><span class="pill">Score Tracker</span>
+    <span class="pill">RTO / RPO</span><span class="pill">Pilot Light vs Warm</span><span class="pill">DMS / SCT / MGN</span><span class="pill">18 Questions</span>
   </div>
 </header>
-
-<section class="weight-wrap">
-  <div class="weight-box">
-    <div class="wlabel">📊 Exam Weightage — Serverless Architectures</div>
-    <p>This section introduces no new services — but <strong>assembling them correctly is the heart of the exam</strong>. Most SAA-C03 questions are "design a solution" scenarios, and the serverless reference patterns here (web/mobile backend, static hosting, microservices, event pipelines) recur constantly. Master picking the right <em>combination</em>, not just the right single service.</p>
-  </div>
-</section>
 
 <div class="score-bar">
   <span class="score-label">SCORE</span>
@@ -118,93 +122,113 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 </div>
 
+<nav class="tab-nav">
+  <button class="tab active" onclick="switchTab('cheat',this)">📋 DR &amp; Migration Cheat Sheet</button>
+  <button class="tab" onclick="switchTab('questions',this)">🎯 Practice Questions</button>
+</nav>
+
 <div class="main">
-  <div class="sec-header"><h2>Architecture Design Questions</h2><p>Select your answer, then <strong>Check Answer</strong> for the explanation.</p></div>
+
+<div id="tab-cheat" class="tab-content active">
+  <div class="done-banner">🎓 <strong>This is the final section of the SAA-C03 syllabus.</strong> Once you can answer these cold, switch to full-length timed mock exams. You've got this.</div>
+  <div class="sec-header"><h2>The DR &amp; Migration Cheat Sheet</h2><p>Match the clue to the strategy/service.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>Clue</th><th>Answer</th></tr></thead>
+    <tbody>
+      <tr><td>Cheapest DR, RTO of hours acceptable</td><td><strong>Backup &amp; Restore</strong></td></tr>
+      <tr><td>Core DB running/replicated, compute OFF</td><td><strong>Pilot Light</strong></td></tr>
+      <tr><td>Scaled-down full stack already running</td><td><strong>Warm Standby</strong></td></tr>
+      <tr><td>Near-zero downtime, both regions serving</td><td><strong>Multi-Site Active-Active</strong></td></tr>
+      <tr><td>Cross-region relational DB, near-zero RPO</td><td><strong>Aurora Global Database</strong></td></tr>
+      <tr><td>Migrate DB, minimal downtime, source stays up</td><td><strong>DMS</strong> (full load + CDC)</td></tr>
+      <tr><td>Migrate to a DIFFERENT DB engine</td><td><strong>SCT + DMS</strong></td></tr>
+      <tr><td>Lift-and-shift servers to EC2</td><td><strong>Application Migration Service (MGN)</strong></td></tr>
+      <tr><td>Ongoing server replication for DR</td><td><strong>Elastic Disaster Recovery (DRS)</strong></td></tr>
+      <tr><td>Discover on-prem inventory + dependencies</td><td><strong>Application Discovery Service</strong></td></tr>
+      <tr><td>Track migration progress centrally</td><td><strong>Migration Hub</strong></td></tr>
+      <tr><td>Move files/PB of data (not databases)</td><td><strong>DataSync / Snowball / Transfer</strong></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-questions" class="tab-content">
+  <div class="sec-header"><h2>Practice Questions</h2><p>Select your answer, then <strong>Check Answer</strong> for the explanation.</p></div>
   <div id="qlist"></div>
 </div>
 
+</div>
+
 <footer style="text-align:center;padding:30px 20px 50px;color:#6a6560;font-size:14px;">
-  SAA-C03 Exam Cracker · Section 20 — Serverless Architectures · Document 2 of 2 · Study Series by Sanky
+  SAA-C03 Exam Cracker · Section 28 — Disaster Recovery &amp; Migrations · Document 2 of 2 · 🎓 Final Section · Study Series by Sanky
 </footer>
 
 <script>
 const questions = [
-  {id:1,topic:'WEB',diff:'medium',
-   q:'A startup needs a backend for a mobile app: user sign-in, a REST API, and a fast data store, scaling automatically with no servers and near-zero idle cost. Which architecture fits BEST?',
-   opts:['EC2 + RDS + a custom login system','Cognito + API Gateway + Lambda + DynamoDB','ECS on EC2 + Aurora','Lightsail + MySQL'],
-   correct:1,
-   exp:'The canonical serverless backend: <strong>Cognito</strong> (auth) → <strong>API Gateway</strong> (front door) → <strong>Lambda</strong> (logic) → <strong>DynamoDB</strong> (data). It scales to zero, has no servers, and costs almost nothing when idle. The EC2/ECS/Lightsail options carry idle cost and server management.'},
-  {id:2,topic:'WEB',diff:'hard',
-   q:'In a serverless app, users must upload <strong>large video files</strong>. Routing them through Lambda hits the 6 MB payload limit and wastes compute. What is the BEST approach?',
-   opts:['Increase Lambda memory','Have the client upload directly to S3 using a presigned URL (or Identity Pool credentials)','Base64-encode the files','Stream the file through API Gateway'],
-   correct:1,
-   exp:'Generate an <strong>S3 presigned URL</strong> (or temporary credentials via a <strong>Cognito Identity Pool</strong>) so the client uploads <em>directly to S3</em>, bypassing Lambda and API Gateway payload limits entirely. Lambda memory (A) and API Gateway streaming (D) don\'t solve the payload constraint; Base64 (C) inflates size.'},
-  {id:3,topic:'WEB',diff:'medium',
-   q:'A latency-sensitive serverless API suffers cold starts during traffic bursts. Without rewriting code, how do you ensure consistently low latency?',
-   opts:['Provisioned Concurrency on the Lambda','A bigger DynamoDB table','More API Gateway stages','Switch to EC2'],
-   correct:0,
-   exp:'<strong>Provisioned Concurrency</strong> keeps Lambda environments pre-warmed, eliminating cold starts for predictable latency (SnapStart is the no-extra-cost option for Java/Python/.NET). The other choices don\'t address cold starts.'},
-  {id:4,topic:'HOST',diff:'medium',
-   q:'A company wants to host a global single-page application (SPA) with HTTPS at the lowest cost and no web servers. Which architecture is correct?',
-   opts:['EC2 web servers behind an ALB','S3 (private) + CloudFront with OAC + ACM certificate','A single large EC2 instance','Elastic Beanstalk'],
-   correct:1,
-   exp:'Static files in a <strong>private S3 bucket</strong>, served globally by <strong>CloudFront</strong> locked to the bucket with <strong>OAC</strong>, with an <strong>ACM certificate (in us-east-1)</strong> for HTTPS — no servers, global, cheap. EC2/Beanstalk options run servers unnecessarily for static content.'},
-  {id:5,topic:'HOST',diff:'medium',
-   q:'For the static site above, where must the ACM certificate be created for the CloudFront custom domain?',
-   opts:['The same region as the S3 bucket','us-east-1 (N. Virginia)','eu-west-1','Any region works'],
-   correct:1,
-   exp:'A CloudFront custom-domain certificate <strong>must be in us-east-1</strong>, regardless of where the bucket or users are — a frequently tested trap. (ALB certs go in the ALB\'s region; CloudFront is the exception.)'},
-  {id:6,topic:'HOST',diff:'medium',
-   q:'The SPA must point its apex domain (example.com) at CloudFront. Which Route 53 record type is required and free?',
-   opts:['CNAME','Alias record (A/AAAA) to the CloudFront distribution','MX','TXT'],
-   correct:1,
-   exp:'An <strong>Alias record</strong> works at the zone apex (CNAME is illegal there) and <strong>Alias queries to AWS targets like CloudFront are free</strong>. CNAME (A) can\'t be used at the apex; MX/TXT are unrelated.'},
-  {id:7,topic:'MICRO',diff:'hard',
-   q:'A serverless microservices system must coordinate a multi-step order workflow (reserve inventory → charge payment → ship), with retries, error handling, and a visual audit trail. Which service orchestrates this BEST?',
-   opts:['A single large Lambda doing all steps','AWS Step Functions','SQS only','EventBridge Scheduler'],
-   correct:1,
-   exp:'<strong>Step Functions</strong> orchestrates multi-step workflows (sagas) as a visual state machine with built-in retries, error handling, and auditability — ideal for ordered business processes. One giant Lambda (A) is brittle and hits the 15-min limit; SQS (C) decouples but doesn\'t orchestrate; EventBridge Scheduler (D) is for cron.'},
-  {id:8,topic:'MICRO',diff:'medium',
-   q:'Two serverless microservices must communicate so that if one is temporarily down, no messages are lost and it processes them when it recovers. What should connect them?',
-   opts:['Synchronous API Gateway calls','An SQS queue between them','Direct Lambda-to-Lambda invokes','A shared database table polled every minute'],
-   correct:1,
-   exp:'An <strong>SQS queue</strong> durably buffers messages so a down consumer loses nothing and drains the backlog on recovery — the core decoupling pattern. Synchronous calls (A) and direct invokes (C) couple failures; polling a DB (D) is an inefficient anti-pattern.'},
-  {id:9,topic:'MICRO',diff:'hard',
-   q:'A workflow needs to pause and wait for a <strong>human approval</strong> before continuing. Which capability fits?',
-   opts:['SQS delay queue','Step Functions with the waitForTaskToken (callback) pattern','Lambda with a long sleep','EventBridge rule'],
-   correct:1,
-   exp:'<strong>Step Functions waitForTaskToken</strong> pauses the workflow until an external action (e.g. a human approval) calls back with the task token — the standard "human-in-the-loop" pattern. A Lambda sleep (C) would blow the 15-min limit; SQS delay (A) and EventBridge (D) don\'t pause a workflow for approval.'},
-  {id:10,topic:'EVENT',diff:'medium',
-   q:'Every image uploaded to S3 must be automatically resized into thumbnails. What is the simplest event-driven design?',
-   opts:['Poll the bucket every minute with a cron job','S3 ObjectCreated event triggers a Lambda that resizes and writes back to S3','A daily Batch job','Manual processing'],
-   correct:1,
-   exp:'An <strong>S3 ObjectCreated event triggering a Lambda</strong> resizes each image as it lands — fully event-driven, scales with uploads, zero idle cost. Polling (A) and daily batches (C) add latency and waste; manual (D) doesn\'t scale.'},
-  {id:11,topic:'EVENT',diff:'hard',
-   q:'A single S3 upload must trigger <strong>three independent processors</strong> (thumbnail, virus scan, metadata index), each able to retry without losing events. What is the BEST design?',
-   opts:['One Lambda doing all three sequentially','S3 event → SNS topic → three subscribed SQS queues, each with its own Lambda','S3 event → one SQS queue read by all three','S3 event → Kinesis'],
-   correct:1,
-   exp:'<strong>S3 → SNS → three SQS queues (fan-out)</strong> gives each processor its own durable buffer with independent retry and DLQ — one upload reliably triggers all three. One Lambda (A) couples the steps; a single shared queue (C) delivers each message to only one consumer. This combines the event pipeline with the SNS+SQS fan-out pattern.'},
-  {id:12,topic:'EVENT',diff:'hard',
-   q:'A video file uploaded to S3 needs transcoding that takes about <strong>30 minutes</strong>. A Lambda triggered by the S3 event keeps timing out. What is the fix?',
-   opts:['Increase Lambda timeout to 30 minutes','Use Fargate / AWS Batch / MediaConvert (often orchestrated by Step Functions) instead of Lambda','Split the video into 2-minute Lambdas','Use a larger Lambda memory size'],
-   correct:1,
-   exp:'Lambda\'s hard <strong>15-minute limit</strong> can\'t be raised (A is impossible), so long transcoding must move to <strong>Fargate, AWS Batch, or Elemental MediaConvert</strong>, commonly coordinated by Step Functions. Splitting (C) is fragile; memory (D) doesn\'t extend the time limit.'},
-  {id:13,topic:'EVENT',diff:'medium',
-   q:'A platform must ingest a high-volume clickstream in real time and deliver it to an S3 data lake with the least operational overhead (no shards or consumers to manage). Which fits?',
-   opts:['Kinesis Data Streams with a custom consumer','Kinesis Data Firehose','SQS','Amazon MQ'],
-   correct:1,
-   exp:'<strong>Kinesis Data Firehose</strong> is fully serverless and delivers streaming data to S3/Redshift/OpenSearch in near-real-time with no shards or consumers to manage — least ops. Data Streams (A) requires building/operating consumers; SQS/MQ aren\'t stream-to-lake delivery services.'},
-  {id:14,topic:'WEB',diff:'hard',
-   q:'A global serverless API must authenticate end users, scale automatically, cache hot reads at microsecond latency, and protect against bots/SQLi. Which combination is correct?',
-   opts:['Cognito + API Gateway + Lambda + DynamoDB (DAX) + WAF + CloudFront','EC2 + RDS + IAM Identity Center','Lambda + Redshift + Shield only','ECS + Aurora + Cognito Sync'],
-   correct:0,
-   exp:'The full picture: <strong>Cognito</strong> (auth) + <strong>API Gateway</strong> (front door) + <strong>Lambda</strong> (logic) + <strong>DynamoDB with DAX</strong> (microsecond reads) + <strong>WAF</strong> (bot/SQLi) + <strong>CloudFront</strong> (global edge). IAM Identity Center (B) is workforce SSO, not app auth; Redshift (C) is analytics; Cognito Sync (D) is deprecated/irrelevant here.'},
+  {id:1,topic:'DR',diff:'medium',q:'A company wants the <strong>cheapest possible DR</strong> and can tolerate an RTO of several hours and some data loss. Which strategy?',
+   opts:['Multi-Site Active-Active','Backup & Restore','Warm Standby','Pilot Light'],correct:1,
+   exp:'<strong>Backup &amp; Restore</strong> is the cheapest DR: keep backups/snapshots (e.g. in S3 via cross-region copy or AWS Backup) and restore on disaster — accepting hours of RTO. The other strategies cost more for faster recovery. Match "cheapest + hours acceptable" to Backup &amp; Restore.'},
+  {id:2,topic:'DR',diff:'hard',q:'A DR design keeps the <strong>database replicated and running in the second region, but the application servers are switched OFF</strong> until a disaster, when they\'re started and scaled up. Which strategy is this?',
+   opts:['Backup & Restore','Pilot Light','Warm Standby','Multi-Site Active-Active'],correct:1,
+   exp:'<strong>Pilot Light</strong>: only the <em>core</em> (the database) is live/replicated; the compute tier is off and is started + scaled up at failover. <strong>Warm Standby (C)</strong> would have a scaled-down stack <em>already running</em>. "DB on, app servers off" = Pilot Light — a top exam distinction.'},
+  {id:3,topic:'DR',diff:'hard',q:'A company runs a <strong>scaled-down but fully functional copy</strong> of its environment in a second region at all times, ready to scale up on disaster. Which strategy?',
+   opts:['Pilot Light','Warm Standby','Backup & Restore','Multi-Site Active-Active'],correct:1,
+   exp:'<strong>Warm Standby</strong> keeps a smaller, <em>running</em> version of the full stack that can scale up quickly — faster RTO than Pilot Light (where compute is off). Pilot Light (A) has the app tier off; Active-Active (D) serves full production from both regions. "Scaled-down running stack" = Warm Standby.'},
+  {id:4,topic:'DR',diff:'medium',q:'A global application needs <strong>near-zero RTO and RPO</strong> with both regions actively serving traffic. Which strategy (and at what cost)?',
+   opts:['Backup & Restore (cheap)','Multi-Site Active-Active (most expensive)','Pilot Light (low cost)','Warm Standby (medium)'],correct:1,
+   exp:'<strong>Multi-Site Active-Active</strong> runs full production in both regions simultaneously — near-zero RTO/RPO — and is the <strong>most expensive</strong>. The cheaper strategies all trade some recovery speed for cost. Often built with DynamoDB Global Tables / Aurora Global + Route 53 / Global Accelerator.'},
+  {id:5,topic:'RTORPO',diff:'medium',q:'What do RTO and RPO measure, respectively?',
+   opts:['Cost and performance','RTO = how long to recover (downtime); RPO = how much data loss (time back to last good copy)','Both measure data loss','RTO = data loss; RPO = downtime'],correct:1,
+   exp:'<strong>RTO (Recovery Time Objective) = acceptable downtime</strong> (how long recovery takes). <strong>RPO (Recovery Point Objective) = acceptable data loss</strong> (how far back the last recoverable point is). Lower values mean faster recovery / less loss, at higher cost. Option D reverses them.'},
+  {id:6,topic:'DMS',diff:'medium',q:'A company is migrating an on-prem MySQL database to Amazon RDS for MySQL with <strong>minimal downtime</strong>, keeping the source available during migration. Which service?',
+   opts:['AWS DataSync','AWS Database Migration Service (DMS)','AWS Snowball','AWS Backup'],correct:1,
+   exp:'<strong>DMS</strong> migrates databases with minimal downtime — full load plus ongoing <strong>change data capture (CDC)</strong> keeps the target in sync while the source stays live, until cutover. DataSync/Snowball (A, C) move files, not live databases; Backup (D) is for backups, not migration.'},
+  {id:7,topic:'SCT',diff:'hard',q:'A company is migrating from <strong>Oracle to Amazon Aurora PostgreSQL</strong> (a different engine). Which combination is correct?',
+   opts:['DMS only','AWS Schema Conversion Tool (SCT) to convert the schema, then DMS to migrate the data','DataSync + Snowball','Application Migration Service (MGN)'],correct:1,
+   exp:'A <strong>heterogeneous</strong> migration (different engines) needs <strong>SCT</strong> to convert the schema/stored procedures, then <strong>DMS</strong> to move the data (with CDC for minimal downtime). DMS alone (A) doesn\'t convert incompatible schemas; DataSync/Snowball (C) and MGN (D) are for files/servers, not databases.'},
+  {id:8,topic:'MGN',diff:'medium',q:'A company wants to <strong>lift-and-shift (rehost) its on-prem physical and VM servers to EC2</strong> with minimal changes and downtime, using automated block-level replication. Which service?',
+   opts:['AWS Application Migration Service (MGN)','AWS Database Migration Service','AWS DataSync','AWS Backup'],correct:0,
+   exp:'<strong>AWS Application Migration Service (MGN)</strong> is the primary lift-and-shift (rehost) tool — it block-level replicates servers and launches them as EC2 with minimal changes/downtime (it replaced SMS and CloudEndure Migration). DMS (B) is databases; DataSync (C) is files; Backup (D) is backups.'},
+  {id:9,topic:'DRS',diff:'hard',q:'A company wants <strong>ongoing replication of its servers into AWS for disaster recovery</strong> (servers stay primary on-prem until a disaster, then spin up in AWS in minutes). Which service?',
+   opts:['Application Migration Service (MGN)','AWS Elastic Disaster Recovery (DRS)','AWS Backup','Pilot Light with manual scripts'],correct:1,
+   exp:'<strong>AWS Elastic Disaster Recovery (DRS)</strong> continuously block-level replicates servers to a low-cost staging area, ready to launch full capacity in minutes on disaster — managed pilot-light DR for whole servers. <strong>MGN (A)</strong> is for one-time <em>migration</em> (then you run on AWS); DRS is for ongoing <em>recovery</em>.'},
+  {id:10,topic:'Discovery',diff:'medium',q:'Before a large migration, a company must <strong>inventory its on-prem servers and map their dependencies</strong> to plan move groups. Which service helps?',
+   opts:['AWS Migration Hub','AWS Application Discovery Service','AWS Config','Amazon Inspector'],correct:1,
+   exp:'<strong>AWS Application Discovery Service</strong> collects on-prem server inventory and dependency/utilization data to plan migrations. Migration Hub (A) <em>tracks</em> migrations across tools (it consumes Discovery data); Config (C) is AWS resource compliance; Inspector (D) is vulnerability scanning.'},
+  {id:11,topic:'DR',diff:'hard',q:'A relational workload needs <strong>cross-region disaster recovery with near-zero RPO and fast regional failover</strong>. Which database feature fits BEST?',
+   opts:['DynamoDB Global Tables','Aurora Global Database','RDS Multi-AZ','S3 Cross-Region Replication'],correct:1,
+   exp:'<strong>Aurora Global Database</strong> replicates across regions with typically &lt;1s lag and fast (&lt;1 min) regional failover — ideal cross-region DR for <em>relational</em> data. DynamoDB Global Tables (A) is the NoSQL equivalent (wrong data model). RDS Multi-AZ (C) is single-region HA. S3 CRR (D) is object storage, not the database.'},
+  {id:12,topic:'DMS',diff:'medium',q:'Why is DataSync (or Snowball) the WRONG choice for migrating a live transactional database?',
+   opts:['It is too expensive','Those services move files/objects, not live databases with ongoing changes — use DMS (+SCT)','It only works in us-east-1','It cannot connect to on-prem'],correct:1,
+   exp:'<strong>DataSync, Snowball, and Storage Gateway move files/objects — not live, transactional databases</strong> with ongoing writes and (possibly) schema conversion. A live DB migration with minimal downtime needs <strong>DMS</strong> (and SCT if the engine changes). This file-vs-database trap appears frequently.'},
+  {id:13,topic:'7Rs',diff:'medium',q:'A migration strategy where you make <strong>minor optimizations (e.g. moving a self-managed DB onto RDS) without re-architecting</strong> is called:',
+   opts:['Rehost','Replatform','Refactor','Retire'],correct:1,
+   exp:'<strong>Replatform</strong> ("lift and reshape") makes small cloud optimizations — like moving a database onto managed RDS — without a full rewrite. <strong>Rehost (A)</strong> is pure lift-and-shift (no change); <strong>Refactor (C)</strong> is rebuilding cloud-native; <strong>Retire (D)</strong> is decommissioning.'},
+  {id:14,topic:'DR',diff:'medium',q:'Which AWS services are commonly used to implement Route-53-based DR failover between regions?',
+   opts:['Route 53 failover routing (or Global Accelerator) + a standby in the second region','VPC Peering only','CloudFront only','NAT Gateways'],correct:0,
+   exp:'<strong>Route 53 failover routing</strong> (health-check-based DNS failover) or <strong>Global Accelerator</strong> (faster, DNS-independent failover) directs traffic to the DR region\'s standby. These pair with the chosen DR strategy (pilot light/warm/active-active). Peering, CloudFront, and NAT (B–D) aren\'t the failover-routing mechanism.'},
+  {id:15,topic:'Backup',diff:'medium',q:'A company implementing the Backup &amp; Restore DR strategy wants <strong>centralized, cross-region, immutable backups</strong> across EBS, RDS, and DynamoDB. Which service?',
+   opts:['Manual snapshots per service','AWS Backup (with cross-region copy and Vault Lock)','DataSync','Elastic Disaster Recovery'],correct:1,
+   exp:'<strong>AWS Backup</strong> centralizes backups across services with cross-region copy and <strong>Vault Lock</strong> (immutable/WORM) — the backbone of a Backup &amp; Restore DR plan. Manual per-service snapshots (A) are high-ops; DataSync (C) moves files; DRS (D) is server replication, not policy-based backup.'},
+  {id:16,topic:'MGN',diff:'medium',q:'Which statement correctly distinguishes MGN from DRS?',
+   opts:['They are the same service','MGN is for one-time server migration to AWS; DRS is for ongoing replication for disaster recovery','MGN is for databases; DRS is for files','DRS migrates; MGN recovers'],correct:1,
+   exp:'<strong>MGN (Application Migration Service) = one-time lift-and-shift migration</strong> to AWS (then you run there). <strong>DRS (Elastic Disaster Recovery) = ongoing replication for recovery</strong> (primary stays elsewhere until disaster). Same underlying tech, different goal. Option D reverses them.'},
+  {id:17,topic:'DR',diff:'hard',q:'A company must minimize cost while still having a DR region that can take over in <strong>tens of minutes</strong>, with the database already up to date. Which strategy is the BEST fit?',
+   opts:['Backup & Restore','Pilot Light','Multi-Site Active-Active','No DR'],correct:1,
+   exp:'<strong>Pilot Light</strong> keeps the database continuously replicated (so it\'s current) while the compute tier stays off — low cost, with RTO in tens of minutes once you start and scale the app tier. Backup &amp; Restore (A) is cheaper but slower (hours); Active-Active (C) is far costlier than needed for "tens of minutes."'},
+  {id:18,topic:'7Rs',diff:'easy',q:'In the 7 Rs of migration, what does "Rehost" mean?',
+   opts:['Rebuild the application cloud-native','Lift-and-shift the application as-is to AWS (e.g. via MGN)','Replace it with a SaaS product','Decommission it'],correct:1,
+   exp:'<strong>Rehost = "lift and shift"</strong> — move the application to AWS as-is with minimal changes (commonly automated with Application Migration Service / MGN). Rebuilding cloud-native is <em>Refactor</em>; moving to SaaS is <em>Repurchase</em>; decommissioning is <em>Retire</em>.'},
 ];
 
 let state = {};
 let correctCount = 0, answeredCount = 0;
 function initState(){ questions.forEach(q => state[q.id] = {answered:false,correct:false,marked:false,selected:[]}); correctCount=0; answeredCount=0; }
 initState();
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active'); btn.classList.add('active');
+}
 function updateScore(){
   document.getElementById('scoreDisplay').textContent = correctCount + ' / ' + answeredCount;
   if(answeredCount > 0){ document.getElementById('scorePercent').textContent = Math.round((correctCount/answeredCount)*100) + '% correct';
@@ -226,8 +250,7 @@ function renderQuestion(q){
   const resultTag = s.answered ? (s.correct ? '<div class="exp-correct-tag">✅ Correct</div>' : `<div class="exp-wrong-tag">❌ Incorrect</div><div class="correct-ans">✓ Correct: ${correctLabels}</div>`) : '';
   const typeHint = isMulti ? '<span class="q-type-badge">— select two</span>' : '';
   return `<div class="q-card ${cardClass} ${s.marked?'marked':''}" id="qcard-${q.id}">
-    <div class="q-meta"><span class="q-num">Q${q.id}</span>
-      <span class="q-topic-tag">${q.topic}</span>
+    <div class="q-meta"><span class="q-num">Q${q.id}</span><span class="q-topic-tag">${q.topic}</span>
       <span class="q-diff diff-${q.diff}">${q.diff}</span>${typeHint}
       <button class="q-mark-btn ${s.marked?'marked':''}" onclick="toggleMark(${q.id})" title="Mark for review">${s.marked?'★':'☆'}</button></div>
     <div class="q-text">${q.q}</div>
@@ -254,14 +277,6 @@ function revealAll(){ if(!confirm('Reveal answers for all questions?')) return;
   updateScore(); renderAll(); }
 document.addEventListener('DOMContentLoaded', () => { renderAll(); updateScore(); });
 </script>
-
-
-
-
-
-
-
-
 
 
 
@@ -376,10 +391,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel cnav-gcurrent">S20 · Serverless Architectures</div>
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
 <ul>
-<li class=""><a href="01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
-<li class="cnav-current"><a href="02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S21 · Databases in AWS</div>
@@ -424,10 +439,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../27_Networking_VPC/02_VPC_ExamCracker.html">VPC ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">S28 · DR & Migrations</div>
+<div class="cnav-glabel cnav-gcurrent">S28 · DR & Migrations</div>
 <ul>
-<li class=""><a href="../28_DR_and_Migrations/01_DR_Migrations_Masterclass.html">DR Migrations Masterclass</a></li>
-<li class=""><a href="../28_DR_and_Migrations/02_DR_Migrations_ExamCracker.html">DR Migrations ExamCracker</a></li>
+<li class=""><a href="01_DR_Migrations_Masterclass.html">DR Migrations Masterclass</a></li>
+<li class="cnav-current"><a href="02_DR_Migrations_ExamCracker.html">DR Migrations ExamCracker</a></li>
 </ul></div>
 <div class="cnav-foot">42 chapters · press \ to toggle</div>
 </nav>

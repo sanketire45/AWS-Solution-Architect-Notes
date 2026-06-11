@@ -309,6 +309,41 @@ There is **no hourly/fixed fee** — a CloudFront distribution with zero traffic
 
 ---
 
+## Monitoring & Audit — CloudWatch, CloudTrail, Config
+
+**Billed on:** CloudWatch per-metric/per-GB-logs/per-alarm · CloudTrail mostly free for management events · Config per configuration item recorded.
+
+| Service | Billed on | Headline |
+|---|---|---|
+| **CloudWatch metrics** | custom metrics + API + dashboards | first 10 custom metrics/10 alarms free; ~$0.30/custom metric/mo; $0.10/alarm/mo |
+| **CloudWatch Logs** | per GB ingested + stored | ~$0.50/GB ingested + $0.03/GB-mo stored (Logs Insights per GB scanned) |
+| **CloudTrail** | management events FREE; data events paid | **management events = free** (90-day console history); S3/Lambda **data events** ~$0.10/100k |
+| **AWS Config** | per configuration item recorded + rule evaluations | ~$0.003 per config item + ~$0.001 per rule evaluation |
+
+- **Key teaching point:** **CloudTrail management events are free** — there's no excuse not to enable an org-wide trail to S3. **Config and CloudWatch Logs are the ones that grow** with resource churn / log volume — watch log retention and Config recorder scope.
+- **Cost lever:** set **CloudWatch Logs retention** (default = never expire = silent cost) and scope **Config** to the resource types you actually need to govern.
+
+---
+
+## Security & Encryption — KMS, Secrets, WAF, Shield, threat detection
+
+| Service | Billed on | Headline |
+|---|---|---|
+| **KMS** | per customer-managed key/mo + API calls | **$1/CMK/month** + $0.03/10k requests (AWS-managed keys free) |
+| **CloudHSM** | per HSM-hour | ~$1.45/hr (~$1,000+/mo) — dedicated single-tenant hardware |
+| **Secrets Manager** | per secret/mo + API | **$0.40/secret/mo** + $0.05/10k calls (has built-in rotation) |
+| **SSM Parameter Store** | standard tier FREE | free (SecureString via KMS); advanced tier ~$0.05/param/mo |
+| **ACM** | public certs FREE | **$0** for public TLS certs (auto-renew); Private CA ~$400/mo |
+| **WAF** | per web ACL + rule + request | ~$5/web ACL/mo + $1/rule/mo + $0.60/M requests |
+| **Shield Standard** | FREE | automatic DDoS protection |
+| **Shield Advanced** | subscription | **$3,000/month** (1-yr commit) + DDoS cost protection + SRT |
+| **GuardDuty** | per GB logs analyzed | usage-based (VPC Flow/CloudTrail/DNS) — agentless |
+| **Macie** | per GB scanned in S3 | usage-based sensitive-data discovery |
+
+- **Cost levers:** **Parameter Store (free)** vs **Secrets Manager ($0.40/secret + rotation)** — use Secrets Manager when you need *automatic rotation* (esp. RDS); Parameter Store for plain config/secure strings to save money. **AWS-managed KMS keys are free**; you pay $1/mo only for *customer-managed* keys. **Shield Advanced is a big fixed $3k/mo** — only for orgs needing DDoS cost protection + the response team.
+
+---
+
 ## NAT Gateway — the famous bill-shock
 
 **Billed on:** $0.045/hr (~$32.85/mo) **+ $0.045 per GB processed** (us-east-1). eu-west-1: $0.048/hr (~$35.04/mo) + $0.048/GB.
@@ -317,6 +352,23 @@ There is **no hourly/fixed fee** — a CloudFront distribution with zero traffic
 - **Cost lever:** **VPC Gateway Endpoints for S3 and DynamoDB are FREE** and bypass NAT entirely — route that traffic around the NAT Gateway.
 
 ---
+
+## VPC Networking — endpoints, peering, Transit Gateway, Direct Connect
+
+| Resource | Billed on | Headline |
+|---|---|---|
+| **VPC / subnets / route tables / IGW / SG / NACL** | nothing | **FREE** |
+| **NAT Gateway** | per-hour + per-GB processed | $0.045/hr (~$33/mo) + $0.045/GB (see NAT section) |
+| **Gateway VPC Endpoint (S3, DynamoDB)** | nothing | **FREE** — and bypasses NAT |
+| **Interface VPC Endpoint (PrivateLink)** | per-AZ-hour + per-GB | ~$0.01/hr/AZ + ~$0.01/GB |
+| **VPC Peering** | data transfer only | no hourly fee; cross-AZ/region data transfer charges apply |
+| **Transit Gateway** | per-attachment-hour + per-GB | ~$0.05/attachment/hr + ~$0.02/GB processed |
+| **Site-to-Site VPN** | per-connection-hour + data | ~$0.05/hr (~$36/mo) per connection |
+| **Direct Connect** | port-hour + data transfer out | port ~$0.30/hr (1 Gbps) + low DTO rates; weeks lead time |
+
+- **The free networking is the foundation:** VPCs, subnets, route tables, IGWs, security groups, and NACLs cost **$0** — you only pay for the *traffic-moving* pieces (NAT, endpoints, TGW, VPN, DX).
+- **Top cost lever (repeat from NAT):** **Gateway endpoints for S3/DynamoDB are FREE** and route that traffic off the NAT Gateway — a chatty app saving $1,000s/mo.
+- **DX vs VPN:** Direct Connect gives consistent low-latency/high-bandwidth but costs more and takes **weeks** to provision; VPN is cheap and up in minutes (over the internet, encrypted). DX is *not encrypted by default* — add a VPN over it for encryption.
 
 ## 🧮 Combined reference architecture — small production web app (us-east-1)
 

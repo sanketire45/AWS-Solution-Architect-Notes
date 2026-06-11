@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Serverless Architectures — Exam Cracker (SAA-C03)</title>
+<title>Security & Encryption — Exam Cracker (SAA-C03)</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -27,10 +27,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .hero p{font-size:17px;color:rgba(226,221,214,0.65);max-width:680px;margin-bottom:26px;font-weight:300;}
 .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
 .pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(226,221,214,0.8);padding:5px 14px;border-radius:100px;font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
-.weight-wrap{max-width:1100px;margin:26px auto 0;padding:0 24px;}
-.weight-box{background:var(--bg-2);border:1px solid #2a2e3c;border-left:4px solid var(--amber);border-radius:14px;padding:24px 26px;}
-.weight-box .wlabel{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:700;}
-.weight-box p{margin:0;color:var(--text);font-size:16px;line-height:1.65;}
 .score-bar{background:var(--bg-2);border-bottom:1px solid var(--border);padding:12px 60px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.5);}
 .score-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-soft);letter-spacing:1px;}
 .score-nums{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--amber);}
@@ -41,10 +37,23 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.2s;}
 .btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-soft);border:1px solid var(--border);}
 .btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text);}
-.main{max-width:1100px;margin:0 auto;padding:34px 60px 80px;}
+.tab-nav{background:var(--bg-2);border-bottom:1px solid var(--border);padding:0 60px;display:flex;gap:4px;position:sticky;top:49px;z-index:190;}
+.tab{padding:14px 20px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.main{max-width:1150px;margin:0 auto;padding:34px 60px 80px;}
 .sec-header{margin:0 0 26px;padding-bottom:18px;border-bottom:1px solid var(--border);}
 .sec-header h2{font-family:'Lora',serif;font-size:27px;font-weight:700;color:#fff;margin-bottom:6px;}
 .sec-header p{font-size:15px;color:var(--text-soft);}
+.cheat-table-wrap{overflow-x:auto;margin-bottom:36px;border-radius:12px;border:1px solid var(--border);}
+.cheat-table{width:100%;border-collapse:collapse;font-size:15.5px;}
+.cheat-table thead tr{background:rgba(255,255,255,0.04);}
+.cheat-table th{padding:12px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);}
+.cheat-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text-soft);vertical-align:top;line-height:1.5;}
+.cheat-table tr:last-child td{border-bottom:none;}
+.cheat-table tr:hover td{background:rgba(255,255,255,0.02);}
+.cheat-table td strong{color:var(--text);font-weight:600;}
 .q-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:18px;transition:border-color 0.2s;}
 .q-card:hover{border-color:var(--border-2);}
 .q-card.answered-correct{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);}
@@ -86,26 +95,19 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .submit-btn{display:block;margin-top:18px;padding:11px 24px;border-radius:10px;cursor:pointer;background:var(--bg-3);color:var(--text-soft);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border:1px solid var(--border);transition:all 0.2s;}
 .submit-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border-2);}
 .submit-btn.hide{display:none;}
-@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}}
+@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.tab-nav{padding:0 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}}
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <div class="hero-eyebrow">SAA-C03 · Section 20 · Document 2 of 2</div>
-  <h1>Serverless Architectures <em>Exam Cracker</em></h1>
-  <p>14 architecture-design questions: given a scenario, choose the right serverless reference pattern. This is exactly how the exam tests "design a solution."</p>
+  <div class="hero-eyebrow">SAA-C03 · Section 26 · Document 2 of 2</div>
+  <h1>Security &amp; Encryption <em>Exam Cracker</em></h1>
+  <p>The security-service cheat-sheet plus 20 scenario questions — Security is the exam's biggest domain (30%), so drill these hard.</p>
   <div class="pill-row">
-    <span class="pill">Design Scenarios</span><span class="pill">Reference Patterns</span><span class="pill">14 Questions</span><span class="pill">Score Tracker</span>
+    <span class="pill">KMS / Secrets / WAF</span><span class="pill">GuardDuty / Inspector / Macie</span><span class="pill">20 Questions</span><span class="pill">Score Tracker</span>
   </div>
 </header>
-
-<section class="weight-wrap">
-  <div class="weight-box">
-    <div class="wlabel">📊 Exam Weightage — Serverless Architectures</div>
-    <p>This section introduces no new services — but <strong>assembling them correctly is the heart of the exam</strong>. Most SAA-C03 questions are "design a solution" scenarios, and the serverless reference patterns here (web/mobile backend, static hosting, microservices, event pipelines) recur constantly. Master picking the right <em>combination</em>, not just the right single service.</p>
-  </div>
-</section>
 
 <div class="score-bar">
   <span class="score-label">SCORE</span>
@@ -118,93 +120,120 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 </div>
 
+<nav class="tab-nav">
+  <button class="tab active" onclick="switchTab('cheat',this)">📋 Security Cheat Sheet</button>
+  <button class="tab" onclick="switchTab('questions',this)">🎯 Practice Questions</button>
+</nav>
+
 <div class="main">
-  <div class="sec-header"><h2>Architecture Design Questions</h2><p>Select your answer, then <strong>Check Answer</strong> for the explanation.</p></div>
+
+<div id="tab-cheat" class="tab-content active">
+  <div class="sec-header"><h2>The Security Service Cheat Sheet</h2><p>Match the clue to the service.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>Clue</th><th>Service</th></tr></thead>
+    <tbody>
+      <tr><td>Manage encryption keys / SSE-KMS / yearly rotation + control</td><td><strong>KMS (customer-managed CMK)</strong></td></tr>
+      <tr><td>Dedicated single-tenant HSM / own key material</td><td><strong>CloudHSM</strong></td></tr>
+      <tr><td>Store DB credentials with automatic rotation</td><td><strong>Secrets Manager</strong></td></tr>
+      <tr><td>Store config / secure strings, free, no rotation</td><td><strong>SSM Parameter Store</strong></td></tr>
+      <tr><td>Free auto-renewing TLS certs (ALB/CloudFront)</td><td><strong>ACM</strong> (CloudFront cert = us-east-1)</td></tr>
+      <tr><td>Block SQLi/XSS/bots, rate-limit (L7)</td><td><strong>WAF</strong> (not on NLB)</td></tr>
+      <tr><td>DDoS cost protection + response team</td><td><strong>Shield Advanced</strong> ($3k/mo)</td></tr>
+      <tr><td>Detect threats/anomalies with ML from logs</td><td><strong>GuardDuty</strong> (agentless)</td></tr>
+      <tr><td>Scan EC2/ECR/Lambda for vulnerabilities (CVEs)</td><td><strong>Inspector</strong></td></tr>
+      <tr><td>Find PII / sensitive data in S3</td><td><strong>Macie</strong></td></tr>
+      <tr><td>Aggregate security findings / posture</td><td><strong>Security Hub</strong></td></tr>
+      <tr><td>Investigate root cause of a finding</td><td><strong>Detective</strong></td></tr>
+      <tr><td>Central WAF/Shield/SG/firewall across org</td><td><strong>Firewall Manager</strong></td></tr>
+      <tr><td>Stateful network firewall / IDS-IPS for VPC</td><td><strong>Network Firewall</strong></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-questions" class="tab-content">
+  <div class="sec-header"><h2>Practice Questions</h2><p>Select your answer, then <strong>Check Answer</strong> for the explanation.</p></div>
   <div id="qlist"></div>
 </div>
 
+</div>
+
 <footer style="text-align:center;padding:30px 20px 50px;color:#6a6560;font-size:14px;">
-  SAA-C03 Exam Cracker · Section 20 — Serverless Architectures · Document 2 of 2 · Study Series by Sanky
+  SAA-C03 Exam Cracker · Section 26 — Security &amp; Encryption · Document 2 of 2 · Study Series by Sanky
 </footer>
 
 <script>
 const questions = [
-  {id:1,topic:'WEB',diff:'medium',
-   q:'A startup needs a backend for a mobile app: user sign-in, a REST API, and a fast data store, scaling automatically with no servers and near-zero idle cost. Which architecture fits BEST?',
-   opts:['EC2 + RDS + a custom login system','Cognito + API Gateway + Lambda + DynamoDB','ECS on EC2 + Aurora','Lightsail + MySQL'],
-   correct:1,
-   exp:'The canonical serverless backend: <strong>Cognito</strong> (auth) → <strong>API Gateway</strong> (front door) → <strong>Lambda</strong> (logic) → <strong>DynamoDB</strong> (data). It scales to zero, has no servers, and costs almost nothing when idle. The EC2/ECS/Lightsail options carry idle cost and server management.'},
-  {id:2,topic:'WEB',diff:'hard',
-   q:'In a serverless app, users must upload <strong>large video files</strong>. Routing them through Lambda hits the 6 MB payload limit and wastes compute. What is the BEST approach?',
-   opts:['Increase Lambda memory','Have the client upload directly to S3 using a presigned URL (or Identity Pool credentials)','Base64-encode the files','Stream the file through API Gateway'],
-   correct:1,
-   exp:'Generate an <strong>S3 presigned URL</strong> (or temporary credentials via a <strong>Cognito Identity Pool</strong>) so the client uploads <em>directly to S3</em>, bypassing Lambda and API Gateway payload limits entirely. Lambda memory (A) and API Gateway streaming (D) don\'t solve the payload constraint; Base64 (C) inflates size.'},
-  {id:3,topic:'WEB',diff:'medium',
-   q:'A latency-sensitive serverless API suffers cold starts during traffic bursts. Without rewriting code, how do you ensure consistently low latency?',
-   opts:['Provisioned Concurrency on the Lambda','A bigger DynamoDB table','More API Gateway stages','Switch to EC2'],
-   correct:0,
-   exp:'<strong>Provisioned Concurrency</strong> keeps Lambda environments pre-warmed, eliminating cold starts for predictable latency (SnapStart is the no-extra-cost option for Java/Python/.NET). The other choices don\'t address cold starts.'},
-  {id:4,topic:'HOST',diff:'medium',
-   q:'A company wants to host a global single-page application (SPA) with HTTPS at the lowest cost and no web servers. Which architecture is correct?',
-   opts:['EC2 web servers behind an ALB','S3 (private) + CloudFront with OAC + ACM certificate','A single large EC2 instance','Elastic Beanstalk'],
-   correct:1,
-   exp:'Static files in a <strong>private S3 bucket</strong>, served globally by <strong>CloudFront</strong> locked to the bucket with <strong>OAC</strong>, with an <strong>ACM certificate (in us-east-1)</strong> for HTTPS — no servers, global, cheap. EC2/Beanstalk options run servers unnecessarily for static content.'},
-  {id:5,topic:'HOST',diff:'medium',
-   q:'For the static site above, where must the ACM certificate be created for the CloudFront custom domain?',
-   opts:['The same region as the S3 bucket','us-east-1 (N. Virginia)','eu-west-1','Any region works'],
-   correct:1,
-   exp:'A CloudFront custom-domain certificate <strong>must be in us-east-1</strong>, regardless of where the bucket or users are — a frequently tested trap. (ALB certs go in the ALB\'s region; CloudFront is the exception.)'},
-  {id:6,topic:'HOST',diff:'medium',
-   q:'The SPA must point its apex domain (example.com) at CloudFront. Which Route 53 record type is required and free?',
-   opts:['CNAME','Alias record (A/AAAA) to the CloudFront distribution','MX','TXT'],
-   correct:1,
-   exp:'An <strong>Alias record</strong> works at the zone apex (CNAME is illegal there) and <strong>Alias queries to AWS targets like CloudFront are free</strong>. CNAME (A) can\'t be used at the apex; MX/TXT are unrelated.'},
-  {id:7,topic:'MICRO',diff:'hard',
-   q:'A serverless microservices system must coordinate a multi-step order workflow (reserve inventory → charge payment → ship), with retries, error handling, and a visual audit trail. Which service orchestrates this BEST?',
-   opts:['A single large Lambda doing all steps','AWS Step Functions','SQS only','EventBridge Scheduler'],
-   correct:1,
-   exp:'<strong>Step Functions</strong> orchestrates multi-step workflows (sagas) as a visual state machine with built-in retries, error handling, and auditability — ideal for ordered business processes. One giant Lambda (A) is brittle and hits the 15-min limit; SQS (C) decouples but doesn\'t orchestrate; EventBridge Scheduler (D) is for cron.'},
-  {id:8,topic:'MICRO',diff:'medium',
-   q:'Two serverless microservices must communicate so that if one is temporarily down, no messages are lost and it processes them when it recovers. What should connect them?',
-   opts:['Synchronous API Gateway calls','An SQS queue between them','Direct Lambda-to-Lambda invokes','A shared database table polled every minute'],
-   correct:1,
-   exp:'An <strong>SQS queue</strong> durably buffers messages so a down consumer loses nothing and drains the backlog on recovery — the core decoupling pattern. Synchronous calls (A) and direct invokes (C) couple failures; polling a DB (D) is an inefficient anti-pattern.'},
-  {id:9,topic:'MICRO',diff:'hard',
-   q:'A workflow needs to pause and wait for a <strong>human approval</strong> before continuing. Which capability fits?',
-   opts:['SQS delay queue','Step Functions with the waitForTaskToken (callback) pattern','Lambda with a long sleep','EventBridge rule'],
-   correct:1,
-   exp:'<strong>Step Functions waitForTaskToken</strong> pauses the workflow until an external action (e.g. a human approval) calls back with the task token — the standard "human-in-the-loop" pattern. A Lambda sleep (C) would blow the 15-min limit; SQS delay (A) and EventBridge (D) don\'t pause a workflow for approval.'},
-  {id:10,topic:'EVENT',diff:'medium',
-   q:'Every image uploaded to S3 must be automatically resized into thumbnails. What is the simplest event-driven design?',
-   opts:['Poll the bucket every minute with a cron job','S3 ObjectCreated event triggers a Lambda that resizes and writes back to S3','A daily Batch job','Manual processing'],
-   correct:1,
-   exp:'An <strong>S3 ObjectCreated event triggering a Lambda</strong> resizes each image as it lands — fully event-driven, scales with uploads, zero idle cost. Polling (A) and daily batches (C) add latency and waste; manual (D) doesn\'t scale.'},
-  {id:11,topic:'EVENT',diff:'hard',
-   q:'A single S3 upload must trigger <strong>three independent processors</strong> (thumbnail, virus scan, metadata index), each able to retry without losing events. What is the BEST design?',
-   opts:['One Lambda doing all three sequentially','S3 event → SNS topic → three subscribed SQS queues, each with its own Lambda','S3 event → one SQS queue read by all three','S3 event → Kinesis'],
-   correct:1,
-   exp:'<strong>S3 → SNS → three SQS queues (fan-out)</strong> gives each processor its own durable buffer with independent retry and DLQ — one upload reliably triggers all three. One Lambda (A) couples the steps; a single shared queue (C) delivers each message to only one consumer. This combines the event pipeline with the SNS+SQS fan-out pattern.'},
-  {id:12,topic:'EVENT',diff:'hard',
-   q:'A video file uploaded to S3 needs transcoding that takes about <strong>30 minutes</strong>. A Lambda triggered by the S3 event keeps timing out. What is the fix?',
-   opts:['Increase Lambda timeout to 30 minutes','Use Fargate / AWS Batch / MediaConvert (often orchestrated by Step Functions) instead of Lambda','Split the video into 2-minute Lambdas','Use a larger Lambda memory size'],
-   correct:1,
-   exp:'Lambda\'s hard <strong>15-minute limit</strong> can\'t be raised (A is impossible), so long transcoding must move to <strong>Fargate, AWS Batch, or Elemental MediaConvert</strong>, commonly coordinated by Step Functions. Splitting (C) is fragile; memory (D) doesn\'t extend the time limit.'},
-  {id:13,topic:'EVENT',diff:'medium',
-   q:'A platform must ingest a high-volume clickstream in real time and deliver it to an S3 data lake with the least operational overhead (no shards or consumers to manage). Which fits?',
-   opts:['Kinesis Data Streams with a custom consumer','Kinesis Data Firehose','SQS','Amazon MQ'],
-   correct:1,
-   exp:'<strong>Kinesis Data Firehose</strong> is fully serverless and delivers streaming data to S3/Redshift/OpenSearch in near-real-time with no shards or consumers to manage — least ops. Data Streams (A) requires building/operating consumers; SQS/MQ aren\'t stream-to-lake delivery services.'},
-  {id:14,topic:'WEB',diff:'hard',
-   q:'A global serverless API must authenticate end users, scale automatically, cache hot reads at microsecond latency, and protect against bots/SQLi. Which combination is correct?',
-   opts:['Cognito + API Gateway + Lambda + DynamoDB (DAX) + WAF + CloudFront','EC2 + RDS + IAM Identity Center','Lambda + Redshift + Shield only','ECS + Aurora + Cognito Sync'],
-   correct:0,
-   exp:'The full picture: <strong>Cognito</strong> (auth) + <strong>API Gateway</strong> (front door) + <strong>Lambda</strong> (logic) + <strong>DynamoDB with DAX</strong> (microsecond reads) + <strong>WAF</strong> (bot/SQLi) + <strong>CloudFront</strong> (global edge). IAM Identity Center (B) is workforce SSO, not app auth; Redshift (C) is analytics; Cognito Sync (D) is deprecated/irrelevant here.'},
+  {id:1,topic:'KMS',diff:'medium',q:'A company must encrypt S3 objects with a key they <strong>control, audit, and rotate yearly</strong>. Which option fits BEST?',
+   opts:['SSE-S3 (Amazon-managed)','SSE-KMS with a customer-managed CMK (rotation enabled)','No encryption','Client-side only with a hard-coded key'],correct:1,
+   exp:'<strong>SSE-KMS with a customer-managed CMK</strong> gives full control: key policy, CloudTrail audit of every use, and automatic yearly rotation. SSE-S3 (A) is managed by AWS with no key control/audit — the classic distractor. No encryption (C) fails the requirement; hard-coded keys (D) are insecure.'},
+  {id:2,topic:'CloudHSM',diff:'hard',q:'A regulated bank must use a <strong>single-tenant, dedicated hardware security module</strong> where they fully control the key material (FIPS 140-2 Level 3). Which service?',
+   opts:['AWS KMS','AWS CloudHSM','Secrets Manager','ACM'],correct:1,
+   exp:'<strong>CloudHSM</strong> provides dedicated, single-tenant HSMs that you fully control — for strict regulatory requirements to own key material. KMS (A) is multi-tenant AWS-managed (still FIPS validated, but not dedicated/single-tenant). Secrets Manager (C) and ACM (D) are unrelated.'},
+  {id:3,topic:'Secrets',diff:'medium',q:'An application needs to store database credentials and <strong>automatically rotate them on a schedule</strong> with native RDS integration. Which service?',
+   opts:['SSM Parameter Store','AWS Secrets Manager','S3 with KMS','IAM'],correct:1,
+   exp:'<strong>Secrets Manager</strong> stores secrets and provides <strong>built-in automatic rotation</strong>, with native integration for RDS/Aurora/Redshift. Parameter Store (A) can store secrets (SecureString) but has <em>no native rotation</em>. S3 (C) and IAM (D) aren\'t secret stores with rotation.'},
+  {id:4,topic:'Secrets',diff:'medium',q:'A cost-sensitive team needs to store application configuration values and a few secure strings, with <strong>no rotation requirement</strong>. Which is cheapest and sufficient?',
+   opts:['AWS Secrets Manager','SSM Parameter Store (standard tier)','CloudHSM','A public S3 file'],correct:1,
+   exp:'<strong>SSM Parameter Store standard tier is free</strong> and stores config plus SecureString secrets (encrypted via KMS) — ideal when you don\'t need rotation. Secrets Manager (A) costs $0.40/secret/mo and is for rotation needs. CloudHSM (C) is expensive hardware; a public S3 file (D) is insecure.'},
+  {id:5,topic:'WAF',diff:'medium',q:'A web app behind an ALB is being hit with <strong>SQL injection and needs IP rate-limiting</strong> at the application layer. Which service?',
+   opts:['AWS Shield Standard','AWS WAF (Web ACL on the ALB)','Network ACLs','GuardDuty'],correct:1,
+   exp:'<strong>AWS WAF</strong> filters L7 HTTP traffic — blocking SQLi/XSS and applying rate-based rules — and attaches to ALB/CloudFront/API Gateway. Shield Standard (A) is DDoS (L3/L4), not app-layer filtering; NACLs (C) are stateless L4 network rules; GuardDuty (D) detects threats but doesn\'t block requests inline.'},
+  {id:6,topic:'WAF',diff:'hard',q:'A team wants to attach AWS WAF to a <strong>Network Load Balancer (NLB)</strong>. What\'s the issue?',
+   opts:['It works fine','WAF cannot attach to an NLB (it is Layer 7); use it on ALB/CloudFront/API Gateway','WAF requires Shield Advanced first','NLB must be internal'],correct:1,
+   exp:'<strong>WAF cannot attach to an NLB</strong> — WAF operates at Layer 7 (HTTP), while NLB is Layer 4. WAF attaches to CloudFront, ALB, API Gateway (REST), AppSync, and Cognito. For L4/NLB you rely on Shield + security groups/Network Firewall. This is a recurring trap.'},
+  {id:7,topic:'Shield',diff:'medium',q:'A high-profile application needs <strong>advanced DDoS protection, cost protection against attack-driven scaling, and access to a response team</strong>. Which is required?',
+   opts:['Shield Standard (free)','AWS Shield Advanced','AWS WAF only','GuardDuty'],correct:1,
+   exp:'<strong>Shield Advanced</strong> ($3,000/mo) adds enhanced DDoS protection, <strong>DDoS cost protection</strong> (refunds scaling charges during attacks), the <strong>Shield Response Team (SRT)</strong>, and free WAF on protected resources. Shield Standard (A) is automatic/free but lacks these; WAF (C) is app-layer filtering; GuardDuty (D) is detection.'},
+  {id:8,topic:'GuardDuty',diff:'medium',q:'A company wants to <strong>detect threats and unusual activity</strong> (e.g. crypto-mining, compromised credentials) across its accounts using ML, with no agents to install. Which service?',
+   opts:['Amazon Inspector','Amazon GuardDuty','Amazon Macie','AWS Config'],correct:1,
+   exp:'<strong>GuardDuty</strong> is the agentless, ML-based threat-detection service analyzing VPC Flow Logs, CloudTrail, DNS, EKS audit, RDS login, and Lambda activity. Inspector (A) finds software vulnerabilities; Macie (C) finds sensitive S3 data; Config (D) is compliance.'},
+  {id:9,topic:'Inspector',diff:'medium',q:'A team must continuously <strong>scan EC2 instances, container images in ECR, and Lambda functions for software vulnerabilities (CVEs)</strong>. Which service?',
+   opts:['Amazon GuardDuty','Amazon Inspector','Amazon Macie','AWS Shield'],correct:1,
+   exp:'<strong>Amazon Inspector</strong> performs automated vulnerability assessment on EC2, ECR images, and Lambda — finding CVEs and reachability issues. GuardDuty (A) detects active threats from logs; Macie (C) is S3 sensitive-data; Shield (D) is DDoS.'},
+  {id:10,topic:'Macie',diff:'medium',q:'A company must <strong>discover and classify PII (sensitive data) stored in Amazon S3</strong> automatically. Which service?',
+   opts:['Amazon Macie','Amazon Comprehend','Amazon GuardDuty','AWS Config'],correct:0,
+   exp:'<strong>Amazon Macie</strong> uses ML to discover and classify sensitive data (PII) in S3 buckets. (Comprehend detects PII <em>within text you pass it</em>, not S3-wide discovery.) GuardDuty (C) is threat detection; Config (D) is compliance.'},
+  {id:11,topic:'SecurityHub',diff:'medium',q:'A security team wants a <strong>single dashboard aggregating findings from GuardDuty, Inspector, and Macie</strong>, with compliance-standard checks. Which service?',
+   opts:['AWS Security Hub','Amazon Detective','AWS Config','CloudWatch'],correct:0,
+   exp:'<strong>Security Hub</strong> aggregates and prioritizes security findings from GuardDuty, Inspector, Macie, and partners, plus runs compliance standards (CIS/PCI) — the central posture dashboard. Detective (B) is for investigating a specific finding; Config (C) is configuration compliance; CloudWatch (D) is performance.'},
+  {id:12,topic:'Detective',diff:'hard',q:'After GuardDuty raises an alert, analysts need to <strong>investigate and visualize the root cause</strong> across logs and entity relationships. Which service helps?',
+   opts:['Amazon Detective','AWS Security Hub','Amazon Inspector','AWS Config'],correct:0,
+   exp:'<strong>Amazon Detective</strong> automatically builds a linked view of logs/entities to investigate and root-cause a security finding. Security Hub (B) aggregates findings but doesn\'t do the deep investigation; Inspector (C) is vuln scanning; Config (D) is compliance.'},
+  {id:13,topic:'FirewallMgr',diff:'hard',q:'An organization must <strong>centrally deploy and enforce WAF rules and security-group policies across all accounts</strong> in AWS Organizations. Which service?',
+   opts:['AWS WAF in each account manually','AWS Firewall Manager','Security Hub','GuardDuty'],correct:1,
+   exp:'<strong>AWS Firewall Manager</strong> centrally manages WAF rules, Shield Advanced, security groups, and Network Firewall policies across all accounts in an Organization. Configuring WAF per-account manually (A) doesn\'t scale; Security Hub (C) aggregates findings; GuardDuty (D) detects threats.'},
+  {id:14,topic:'ACM',diff:'medium',q:'A company needs <strong>free public TLS certificates that auto-renew</strong> for its ALB and CloudFront distribution. Which service, and any region caveat?',
+   opts:['ACM; CloudFront certs must be in us-east-1','Import certs manually each year','CloudHSM','IAM certificate store'],correct:0,
+   exp:'<strong>ACM</strong> issues free public certs that auto-renew, used on ALB/CloudFront/API Gateway. The caveat: a <strong>CloudFront</strong> cert must be in <strong>us-east-1</strong> (ALB cert in the ALB\'s region). Manually imported certs (B) don\'t auto-renew; CloudHSM (C) and the legacy IAM cert store (D) aren\'t the managed-cert answer.'},
+  {id:15,topic:'KMS',diff:'hard',q:'Objects in an S3 bucket are encrypted with SSE-KMS, and a CloudFront distribution must serve them. Which origin access mechanism is required?',
+   opts:['OAI (Origin Access Identity)','OAC (Origin Access Control)','A public bucket','Signed cookies only'],correct:1,
+   exp:'<strong>OAC</strong> supports <strong>SSE-KMS</strong>-encrypted S3 objects; the legacy <strong>OAI cannot decrypt KMS</strong> objects. So CloudFront fronting KMS-encrypted S3 requires OAC. A public bucket (C) bypasses the CDN/security; signed cookies (D) control viewer access, not origin decryption.'},
+  {id:16,topic:'NetworkFirewall',diff:'medium',q:'A company needs a <strong>managed, stateful network firewall with intrusion prevention and domain filtering for its VPC</strong>. Which service?',
+   opts:['Security groups only','AWS Network Firewall','AWS WAF','Shield Advanced'],correct:1,
+   exp:'<strong>AWS Network Firewall</strong> is a managed, stateful VPC firewall with IDS/IPS and domain/URL filtering. Security groups (A) are basic stateful instance-level rules (no IDS/IPS); WAF (C) is L7 HTTP filtering; Shield Advanced (D) is DDoS.'},
+  {id:17,topic:'KMS',diff:'medium',q:'Which statement about KMS key costs is correct?',
+   opts:['All KMS keys cost $1/month','AWS-managed keys are free; customer-managed keys (CMKs) cost ~$1/month + API calls','KMS is entirely free','KMS charges per GB encrypted'],correct:1,
+   exp:'<strong>AWS-managed keys are free</strong>; you pay ~<strong>$1/month per customer-managed CMK</strong> plus ~$0.03/10k API requests. KMS doesn\'t charge per GB (it uses envelope encryption with data keys). Knowing this helps justify customer-managed keys when control/audit is needed.'},
+  {id:18,topic:'Detection',diff:'hard',q:'Match correctly: which service finds software <strong>vulnerabilities</strong>, which finds <strong>threats</strong>, which finds <strong>sensitive data in S3</strong>?',
+   opts:['Inspector=threats, GuardDuty=vulns, Macie=data','Inspector=vulnerabilities, GuardDuty=threats, Macie=sensitive S3 data','All three find vulnerabilities','GuardDuty=data, Macie=threats, Inspector=vulns'],correct:1,
+   exp:'<strong>Inspector = vulnerabilities (CVEs in EC2/ECR/Lambda)</strong>, <strong>GuardDuty = threats (ML on logs)</strong>, <strong>Macie = sensitive data (PII in S3)</strong>. This three-way mapping is among the most-tested security distinctions on the exam.'},
+  {id:19,topic:'Secrets',diff:'medium',q:'Which is an insecure anti-pattern the exam always rejects for application credentials?',
+   opts:['Storing them in Secrets Manager','Storing them in SSM Parameter Store (SecureString)','Hard-coding them in application code or baking them into an AMI','Retrieving them at runtime via an IAM role'],correct:2,
+   exp:'<strong>Hard-coding credentials in code or AMIs</strong> is the insecure anti-pattern — they leak and can\'t rotate. Use <strong>Secrets Manager</strong> or <strong>Parameter Store</strong>, retrieved at runtime via an IAM role with least privilege.'},
+  {id:20,topic:'WAF',diff:'medium',q:'What is the standard secure-edge architecture for a global web application on the exam?',
+   opts:['NLB + WAF + Shield','CloudFront + AWS WAF + Shield (Advanced for critical apps)','EC2 + security groups only','API Gateway + Macie'],correct:1,
+   exp:'The go-to pattern is <strong>CloudFront + AWS WAF + Shield</strong> (add Shield Advanced for critical apps): WAF blocks malicious requests at the edge, Shield absorbs DDoS, CloudFront caches/serves globally. WAF can\'t attach to NLB (A); security groups alone (C) aren\'t app-layer; Macie (D) is data discovery, not edge protection.'},
 ];
 
 let state = {};
 let correctCount = 0, answeredCount = 0;
 function initState(){ questions.forEach(q => state[q.id] = {answered:false,correct:false,marked:false,selected:[]}); correctCount=0; answeredCount=0; }
 initState();
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active'); btn.classList.add('active');
+}
 function updateScore(){
   document.getElementById('scoreDisplay').textContent = correctCount + ' / ' + answeredCount;
   if(answeredCount > 0){ document.getElementById('scorePercent').textContent = Math.round((correctCount/answeredCount)*100) + '% correct';
@@ -226,8 +255,7 @@ function renderQuestion(q){
   const resultTag = s.answered ? (s.correct ? '<div class="exp-correct-tag">✅ Correct</div>' : `<div class="exp-wrong-tag">❌ Incorrect</div><div class="correct-ans">✓ Correct: ${correctLabels}</div>`) : '';
   const typeHint = isMulti ? '<span class="q-type-badge">— select two</span>' : '';
   return `<div class="q-card ${cardClass} ${s.marked?'marked':''}" id="qcard-${q.id}">
-    <div class="q-meta"><span class="q-num">Q${q.id}</span>
-      <span class="q-topic-tag">${q.topic}</span>
+    <div class="q-meta"><span class="q-num">Q${q.id}</span><span class="q-topic-tag">${q.topic}</span>
       <span class="q-diff diff-${q.diff}">${q.diff}</span>${typeHint}
       <button class="q-mark-btn ${s.marked?'marked':''}" onclick="toggleMark(${q.id})" title="Mark for review">${s.marked?'★':'☆'}</button></div>
     <div class="q-text">${q.q}</div>
@@ -254,12 +282,6 @@ function revealAll(){ if(!confirm('Reveal answers for all questions?')) return;
   updateScore(); renderAll(); }
 document.addEventListener('DOMContentLoaded', () => { renderAll(); updateScore(); });
 </script>
-
-
-
-
-
-
 
 
 
@@ -376,10 +398,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel cnav-gcurrent">S20 · Serverless Architectures</div>
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
 <ul>
-<li class=""><a href="01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
-<li class="cnav-current"><a href="02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S21 · Databases in AWS</div>
@@ -412,10 +434,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../25_IAM_Advanced/02_IAM_Advanced_ExamCracker.html">IAM Advanced ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">S26 · Security & Encryption</div>
+<div class="cnav-glabel cnav-gcurrent">S26 · Security & Encryption</div>
 <ul>
-<li class=""><a href="../26_Security_Encryption/01_Security_Encryption_Masterclass.html">Security Encryption Masterclass</a></li>
-<li class=""><a href="../26_Security_Encryption/02_Security_Encryption_ExamCracker.html">Security Encryption ExamCracker</a></li>
+<li class=""><a href="01_Security_Encryption_Masterclass.html">Security Encryption Masterclass</a></li>
+<li class="cnav-current"><a href="02_Security_Encryption_ExamCracker.html">Security Encryption ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S27 · Networking (VPC)</div>

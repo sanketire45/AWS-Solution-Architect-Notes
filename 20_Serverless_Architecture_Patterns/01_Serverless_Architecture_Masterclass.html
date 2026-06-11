@@ -75,6 +75,14 @@
   .diagram{background:var(--warm-white);border:1px solid var(--border);border-radius:16px;padding:26px;margin:26px 0;text-align:center;box-shadow:var(--shadow-card);}
   .diagram svg{max-width:100%;height:auto;}
   .diagram-caption{font-size:14px;color:var(--ink-muted);margin-top:14px;font-style:italic;}
+  .industry-spotlight{background:linear-gradient(135deg,#1b2438 0%,#142a36 100%);color:#e8eef5;border-radius:18px;padding:34px 38px;margin:34px 0;scroll-margin-top:86px;}
+  .industry-spotlight-tag{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:14px;}
+  .industry-spotlight h3{font-family:'Fraunces',serif;font-size:24px;color:#fff;margin-bottom:14px;font-weight:600;line-height:1.25;}
+  .industry-spotlight p{color:rgba(232,238,245,0.82);margin-bottom:14px;}
+  .industry-spotlight strong{color:#fff;}
+  .arch-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px 18px;margin:10px 0;}
+  .arch-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber-light);margin-bottom:5px;}
+  .arch-item p{margin:0;font-size:15.5px;}
   .trigger-box{background:#1a1208;color:#f0e6d6;border-radius:16px;padding:30px 34px;margin:30px 0;}
   .trigger-box h3{font-family:'Fraunces',serif;color:var(--accent-amber-light);font-size:22px;margin-bottom:16px;}
   .trigger-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
@@ -174,7 +182,18 @@
     </ul>
   </div>
 
-  <div class="trigger-box" id="web-triggers">
+  
+<div class="price-tag">💵 <strong>The whole serverless stack scales to zero:</strong> Lambda (1M req + 400k GB-s free), DynamoDB on-demand, HTTP API ($1/M), Cognito (50k MAU free) — a small/medium production app often runs <strong>$0–a few dollars/month</strong>, the core reason fintechs build serverless-first.</div>
+
+<div class="industry-spotlight">
+  <div class="industry-spotlight-tag">🏢 Dublin Industry — Verified</div>
+  <h3>Fenergo runs a serverless-first, event-sourced platform — the textbook of these patterns</h3>
+  <p><strong>Fenergo</strong> (Dublin RegTech for KYC/AML) is <strong>single-cloud AWS, serverless-first</strong>, running <em>active-active across 3 AZs</em> ("Always On"). It stitches together exactly the patterns in this section: <strong>API Gateway + Lambda</strong> front-ends, <strong>DynamoDB</strong> as the event-sourced state/read-model store (with Streams for CDC), <strong>EventBridge</strong> fan-out, and <strong>Step Functions</strong> orchestrating cluster upgrades.</p>
+  <p>Dublin B2B-payments firm <strong>AccessPay</strong> uses the decoupled event-pipeline pattern — SFTP files land in S3, SQS buffers them, and Lambda processes them for PCI-compliant downstream workflows.</p>
+  <div class="arch-item"><div class="arch-label">Why serverless-first</div><p>Multi-tenant SaaS for regulated banks needs hard tenant isolation and elastic scale — per-tenant IAM condition keys + least-privilege Lambda roles per microservice, with pay-per-use economics that scale to zero between bursts.</p></div>
+</div>
+
+<div class="trigger-box" id="web-triggers">
     <h3>⚡ Web/Mobile Backend — Exam Angles</h3>
     <div class="trigger-row"><div class="trigger-kw">"Serverless app backend, scales to zero, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">API GW + Lambda + DynamoDB + Cognito</div></div>
     <div class="trigger-row"><div class="trigger-kw">"Authenticate app users"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Cognito User Pool (+ API GW authorizer)</div></div>
@@ -403,6 +422,14 @@
 
 
 
+
+
+
+
+
+
+
+
 <!-- CHAPTER_NAV_START -->
 
 <style id="cnav-style">
@@ -446,42 +473,42 @@ body.cnav-open .cnav-panel{transform:none;}
 <nav class="cnav-panel" aria-label="All chapters">
 <div class="cnav-head"><span class="cnav-title">AWS Masterclass</span><button class="cnav-x" aria-label="Close">&times;</button></div>
 <div class="cnav-group">
-<div class="cnav-glabel">EC2</div>
+<div class="cnav-glabel">S01 · IAM</div>
 <ul>
-<li class=""><a href="../EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
-<li class=""><a href="../EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
+<li class=""><a href="../01_IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
+<li class=""><a href="../01_IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">ELB & ASG</div>
+<div class="cnav-glabel">S02 · EC2</div>
 <ul>
-<li class=""><a href="../ELB%20%26%20%20ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
-<li class=""><a href="../ELB%20%26%20%20ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
-<li class=""><a href="../ELB%20%26%20%20ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
-<li class=""><a href="../ELB%20%26%20%20ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
+<li class=""><a href="../02_EC2/EC2_Masterclass_Concepts.html">EC2 Masterclass Concepts</a></li>
+<li class=""><a href="../02_EC2/EC2_Exam_Crusher.html">EC2 Exam Crusher</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">IAM</div>
+<div class="cnav-glabel">S03 · ELB & ASG</div>
 <ul>
-<li class=""><a href="../IAM/01_IAM_Masterclass.html">IAM Masterclass</a></li>
-<li class=""><a href="../IAM/02_IAM_Exam_Cracker.html">IAM Exam Cracker</a></li>
+<li class=""><a href="../03_ELB_ASG/01_ELB_ASG_Masterclass.html">ELB ASG Masterclass</a></li>
+<li class=""><a href="../03_ELB_ASG/elb_asg_masterclass_2.html">elb asg masterclass 2</a></li>
+<li class=""><a href="../03_ELB_ASG/03_VPC_Subnet_ALB_Debrief.html">VPC Subnet ALB Debrief</a></li>
+<li class=""><a href="../03_ELB_ASG/02_ELB_ASG_Exam_Cracker.html">ELB ASG Exam Cracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">RDS · Aurora · ElastiCache</div>
+<div class="cnav-glabel">S04 · RDS · Aurora · ElastiCache</div>
 <ul>
-<li class=""><a href="../RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
-<li class=""><a href="../RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
+<li class=""><a href="../04_RDS_Aurora_ElastiCache/01_RDS_Aurora_ElastiCache_Masterclass.html">RDS Aurora ElastiCache Masterclass</a></li>
+<li class=""><a href="../04_RDS_Aurora_ElastiCache/02_RDS_Aurora_ElastiCache_ExamCrack.html">RDS Aurora ElastiCache ExamCrack</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">Route 53</div>
+<div class="cnav-glabel">S05 · Route 53</div>
 <ul>
-<li class=""><a href="../Route%2053/route53_masterclass_v2.html">route53 masterclass v2</a></li>
-<li class=""><a href="../Route%2053/route53_exam_cracker.html">route53 exam cracker</a></li>
+<li class=""><a href="../05_Route_53/route53_masterclass_v2.html">route53 masterclass v2</a></li>
+<li class=""><a href="../05_Route_53/route53_exam_cracker.html">route53 exam cracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">S3</div>
+<div class="cnav-glabel">S06 · S3</div>
 <ul>
-<li class=""><a href="../S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
-<li class=""><a href="../S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
+<li class=""><a href="../06_S3/S3_Masterclass_Doc1.html">S3 Masterclass Doc1</a></li>
+<li class=""><a href="../06_S3/S3_ExamCracker_Doc2.html">S3 ExamCracker Doc2</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S15 · CloudFront & Global Accelerator</div>
@@ -531,7 +558,43 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../22_Data_and_Analytics/01_Data_Analytics_Masterclass.html">Data Analytics Masterclass</a></li>
 <li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
 </ul></div>
-<div class="cnav-foot">30 chapters · press \ to toggle</div>
+<div class="cnav-group">
+<div class="cnav-glabel">S23 · Machine Learning</div>
+<ul>
+<li class=""><a href="../23_Machine_Learning/01_Machine_Learning_Masterclass.html">Machine Learning Masterclass</a></li>
+<li class=""><a href="../23_Machine_Learning/02_Machine_Learning_ExamCracker.html">Machine Learning ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S24 · Monitoring & Audit</div>
+<ul>
+<li class=""><a href="../24_Monitoring_CloudWatch_CloudTrail_Config/01_Monitoring_Masterclass.html">Monitoring Masterclass</a></li>
+<li class=""><a href="../24_Monitoring_CloudWatch_CloudTrail_Config/02_Monitoring_ExamCracker.html">Monitoring ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S25 · IAM Advanced</div>
+<ul>
+<li class=""><a href="../25_IAM_Advanced/01_IAM_Advanced_Masterclass.html">IAM Advanced Masterclass</a></li>
+<li class=""><a href="../25_IAM_Advanced/02_IAM_Advanced_ExamCracker.html">IAM Advanced ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S26 · Security & Encryption</div>
+<ul>
+<li class=""><a href="../26_Security_Encryption/01_Security_Encryption_Masterclass.html">Security Encryption Masterclass</a></li>
+<li class=""><a href="../26_Security_Encryption/02_Security_Encryption_ExamCracker.html">Security Encryption ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S27 · Networking (VPC)</div>
+<ul>
+<li class=""><a href="../27_Networking_VPC/01_VPC_Masterclass.html">VPC Masterclass</a></li>
+<li class=""><a href="../27_Networking_VPC/02_VPC_ExamCracker.html">VPC ExamCracker</a></li>
+</ul></div>
+<div class="cnav-group">
+<div class="cnav-glabel">S28 · DR & Migrations</div>
+<ul>
+<li class=""><a href="../28_DR_and_Migrations/01_DR_Migrations_Masterclass.html">DR Migrations Masterclass</a></li>
+<li class=""><a href="../28_DR_and_Migrations/02_DR_Migrations_ExamCracker.html">DR Migrations ExamCracker</a></li>
+</ul></div>
+<div class="cnav-foot">42 chapters · press \ to toggle</div>
 </nav>
 <script id="cnav-js">
 (function(){

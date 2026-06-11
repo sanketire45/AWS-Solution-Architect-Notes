@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Serverless Architectures — Exam Cracker (SAA-C03)</title>
+<title>IAM Advanced — Exam Cracker (SAA-C03)</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -14,23 +14,19 @@
   --blue:#5b9cf6;--blue-dim:rgba(91,156,246,0.12);--green:#4ade80;--green-dim:rgba(74,222,128,0.12);
   --red:#f87171;--red-dim:rgba(248,113,113,0.12);--purple:#c084fc;--purple-dim:rgba(192,132,252,0.12);
   --rust:#f08a5d;--rust-dim:rgba(240,138,93,0.12);
-  --accent:#c084fc;--paper:#1a1d26;--rule:rgba(255,255,255,0.1);--ink:#e2ddd6;--ink-soft:#9a9590;--ink-mute:#6a6560;--bg-alt:#222638;
+  --accent:#f08a5d;--paper:#1a1d26;--rule:rgba(255,255,255,0.1);--ink:#e2ddd6;--ink-soft:#9a9590;--ink-mute:#6a6560;--bg-alt:#222638;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:17.5px;line-height:1.8;}
 ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
-.hero{background:linear-gradient(135deg,#0a0c12 0%,#1a1430 50%,#0e1420 100%);padding:60px 60px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(192,132,252,0.07) 0%,transparent 70%);}
+.hero{background:linear-gradient(135deg,#0a0c12 0%,#211410 50%,#0e1420 100%);padding:60px 60px 44px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(240,138,93,0.07) 0%,transparent 70%);}
 .hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
 .hero h1{font-family:'Lora',Georgia,serif;font-size:clamp(32px,4vw,52px);font-weight:700;line-height:1.08;color:#fff;margin-bottom:14px;}
 .hero h1 em{color:var(--amber);font-style:normal;}
 .hero p{font-size:17px;color:rgba(226,221,214,0.65);max-width:680px;margin-bottom:26px;font-weight:300;}
 .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
 .pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(226,221,214,0.8);padding:5px 14px;border-radius:100px;font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
-.weight-wrap{max-width:1100px;margin:26px auto 0;padding:0 24px;}
-.weight-box{background:var(--bg-2);border:1px solid #2a2e3c;border-left:4px solid var(--amber);border-radius:14px;padding:24px 26px;}
-.weight-box .wlabel{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:700;}
-.weight-box p{margin:0;color:var(--text);font-size:16px;line-height:1.65;}
 .score-bar{background:var(--bg-2);border-bottom:1px solid var(--border);padding:12px 60px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.5);}
 .score-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-soft);letter-spacing:1px;}
 .score-nums{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--amber);}
@@ -41,10 +37,23 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.2s;}
 .btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-soft);border:1px solid var(--border);}
 .btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text);}
-.main{max-width:1100px;margin:0 auto;padding:34px 60px 80px;}
+.tab-nav{background:var(--bg-2);border-bottom:1px solid var(--border);padding:0 60px;display:flex;gap:4px;position:sticky;top:49px;z-index:190;}
+.tab{padding:14px 20px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.main{max-width:1150px;margin:0 auto;padding:34px 60px 80px;}
 .sec-header{margin:0 0 26px;padding-bottom:18px;border-bottom:1px solid var(--border);}
 .sec-header h2{font-family:'Lora',serif;font-size:27px;font-weight:700;color:#fff;margin-bottom:6px;}
 .sec-header p{font-size:15px;color:var(--text-soft);}
+.cheat-table-wrap{overflow-x:auto;margin-bottom:36px;border-radius:12px;border:1px solid var(--border);}
+.cheat-table{width:100%;border-collapse:collapse;font-size:15.5px;}
+.cheat-table thead tr{background:rgba(255,255,255,0.04);}
+.cheat-table th{padding:12px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);}
+.cheat-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text-soft);vertical-align:top;line-height:1.5;}
+.cheat-table tr:last-child td{border-bottom:none;}
+.cheat-table tr:hover td{background:rgba(255,255,255,0.02);}
+.cheat-table td strong{color:var(--text);font-weight:600;}
 .q-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:18px;transition:border-color 0.2s;}
 .q-card:hover{border-color:var(--border-2);}
 .q-card.answered-correct{border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);}
@@ -52,7 +61,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .q-card.marked{border-color:rgba(245,166,35,0.4);}
 .q-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .q-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);background:var(--amber-dim);padding:3px 10px;border-radius:6px;}
-.q-topic-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;background:var(--purple-dim);color:var(--purple);}
+.q-topic-tag{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;letter-spacing:0.5px;background:var(--rust-dim);color:var(--rust);}
 .q-diff{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:6px;}
 .diff-easy{background:rgba(74,222,128,0.1);color:var(--green);}
 .diff-medium{background:rgba(245,166,35,0.1);color:var(--amber);}
@@ -86,26 +95,19 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .submit-btn{display:block;margin-top:18px;padding:11px 24px;border-radius:10px;cursor:pointer;background:var(--bg-3);color:var(--text-soft);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border:1px solid var(--border);transition:all 0.2s;}
 .submit-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border-2);}
 .submit-btn.hide{display:none;}
-@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}}
+@media(max-width:768px){.hero{padding:40px 20px 36px;}.score-bar{padding:10px 20px;}.tab-nav{padding:0 20px;}.main{padding:24px 20px 60px;}.q-card{padding:20px;}}
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <div class="hero-eyebrow">SAA-C03 · Section 20 · Document 2 of 2</div>
-  <h1>Serverless Architectures <em>Exam Cracker</em></h1>
-  <p>14 architecture-design questions: given a scenario, choose the right serverless reference pattern. This is exactly how the exam tests "design a solution."</p>
+  <div class="hero-eyebrow">SAA-C03 · Section 25 · Document 2 of 2</div>
+  <h1>IAM Advanced <em>Exam Cracker</em></h1>
+  <p>The advanced-IAM cheat-sheet plus 18 scenario questions on policy evaluation, STS/cross-account, federation, and SCPs — core Security-domain (30%) material.</p>
   <div class="pill-row">
-    <span class="pill">Design Scenarios</span><span class="pill">Reference Patterns</span><span class="pill">14 Questions</span><span class="pill">Score Tracker</span>
+    <span class="pill">Policy Evaluation</span><span class="pill">STS &amp; SCP</span><span class="pill">18 Questions</span><span class="pill">Score Tracker</span>
   </div>
 </header>
-
-<section class="weight-wrap">
-  <div class="weight-box">
-    <div class="wlabel">📊 Exam Weightage — Serverless Architectures</div>
-    <p>This section introduces no new services — but <strong>assembling them correctly is the heart of the exam</strong>. Most SAA-C03 questions are "design a solution" scenarios, and the serverless reference patterns here (web/mobile backend, static hosting, microservices, event pipelines) recur constantly. Master picking the right <em>combination</em>, not just the right single service.</p>
-  </div>
-</section>
 
 <div class="score-bar">
   <span class="score-label">SCORE</span>
@@ -118,93 +120,112 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 </div>
 
+<nav class="tab-nav">
+  <button class="tab active" onclick="switchTab('cheat',this)">📋 IAM Cheat Sheet</button>
+  <button class="tab" onclick="switchTab('questions',this)">🎯 Practice Questions</button>
+</nav>
+
 <div class="main">
-  <div class="sec-header"><h2>Architecture Design Questions</h2><p>Select your answer, then <strong>Check Answer</strong> for the explanation.</p></div>
+
+<div id="tab-cheat" class="tab-content active">
+  <div class="sec-header"><h2>The Advanced IAM Cheat Sheet</h2><p>The rules and distinctions the exam tests most.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>Concept</th><th>Rule / trigger</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Policy evaluation</strong></td><td><strong>Explicit Deny &gt; Allow &gt; implicit Deny</strong> — one Deny beats all Allows</td></tr>
+      <tr><td><strong>Cross-account access</strong></td><td>Need <strong>both</strong> identity policy (caller) AND resource policy (resource) to allow</td></tr>
+      <tr><td><strong>Permission boundary</strong></td><td>Max permissions for a user/role (ceiling) = identity policy ∩ boundary</td></tr>
+      <tr><td><strong>SCP</strong></td><td>Org-wide guardrail — <strong>never grants</strong>, only restricts; not the management account</td></tr>
+      <tr><td><strong>Cross-account / temp access</strong></td><td><strong>IAM role + STS AssumeRole</strong> (never IAM user keys)</td></tr>
+      <tr><td><strong>3rd-party assumes your role</strong></td><td><strong>External ID</strong> (confused-deputy protection)</td></tr>
+      <tr><td><strong>Workforce SSO to AWS</strong></td><td><strong>IAM Identity Center</strong></td></tr>
+      <tr><td><strong>App/customer login</strong></td><td><strong>Cognito</strong> (not Identity Center)</td></tr>
+      <tr><td><strong>Tag-based access at scale</strong></td><td><strong>ABAC</strong></td></tr>
+      <tr><td><strong>Require MFA / restrict by IP</strong></td><td>IAM policy <strong>condition keys</strong></td></tr>
+      <tr><td><strong>Share resources across accounts</strong></td><td><strong>AWS RAM</strong></td></tr>
+      <tr><td><strong>Secure multi-account landing zone</strong></td><td><strong>Control Tower</strong></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-questions" class="tab-content">
+  <div class="sec-header"><h2>Practice Questions</h2><p>Select your answer, then <strong>Check Answer</strong> for the explanation.</p></div>
   <div id="qlist"></div>
 </div>
 
+</div>
+
 <footer style="text-align:center;padding:30px 20px 50px;color:#6a6560;font-size:14px;">
-  SAA-C03 Exam Cracker · Section 20 — Serverless Architectures · Document 2 of 2 · Study Series by Sanky
+  SAA-C03 Exam Cracker · Section 25 — IAM Advanced · Document 2 of 2 · Study Series by Sanky
 </footer>
 
 <script>
 const questions = [
-  {id:1,topic:'WEB',diff:'medium',
-   q:'A startup needs a backend for a mobile app: user sign-in, a REST API, and a fast data store, scaling automatically with no servers and near-zero idle cost. Which architecture fits BEST?',
-   opts:['EC2 + RDS + a custom login system','Cognito + API Gateway + Lambda + DynamoDB','ECS on EC2 + Aurora','Lightsail + MySQL'],
-   correct:1,
-   exp:'The canonical serverless backend: <strong>Cognito</strong> (auth) → <strong>API Gateway</strong> (front door) → <strong>Lambda</strong> (logic) → <strong>DynamoDB</strong> (data). It scales to zero, has no servers, and costs almost nothing when idle. The EC2/ECS/Lightsail options carry idle cost and server management.'},
-  {id:2,topic:'WEB',diff:'hard',
-   q:'In a serverless app, users must upload <strong>large video files</strong>. Routing them through Lambda hits the 6 MB payload limit and wastes compute. What is the BEST approach?',
-   opts:['Increase Lambda memory','Have the client upload directly to S3 using a presigned URL (or Identity Pool credentials)','Base64-encode the files','Stream the file through API Gateway'],
-   correct:1,
-   exp:'Generate an <strong>S3 presigned URL</strong> (or temporary credentials via a <strong>Cognito Identity Pool</strong>) so the client uploads <em>directly to S3</em>, bypassing Lambda and API Gateway payload limits entirely. Lambda memory (A) and API Gateway streaming (D) don\'t solve the payload constraint; Base64 (C) inflates size.'},
-  {id:3,topic:'WEB',diff:'medium',
-   q:'A latency-sensitive serverless API suffers cold starts during traffic bursts. Without rewriting code, how do you ensure consistently low latency?',
-   opts:['Provisioned Concurrency on the Lambda','A bigger DynamoDB table','More API Gateway stages','Switch to EC2'],
-   correct:0,
-   exp:'<strong>Provisioned Concurrency</strong> keeps Lambda environments pre-warmed, eliminating cold starts for predictable latency (SnapStart is the no-extra-cost option for Java/Python/.NET). The other choices don\'t address cold starts.'},
-  {id:4,topic:'HOST',diff:'medium',
-   q:'A company wants to host a global single-page application (SPA) with HTTPS at the lowest cost and no web servers. Which architecture is correct?',
-   opts:['EC2 web servers behind an ALB','S3 (private) + CloudFront with OAC + ACM certificate','A single large EC2 instance','Elastic Beanstalk'],
-   correct:1,
-   exp:'Static files in a <strong>private S3 bucket</strong>, served globally by <strong>CloudFront</strong> locked to the bucket with <strong>OAC</strong>, with an <strong>ACM certificate (in us-east-1)</strong> for HTTPS — no servers, global, cheap. EC2/Beanstalk options run servers unnecessarily for static content.'},
-  {id:5,topic:'HOST',diff:'medium',
-   q:'For the static site above, where must the ACM certificate be created for the CloudFront custom domain?',
-   opts:['The same region as the S3 bucket','us-east-1 (N. Virginia)','eu-west-1','Any region works'],
-   correct:1,
-   exp:'A CloudFront custom-domain certificate <strong>must be in us-east-1</strong>, regardless of where the bucket or users are — a frequently tested trap. (ALB certs go in the ALB\'s region; CloudFront is the exception.)'},
-  {id:6,topic:'HOST',diff:'medium',
-   q:'The SPA must point its apex domain (example.com) at CloudFront. Which Route 53 record type is required and free?',
-   opts:['CNAME','Alias record (A/AAAA) to the CloudFront distribution','MX','TXT'],
-   correct:1,
-   exp:'An <strong>Alias record</strong> works at the zone apex (CNAME is illegal there) and <strong>Alias queries to AWS targets like CloudFront are free</strong>. CNAME (A) can\'t be used at the apex; MX/TXT are unrelated.'},
-  {id:7,topic:'MICRO',diff:'hard',
-   q:'A serverless microservices system must coordinate a multi-step order workflow (reserve inventory → charge payment → ship), with retries, error handling, and a visual audit trail. Which service orchestrates this BEST?',
-   opts:['A single large Lambda doing all steps','AWS Step Functions','SQS only','EventBridge Scheduler'],
-   correct:1,
-   exp:'<strong>Step Functions</strong> orchestrates multi-step workflows (sagas) as a visual state machine with built-in retries, error handling, and auditability — ideal for ordered business processes. One giant Lambda (A) is brittle and hits the 15-min limit; SQS (C) decouples but doesn\'t orchestrate; EventBridge Scheduler (D) is for cron.'},
-  {id:8,topic:'MICRO',diff:'medium',
-   q:'Two serverless microservices must communicate so that if one is temporarily down, no messages are lost and it processes them when it recovers. What should connect them?',
-   opts:['Synchronous API Gateway calls','An SQS queue between them','Direct Lambda-to-Lambda invokes','A shared database table polled every minute'],
-   correct:1,
-   exp:'An <strong>SQS queue</strong> durably buffers messages so a down consumer loses nothing and drains the backlog on recovery — the core decoupling pattern. Synchronous calls (A) and direct invokes (C) couple failures; polling a DB (D) is an inefficient anti-pattern.'},
-  {id:9,topic:'MICRO',diff:'hard',
-   q:'A workflow needs to pause and wait for a <strong>human approval</strong> before continuing. Which capability fits?',
-   opts:['SQS delay queue','Step Functions with the waitForTaskToken (callback) pattern','Lambda with a long sleep','EventBridge rule'],
-   correct:1,
-   exp:'<strong>Step Functions waitForTaskToken</strong> pauses the workflow until an external action (e.g. a human approval) calls back with the task token — the standard "human-in-the-loop" pattern. A Lambda sleep (C) would blow the 15-min limit; SQS delay (A) and EventBridge (D) don\'t pause a workflow for approval.'},
-  {id:10,topic:'EVENT',diff:'medium',
-   q:'Every image uploaded to S3 must be automatically resized into thumbnails. What is the simplest event-driven design?',
-   opts:['Poll the bucket every minute with a cron job','S3 ObjectCreated event triggers a Lambda that resizes and writes back to S3','A daily Batch job','Manual processing'],
-   correct:1,
-   exp:'An <strong>S3 ObjectCreated event triggering a Lambda</strong> resizes each image as it lands — fully event-driven, scales with uploads, zero idle cost. Polling (A) and daily batches (C) add latency and waste; manual (D) doesn\'t scale.'},
-  {id:11,topic:'EVENT',diff:'hard',
-   q:'A single S3 upload must trigger <strong>three independent processors</strong> (thumbnail, virus scan, metadata index), each able to retry without losing events. What is the BEST design?',
-   opts:['One Lambda doing all three sequentially','S3 event → SNS topic → three subscribed SQS queues, each with its own Lambda','S3 event → one SQS queue read by all three','S3 event → Kinesis'],
-   correct:1,
-   exp:'<strong>S3 → SNS → three SQS queues (fan-out)</strong> gives each processor its own durable buffer with independent retry and DLQ — one upload reliably triggers all three. One Lambda (A) couples the steps; a single shared queue (C) delivers each message to only one consumer. This combines the event pipeline with the SNS+SQS fan-out pattern.'},
-  {id:12,topic:'EVENT',diff:'hard',
-   q:'A video file uploaded to S3 needs transcoding that takes about <strong>30 minutes</strong>. A Lambda triggered by the S3 event keeps timing out. What is the fix?',
-   opts:['Increase Lambda timeout to 30 minutes','Use Fargate / AWS Batch / MediaConvert (often orchestrated by Step Functions) instead of Lambda','Split the video into 2-minute Lambdas','Use a larger Lambda memory size'],
-   correct:1,
-   exp:'Lambda\'s hard <strong>15-minute limit</strong> can\'t be raised (A is impossible), so long transcoding must move to <strong>Fargate, AWS Batch, or Elemental MediaConvert</strong>, commonly coordinated by Step Functions. Splitting (C) is fragile; memory (D) doesn\'t extend the time limit.'},
-  {id:13,topic:'EVENT',diff:'medium',
-   q:'A platform must ingest a high-volume clickstream in real time and deliver it to an S3 data lake with the least operational overhead (no shards or consumers to manage). Which fits?',
-   opts:['Kinesis Data Streams with a custom consumer','Kinesis Data Firehose','SQS','Amazon MQ'],
-   correct:1,
-   exp:'<strong>Kinesis Data Firehose</strong> is fully serverless and delivers streaming data to S3/Redshift/OpenSearch in near-real-time with no shards or consumers to manage — least ops. Data Streams (A) requires building/operating consumers; SQS/MQ aren\'t stream-to-lake delivery services.'},
-  {id:14,topic:'WEB',diff:'hard',
-   q:'A global serverless API must authenticate end users, scale automatically, cache hot reads at microsecond latency, and protect against bots/SQLi. Which combination is correct?',
-   opts:['Cognito + API Gateway + Lambda + DynamoDB (DAX) + WAF + CloudFront','EC2 + RDS + IAM Identity Center','Lambda + Redshift + Shield only','ECS + Aurora + Cognito Sync'],
-   correct:0,
-   exp:'The full picture: <strong>Cognito</strong> (auth) + <strong>API Gateway</strong> (front door) + <strong>Lambda</strong> (logic) + <strong>DynamoDB with DAX</strong> (microsecond reads) + <strong>WAF</strong> (bot/SQLi) + <strong>CloudFront</strong> (global edge). IAM Identity Center (B) is workforce SSO, not app auth; Redshift (C) is analytics; Cognito Sync (D) is deprecated/irrelevant here.'},
+  {id:1,topic:'Evaluation',diff:'medium',q:'A user has an IAM policy allowing <code>s3:*</code>, but an S3 bucket policy contains an explicit <strong>Deny</strong> for that user. Can the user access the bucket?',
+   opts:['Yes — the Allow wins','No — an explicit Deny always overrides any Allow','Only with MFA','Only from inside the VPC'],correct:1,
+   exp:'<strong>Explicit Deny always wins.</strong> The evaluation order is explicit Deny &gt; Allow &gt; implicit Deny — so a Deny anywhere (identity or resource policy) blocks access regardless of Allows. This is the single most-tested IAM rule.'},
+  {id:2,topic:'CrossAccount',diff:'hard',q:'Account A\'s application must access an S3 bucket in Account B. What is the recommended, secure way to grant this?',
+   opts:['Create an IAM user in Account B and share its access keys with Account A','Create a role in Account B trusting Account A; the app assumes it via STS for temporary credentials','Make the bucket public','Email the credentials'],correct:1,
+   exp:'Cross-account access uses an <strong>IAM role</strong> in the resource account (B) with a trust policy allowing the caller account (A); the app calls <strong>STS AssumeRole</strong> for temporary, auto-expiring credentials. Sharing IAM user keys (A) is the insecure anti-pattern the exam always rejects. Public buckets (C) are a security hole.'},
+  {id:3,topic:'Boundary',diff:'hard',q:'A company lets developers create IAM roles for their applications but must ensure those roles can <strong>never</strong> exceed S3 and DynamoDB access. What should they apply?',
+   opts:['An SCP on the management account','A permission boundary attached to the roles developers create','A resource-based policy','MFA'],correct:1,
+   exp:'A <strong>permission boundary</strong> caps the maximum permissions an IAM user/role can have (effective = identity policy ∩ boundary) — perfect for safe delegation where developers create roles but can\'t grant beyond the allowed services. An SCP (A) is account-wide and doesn\'t target self-created roles specifically; resource policies (C) and MFA (D) don\'t cap a role\'s permissions.'},
+  {id:4,topic:'SCP',diff:'hard',q:'An organization must ensure that <strong>no account</strong> (and no admin within it) can disable CloudTrail or operate outside approved regions. Which mechanism enforces this org-wide?',
+   opts:['IAM policies in each account','Service Control Policies (SCPs) in AWS Organizations','Permission boundaries','Resource policies'],correct:1,
+   exp:'<strong>SCPs</strong> set org-wide guardrails (maximum permissions) for accounts/OUs — even account admins cannot exceed them. An SCP can deny <code>cloudtrail:StopLogging</code> and restrict regions across every account. Per-account IAM policies (A) can be changed by local admins; boundaries (C) and resource policies (D) don\'t enforce org-wide account restrictions.'},
+  {id:5,topic:'SCP',diff:'medium',q:'A team attaches an SCP that allows certain actions but the users still cannot perform them. Why?',
+   opts:['SCPs grant permissions, so something else is broken','SCPs never grant permissions — users still need an IAM Allow policy; the SCP only sets the ceiling','SCPs require MFA','SCPs only work in us-east-1'],correct:1,
+   exp:'<strong>SCPs do not grant permissions</strong> — they only define the maximum (a guardrail). Effective permission = SCP ∩ IAM policy. Users still need an explicit IAM Allow; the SCP merely can\'t expand beyond it. This "SCP grants nothing" point is a classic trap.'},
+  {id:6,topic:'Federation',diff:'medium',q:'A 6,000-employee company wants staff to sign in once with their <strong>corporate directory</strong> and access multiple AWS accounts, without creating IAM users per person. Which service fits BEST?',
+   opts:['Amazon Cognito','AWS IAM Identity Center','Individual IAM users','AWS Directory Service only'],correct:1,
+   exp:'<strong>IAM Identity Center</strong> provides workforce single sign-on across multiple AWS accounts, federated from a corporate IdP (AD/Okta/Entra), with permission sets — no per-person IAM users. Cognito (A) is for application end-users, not workforce AWS access. Per-user IAM (C) doesn\'t scale. Directory Service (D) is managed AD, not the SSO layer.'},
+  {id:7,topic:'Federation',diff:'hard',q:'A mobile game needs its <strong>players</strong> to sign in (Google/Apple/email) and then upload scores. Which identity service is correct (NOT IAM Identity Center)?',
+   opts:['Amazon Cognito','AWS IAM Identity Center','SAML federation to corporate AD','IAM users per player'],correct:0,
+   exp:'<strong>Cognito</strong> handles <em>application end-user</em> identity (sign-in, social federation, tokens). <strong>IAM Identity Center (B)</strong> is for <em>workforce</em> SSO into AWS accounts — wrong audience. SAML-to-AD (C) is enterprise workforce; per-player IAM users (D) never scale and aren\'t how app auth works.'},
+  {id:8,topic:'STS',diff:'hard',q:'A SaaS monitoring vendor needs to assume a role in your AWS account. To prevent the <strong>confused deputy</strong> problem, what should the role\'s trust policy require?',
+   opts:['MFA','An External ID provided by the vendor','A permission boundary','A VPC endpoint'],correct:1,
+   exp:'An <strong>External ID</strong> in the role\'s trust policy must be presented by the third party when assuming the role, preventing a <strong>confused deputy</strong> attack (where the vendor could be tricked into acting against another customer\'s account). MFA (A) is for human users; boundaries (C) and endpoints (D) don\'t address cross-account third-party confusion.'},
+  {id:9,topic:'ABAC',diff:'medium',q:'A fast-growing company has hundreds of projects and wants permissions to scale automatically based on <strong>resource and user tags</strong>, instead of writing a new policy per team. Which approach fits?',
+   opts:['RBAC with one policy per team','Attribute-Based Access Control (ABAC) using tags in conditions','A single admin policy for everyone','Permission boundaries only'],correct:1,
+   exp:'<strong>ABAC</strong> grants access by matching <strong>tags</strong> (e.g. allow if the resource\'s Project tag equals the principal\'s Project tag) — it scales to many teams without a policy explosion. RBAC (A) needs a policy per role/team (harder to scale). A single admin policy (C) violates least privilege; boundaries (D) cap, they don\'t implement tag-based grants.'},
+  {id:10,topic:'STS',diff:'medium',q:'What is the recommended way to give an EC2 instance permission to read from an S3 bucket?',
+   opts:['Store access keys in a file on the instance','Attach an IAM role (instance profile) to the EC2 instance','Use the root account credentials','Hard-code keys in the application'],correct:1,
+   exp:'Attach an <strong>IAM role via an instance profile</strong> — the instance gets temporary, auto-rotating credentials through STS, with no static keys to leak. Storing keys on disk (A), using root (C), or hard-coding (D) are all insecure anti-patterns.'},
+  {id:11,topic:'Evaluation',diff:'hard',q:'A user is in an account governed by an SCP that does NOT allow <code>ec2:*</code>, but the user has an IAM policy allowing <code>ec2:RunInstances</code>. Can they launch instances?',
+   opts:['Yes — the IAM Allow grants it','No — the SCP caps the account; the action must be permitted by BOTH the SCP and the IAM policy','Only with MFA','Only the root user can'],correct:1,
+   exp:'Effective permission = <strong>SCP ∩ IAM policy</strong>. If the SCP doesn\'t permit <code>ec2:*</code>, the action is outside the account\'s ceiling and is denied — even though the IAM policy allows it. Both must permit the action.'},
+  {id:12,topic:'CrossAccount',diff:'medium',q:'Which is required for a principal in Account A to access an S3 bucket in Account B via a bucket policy?',
+   opts:['Only the bucket policy (Account B) needs to allow it','Both the identity policy in Account A AND the bucket policy in Account B must allow it','Only Account A\'s policy matters','Public access must be enabled'],correct:1,
+   exp:'For cross-account access, <strong>both sides must allow</strong>: the identity-based policy in the caller\'s account (A) and the resource-based policy (bucket policy) in the resource\'s account (B). One side alone is insufficient. (Same-account resource policies can grant alone, but cross-account needs both.)'},
+  {id:13,topic:'Org',diff:'medium',q:'A company runs 40 AWS accounts and wants <strong>one consolidated bill</strong> with shared volume discounts and Savings Plans. Which service provides this?',
+   opts:['AWS Organizations (consolidated billing)','AWS Budgets','Cost Explorer','Individual invoices per account'],correct:0,
+   exp:'<strong>AWS Organizations</strong> provides consolidated billing — a single bill across member accounts with combined volume tiering and shared Savings Plans/RIs. Budgets (B) and Cost Explorer (C) are cost-visibility tools, not the billing-consolidation mechanism.'},
+  {id:14,topic:'Org',diff:'medium',q:'A company wants to quickly stand up a <strong>secure, multi-account environment with best-practice guardrails</strong> (a landing zone). Which service automates this?',
+   opts:['AWS Control Tower','AWS Config alone','IAM Identity Center alone','AWS CloudFormation only'],correct:0,
+   exp:'<strong>AWS Control Tower</strong> automates a secure multi-account <strong>landing zone</strong> with guardrails, built on Organizations, SCPs, Config, and Identity Center. Config (B) and Identity Center (C) are components; CloudFormation (D) is IaC you\'d otherwise script manually.'},
+  {id:15,topic:'Org',diff:'medium',q:'A central networking account must <strong>share its VPC subnets</strong> with several other accounts in the Organization. Which service enables this?',
+   opts:['VPC Peering','AWS Resource Access Manager (RAM)','Transit Gateway only','S3 bucket sharing'],correct:1,
+   exp:'<strong>AWS RAM (Resource Access Manager)</strong> shares resources like VPC subnets, Transit Gateways, and Route 53 Resolver rules across accounts. VPC Peering (A) connects VPCs but doesn\'t share subnets for shared deployment; Transit Gateway (C) is for routing (and is itself shareable via RAM).'},
+  {id:16,topic:'Policy',diff:'medium',q:'A policy must allow an action <strong>only when the request includes MFA</strong>. How is this expressed?',
+   opts:['A permission boundary','A condition key (aws:MultiFactorAuthPresent) in the IAM policy','An SCP','A resource ACL'],correct:1,
+   exp:'IAM policy <strong>condition keys</strong> like <code>aws:MultiFactorAuthPresent</code> (or <code>aws:SourceIp</code>, region, tags) gate actions on request context — e.g. require MFA for sensitive operations. Boundaries (A) and SCPs (C) cap permissions but aren\'t how you express a per-request MFA condition; ACLs (D) are legacy S3.'},
+  {id:17,topic:'Federation',diff:'hard',q:'Which statement correctly contrasts a permission boundary and an SCP?',
+   opts:['Both grant permissions','A permission boundary caps an individual IAM user/role; an SCP caps all identities in an account/OU — neither grants','SCP caps a single role; boundary caps a whole account','They are identical'],correct:1,
+   exp:'A <strong>permission boundary</strong> limits a specific IAM user/role; an <strong>SCP</strong> limits everything in an account/OU. <strong>Neither grants permissions</strong> — both are ceilings combined with IAM Allow policies (intersection). Option A/D are wrong (they don\'t grant); C reverses their scope.'},
+  {id:18,topic:'STS',diff:'medium',q:'On-premises servers need to call AWS APIs using temporary credentials <strong>without embedding long-lived access keys</strong>. Which feature fits?',
+   opts:['IAM Roles Anywhere','An IAM user with rotated keys','Cognito Identity Pool','Root credentials'],correct:0,
+   exp:'<strong>IAM Roles Anywhere</strong> lets on-prem/non-AWS workloads obtain temporary credentials by assuming IAM roles using X.509 certificates — no static access keys. An IAM user with keys (B) is the long-lived-credential anti-pattern; Cognito (C) is for app end-users; root (D) is never for workloads.'},
 ];
 
 let state = {};
 let correctCount = 0, answeredCount = 0;
 function initState(){ questions.forEach(q => state[q.id] = {answered:false,correct:false,marked:false,selected:[]}); correctCount=0; answeredCount=0; }
 initState();
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active'); btn.classList.add('active');
+}
 function updateScore(){
   document.getElementById('scoreDisplay').textContent = correctCount + ' / ' + answeredCount;
   if(answeredCount > 0){ document.getElementById('scorePercent').textContent = Math.round((correctCount/answeredCount)*100) + '% correct';
@@ -226,8 +247,7 @@ function renderQuestion(q){
   const resultTag = s.answered ? (s.correct ? '<div class="exp-correct-tag">✅ Correct</div>' : `<div class="exp-wrong-tag">❌ Incorrect</div><div class="correct-ans">✓ Correct: ${correctLabels}</div>`) : '';
   const typeHint = isMulti ? '<span class="q-type-badge">— select two</span>' : '';
   return `<div class="q-card ${cardClass} ${s.marked?'marked':''}" id="qcard-${q.id}">
-    <div class="q-meta"><span class="q-num">Q${q.id}</span>
-      <span class="q-topic-tag">${q.topic}</span>
+    <div class="q-meta"><span class="q-num">Q${q.id}</span><span class="q-topic-tag">${q.topic}</span>
       <span class="q-diff diff-${q.diff}">${q.diff}</span>${typeHint}
       <button class="q-mark-btn ${s.marked?'marked':''}" onclick="toggleMark(${q.id})" title="Mark for review">${s.marked?'★':'☆'}</button></div>
     <div class="q-text">${q.q}</div>
@@ -254,11 +274,6 @@ function revealAll(){ if(!confirm('Reveal answers for all questions?')) return;
   updateScore(); renderAll(); }
 document.addEventListener('DOMContentLoaded', () => { renderAll(); updateScore(); });
 </script>
-
-
-
-
-
 
 
 
@@ -376,10 +391,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../19_Serverless_Lambda_DynamoDB_APIGW_Cognito/02_Serverless_ExamCracker.html">Serverless ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel cnav-gcurrent">S20 · Serverless Architectures</div>
+<div class="cnav-glabel">S20 · Serverless Architectures</div>
 <ul>
-<li class=""><a href="01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
-<li class="cnav-current"><a href="02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/01_Serverless_Architecture_Masterclass.html">Serverless Architecture Masterclass</a></li>
+<li class=""><a href="../20_Serverless_Architecture_Patterns/02_Serverless_Architecture_ExamCracker.html">Serverless Architecture ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S21 · Databases in AWS</div>
@@ -406,10 +421,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../24_Monitoring_CloudWatch_CloudTrail_Config/02_Monitoring_ExamCracker.html">Monitoring ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">S25 · IAM Advanced</div>
+<div class="cnav-glabel cnav-gcurrent">S25 · IAM Advanced</div>
 <ul>
-<li class=""><a href="../25_IAM_Advanced/01_IAM_Advanced_Masterclass.html">IAM Advanced Masterclass</a></li>
-<li class=""><a href="../25_IAM_Advanced/02_IAM_Advanced_ExamCracker.html">IAM Advanced ExamCracker</a></li>
+<li class=""><a href="01_IAM_Advanced_Masterclass.html">IAM Advanced Masterclass</a></li>
+<li class="cnav-current"><a href="02_IAM_Advanced_ExamCracker.html">IAM Advanced ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S26 · Security & Encryption</div>

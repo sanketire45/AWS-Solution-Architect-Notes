@@ -22,18 +22,18 @@ START = "<!-- CHAPTER_NAV_START -->"
 END = "<!-- CHAPTER_NAV_END -->"
 
 # service-folder display order + friendly labels
-ORDER = ["EC2", "ELB &  ASG", "IAM", "RDS_Aurora_ElastiCache", "Route 53", "S3",
+ORDER = ["01_IAM", "02_EC2", "03_ELB_ASG", "04_RDS_Aurora_ElastiCache", "05_Route_53", "06_S3",
          "15_CloudFront_Global_Accelerator", "16_AWS_Storage_Extras",
          "17_Decoupling_SQS_SNS_Kinesis_MQ", "18_Containers_ECS_Fargate_ECR_EKS",
          "19_Serverless_Lambda_DynamoDB_APIGW_Cognito", "20_Serverless_Architecture_Patterns",
-         "21_Databases_in_AWS", "22_Data_and_Analytics"]
+         "21_Databases_in_AWS", "22_Data_and_Analytics", "23_Machine_Learning", "24_Monitoring_CloudWatch_CloudTrail_Config", "25_IAM_Advanced", "26_Security_Encryption", "27_Networking_VPC", "28_DR_and_Migrations"]
 LABELS = {
-    "EC2": "EC2",
-    "ELB &  ASG": "ELB & ASG",
-    "IAM": "IAM",
-    "RDS_Aurora_ElastiCache": "RDS · Aurora · ElastiCache",
-    "Route 53": "Route 53",
-    "S3": "S3",
+    "01_IAM": "S01 · IAM",
+    "02_EC2": "S02 · EC2",
+    "03_ELB_ASG": "S03 · ELB & ASG",
+    "04_RDS_Aurora_ElastiCache": "S04 · RDS · Aurora · ElastiCache",
+    "05_Route_53": "S05 · Route 53",
+    "06_S3": "S06 · S3",
     "15_CloudFront_Global_Accelerator": "S15 · CloudFront & Global Accelerator",
     "16_AWS_Storage_Extras": "S16 · AWS Storage Extras",
     "17_Decoupling_SQS_SNS_Kinesis_MQ": "S17 · Decoupling (SQS/SNS/Kinesis/MQ)",
@@ -42,6 +42,12 @@ LABELS = {
     "20_Serverless_Architecture_Patterns": "S20 · Serverless Architectures",
     "21_Databases_in_AWS": "S21 · Databases in AWS",
     "22_Data_and_Analytics": "S22 · Data & Analytics",
+    "23_Machine_Learning": "S23 · Machine Learning",
+    "24_Monitoring_CloudWatch_CloudTrail_Config": "S24 · Monitoring & Audit",
+    "25_IAM_Advanced": "S25 · IAM Advanced",
+    "26_Security_Encryption": "S26 · Security & Encryption",
+    "27_Networking_VPC": "S27 · Networking (VPC)",
+    "28_DR_and_Migrations": "S28 · DR & Migrations",
 }
 
 

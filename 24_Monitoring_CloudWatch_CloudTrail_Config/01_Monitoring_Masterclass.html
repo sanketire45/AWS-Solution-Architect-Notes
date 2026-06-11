@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Machine Learning on AWS — Masterclass (SAA-C03)</title>
+<title>Monitoring & Audit: CloudWatch, CloudTrail & Config — Masterclass (SAA-C03)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -12,15 +12,15 @@
     --accent-rust:#b84c2a;--accent-rust-light:#d4693e;--accent-purple:#6b3fa0;--accent-blue:#1e5fa8;
     --accent-blue-light:#2b7dd4;--accent-green:#2d7a3e;--border:#e8ddd0;--border-warm:#d4c4aa;
     --shadow-warm:0 4px 24px rgba(100,70,30,0.12);--shadow-card:0 2px 12px rgba(100,70,30,0.08);
-    --accent:#6b3fa0;--paper:#fff9f2;--rule:#e8ddd0;--bg-alt:#f0e8dc;--ink-mute:#6b5744;
+    --accent:#1e5fa8;--paper:#fff9f2;--rule:#e8ddd0;--bg-alt:#f0e8dc;--ink-mute:#6b5744;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.75;-webkit-font-smoothing:antialiased;}
-  .hero{background:linear-gradient(135deg,#221a36 0%,#2a2247 45%,#15233a 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
-  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(160,120,230,0.18) 0%,transparent 70%);}
+  .hero{background:linear-gradient(135deg,#141a2e 0%,#1a2440 45%,#13231f 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
+  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(43,125,212,0.16) 0%,transparent 70%);}
   .hero-tag{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-amber-light);font-weight:700;margin-bottom:16px;}
-  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(36px,4.6vw,58px);line-height:1.06;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
+  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(34px,4.4vw,56px);line-height:1.06;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
   .hero h1 span{color:var(--accent-amber-light);}
   .hero-subtitle{font-size:19px;color:rgba(255,255,255,0.72);max-width:790px;font-weight:400;}
   .hero-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px;}
@@ -28,10 +28,9 @@
   .svc-tabnav{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:8px;padding:14px 60px;background:rgba(250,246,240,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(100,70,30,0.06);}
   .svc-tab{font:600 15.5px/1 'Inter',sans-serif;color:var(--ink-muted);background:var(--warm-white);border:1.5px solid var(--border);border-radius:12px;padding:11px 18px;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;gap:8px;}
   .svc-tab:hover{color:var(--ink);border-color:var(--border-warm);}
-  .svc-tab.vision.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
-  .svc-tab.lang.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
-  .svc-tab.sm.active{color:#fff;background:var(--accent-purple);border-color:var(--accent-purple);box-shadow:0 3px 12px rgba(107,63,160,0.32);}
-  .svc-tab.ai.active{color:#fff;background:var(--accent-rust);border-color:var(--accent-rust);box-shadow:0 3px 12px rgba(184,76,42,0.32);}
+  .svc-tab.cw.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
+  .svc-tab.ct.active{color:#fff;background:var(--accent-rust);border-color:var(--accent-rust);box-shadow:0 3px 12px rgba(184,76,42,0.32);}
+  .svc-tab.cfg.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
   .svc-panel{display:none;}.svc-panel.active{display:block;animation:fade .3s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
   .main-content{max-width:1300px;margin:0 auto;padding:0 60px 80px;}
@@ -44,7 +43,6 @@
   .part-header{padding:20px 28px;border-radius:13px;margin:44px 0 6px;scroll-margin-top:86px;}
   .part-header.blue{background:linear-gradient(135deg,#e0ecf8 0%,#cce0f5 100%);}
   .part-header.teal{background:linear-gradient(135deg,#e0f4f1 0%,#c8eee9 100%);}
-  .part-header.purple{background:linear-gradient(135deg,#efe8f8 0%,#e2d4f0 100%);}
   .part-header.rust{background:linear-gradient(135deg,#fce8e0 0%,#f8d8cc 100%);}
   .part-header.amber{background:linear-gradient(135deg,#fdf0e0 0%,#fde8c8 100%);}
   .part-number{font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-rust);margin-bottom:4px;}
@@ -63,7 +61,10 @@
   .callout-tag{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
   .callout p{margin-bottom:10px;color:var(--ink-soft);}.callout p:last-child{margin-bottom:0;}
   .callout-why{background:#fdf4e6;border-color:#f0d9b0;}.callout-why .callout-tag{color:var(--accent-amber);}
+  .callout-trap{background:#fcebe5;border-color:#f0c4b4;}.callout-trap .callout-tag{color:var(--accent-rust);}
   .callout-key{background:#e6f3f0;border-color:#b4ddd4;}.callout-key .callout-tag{color:var(--accent-teal);}
+  .price-tag{background:#fff6e9;border-left:3px solid var(--accent-amber);border-radius:0 8px 8px 0;padding:12px 18px;margin:18px 0;font-size:16px;color:var(--ink-soft);}
+  .price-tag strong{color:var(--accent-rust);}
   .table-wrap{overflow-x:auto;margin:22px 0;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-card);}
   table.data{width:100%;border-collapse:collapse;font-size:15.5px;background:var(--warm-white);}
   table.data thead tr{background:#f0e8dc;}
@@ -95,264 +96,269 @@
 <body>
 
 <header class="hero">
-  <div class="hero-tag">SAA-C03 Masterclass · Section 23 · Doc 1 of 2</div>
-  <h1>Machine Learning <span>on AWS</span></h1>
-  <p class="hero-subtitle">For the SAA exam you don't build models — you <em>recognise which managed AI service</em> solves a problem. AWS offers pre-trained, API-driven AI services (vision, speech, language, search, recommendations) plus SageMaker to build your own. Learn the one-line trigger for each.</p>
+  <div class="hero-tag">SAA-C03 Masterclass · Section 24 · Doc 1 of 2</div>
+  <h1>Monitoring &amp; Audit — <span>CloudWatch · CloudTrail · Config</span></h1>
+  <p class="hero-subtitle">Three services that sound similar but answer three different questions. <strong>CloudWatch</strong> = "what is happening?" (performance). <strong>CloudTrail</strong> = "who did it?" (API audit). <strong>Config</strong> = "is it compliant, and how did it change?" (configuration). Master the distinction — the exam tests it relentlessly.</p>
   <div class="hero-pills">
-    <span class="hero-pill">Rekognition &amp; Textract</span><span class="hero-pill">Transcribe / Polly / Translate</span><span class="hero-pill">Comprehend &amp; Lex</span><span class="hero-pill">SageMaker</span><span class="hero-pill">Kendra / Personalize / Forecast</span>
+    <span class="hero-pill">Metrics &amp; Alarms</span><span class="hero-pill">Logs &amp; Insights</span><span class="hero-pill">API Auditing</span><span class="hero-pill">Compliance Rules</span>
   </div>
 </header>
 
 <nav class="svc-tabnav">
-  <button class="svc-tab vision active" data-panel="vision">👁️ Vision &amp; Documents</button>
-  <button class="svc-tab lang" data-panel="lang">💬 Speech &amp; Language</button>
-  <button class="svc-tab sm" data-panel="sm">🛠️ SageMaker</button>
-  <button class="svc-tab ai" data-panel="ai">🤖 Specialized AI</button>
+  <button class="svc-tab cw active" data-panel="cw">📈 CloudWatch</button>
+  <button class="svc-tab ct" data-panel="ct">🕵️ CloudTrail</button>
+  <button class="svc-tab cfg" data-panel="cfg">✅ Config</button>
 </nav>
 
 <div class="main-content">
 
-<!-- ════ VISION & DOCUMENTS ════ -->
-<div id="panel-vision" class="svc-panel active">
+<!-- ════ CLOUDWATCH ════ -->
+<div id="panel-cw" class="svc-panel active">
   <div class="svc-index">
-    <div class="svc-index-label">👁️ Vision &amp; Documents — On This Page</div>
+    <div class="svc-index-label">📈 CloudWatch — On This Page</div>
     <div class="svc-index-inner">
-      <a href="#vision-p1"><span class="idx-dot"></span>The AI Services Idea</a>
-      <a href="#vision-p2"><span class="idx-dot"></span>Rekognition (images/video)</a>
-      <a href="#vision-p3"><span class="idx-dot"></span>Textract (documents)</a>
-      <a href="#vision-triggers"><span class="idx-dot"></span>Triggers</a>
+      <a href="#cw-p1"><span class="idx-dot"></span>The Three-Way Distinction</a>
+      <a href="#cw-p2"><span class="idx-dot"></span>Metrics &amp; Alarms</a>
+      <a href="#cw-p3"><span class="idx-dot"></span>Logs &amp; the Agent</a>
+      <a href="#cw-p4"><span class="idx-dot"></span>Events &amp; Beyond</a>
+      <a href="#cw-triggers"><span class="idx-dot"></span>Triggers</a>
     </div>
   </div>
 
-  <div class="part-header blue" id="vision-p1">
-    <div class="part-number">Vision · Part 1</div>
-    <h2>AWS AI Services — Pre-Trained, API-Driven</h2>
-    <p>Most AWS "ML" is not building models — it's calling a ready-made AI API.</p>
+  <div class="part-header blue" id="cw-p1">
+    <div class="part-number">CloudWatch · Part 1</div>
+    <h2>First — The Three-Way Distinction</h2>
+    <p>Get this table right and you'll answer almost every question in this section.</p>
   </div>
   <div class="section">
-    <div class="prose">
-      <p class="lead">You don't need a data-science team to add AI. AWS provides <strong>pre-trained, fully-managed AI services</strong> you call like any API: send an image, get back labels; send audio, get back text. No training, no servers.</p>
-      <p>For the exam, the skill is <strong>mapping a problem to the right service</strong>. Build-your-own (SageMaker) is for when no pre-built service fits and you have your own data/model.</p>
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Service</th><th>Answers</th><th>Think</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CloudWatch</strong></td><td>"What is happening / how is it performing?"</td><td>Metrics, logs, alarms, dashboards — <strong>performance &amp; operations</strong></td></tr>
+        <tr><td><strong>CloudTrail</strong></td><td>"Who did what, when?"</td><td>API call history — <strong>audit &amp; governance</strong></td></tr>
+        <tr><td><strong>Config</strong></td><td>"Is this resource compliant, and how did its config change?"</td><td>Resource configuration over time — <strong>compliance</strong></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 One-line memory hook</div>
+      <p><strong>CloudWatch watches performance. CloudTrail trails API calls. Config checks configuration compliance.</strong></p>
     </div>
   </div>
 
-  <div class="part-header blue" id="vision-p2">
-    <div class="part-number">Vision · Part 2</div>
-    <h2>Amazon Rekognition — Image &amp; Video Analysis</h2>
+  <div class="part-header blue" id="cw-p2">
+    <div class="part-number">CloudWatch · Part 2</div>
+    <h2>Metrics, Alarms &amp; Dashboards</h2>
   </div>
   <div class="section">
     <ul class="nice-list">
-      <li>Detect <strong>objects, scenes, faces, text</strong> in images and video.</li>
-      <li><strong>Facial analysis &amp; comparison</strong> (identity verification), <strong>celebrity recognition</strong>.</li>
-      <li><strong>Content moderation</strong> — flag inappropriate/unsafe images &amp; video (a very common exam use case).</li>
-      <li>"Analyse images/video, detect faces/objects, moderate content" → Rekognition.</li>
+      <li><strong>Metrics</strong> — time-series data (CPU, network, request count). AWS publishes many automatically; you can push <strong>custom metrics</strong>.</li>
+      <li><strong>Alarms</strong> — watch a metric and trigger an <strong>action</strong> when a threshold is breached: notify via <strong>SNS</strong>, trigger <strong>Auto Scaling</strong>, or run an <strong>EC2 action</strong> (recover/stop/reboot).</li>
+      <li><strong>Dashboards</strong> — visualise metrics across services/regions in one view.</li>
+      <li><strong>Composite alarms</strong> combine multiple alarms to cut noise.</li>
     </ul>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Common pattern</div>
+      <p>"Alert me / scale when CPU &gt; 70%" → <strong>CloudWatch alarm → SNS / Auto Scaling</strong>. "Automatically recover a failed EC2 instance" → CloudWatch alarm with an <strong>EC2 recover action</strong>.</p>
+    </div>
   </div>
 
-  <div class="part-header blue" id="vision-p3">
-    <div class="part-number">Vision · Part 3</div>
-    <h2>Amazon Textract — Extract Text &amp; Data from Documents</h2>
+  <div class="part-header blue" id="cw-p3">
+    <div class="part-number">CloudWatch · Part 3</div>
+    <h2>CloudWatch Logs &amp; the Agent</h2>
   </div>
   <div class="section">
-    <div class="prose">
-      <p><strong>Textract</strong> goes beyond plain OCR: it extracts <strong>text, tables, forms (key-value pairs)</strong> from scanned documents, PDFs, invoices, and IDs — preserving structure. "Extract data/tables/forms from scanned documents" → Textract.</p>
+    <ul class="nice-list">
+      <li><strong>CloudWatch Logs</strong> — centralise logs from EC2, Lambda, ECS, on-prem; set <strong>retention</strong> (default = never expire = silent cost).</li>
+      <li><strong>Logs Insights</strong> — query logs with a purpose-built query language.</li>
+      <li><strong>Subscription filters</strong> → stream logs to Kinesis/Firehose/Lambda in near-real-time (e.g. <strong>Logs → Firehose → OpenSearch</strong>).</li>
+    </ul>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ The CloudWatch Agent trap</div>
+      <p>By default, EC2 sends CPU/network/disk-I/O metrics — but <strong>NOT memory (RAM) or disk-space-used</strong>. To collect those you must install the <strong>CloudWatch Agent</strong> (and push them as custom metrics). "Monitor EC2 memory utilization" → CloudWatch Agent, not the default metrics.</p>
     </div>
-    <div class="callout callout-key">
-      <div class="callout-tag">🔑 Rekognition vs Textract</div>
-      <p><strong>Rekognition</strong> = analyse <em>images/video</em> (faces, objects, moderation). <strong>Textract</strong> = extract <em>structured text/forms/tables</em> from <em>documents</em>. "Read a scanned invoice's fields" → Textract, not Rekognition.</p>
-    </div>
+    <div class="price-tag">💵 Logs ≈ <strong>$0.50/GB ingested + $0.03/GB-month stored</strong>. The silent cost is forgotten <strong>retention</strong> — set it (e.g. 30/90 days) instead of "never expire."</div>
+  </div>
+
+  <div class="part-header blue" id="cw-p4">
+    <div class="part-number">CloudWatch · Part 4</div>
+    <h2>Events (EventBridge), X-Ray &amp; the Family</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>EventBridge (CloudWatch Events)</strong> — react to AWS events or schedules (cron) → trigger Lambda/SNS/Step Functions. "Run a task daily" or "react to a state change" → EventBridge.</li>
+      <li><strong>X-Ray</strong> — distributed tracing across microservices ("where is the latency / which call failed?").</li>
+      <li><strong>Synthetics</strong> (canary uptime checks), <strong>RUM</strong> (real-user monitoring), <strong>Container/Lambda Insights</strong>, <strong>Application Signals</strong> (unified APM).</li>
+    </ul>
   </div>
 
   
-<div class="price-tag">💵 <strong>AI services are pay-per-use:</strong> Rekognition/Comprehend/Transcribe bill per image/character/minute; a <strong>SageMaker real-time endpoint</strong> is an always-on instance (~$0.05–$1+/hr — turn it off or use serverless inference for spiky loads); <strong>Bedrock</strong> bills per 1,000 input/output tokens. The lever: pre-trained APIs cost pennies per call; SageMaker endpoints cost like EC2.</div>
-
 <div class="industry-spotlight">
   <div class="industry-spotlight-tag">🏢 Dublin Industry — Verified</div>
-  <h3>Ryanair runs pre-trained AI services AND custom SageMaker models in production</h3>
-  <p><strong>Ryanair</strong> (Dublin) uses a mix the exam expects you to recognise: <strong>SageMaker</strong> for custom <em>demand forecasting</em> models, <strong>Amazon Lex</strong> for customer-support intent routing, and an <strong>Alexa MyRyanair skill</strong> — pre-trained AI services where they fit, custom models where they don't.</p>
-  <p>The pattern across Dublin platforms: reach for the <strong>managed AI API</strong> (Rekognition, Comprehend, Transcribe) for standard tasks, and only build in <strong>SageMaker</strong> when the problem is unique to your data.</p>
-  <div class="arch-item"><div class="arch-label">Build vs buy</div><p>"Standard task" (faces, sentiment, transcription, recommendations) → pre-trained AI service = least effort. "Custom prediction on our own dataset" → SageMaker. Ryanair's forecasting is the rare case that justifies a custom model.</p></div>
+  <h3>How a Dublin SRE team actually uses CloudWatch in production</h3>
+  <p>At <strong>Ryanair</strong>, on-call SREs watch <strong>CloudWatch alarms &amp; dashboards</strong> for the metrics that predict customer pain: <strong>Aurora replica lag</strong>, <strong>ALB 5xx rates</strong>, and <strong>Kinesis IteratorAge</strong> (how far behind stream consumers are). Runbooks tie alarms to actions (e.g. RDS failover, scaling).</p>
+  <p>The three services map to three real questions the team asks daily: CloudWatch "is it healthy / fast?", CloudTrail "who changed that?", Config "is it still compliant?" — used together for full operational governance.</p>
+  <div class="arch-item"><div class="arch-label">Observability in practice</div><p>Alarms → SNS → on-call; metric filters on logs catch error spikes; an org-wide CloudTrail trail to S3 (management events are free) gives audit; Config rules + auto-remediation keep security groups and encryption compliant across accounts.</p></div>
 </div>
 
-<div class="trigger-box" id="vision-triggers">
-    <h3>⚡ Vision &amp; Documents — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"detect objects/faces in images or video"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Rekognition</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"content moderation (flag unsafe images)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Rekognition</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"extract text/tables/forms from scanned docs"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Textract</div></div>
+<div class="trigger-box" id="cw-triggers">
+    <h3>⚡ CloudWatch — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"monitor metrics / set alarms / dashboards"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudWatch</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"collect EC2 memory / disk-space metrics"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudWatch Agent (custom metrics)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"alert / auto-scale on a threshold"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudWatch alarm → SNS / ASG</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"react to an event / scheduled cron"</div><div class="trigger-arrow">→</div><div class="trigger-ans">EventBridge</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"trace requests across microservices"</div><div class="trigger-arrow">→</div><div class="trigger-ans">X-Ray</div></div>
   </div>
 </div>
 
-<!-- ════ SPEECH & LANGUAGE ════ -->
-<div id="panel-lang" class="svc-panel">
+<!-- ════ CLOUDTRAIL ════ -->
+<div id="panel-ct" class="svc-panel">
   <div class="svc-index">
-    <div class="svc-index-label">💬 Speech &amp; Language — On This Page</div>
+    <div class="svc-index-label">🕵️ CloudTrail — On This Page</div>
     <div class="svc-index-inner">
-      <a href="#lang-p1"><span class="idx-dot"></span>Transcribe / Polly / Translate</a>
-      <a href="#lang-p2"><span class="idx-dot"></span>Comprehend (NLP)</a>
-      <a href="#lang-p3"><span class="idx-dot"></span>Lex (chatbots)</a>
-      <a href="#lang-triggers"><span class="idx-dot"></span>Triggers</a>
+      <a href="#ct-p1"><span class="idx-dot"></span>Why CloudTrail</a>
+      <a href="#ct-p2"><span class="idx-dot"></span>Management vs Data Events</a>
+      <a href="#ct-p3"><span class="idx-dot"></span>Trails, Insights &amp; Org Trails</a>
+      <a href="#ct-triggers"><span class="idx-dot"></span>Triggers</a>
     </div>
   </div>
 
-  <div class="part-header teal" id="lang-p1">
-    <div class="part-number">Speech · Part 1</div>
-    <h2>Transcribe · Polly · Translate</h2>
-  </div>
-  <div class="section">
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Service</th><th>Does</th><th>Trigger</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Transcribe</strong></td><td>Speech → text (with speaker labels, PII redaction)</td><td>"speech to text", "transcribe audio/calls"</td></tr>
-        <tr><td><strong>Polly</strong></td><td>Text → lifelike speech</td><td>"text to speech", "read text aloud"</td></tr>
-        <tr><td><strong>Translate</strong></td><td>Translate between languages</td><td>"translate languages", "localize content"</td></tr>
-      </tbody>
-    </table></div>
-    <div class="callout callout-key">
-      <div class="callout-tag">🔑 Chain them</div>
-      <p>A common pattern: <strong>Transcribe</strong> (call audio → text) → <strong>Comprehend</strong> (sentiment/entities) → <strong>Translate</strong> (other languages) → <strong>Polly</strong> (back to speech). Recognise the building blocks.</p>
-    </div>
-  </div>
-
-  <div class="part-header teal" id="lang-p2">
-    <div class="part-number">Language · Part 2</div>
-    <h2>Amazon Comprehend — Natural Language Processing</h2>
-  </div>
-  <div class="section">
-    <ul class="nice-list">
-      <li>NLP on text: <strong>sentiment</strong>, <strong>entities</strong>, key phrases, language detection, topic modeling.</li>
-      <li><strong>Detect &amp; redact PII</strong> in text; <strong>Comprehend Medical</strong> for clinical text.</li>
-      <li>"Analyse sentiment / extract entities / find PII in text" → Comprehend.</li>
-    </ul>
-  </div>
-
-  <div class="part-header teal" id="lang-p3">
-    <div class="part-number">Language · Part 3</div>
-    <h2>Amazon Lex — Conversational Chatbots</h2>
+  <div class="part-header rust" id="ct-p1">
+    <div class="part-number">CloudTrail · Part 1</div>
+    <h2>Why CloudTrail — The Audit Log of Your Account</h2>
+    <p>Who deleted that bucket? Who changed that security group? CloudTrail answers.</p>
   </div>
   <div class="section">
     <div class="prose">
-      <p><strong>Lex</strong> builds <strong>conversational interfaces (chatbots / voice bots)</strong> using the same technology as Alexa — automatic speech recognition + natural-language understanding to capture intent. Pairs with <strong>Amazon Connect</strong> (contact center) for IVR. "Build a chatbot / voice assistant / IVR" → Lex.</p>
+      <p class="lead"><strong>AWS CloudTrail records every API call made in your account</strong> — by the console, CLI, SDK, or another AWS service — capturing <em>who</em> did <em>what</em>, <em>when</em>, and from <em>where</em>.</p>
+      <p>It's the foundation of <strong>governance, compliance, and security forensics</strong>. After an incident ("who deleted the database?"), CloudTrail is where you look. It's enabled by default for recent management events (90-day console history), but for long-term retention you create a <strong>Trail</strong> that delivers logs to S3.</p>
     </div>
   </div>
 
-  <div class="trigger-box" id="lang-triggers">
-    <h3>⚡ Speech &amp; Language — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"speech to text / transcribe"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Transcribe</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"text to speech / read aloud"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Polly</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"translate languages"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Translate</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"sentiment / entities / PII in text"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Comprehend</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"chatbot / voice bot / IVR"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Lex (+ Connect)</div></div>
-  </div>
-</div>
-
-<!-- ════ SAGEMAKER ════ -->
-<div id="panel-sm" class="svc-panel">
-  <div class="svc-index">
-    <div class="svc-index-label">🛠️ SageMaker — On This Page</div>
-    <div class="svc-index-inner">
-      <a href="#sm-p1"><span class="idx-dot"></span>Why SageMaker</a>
-      <a href="#sm-p2"><span class="idx-dot"></span>The ML Lifecycle</a>
-      <a href="#sm-triggers"><span class="idx-dot"></span>Triggers</a>
-    </div>
-  </div>
-
-  <div class="part-header purple" id="sm-p1">
-    <div class="part-number">SageMaker · Part 1</div>
-    <h2>Amazon SageMaker — Build Your Own ML</h2>
-    <p>When no pre-built AI service fits and you have your own data and model, SageMaker is the full workbench.</p>
-  </div>
-  <div class="section">
-    <div class="prose">
-      <p class="lead"><strong>SageMaker</strong> is the end-to-end platform to <strong>build, train, tune, and deploy</strong> your own machine-learning models — managing the heavy lifting of notebooks, training infrastructure, and hosting.</p>
-      <p>For the exam: when a scenario needs a <strong>custom model trained on the company's own data</strong> (not a pre-trained API like Rekognition/Comprehend), the answer is <strong>SageMaker</strong>.</p>
-    </div>
-  </div>
-
-  <div class="part-header purple" id="sm-p2">
-    <div class="part-number">SageMaker · Part 2</div>
-    <h2>The Pieces You Should Recognise</h2>
-  </div>
-  <div class="section">
-    <ul class="nice-list">
-      <li><strong>SageMaker Studio</strong> — the IDE; <strong>notebooks</strong> for exploration.</li>
-      <li><strong>Ground Truth</strong> — data labeling (human + ML-assisted).</li>
-      <li><strong>Training jobs</strong> + automatic model tuning; <strong>built-in algorithms</strong> &amp; <strong>JumpStart</strong> (pre-built models).</li>
-      <li><strong>Endpoints</strong> — deploy a model for real-time inference (or batch transform).</li>
-      <li><strong>Autopilot / Canvas</strong> — auto/no-code ML; <strong>Feature Store</strong>, <strong>Pipelines</strong>, <strong>Model Monitor</strong>.</li>
-    </ul>
-    <div class="callout callout-key">
-      <div class="callout-tag">🔑 Pre-built service vs SageMaker</div>
-      <p>"Standard task (faces, sentiment, transcription)" → use the <strong>pre-trained AI service</strong> (least effort). "Custom model on our own dataset / unique problem" → <strong>SageMaker</strong>. Don't reach for SageMaker when Rekognition/Comprehend already solves it.</p>
-    </div>
-  </div>
-
-  <div class="trigger-box" id="sm-triggers">
-    <h3>⚡ SageMaker — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"build/train/deploy a custom ML model"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SageMaker</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"label a training dataset"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SageMaker Ground Truth</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"real-time inference endpoint for our model"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SageMaker endpoint</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"a pre-trained API already does this"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Use the AI service (not SageMaker)</div></div>
-  </div>
-</div>
-
-<!-- ════ SPECIALIZED AI ════ -->
-<div id="panel-ai" class="svc-panel">
-  <div class="svc-index">
-    <div class="svc-index-label">🤖 Specialized AI — On This Page</div>
-    <div class="svc-index-inner">
-      <a href="#ai-p1"><span class="idx-dot"></span>Kendra · Personalize · Forecast</a>
-      <a href="#ai-p2"><span class="idx-dot"></span>Fraud Detector &amp; Bedrock</a>
-      <a href="#ai-triggers"><span class="idx-dot"></span>Triggers</a>
-    </div>
-  </div>
-
-  <div class="part-header rust" id="ai-p1">
-    <div class="part-number">Specialized · Part 1</div>
-    <h2>Kendra · Personalize · Forecast</h2>
+  <div class="part-header rust" id="ct-p2">
+    <div class="part-number">CloudTrail · Part 2</div>
+    <h2>Management Events vs Data Events</h2>
+    <p>A tested distinction with a cost angle.</p>
   </div>
   <div class="section">
     <div class="table-wrap"><table class="data">
-      <thead><tr><th>Service</th><th>Does</th><th>Trigger</th></tr></thead>
+      <thead><tr><th></th><th>Management Events</th><th>Data Events</th></tr></thead>
       <tbody>
-        <tr><td><strong>Kendra</strong></td><td>ML-powered <strong>intelligent enterprise search</strong> over documents (natural-language Q&amp;A)</td><td>"intelligent document search across the company"</td></tr>
-        <tr><td><strong>Personalize</strong></td><td>Real-time <strong>recommendations</strong> (same tech as Amazon.com)</td><td>"product/content recommendations"</td></tr>
-        <tr><td><strong>Forecast</strong></td><td><strong>Time-series forecasting</strong> (demand, inventory)</td><td>"forecast future demand/sales from history"</td></tr>
+        <tr><td><strong>What</strong></td><td>Control-plane ops (create/delete/modify resources, IAM changes)</td><td>Data-plane ops (S3 object GET/PUT, Lambda invokes)</td></tr>
+        <tr><td><strong>Default</strong></td><td>✅ Logged (and free)</td><td>❌ Not logged by default</td></tr>
+        <tr><td><strong>Cost</strong></td><td><strong>Free</strong></td><td>Paid (high volume)</td></tr>
+        <tr><td><strong>Example</strong></td><td>"Who deleted this S3 bucket?"</td><td>"Who read this specific object?"</td></tr>
       </tbody>
     </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Tested gotcha</div>
+      <p><strong>Data events (S3 object-level, Lambda invokes) are NOT logged by default</strong> — you must explicitly enable them (and they cost more). "Audit who accessed individual S3 objects" → enable CloudTrail <strong>data events</strong>. "Audit who changed configuration / deleted resources" → management events (default).</p>
+    </div>
   </div>
 
-  <div class="part-header rust" id="ai-p2">
-    <div class="part-number">Specialized · Part 2</div>
-    <h2>Fraud Detector &amp; Bedrock</h2>
+  <div class="part-header rust" id="ct-p3">
+    <div class="part-number">CloudTrail · Part 3</div>
+    <h2>Trails, Log Integrity, Insights &amp; Org Trails</h2>
   </div>
   <div class="section">
     <ul class="nice-list">
-      <li><strong>Amazon Fraud Detector</strong> — detect online fraud (fake accounts, payment fraud) with ML, no ML expertise needed.</li>
-      <li><strong>Amazon Bedrock</strong> — the newer <strong>generative-AI</strong> service: access foundation models (Anthropic Claude, etc.) via API to build GenAI apps. "Generative AI / foundation models / build a chatbot with an LLM / RAG" → Bedrock.</li>
-      <li><strong>Comprehend Medical / Transcribe Medical</strong> — healthcare-specific variants.</li>
+      <li><strong>Trail → S3</strong> for long-term storage; send to <strong>CloudWatch Logs</strong> for alerting on specific API calls.</li>
+      <li><strong>Log file validation</strong> — cryptographic hashing proves logs weren't tampered with (compliance).</li>
+      <li><strong>CloudTrail Insights</strong> — detect unusual API activity (anomalies).</li>
+      <li><strong>Organization Trail</strong> — one trail capturing all accounts in AWS Organizations into a central S3 bucket.</li>
+    </ul>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Alert on a specific action</div>
+      <p>"Alert me whenever someone disables encryption / makes a bucket public / changes IAM" → send CloudTrail to <strong>CloudWatch Logs</strong> and trigger an alarm/EventBridge rule on that event. (CloudTrail records; CloudWatch/EventBridge react.)</p>
+    </div>
+  </div>
+
+  <div class="trigger-box" id="ct-triggers">
+    <h3>⚡ CloudTrail — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"who made this API call / who deleted X"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudTrail</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"audit / governance / security forensics"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudTrail</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"audit access to individual S3 objects"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudTrail data events (not default)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"central audit log across all org accounts"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Organization Trail → S3</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"prove logs weren't tampered with"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudTrail log file validation</div></div>
+  </div>
+</div>
+
+<!-- ════ CONFIG ════ -->
+<div id="panel-cfg" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">✅ Config — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#cfg-p1"><span class="idx-dot"></span>Why Config</a>
+      <a href="#cfg-p2"><span class="idx-dot"></span>Rules &amp; Remediation</a>
+      <a href="#cfg-p3"><span class="idx-dot"></span>CloudTrail vs Config</a>
+      <a href="#cfg-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="cfg-p1">
+    <div class="part-number">Config · Part 1</div>
+    <h2>Why AWS Config — Configuration History &amp; Compliance</h2>
+    <p>"Was this security group ever open to the world? Is every bucket encrypted right now?" Config answers.</p>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p class="lead"><strong>AWS Config records the configuration of your resources over time</strong> and evaluates them against <strong>rules</strong> — giving you a timeline of every change and a continuous compliance picture.</p>
+      <p>For each resource it keeps a <strong>configuration history</strong> (what it looked like at each point in time, and what changed) and tells you whether it currently <strong>complies</strong> with your policies (e.g. "all EBS volumes must be encrypted," "no security group may allow 0.0.0.0/0 on port 22").</p>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="cfg-p2">
+    <div class="part-number">Config · Part 2</div>
+    <h2>Config Rules &amp; Auto-Remediation</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Managed &amp; custom rules</strong> — check compliance (e.g. <code>s3-bucket-public-read-prohibited</code>, <code>encrypted-volumes</code>). Custom rules run a Lambda.</li>
+      <li><strong>Auto-remediation</strong> — when a resource is non-compliant, run an SSM Automation document to fix it (e.g. re-enable encryption, remove a public ACL).</li>
+      <li><strong>Conformance packs</strong> — deploy a collection of rules + remediations as one package (e.g. for PCI/HIPAA).</li>
+      <li><strong>Multi-account/region aggregation</strong> via AWS Organizations.</li>
     </ul>
   </div>
 
-  <div class="trigger-box" id="ai-triggers">
-    <h3>⚡ Specialized AI — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"intelligent enterprise/document search"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kendra</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"real-time recommendations"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Personalize</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"forecast demand / time-series prediction"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Forecast</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"detect online/payment fraud with ML"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Fraud Detector</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"generative AI / foundation models / LLM app"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Bedrock</div></div>
+  <div class="part-header amber" id="cfg-p3">
+    <div class="part-number">Section 24 · The Big Distinction</div>
+    <h2>CloudTrail vs Config — Don't Confuse Them</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th></th><th>CloudTrail</th><th>Config</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Question</strong></td><td>Who made the API call?</td><td>What is the resource's configuration &amp; is it compliant?</td></tr>
+        <tr><td><strong>Records</strong></td><td>API activity (actions/events)</td><td>Resource state over time + compliance</td></tr>
+        <tr><td><strong>Example</strong></td><td>"User X called <code>ModifySecurityGroup</code> at 14:03"</td><td>"This SG currently allows 0.0.0.0/0:22 — NON-COMPLIANT; here's its change timeline"</td></tr>
+        <tr><td><strong>Use for</strong></td><td>Audit, forensics, who-did-it</td><td>Compliance, drift, configuration history</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 They complement each other</div>
+      <p>Config tells you a resource is <em>non-compliant</em> and how its config changed; CloudTrail tells you <em>who</em> made the change (the API call). Use both together for full governance. "Continuously check resource compliance / config drift" → Config. "Who performed the action" → CloudTrail.</p>
+    </div>
+    <div class="price-tag">💵 Config ≈ <strong>$0.003 per configuration item recorded</strong> + ~$0.001 per rule evaluation. Cost grows with resource churn — scope the recorder to the resource types you must govern.</div>
+  </div>
+
+  <div class="trigger-box" id="cfg-triggers">
+    <h3>⚡ Config — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"is this resource compliant with our policy?"</div><div class="trigger-arrow">→</div><div class="trigger-ans">AWS Config rules</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"configuration change history / drift over time"</div><div class="trigger-arrow">→</div><div class="trigger-ans">AWS Config</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"auto-fix non-compliant resources"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Config rule + SSM auto-remediation</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"who made the change (the API call)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudTrail (not Config)</div></div>
   </div>
 </div>
 
 </div><!-- end main-content -->
 
 <footer style="text-align:center;padding:30px 20px 50px;color:#6b5744;font-size:14px;">
-  SAA-C03 Masterclass · Section 23 — Machine Learning · Document 1 of 2 · Study Series by Sanky
+  SAA-C03 Masterclass · Section 24 — Monitoring &amp; Audit: CloudWatch, CloudTrail &amp; Config · Document 1 of 2 · Study Series by Sanky
 </footer>
 
 <script id="svc-tabs-js">
 (function(){
   var tabs = document.querySelectorAll('.svc-tab');
-  var keys = ['vision','lang','sm','ai'];
+  var keys = ['cw','ct','cfg'];
   var panels = {};
   keys.forEach(function(k){ panels[k] = document.getElementById('panel-'+k); });
   function activate(key, doScroll){
@@ -372,7 +378,6 @@
   }
 })();
 </script>
-
 
 
 
@@ -509,16 +514,16 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel cnav-gcurrent">S23 · Machine Learning</div>
+<div class="cnav-glabel">S23 · Machine Learning</div>
 <ul>
-<li class="cnav-current"><a href="01_Machine_Learning_Masterclass.html">Machine Learning Masterclass</a></li>
-<li class=""><a href="02_Machine_Learning_ExamCracker.html">Machine Learning ExamCracker</a></li>
+<li class=""><a href="../23_Machine_Learning/01_Machine_Learning_Masterclass.html">Machine Learning Masterclass</a></li>
+<li class=""><a href="../23_Machine_Learning/02_Machine_Learning_ExamCracker.html">Machine Learning ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">S24 · Monitoring & Audit</div>
+<div class="cnav-glabel cnav-gcurrent">S24 · Monitoring & Audit</div>
 <ul>
-<li class=""><a href="../24_Monitoring_CloudWatch_CloudTrail_Config/01_Monitoring_Masterclass.html">Monitoring Masterclass</a></li>
-<li class=""><a href="../24_Monitoring_CloudWatch_CloudTrail_Config/02_Monitoring_ExamCracker.html">Monitoring ExamCracker</a></li>
+<li class="cnav-current"><a href="01_Monitoring_Masterclass.html">Monitoring Masterclass</a></li>
+<li class=""><a href="02_Monitoring_ExamCracker.html">Monitoring ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S25 · IAM Advanced</div>

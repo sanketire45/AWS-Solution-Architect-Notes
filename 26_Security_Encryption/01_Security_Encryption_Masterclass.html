@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Machine Learning on AWS — Masterclass (SAA-C03)</title>
+<title>Security & Encryption: KMS, Secrets, WAF, Shield — Masterclass (SAA-C03)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -17,10 +17,10 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.75;-webkit-font-smoothing:antialiased;}
-  .hero{background:linear-gradient(135deg,#221a36 0%,#2a2247 45%,#15233a 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
-  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(160,120,230,0.18) 0%,transparent 70%);}
+  .hero{background:linear-gradient(135deg,#1f1630 0%,#28203f 45%,#2a1a14 100%);color:#fff;padding:64px 60px 52px;position:relative;overflow:hidden;}
+  .hero::after{content:'';position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(150,110,210,0.18) 0%,transparent 70%);}
   .hero-tag{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-amber-light);font-weight:700;margin-bottom:16px;}
-  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(36px,4.6vw,58px);line-height:1.06;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
+  .hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(34px,4.4vw,56px);line-height:1.06;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
   .hero h1 span{color:var(--accent-amber-light);}
   .hero-subtitle{font-size:19px;color:rgba(255,255,255,0.72);max-width:790px;font-weight:400;}
   .hero-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px;}
@@ -28,10 +28,10 @@
   .svc-tabnav{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:8px;padding:14px 60px;background:rgba(250,246,240,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(100,70,30,0.06);}
   .svc-tab{font:600 15.5px/1 'Inter',sans-serif;color:var(--ink-muted);background:var(--warm-white);border:1.5px solid var(--border);border-radius:12px;padding:11px 18px;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;gap:8px;}
   .svc-tab:hover{color:var(--ink);border-color:var(--border-warm);}
-  .svc-tab.vision.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
-  .svc-tab.lang.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
-  .svc-tab.sm.active{color:#fff;background:var(--accent-purple);border-color:var(--accent-purple);box-shadow:0 3px 12px rgba(107,63,160,0.32);}
-  .svc-tab.ai.active{color:#fff;background:var(--accent-rust);border-color:var(--accent-rust);box-shadow:0 3px 12px rgba(184,76,42,0.32);}
+  .svc-tab.kms.active{color:#fff;background:var(--accent-purple);border-color:var(--accent-purple);box-shadow:0 3px 12px rgba(107,63,160,0.32);}
+  .svc-tab.sec.active{color:#fff;background:var(--accent-blue);border-color:var(--accent-blue);box-shadow:0 3px 12px rgba(30,95,168,0.32);}
+  .svc-tab.waf.active{color:#fff;background:var(--accent-rust);border-color:var(--accent-rust);box-shadow:0 3px 12px rgba(184,76,42,0.32);}
+  .svc-tab.det.active{color:#fff;background:var(--accent-teal);border-color:var(--accent-teal);box-shadow:0 3px 12px rgba(29,122,110,0.32);}
   .svc-panel{display:none;}.svc-panel.active{display:block;animation:fade .3s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
   .main-content{max-width:1300px;margin:0 auto;padding:0 60px 80px;}
@@ -63,7 +63,10 @@
   .callout-tag{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
   .callout p{margin-bottom:10px;color:var(--ink-soft);}.callout p:last-child{margin-bottom:0;}
   .callout-why{background:#fdf4e6;border-color:#f0d9b0;}.callout-why .callout-tag{color:var(--accent-amber);}
+  .callout-trap{background:#fcebe5;border-color:#f0c4b4;}.callout-trap .callout-tag{color:var(--accent-rust);}
   .callout-key{background:#e6f3f0;border-color:#b4ddd4;}.callout-key .callout-tag{color:var(--accent-teal);}
+  .price-tag{background:#fff6e9;border-left:3px solid var(--accent-amber);border-radius:0 8px 8px 0;padding:12px 18px;margin:18px 0;font-size:16px;color:var(--ink-soft);}
+  .price-tag strong{color:var(--accent-rust);}
   .table-wrap{overflow-x:auto;margin:22px 0;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-card);}
   table.data{width:100%;border-collapse:collapse;font-size:15.5px;background:var(--warm-white);}
   table.data thead tr{background:#f0e8dc;}
@@ -95,264 +98,293 @@
 <body>
 
 <header class="hero">
-  <div class="hero-tag">SAA-C03 Masterclass · Section 23 · Doc 1 of 2</div>
-  <h1>Machine Learning <span>on AWS</span></h1>
-  <p class="hero-subtitle">For the SAA exam you don't build models — you <em>recognise which managed AI service</em> solves a problem. AWS offers pre-trained, API-driven AI services (vision, speech, language, search, recommendations) plus SageMaker to build your own. Learn the one-line trigger for each.</p>
+  <div class="hero-tag">SAA-C03 Masterclass · Section 26 · Doc 1 of 2</div>
+  <h1>Security &amp; Encryption — <span>KMS · Secrets · WAF · Shield</span></h1>
+  <p class="hero-subtitle">The Security domain is <strong>30% of the exam</strong> — the biggest. Master how AWS handles <em>encryption keys</em> (KMS), <em>secrets &amp; certificates</em>, <em>web/DDoS protection</em> (WAF, Shield), and the <em>threat-detection</em> family (GuardDuty, Inspector, Macie…). Each has a sharp one-line trigger.</p>
   <div class="hero-pills">
-    <span class="hero-pill">Rekognition &amp; Textract</span><span class="hero-pill">Transcribe / Polly / Translate</span><span class="hero-pill">Comprehend &amp; Lex</span><span class="hero-pill">SageMaker</span><span class="hero-pill">Kendra / Personalize / Forecast</span>
+    <span class="hero-pill">KMS &amp; CloudHSM</span><span class="hero-pill">Secrets Manager / Params</span><span class="hero-pill">WAF &amp; Shield</span><span class="hero-pill">GuardDuty / Inspector / Macie</span>
   </div>
 </header>
 
 <nav class="svc-tabnav">
-  <button class="svc-tab vision active" data-panel="vision">👁️ Vision &amp; Documents</button>
-  <button class="svc-tab lang" data-panel="lang">💬 Speech &amp; Language</button>
-  <button class="svc-tab sm" data-panel="sm">🛠️ SageMaker</button>
-  <button class="svc-tab ai" data-panel="ai">🤖 Specialized AI</button>
+  <button class="svc-tab kms active" data-panel="kms">🔐 KMS &amp; CloudHSM</button>
+  <button class="svc-tab sec" data-panel="sec">🗝️ Secrets / Params / ACM</button>
+  <button class="svc-tab waf" data-panel="waf">🛡️ WAF &amp; Shield</button>
+  <button class="svc-tab det" data-panel="det">🔎 Threat Detection</button>
 </nav>
 
 <div class="main-content">
 
-<!-- ════ VISION & DOCUMENTS ════ -->
-<div id="panel-vision" class="svc-panel active">
+<!-- ════ KMS ════ -->
+<div id="panel-kms" class="svc-panel active">
   <div class="svc-index">
-    <div class="svc-index-label">👁️ Vision &amp; Documents — On This Page</div>
+    <div class="svc-index-label">🔐 KMS &amp; CloudHSM — On This Page</div>
     <div class="svc-index-inner">
-      <a href="#vision-p1"><span class="idx-dot"></span>The AI Services Idea</a>
-      <a href="#vision-p2"><span class="idx-dot"></span>Rekognition (images/video)</a>
-      <a href="#vision-p3"><span class="idx-dot"></span>Textract (documents)</a>
-      <a href="#vision-triggers"><span class="idx-dot"></span>Triggers</a>
+      <a href="#kms-p1"><span class="idx-dot"></span>Why KMS</a>
+      <a href="#kms-p2"><span class="idx-dot"></span>Key Types &amp; Rotation</a>
+      <a href="#kms-p3"><span class="idx-dot"></span>KMS vs CloudHSM</a>
+      <a href="#kms-triggers"><span class="idx-dot"></span>Triggers</a>
     </div>
   </div>
 
-  <div class="part-header blue" id="vision-p1">
-    <div class="part-number">Vision · Part 1</div>
-    <h2>AWS AI Services — Pre-Trained, API-Driven</h2>
-    <p>Most AWS "ML" is not building models — it's calling a ready-made AI API.</p>
+  <div class="part-header purple" id="kms-p1">
+    <div class="part-number">KMS · Part 1</div>
+    <h2>Why KMS — Managed Encryption Keys</h2>
   </div>
   <div class="section">
     <div class="prose">
-      <p class="lead">You don't need a data-science team to add AI. AWS provides <strong>pre-trained, fully-managed AI services</strong> you call like any API: send an image, get back labels; send audio, get back text. No training, no servers.</p>
-      <p>For the exam, the skill is <strong>mapping a problem to the right service</strong>. Build-your-own (SageMaker) is for when no pre-built service fits and you have your own data/model.</p>
+      <p class="lead"><strong>AWS KMS (Key Management Service)</strong> creates and controls the encryption keys used to protect your data, integrated into almost every AWS service (S3 SSE-KMS, EBS, RDS, Secrets Manager…).</p>
+      <p>You never see the raw key material — KMS uses it on your behalf and logs every use in CloudTrail. Access is governed by <strong>key policies</strong> (+ IAM). It uses <strong>envelope encryption</strong>: KMS encrypts a data key, which encrypts your data, so you can encrypt large objects efficiently.</p>
     </div>
   </div>
 
-  <div class="part-header blue" id="vision-p2">
-    <div class="part-number">Vision · Part 2</div>
-    <h2>Amazon Rekognition — Image &amp; Video Analysis</h2>
+  <div class="part-header purple" id="kms-p2">
+    <div class="part-number">KMS · Part 2</div>
+    <h2>Key Types, Policies &amp; Rotation</h2>
   </div>
   <div class="section">
     <ul class="nice-list">
-      <li>Detect <strong>objects, scenes, faces, text</strong> in images and video.</li>
-      <li><strong>Facial analysis &amp; comparison</strong> (identity verification), <strong>celebrity recognition</strong>.</li>
-      <li><strong>Content moderation</strong> — flag inappropriate/unsafe images &amp; video (a very common exam use case).</li>
-      <li>"Analyse images/video, detect faces/objects, moderate content" → Rekognition.</li>
+      <li><strong>AWS-owned</strong> (invisible, free), <strong>AWS-managed</strong> (<code>aws/service</code>, free, auto-rotate), and <strong>Customer-managed (CMK)</strong> — full control of policy, rotation, audit.</li>
+      <li><strong>Automatic rotation</strong> — customer-managed keys can auto-rotate yearly; "encrypt with a key we rotate annually, with full audit/control" → <strong>customer-managed CMK + rotation</strong> (the SSE-S3 distractor lacks control).</li>
+      <li><strong>Key policy</strong> defines who can use/administer the key (required for cross-account key use).</li>
+      <li><strong>Multi-Region keys</strong> for cross-region replicated encrypted data; <strong>symmetric</strong> (default) vs <strong>asymmetric</strong> keys.</li>
     </ul>
+    <div class="price-tag">💵 <strong>AWS-managed keys are free</strong>; a <strong>customer-managed CMK is $1/month</strong> + $0.03 per 10,000 requests. Cheap, and the audit/control is usually worth it for sensitive data.</div>
   </div>
 
-  <div class="part-header blue" id="vision-p3">
-    <div class="part-number">Vision · Part 3</div>
-    <h2>Amazon Textract — Extract Text &amp; Data from Documents</h2>
+  <div class="part-header purple" id="kms-p3">
+    <div class="part-number">KMS · Part 3</div>
+    <h2>KMS vs CloudHSM</h2>
   </div>
   <div class="section">
-    <div class="prose">
-      <p><strong>Textract</strong> goes beyond plain OCR: it extracts <strong>text, tables, forms (key-value pairs)</strong> from scanned documents, PDFs, invoices, and IDs — preserving structure. "Extract data/tables/forms from scanned documents" → Textract.</p>
-    </div>
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th></th><th>KMS</th><th>CloudHSM</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Tenancy</strong></td><td>Multi-tenant, AWS-managed</td><td><strong>Single-tenant dedicated hardware</strong></td></tr>
+        <tr><td><strong>Control</strong></td><td>AWS manages the HSM; you manage keys/policy</td><td><strong>You fully control</strong> the HSM &amp; keys</td></tr>
+        <tr><td><strong>Compliance</strong></td><td>FIPS 140-2 Level 3 (validated)</td><td>FIPS 140-2 Level 3, dedicated</td></tr>
+        <tr><td><strong>Use when</strong></td><td>Default for most encryption needs</td><td>Regulatory need for dedicated/single-tenant HSM or you must own key material</td></tr>
+      </tbody>
+    </table></div>
     <div class="callout callout-key">
-      <div class="callout-tag">🔑 Rekognition vs Textract</div>
-      <p><strong>Rekognition</strong> = analyse <em>images/video</em> (faces, objects, moderation). <strong>Textract</strong> = extract <em>structured text/forms/tables</em> from <em>documents</em>. "Read a scanned invoice's fields" → Textract, not Rekognition.</p>
+      <div class="callout-tag">🔑 Trigger</div>
+      <p>"Managed keys, integrate with AWS services" → <strong>KMS</strong>. "Dedicated, single-tenant hardware security module / we must fully control key material for compliance" → <strong>CloudHSM</strong>.</p>
     </div>
   </div>
 
   
-<div class="price-tag">💵 <strong>AI services are pay-per-use:</strong> Rekognition/Comprehend/Transcribe bill per image/character/minute; a <strong>SageMaker real-time endpoint</strong> is an always-on instance (~$0.05–$1+/hr — turn it off or use serverless inference for spiky loads); <strong>Bedrock</strong> bills per 1,000 input/output tokens. The lever: pre-trained APIs cost pennies per call; SageMaker endpoints cost like EC2.</div>
-
 <div class="industry-spotlight">
-  <div class="industry-spotlight-tag">🏢 Dublin Industry — Verified</div>
-  <h3>Ryanair runs pre-trained AI services AND custom SageMaker models in production</h3>
-  <p><strong>Ryanair</strong> (Dublin) uses a mix the exam expects you to recognise: <strong>SageMaker</strong> for custom <em>demand forecasting</em> models, <strong>Amazon Lex</strong> for customer-support intent routing, and an <strong>Alexa MyRyanair skill</strong> — pre-trained AI services where they fit, custom models where they don't.</p>
-  <p>The pattern across Dublin platforms: reach for the <strong>managed AI API</strong> (Rekognition, Comprehend, Transcribe) for standard tasks, and only build in <strong>SageMaker</strong> when the problem is unique to your data.</p>
-  <div class="arch-item"><div class="arch-label">Build vs buy</div><p>"Standard task" (faces, sentiment, transcription, recommendations) → pre-trained AI service = least effort. "Custom prediction on our own dataset" → SageMaker. Ryanair's forecasting is the rare case that justifies a custom model.</p></div>
+  <div class="industry-spotlight-tag">🏢 Dublin Industry — Verified / Inferred</div>
+  <h3>How fintechs lock down cardholder data — the Stripe &amp; Ryanair security stack</h3>
+  <p><strong>Stripe</strong> isolates its <strong>Card Data Vault</strong> in a dedicated, hardened AWS environment with <strong>AES-256</strong> encryption, <strong>CloudHSM</strong> + <strong>KMS</strong> for key control, <strong>Secrets Manager</strong> for credentials, and <strong>GuardDuty</strong> for threat detection — PCI DSS Level 1, tokenization, and tight blast-radius isolation.</p>
+  <p><strong>Ryanair</strong> fronts customer endpoints with the standard secure edge: <strong>CloudFront + WAF + Shield Advanced</strong>, KMS for PII at rest, Secrets Manager for DB creds, and GuardDuty/Security Hub for posture.</p>
+  <div class="arch-item"><div class="arch-label">The fintech security blueprint</div><p>Encrypt everything (KMS, or CloudHSM where you must own key material) · isolate sensitive data in its own account/VPC · rotate secrets automatically (Secrets Manager) · block at the edge (WAF + Shield) · detect continuously (GuardDuty + Macie + Security Hub). This is the architecture the Security domain (30%) tests.</p></div>
 </div>
 
-<div class="trigger-box" id="vision-triggers">
-    <h3>⚡ Vision &amp; Documents — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"detect objects/faces in images or video"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Rekognition</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"content moderation (flag unsafe images)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Rekognition</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"extract text/tables/forms from scanned docs"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Textract</div></div>
+<div class="trigger-box" id="kms-triggers">
+    <h3>⚡ KMS &amp; CloudHSM — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"manage encryption keys / SSE-KMS"</div><div class="trigger-arrow">→</div><div class="trigger-ans">KMS</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"encrypt + key rotated yearly, full control/audit"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Customer-managed CMK + rotation</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"dedicated single-tenant HSM / own key material"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudHSM</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"cross-account use of a KMS key"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Key policy (+ IAM)</div></div>
   </div>
 </div>
 
-<!-- ════ SPEECH & LANGUAGE ════ -->
-<div id="panel-lang" class="svc-panel">
+<!-- ════ SECRETS ════ -->
+<div id="panel-sec" class="svc-panel">
   <div class="svc-index">
-    <div class="svc-index-label">💬 Speech &amp; Language — On This Page</div>
+    <div class="svc-index-label">🗝️ Secrets / Params / ACM — On This Page</div>
     <div class="svc-index-inner">
-      <a href="#lang-p1"><span class="idx-dot"></span>Transcribe / Polly / Translate</a>
-      <a href="#lang-p2"><span class="idx-dot"></span>Comprehend (NLP)</a>
-      <a href="#lang-p3"><span class="idx-dot"></span>Lex (chatbots)</a>
-      <a href="#lang-triggers"><span class="idx-dot"></span>Triggers</a>
+      <a href="#sec-p1"><span class="idx-dot"></span>Secrets Manager vs Parameter Store</a>
+      <a href="#sec-p2"><span class="idx-dot"></span>ACM (Certificates)</a>
+      <a href="#sec-triggers"><span class="idx-dot"></span>Triggers</a>
     </div>
   </div>
 
-  <div class="part-header teal" id="lang-p1">
-    <div class="part-number">Speech · Part 1</div>
-    <h2>Transcribe · Polly · Translate</h2>
+  <div class="part-header blue" id="sec-p1">
+    <div class="part-number">Secrets · Part 1</div>
+    <h2>Secrets Manager vs SSM Parameter Store</h2>
+    <p>Both store secrets securely. The difference is rotation (and cost).</p>
   </div>
   <div class="section">
     <div class="table-wrap"><table class="data">
-      <thead><tr><th>Service</th><th>Does</th><th>Trigger</th></tr></thead>
+      <thead><tr><th></th><th>Secrets Manager</th><th>Parameter Store</th></tr></thead>
       <tbody>
-        <tr><td><strong>Transcribe</strong></td><td>Speech → text (with speaker labels, PII redaction)</td><td>"speech to text", "transcribe audio/calls"</td></tr>
-        <tr><td><strong>Polly</strong></td><td>Text → lifelike speech</td><td>"text to speech", "read text aloud"</td></tr>
-        <tr><td><strong>Translate</strong></td><td>Translate between languages</td><td>"translate languages", "localize content"</td></tr>
+        <tr><td><strong>Stores</strong></td><td>Secrets (DB creds, API keys)</td><td>Config + secrets (SecureString via KMS)</td></tr>
+        <tr><td><strong>Automatic rotation</strong></td><td>✅ Built-in (native for RDS)</td><td>❌ No native rotation</td></tr>
+        <tr><td><strong>Cost</strong></td><td>$0.40/secret/month</td><td><strong>Free</strong> (standard tier)</td></tr>
+        <tr><td><strong>Use when</strong></td><td>Need automatic rotation of secrets</td><td>Plain config / secure strings, cost-sensitive</td></tr>
       </tbody>
     </table></div>
     <div class="callout callout-key">
-      <div class="callout-tag">🔑 Chain them</div>
-      <p>A common pattern: <strong>Transcribe</strong> (call audio → text) → <strong>Comprehend</strong> (sentiment/entities) → <strong>Translate</strong> (other languages) → <strong>Polly</strong> (back to speech). Recognise the building blocks.</p>
+      <div class="callout-tag">🔑 The deciding factor</div>
+      <p><strong>Need automatic credential rotation</strong> (especially for RDS) → <strong>Secrets Manager</strong>. Just need to store config/secrets cheaply with no rotation → <strong>Parameter Store</strong> (free). Either way, never hard-code credentials in code/AMIs.</p>
     </div>
   </div>
 
-  <div class="part-header teal" id="lang-p2">
-    <div class="part-number">Language · Part 2</div>
-    <h2>Amazon Comprehend — Natural Language Processing</h2>
+  <div class="part-header blue" id="sec-p2">
+    <div class="part-number">Secrets · Part 2</div>
+    <h2>AWS Certificate Manager (ACM)</h2>
   </div>
   <div class="section">
     <ul class="nice-list">
-      <li>NLP on text: <strong>sentiment</strong>, <strong>entities</strong>, key phrases, language detection, topic modeling.</li>
-      <li><strong>Detect &amp; redact PII</strong> in text; <strong>Comprehend Medical</strong> for clinical text.</li>
-      <li>"Analyse sentiment / extract entities / find PII in text" → Comprehend.</li>
+      <li><strong>Free public TLS/SSL certificates</strong> that <strong>auto-renew</strong> — no more expired-cert outages.</li>
+      <li>Used on <strong>ALB, NLB (TLS), CloudFront, API Gateway</strong> — never installed directly on EC2.</li>
+      <li><strong>CloudFront certs must be in us-east-1</strong> (the recurring trap); ALB certs in the ALB's region.</li>
+      <li>Imported certs don't auto-renew. <strong>ACM Private CA</strong> for internal/private certificate hierarchies.</li>
     </ul>
   </div>
 
-  <div class="part-header teal" id="lang-p3">
-    <div class="part-number">Language · Part 3</div>
-    <h2>Amazon Lex — Conversational Chatbots</h2>
-  </div>
-  <div class="section">
-    <div class="prose">
-      <p><strong>Lex</strong> builds <strong>conversational interfaces (chatbots / voice bots)</strong> using the same technology as Alexa — automatic speech recognition + natural-language understanding to capture intent. Pairs with <strong>Amazon Connect</strong> (contact center) for IVR. "Build a chatbot / voice assistant / IVR" → Lex.</p>
-    </div>
-  </div>
-
-  <div class="trigger-box" id="lang-triggers">
-    <h3>⚡ Speech &amp; Language — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"speech to text / transcribe"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Transcribe</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"text to speech / read aloud"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Polly</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"translate languages"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Translate</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"sentiment / entities / PII in text"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Comprehend</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"chatbot / voice bot / IVR"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Lex (+ Connect)</div></div>
+  <div class="trigger-box" id="sec-triggers">
+    <h3>⚡ Secrets / Params / ACM — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"store DB credentials with automatic rotation"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Secrets Manager</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"store config / secure strings, free, no rotation"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SSM Parameter Store</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"free auto-renewing TLS certs for ALB/CloudFront"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ACM</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"never store creds in code/AMI"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Secrets Manager / Parameter Store</div></div>
   </div>
 </div>
 
-<!-- ════ SAGEMAKER ════ -->
-<div id="panel-sm" class="svc-panel">
+<!-- ════ WAF & SHIELD ════ -->
+<div id="panel-waf" class="svc-panel">
   <div class="svc-index">
-    <div class="svc-index-label">🛠️ SageMaker — On This Page</div>
+    <div class="svc-index-label">🛡️ WAF &amp; Shield — On This Page</div>
     <div class="svc-index-inner">
-      <a href="#sm-p1"><span class="idx-dot"></span>Why SageMaker</a>
-      <a href="#sm-p2"><span class="idx-dot"></span>The ML Lifecycle</a>
-      <a href="#sm-triggers"><span class="idx-dot"></span>Triggers</a>
+      <a href="#waf-p1"><span class="idx-dot"></span>AWS WAF (Layer 7)</a>
+      <a href="#waf-p2"><span class="idx-dot"></span>Shield Standard vs Advanced</a>
+      <a href="#waf-p3"><span class="idx-dot"></span>The Protection Stack</a>
+      <a href="#waf-triggers"><span class="idx-dot"></span>Triggers</a>
     </div>
   </div>
 
-  <div class="part-header purple" id="sm-p1">
-    <div class="part-number">SageMaker · Part 1</div>
-    <h2>Amazon SageMaker — Build Your Own ML</h2>
-    <p>When no pre-built AI service fits and you have your own data and model, SageMaker is the full workbench.</p>
-  </div>
-  <div class="section">
-    <div class="prose">
-      <p class="lead"><strong>SageMaker</strong> is the end-to-end platform to <strong>build, train, tune, and deploy</strong> your own machine-learning models — managing the heavy lifting of notebooks, training infrastructure, and hosting.</p>
-      <p>For the exam: when a scenario needs a <strong>custom model trained on the company's own data</strong> (not a pre-trained API like Rekognition/Comprehend), the answer is <strong>SageMaker</strong>.</p>
-    </div>
-  </div>
-
-  <div class="part-header purple" id="sm-p2">
-    <div class="part-number">SageMaker · Part 2</div>
-    <h2>The Pieces You Should Recognise</h2>
+  <div class="part-header rust" id="waf-p1">
+    <div class="part-number">WAF · Part 1</div>
+    <h2>AWS WAF — Web Application Firewall (Layer 7)</h2>
   </div>
   <div class="section">
     <ul class="nice-list">
-      <li><strong>SageMaker Studio</strong> — the IDE; <strong>notebooks</strong> for exploration.</li>
-      <li><strong>Ground Truth</strong> — data labeling (human + ML-assisted).</li>
-      <li><strong>Training jobs</strong> + automatic model tuning; <strong>built-in algorithms</strong> &amp; <strong>JumpStart</strong> (pre-built models).</li>
-      <li><strong>Endpoints</strong> — deploy a model for real-time inference (or batch transform).</li>
-      <li><strong>Autopilot / Canvas</strong> — auto/no-code ML; <strong>Feature Store</strong>, <strong>Pipelines</strong>, <strong>Model Monitor</strong>.</li>
+      <li>Filters <strong>HTTP/HTTPS</strong> traffic with a <strong>Web ACL</strong>: block <strong>SQL injection, XSS, bad bots</strong>, apply <strong>rate-based</strong> rules, <strong>geo</strong> &amp; IP match, and managed rule groups (incl. Bot Control).</li>
+      <li><strong>Attaches to: CloudFront, ALB, API Gateway (REST), AppSync, Cognito User Pools, App Runner — NOT NLB</strong> (a classic trap).</li>
+      <li>"Block SQLi/XSS, rate-limit, filter bots at the application layer" → WAF.</li>
     </ul>
-    <div class="callout callout-key">
-      <div class="callout-tag">🔑 Pre-built service vs SageMaker</div>
-      <p>"Standard task (faces, sentiment, transcription)" → use the <strong>pre-trained AI service</strong> (least effort). "Custom model on our own dataset / unique problem" → <strong>SageMaker</strong>. Don't reach for SageMaker when Rekognition/Comprehend already solves it.</p>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ Trap</div>
+      <p><strong>WAF cannot attach to a Network Load Balancer (NLB)</strong> — it's Layer 7. For NLB/L4 protection you rely on Shield + security groups/Network Firewall.</p>
     </div>
   </div>
 
-  <div class="trigger-box" id="sm-triggers">
-    <h3>⚡ SageMaker — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"build/train/deploy a custom ML model"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SageMaker</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"label a training dataset"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SageMaker Ground Truth</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"real-time inference endpoint for our model"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SageMaker endpoint</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"a pre-trained API already does this"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Use the AI service (not SageMaker)</div></div>
-  </div>
-</div>
-
-<!-- ════ SPECIALIZED AI ════ -->
-<div id="panel-ai" class="svc-panel">
-  <div class="svc-index">
-    <div class="svc-index-label">🤖 Specialized AI — On This Page</div>
-    <div class="svc-index-inner">
-      <a href="#ai-p1"><span class="idx-dot"></span>Kendra · Personalize · Forecast</a>
-      <a href="#ai-p2"><span class="idx-dot"></span>Fraud Detector &amp; Bedrock</a>
-      <a href="#ai-triggers"><span class="idx-dot"></span>Triggers</a>
-    </div>
-  </div>
-
-  <div class="part-header rust" id="ai-p1">
-    <div class="part-number">Specialized · Part 1</div>
-    <h2>Kendra · Personalize · Forecast</h2>
+  <div class="part-header rust" id="waf-p2">
+    <div class="part-number">Shield · Part 2</div>
+    <h2>AWS Shield — DDoS Protection</h2>
   </div>
   <div class="section">
     <div class="table-wrap"><table class="data">
-      <thead><tr><th>Service</th><th>Does</th><th>Trigger</th></tr></thead>
+      <thead><tr><th></th><th>Shield Standard</th><th>Shield Advanced</th></tr></thead>
       <tbody>
-        <tr><td><strong>Kendra</strong></td><td>ML-powered <strong>intelligent enterprise search</strong> over documents (natural-language Q&amp;A)</td><td>"intelligent document search across the company"</td></tr>
-        <tr><td><strong>Personalize</strong></td><td>Real-time <strong>recommendations</strong> (same tech as Amazon.com)</td><td>"product/content recommendations"</td></tr>
-        <tr><td><strong>Forecast</strong></td><td><strong>Time-series forecasting</strong> (demand, inventory)</td><td>"forecast future demand/sales from history"</td></tr>
+        <tr><td><strong>Cost</strong></td><td>Free (automatic)</td><td><strong>$3,000/month</strong> (1-yr commit)</td></tr>
+        <tr><td><strong>Protection</strong></td><td>Common network/transport (L3/L4) DDoS</td><td>Advanced DDoS + larger attacks</td></tr>
+        <tr><td><strong>Extras</strong></td><td>—</td><td><strong>DDoS cost protection</strong> (refunds scaling charges), <strong>SRT</strong> (response team), advanced reporting, free WAF on protected resources</td></tr>
       </tbody>
     </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Trigger</div>
+      <p>"DDoS cost protection + 24/7 response team for a critical app" → <strong>Shield Advanced</strong>. Baseline DDoS is already covered free by <strong>Shield Standard</strong> on CloudFront/Route 53/Global Accelerator.</p>
+    </div>
   </div>
 
-  <div class="part-header rust" id="ai-p2">
-    <div class="part-number">Specialized · Part 2</div>
-    <h2>Fraud Detector &amp; Bedrock</h2>
+  <div class="part-header amber" id="waf-p3">
+    <div class="part-number">WAF &amp; Shield · Part 3</div>
+    <h2>The Standard Global-App Protection Stack</h2>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p>The exam's go-to secure edge architecture: <strong>CloudFront + AWS WAF + Shield</strong> (+ Shield Advanced for critical apps) in front of your origin. WAF blocks malicious requests at the edge; Shield absorbs DDoS; CloudFront caches and provides the edge. For multi-account WAF/Shield/SG rule management, use <strong>AWS Firewall Manager</strong>.</p>
+    </div>
+  </div>
+
+  <div class="trigger-box" id="waf-triggers">
+    <h3>⚡ WAF &amp; Shield — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"block SQLi/XSS/bots, rate-limit (L7)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">AWS WAF</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"WAF on an NLB"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Not possible — WAF is L7 (ALB/CF/API GW)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"DDoS cost protection + response team"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Shield Advanced</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"central WAF/Shield/SG rules across org accounts"</div><div class="trigger-arrow">→</div><div class="trigger-ans">AWS Firewall Manager</div></div>
+  </div>
+</div>
+
+<!-- ════ THREAT DETECTION ════ -->
+<div id="panel-det" class="svc-panel">
+  <div class="svc-index">
+    <div class="svc-index-label">🔎 Threat Detection — On This Page</div>
+    <div class="svc-index-inner">
+      <a href="#det-p1"><span class="idx-dot"></span>GuardDuty / Inspector / Macie</a>
+      <a href="#det-p2"><span class="idx-dot"></span>Security Hub / Detective</a>
+      <a href="#det-p3"><span class="idx-dot"></span>Network Firewall &amp; Firewall Mgr</a>
+      <a href="#det-triggers"><span class="idx-dot"></span>Triggers</a>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="det-p1">
+    <div class="part-number">Detection · Part 1</div>
+    <h2>The Big Three — GuardDuty · Inspector · Macie</h2>
+    <p>Three "find the problem" services the exam loves to confuse.</p>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Service</th><th>Finds</th><th>How / trigger</th></tr></thead>
+      <tbody>
+        <tr><td><strong>GuardDuty</strong></td><td>Threats &amp; malicious activity</td><td>ML on logs (VPC Flow, CloudTrail, DNS, EKS, RDS login, Lambda) — <strong>agentless</strong>. "Detect threats/anomalies with ML"</td></tr>
+        <tr><td><strong>Inspector</strong></td><td>Vulnerabilities (CVEs)</td><td>Scans <strong>EC2, ECR container images, Lambda</strong> for software vulns &amp; misconfig. "Find vulnerabilities"</td></tr>
+        <tr><td><strong>Macie</strong></td><td>Sensitive data (PII)</td><td>ML discovers/classifies PII in <strong>S3</strong>. "Find PII / sensitive data in S3"</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Memory hook</div>
+      <p><strong>GuardDuty = threats (logs). Inspector = vulnerabilities (CVEs). Macie = sensitive data (S3 PII).</strong></p>
+    </div>
+  </div>
+
+  <div class="part-header teal" id="det-p2">
+    <div class="part-number">Detection · Part 2</div>
+    <h2>Security Hub &amp; Detective</h2>
   </div>
   <div class="section">
     <ul class="nice-list">
-      <li><strong>Amazon Fraud Detector</strong> — detect online fraud (fake accounts, payment fraud) with ML, no ML expertise needed.</li>
-      <li><strong>Amazon Bedrock</strong> — the newer <strong>generative-AI</strong> service: access foundation models (Anthropic Claude, etc.) via API to build GenAI apps. "Generative AI / foundation models / build a chatbot with an LLM / RAG" → Bedrock.</li>
-      <li><strong>Comprehend Medical / Transcribe Medical</strong> — healthcare-specific variants.</li>
+      <li><strong>Security Hub</strong> — <strong>aggregates &amp; prioritizes</strong> findings from GuardDuty, Inspector, Macie, etc. into one dashboard with compliance standards (CIS, PCI). "Central security posture / aggregate findings" → Security Hub.</li>
+      <li><strong>Detective</strong> — <strong>investigate &amp; root-cause</strong> a finding (visualizes relationships across logs). "Deep-dive/investigate the root cause of a finding" → Detective.</li>
     </ul>
   </div>
 
-  <div class="trigger-box" id="ai-triggers">
-    <h3>⚡ Specialized AI — Triggers</h3>
-    <div class="trigger-row"><div class="trigger-kw">"intelligent enterprise/document search"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kendra</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"real-time recommendations"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Personalize</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"forecast demand / time-series prediction"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Forecast</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"detect online/payment fraud with ML"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Fraud Detector</div></div>
-    <div class="trigger-row"><div class="trigger-kw">"generative AI / foundation models / LLM app"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Bedrock</div></div>
+  <div class="part-header teal" id="det-p3">
+    <div class="part-number">Detection · Part 3</div>
+    <h2>Network Firewall &amp; Firewall Manager</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>AWS Network Firewall</strong> — managed, stateful network/IDS-IPS firewall for your <strong>VPC</strong> (deep packet inspection, domain filtering).</li>
+      <li><strong>AWS Firewall Manager</strong> — centrally manage <strong>WAF rules, Shield Advanced, security groups, and Network Firewall</strong> policies <strong>across all accounts</strong> in an Organization.</li>
+    </ul>
+  </div>
+
+  <div class="trigger-box" id="det-triggers">
+    <h3>⚡ Threat Detection — Triggers</h3>
+    <div class="trigger-row"><div class="trigger-kw">"detect threats/anomalies with ML from logs"</div><div class="trigger-arrow">→</div><div class="trigger-ans">GuardDuty</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"scan EC2/ECR/Lambda for vulnerabilities (CVEs)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Inspector</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"find PII / sensitive data in S3"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Macie</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"aggregate security findings, posture dashboard"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Security Hub</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"investigate root cause of a finding"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Detective</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"central WAF/SG/firewall across org"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Firewall Manager</div></div>
   </div>
 </div>
 
 </div><!-- end main-content -->
 
 <footer style="text-align:center;padding:30px 20px 50px;color:#6b5744;font-size:14px;">
-  SAA-C03 Masterclass · Section 23 — Machine Learning · Document 1 of 2 · Study Series by Sanky
+  SAA-C03 Masterclass · Section 26 — Security &amp; Encryption · Document 1 of 2 · Study Series by Sanky
 </footer>
 
 <script id="svc-tabs-js">
 (function(){
   var tabs = document.querySelectorAll('.svc-tab');
-  var keys = ['vision','lang','sm','ai'];
+  var keys = ['kms','sec','waf','det'];
   var panels = {};
   keys.forEach(function(k){ panels[k] = document.getElementById('panel-'+k); });
   function activate(key, doScroll){
@@ -372,9 +404,6 @@
   }
 })();
 </script>
-
-
-
 
 
 
@@ -509,10 +538,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../22_Data_and_Analytics/02_Data_Analytics_ExamCracker.html">Data Analytics ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel cnav-gcurrent">S23 · Machine Learning</div>
+<div class="cnav-glabel">S23 · Machine Learning</div>
 <ul>
-<li class="cnav-current"><a href="01_Machine_Learning_Masterclass.html">Machine Learning Masterclass</a></li>
-<li class=""><a href="02_Machine_Learning_ExamCracker.html">Machine Learning ExamCracker</a></li>
+<li class=""><a href="../23_Machine_Learning/01_Machine_Learning_Masterclass.html">Machine Learning Masterclass</a></li>
+<li class=""><a href="../23_Machine_Learning/02_Machine_Learning_ExamCracker.html">Machine Learning ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S24 · Monitoring & Audit</div>
@@ -527,10 +556,10 @@ body.cnav-open .cnav-panel{transform:none;}
 <li class=""><a href="../25_IAM_Advanced/02_IAM_Advanced_ExamCracker.html">IAM Advanced ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
-<div class="cnav-glabel">S26 · Security & Encryption</div>
+<div class="cnav-glabel cnav-gcurrent">S26 · Security & Encryption</div>
 <ul>
-<li class=""><a href="../26_Security_Encryption/01_Security_Encryption_Masterclass.html">Security Encryption Masterclass</a></li>
-<li class=""><a href="../26_Security_Encryption/02_Security_Encryption_ExamCracker.html">Security Encryption ExamCracker</a></li>
+<li class="cnav-current"><a href="01_Security_Encryption_Masterclass.html">Security Encryption Masterclass</a></li>
+<li class=""><a href="02_Security_Encryption_ExamCracker.html">Security Encryption ExamCracker</a></li>
 </ul></div>
 <div class="cnav-group">
 <div class="cnav-glabel">S27 · Networking (VPC)</div>
