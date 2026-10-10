@@ -417,6 +417,7 @@
       <li><strong>Control plane</strong> — managed by AWS, multi-AZ, ~$0.10/hour per cluster.</li>
       <li><strong>Worker nodes</strong> — your pods run on either <strong>EC2 nodes</strong> (self-managed or <strong>Managed Node Groups</strong>) or <strong>Fargate</strong> (serverless pods via <strong>Fargate profiles</strong> — "Kubernetes + no node management").</li>
       <li><strong>Node autoscaling</strong> — Cluster Autoscaler or <strong>Karpenter</strong> (fast, flexible, cost-aware node provisioning).</li>
+      <li><strong>EKS Auto Mode</strong> (2024) — one-click <strong>fully-managed compute</strong>: AWS runs Karpenter, patches &amp; right-sizes EC2 nodes (incl. Graviton/Spot), and manages networking/storage. ~12% fee on the EC2 cost. "Kubernetes with the least node/ops overhead, but still need full EC2 features (GPU, DaemonSets)" → Auto Mode.</li>
       <li>Integrates with ALB (AWS Load Balancer Controller), VPC CNI networking, CloudWatch, and ECR.</li>
     </ul>
   </div>

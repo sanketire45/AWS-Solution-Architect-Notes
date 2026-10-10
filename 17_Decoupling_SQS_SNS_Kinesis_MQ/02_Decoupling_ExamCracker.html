@@ -187,7 +187,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-sqs" class="svc-panel active">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="sqs" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="sqs" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="sqs" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="sqs-cheat">
@@ -203,7 +202,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <div class="cheat-table-wrap"><table class="cheat-table">
       <thead><tr><th></th><th>Standard</th><th>FIFO</th></tr></thead>
       <tbody>
-        <tr><td>Throughput</td><td><strong>Nearly unlimited</strong></td><td>300/s (3,000 batched)</td></tr>
+        <tr><td>Throughput</td><td><strong>Nearly unlimited</strong></td><td>300/s (3,000 batched) · <strong>High Throughput mode → ~70,000/s</strong></td></tr>
         <tr><td>Delivery</td><td>At-least-once (rare dupes)</td><td><strong>Exactly-once</strong></td></tr>
         <tr><td>Ordering</td><td>Best-effort</td><td><strong>Strict FIFO</strong></td></tr>
         <tr><td>Name</td><td>any</td><td>ends in <code>.fifo</code></td></tr>
@@ -218,12 +217,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>ASG on queue depth</strong></td><td>Scale consumers on backlog-per-instance</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="sqs-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>SQS — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"decouple / buffer / absorb spikes"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS</div></div>
       <div class="trigger-item"><div class="trigger-kw">"ordered + exactly-once"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS FIFO</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"FIFO ordering BUT very high throughput"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SQS FIFO High Throughput mode (~70k/s)</div></div>
       <div class="trigger-item"><div class="trigger-kw">"repeatedly failing messages"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Dead-Letter Queue</div></div>
       <div class="trigger-item"><div class="trigger-kw">"message > 256 KB"</div><div class="trigger-arrow">→</div><div class="trigger-ans">S3 + SQS Extended Client</div></div>
     </div>
@@ -231,7 +231,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">FIFO chosen when order doesn't matter</div><div class="trigger-arrow">✗</div><div class="trigger-ans">300/s cap; Standard is cheaper/scalable</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">SQS to "replay" or "many consumers read all"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS deletes on consume → Kinesis</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="sqs-questions"><div class="sec-header"><h2>SQS — Practice Questions</h2></div><div id="qlist-sqs"></div></div>
 </div>
 
@@ -239,7 +241,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-sns" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="sns" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="sns" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="sns" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="sns-cheat">
@@ -259,8 +260,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <thead><tr><th>SNS vs EventBridge</th></tr></thead>
       <tbody><tr><td>SNS = simple, fast, high-throughput pub/sub. <strong>EventBridge</strong> = content-based routing + SaaS sources + schema registry + archive/replay + scheduling.</td></tr></tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="sns-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>SNS — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"fan-out / one event to many subscribers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SNS</div></div>
@@ -271,7 +272,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">SNS → Lambda directly when buffering/retry needed</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SNS → SQS → Lambda (durable)</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">SNS for SaaS content routing</div><div class="trigger-arrow">✗</div><div class="trigger-ans">EventBridge</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="sns-questions"><div class="sec-header"><h2>SNS — Practice Questions</h2></div><div id="qlist-sns"></div></div>
 </div>
 
@@ -279,7 +282,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-kin" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="kin" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="kin" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="kin" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="kin-cheat">
@@ -297,25 +299,29 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td>Ops</td><td>You build consumers; shards</td><td>Fully serverless, no shards</td></tr>
         <tr><td>Replay/storage</td><td><strong>Yes</strong> (retention)</td><td>No — just delivers</td></tr>
         <tr><td>Targets</td><td>Lambda/KCL/custom</td><td>S3, Redshift, OpenSearch, Splunk</td></tr>
+        <tr><td>Capacity</td><td><strong>Provisioned</strong> (manage shards) or <strong>On-Demand</strong> (auto-scales to 10 GB/s, no shard mgmt)</td><td>Serverless — fully automatic</td></tr>
       </tbody>
     </table></div>
     <div class="cheat-table-wrap"><table class="cheat-table">
       <thead><tr><th>SQS vs Kinesis</th></tr></thead>
       <tbody><tr><td>SQS = consume &amp; delete, competing consumers, no replay. <strong>Kinesis</strong> = retain &amp; replay, many readers of the whole stream, ordered per shard. Real-time analytics/clickstream/IoT → Kinesis.</td></tr></tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="kin-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Kinesis — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"real-time streaming, ordered, replay, many readers"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis Data Streams</div></div>
-      <div class="trigger-item"><div class="trigger-kw">"stream → S3/Redshift/OpenSearch, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Kinesis Data Firehose</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"streaming, unpredictable throughput, no shard management"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Data Streams On-Demand mode</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"stream → S3/Redshift/OpenSearch, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Data Firehose (renamed Amazon Data Firehose, 2024)</div></div>
       <div class="trigger-item"><div class="trigger-kw">"real-time SQL / windowed analytics"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Managed Service for Apache Flink</div></div>
     </div>
     <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
       <div class="trigger-item trap-item"><div class="trigger-kw">SQS for "replay / multiple full-stream readers"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS deletes → Kinesis</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Firehose for "sub-second custom processing + replay"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">That's Data Streams</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="kin-questions"><div class="sec-header"><h2>Kinesis — Practice Questions</h2></div><div id="qlist-kin"></div></div>
 </div>
 
@@ -323,7 +329,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-mq" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="mq" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="mq" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="mq" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="mq-cheat">
@@ -349,8 +354,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td>Content routing / SaaS events</td><td>EventBridge</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="mq-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Amazon MQ — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"migrate existing broker, least code change"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon MQ</div></div>
@@ -361,7 +366,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">Amazon MQ for a brand-new cloud-native app</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS/SNS (serverless, scales better, cheaper)</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">SQS to avoid rewriting a JMS app</div><div class="trigger-arrow">✗</div><div class="trigger-ans">SQS needs SDK rewrite → Amazon MQ</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="mq-questions"><div class="sec-header"><h2>Amazon MQ — Practice Questions</h2></div><div id="qlist-mq"></div></div>
 </div>
 

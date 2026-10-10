@@ -220,7 +220,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-cf" class="svc-panel active">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="cf" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="cf" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="cf" data-sub="questions">🎯 Practice Questions</button>
   </nav>
 
@@ -293,10 +292,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>Invalidation vs versioning</strong></td><td>Stale content → invalidate paths (1,000 free) <em>or</em> use versioned filenames (free, preferred)</td></tr>
       </tbody>
     </table></div>
-  </div>
-
-  <!-- CF TRIGGERS -->
-  <div class="sub-content" id="cf-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>CloudFront — Triggers &amp; Traps</h2><p>Phrase → answer mappings, and the distractors designed to catch you.</p></div>
     <div class="trigger-section">
       <h3>⚡ Trigger Phrases</h3>
@@ -321,7 +318,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">"Users see old content" → re-deploy origin</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Cache TTL — invalidate or version filenames</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Public S3 bucket so CloudFront can read it</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Keep private + OAC; public bypasses the CDN</div></div>
     </div>
+  
   </div>
+
+  <!-- CF TRIGGERS -->
+  
 
   <!-- CF QUESTIONS -->
   <div class="sub-content" id="cf-questions">
@@ -334,7 +335,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-ga" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="ga" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="ga" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="ga" data-sub="questions">🎯 Practice Questions</button>
   </nav>
 
@@ -391,10 +391,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <thead><tr><th>Memory hook</th></tr></thead>
       <tbody><tr><td><strong>CloudFront caches HTTP. Global Accelerator races TCP/UDP.</strong> Both ride AWS edges + get free Shield Standard. GA never caches and never saves transfer cost — it's a performance/availability tool.</td></tr></tbody>
     </table></div>
-  </div>
-
-  <!-- GA TRIGGERS -->
-  <div class="sub-content" id="ga-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Global Accelerator — Triggers &amp; Traps</h2><p>The GA answer phrases and the CloudFront-confusion traps.</p></div>
     <div class="trigger-section">
       <h3>⚡ Trigger Phrases</h3>
@@ -413,7 +411,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">Route 53 failover for sub-minute RTO</div><div class="trigger-arrow">✗</div><div class="trigger-ans">DNS TTL delays it → GA fails over in ~30s</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">"ALB has a static IP we can whitelist"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">ALB IPs change → NLB or GA for static IP</div></div>
     </div>
+  
   </div>
+
+  <!-- GA TRIGGERS -->
+  
 
   <!-- GA QUESTIONS -->
   <div class="sub-content" id="ga-questions">

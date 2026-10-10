@@ -135,7 +135,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td><strong>Policy evaluation</strong></td><td><strong>Explicit Deny &gt; Allow &gt; implicit Deny</strong> — one Deny beats all Allows</td></tr>
       <tr><td><strong>Cross-account access</strong></td><td>Need <strong>both</strong> identity policy (caller) AND resource policy (resource) to allow</td></tr>
       <tr><td><strong>Permission boundary</strong></td><td>Max permissions for a user/role (ceiling) = identity policy ∩ boundary</td></tr>
-      <tr><td><strong>SCP</strong></td><td>Org-wide guardrail — <strong>never grants</strong>, only restricts; not the management account</td></tr>
+      <tr><td><strong>SCP / RCP</strong></td><td>Org-wide guardrails — <strong>never grant</strong>, only restrict. <strong>SCP</strong> caps <em>principals</em> (identities); <strong>RCP</strong> (2024) caps <em>resources</em>. Neither limits the management account</td></tr>
       <tr><td><strong>Cross-account / temp access</strong></td><td><strong>IAM role + STS AssumeRole</strong> (never IAM user keys)</td></tr>
       <tr><td><strong>3rd-party assumes your role</strong></td><td><strong>External ID</strong> (confused-deputy protection)</td></tr>
       <tr><td><strong>Workforce SSO to AWS</strong></td><td><strong>IAM Identity Center</strong></td></tr>
@@ -144,6 +144,20 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td><strong>Require MFA / restrict by IP</strong></td><td>IAM policy <strong>condition keys</strong></td></tr>
       <tr><td><strong>Share resources across accounts</strong></td><td><strong>AWS RAM</strong></td></tr>
       <tr><td><strong>Secure multi-account landing zone</strong></td><td><strong>Control Tower</strong></td></tr>
+      <tr><td><strong>Find external/public or unused access</strong></td><td><strong>IAM Access Analyzer</strong> (external-access &amp; unused-access findings; also validates &amp; generates least-privilege policies)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>The trap is thinking "IAM policy" and stopping. Separate authN from authZ and spot which layer (or extra gate) is really deciding.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>"restrict an <strong>entire account / OU</strong>" vs "cap what a <strong>delegated user/role</strong> can self-grant"</td><td>Account-wide ceiling → <strong>SCP</strong>. Per-principal ceiling (safe delegation) → <strong>permission boundary</strong>. Both are ceilings; <strong>neither grants</strong> anything.</td></tr>
+      <tr><td>"the <strong>SCP allows</strong> it but the user still <strong>can't</strong> do it"</td><td>SCPs never grant — you still need an <strong>identity-policy Allow</strong>. Effective = SCP ∩ boundary ∩ identity Allow, and any explicit <strong>Deny wins</strong>. Top IAM trap.</td></tr>
+      <tr><td>cross-account role: "<strong>who can assume</strong>" vs "<strong>what it can do</strong>"</td><td><strong>Trust policy</strong> = who may assume (the principal). <strong>Permissions policy</strong> = what the role can do. Both are required — questions test which one is missing.</td></tr>
+      <tr><td>"give <strong>employees</strong> access to accounts" vs "<strong>app end-users</strong> sign-in" vs "an <strong>EC2/Lambda</strong> needs AWS access"</td><td>Workforce humans → <strong>IAM Identity Center</strong>. App/customer users → <strong>Cognito</strong>. Workloads/services/cross-account → <strong>IAM role + STS</strong>. Never long-term keys.</td></tr>
+      <tr><td>Account A app must read a bucket in Account B</td><td>Needs an <strong>Allow on both sides</strong> — identity policy (caller in A) <em>and</em> resource/bucket policy (in B) — via a role it assumes. One-sided Allow = still denied.</td></tr>
+      <tr><td>"IAM allows KMS decrypt, but the user is still <strong>denied</strong>"</td><td>Extra gate: the <strong>KMS key policy</strong> must also allow the principal (KMS is deny-by-default at the key). IAM allow alone isn't enough.</td></tr>
     </tbody>
   </table></div>
 </div>

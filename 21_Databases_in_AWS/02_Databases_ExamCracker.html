@@ -138,18 +138,32 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Automatic failover / HA</td><td><strong>Multi-AZ</strong> (not read replica)</td></tr>
       <tr><td>Offload reads / reporting</td><td><strong>Read Replicas</strong></td></tr>
       <tr><td>Serverless key-value, single-digit ms, massive scale</td><td><strong>DynamoDB</strong></td></tr>
-      <tr><td>Multi-region active-active database</td><td><strong>DynamoDB Global Tables</strong> (relational → Aurora Global)</td></tr>
+      <tr><td>Multi-region active-active database</td><td><strong>DynamoDB Global Tables</strong> (NoSQL). Relational active-active → <strong>Aurora DSQL</strong>; Aurora Global DB = single-writer cross-region DR</td></tr>
+      <tr><td>Serverless distributed SQL, multi-region strong consistency, zero infra</td><td><strong>Aurora DSQL</strong> (GA 2025)</td></tr>
       <tr><td>Microsecond reads for DynamoDB</td><td><strong>DAX</strong></td></tr>
       <tr><td>Cache RDS reads / session store</td><td><strong>ElastiCache</strong> (Redis/Memcached)</td></tr>
       <tr><td>In-memory speed + durability as primary DB</td><td><strong>MemoryDB</strong></td></tr>
       <tr><td>Relationships / social / fraud / recommendations</td><td><strong>Neptune</strong> (graph)</td></tr>
-      <tr><td>Immutable, cryptographically verifiable ledger</td><td><strong>QLDB</strong></td></tr>
+      <tr><td>Immutable, cryptographically verifiable ledger</td><td><strong>QLDB</strong> <em>(retired Jul 2025 → modern answer: Aurora PostgreSQL ledger; QLDB may still show up in older exam items)</em></td></tr>
       <tr><td>Time-series / IoT / metrics</td><td><strong>Timestream</strong></td></tr>
       <tr><td>Managed MongoDB</td><td><strong>DocumentDB</strong></td></tr>
       <tr><td>Managed Cassandra (wide-column)</td><td><strong>Keyspaces</strong></td></tr>
       <tr><td>Petabyte analytics / OLAP / BI</td><td><strong>Redshift</strong></td></tr>
       <tr><td>Ad-hoc SQL on S3 data, serverless, pay-per-query</td><td><strong>Athena</strong></td></tr>
       <tr><td>Full-text search / log analytics</td><td><strong>OpenSearch</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>Same services, different qualifier. These look-alike pairs are where the points are won or lost.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>"highly available / <strong>automatic failover</strong>" vs "<strong>offload reads</strong> / reporting"</td><td><strong>Multi-AZ</strong> = HA + auto-failover (standby is <em>not</em> readable). <strong>Read Replicas</strong> = scale reads, <strong>no</strong> auto-failover. Swapping these is the #1 RDS trap.</td></tr>
+      <tr><td>"multi-Region, <strong>writes in every Region</strong> (active-active)"</td><td>NoSQL → <strong>DynamoDB Global Tables</strong>; relational → <strong>Aurora DSQL</strong>. <strong>Aurora Global DB = 1 writer + read-only secondaries</strong> (cross-Region DR) — the classic "active-active" distractor.</td></tr>
+      <tr><td>"<strong>microsecond</strong> reads" for a DynamoDB table</td><td><strong>DAX</strong> (DynamoDB-only). The word "microsecond" is the tell; ElastiCache is the distractor (generic, not DynamoDB-integrated).</td></tr>
+      <tr><td>cache must "<strong>survive a restart</strong> / persistence / pub-sub / leaderboard / sorted set"</td><td><strong>ElastiCache Redis</strong> (or Valkey), never Memcached. Memcached only wins on "simple, multi-threaded, no HA needed".</td></tr>
+      <tr><td>"complex queries over <strong>billions of rows</strong> / BI / warehouse" (OLAP)</td><td><strong>Redshift</strong>. "Many small fast reads/writes" (OLTP) → RDS/Aurora/DynamoDB. OLTP-vs-OLAP is the framing behind most DB questions.</td></tr>
+      <tr><td>one DynamoDB key is "<strong>throttling / hot</strong>" while others sit idle</td><td>Poor partition key → choose a <strong>high-cardinality partition key</strong> to spread load (not "just add capacity").</td></tr>
     </tbody>
   </table></div>
 </div>
@@ -175,7 +189,7 @@ const questions = [
    exp:'<strong>Neptune</strong> is a purpose-built graph database optimized for traversing relationships (social graphs, recommendations, fraud rings). Modeling deep relationship traversals in DynamoDB/RDS (B, D) is slow and awkward; Redshift (C) is analytics.'},
   {id:3,topic:'Ledger',diff:'hard',q:'A bank must keep an <strong>immutable, cryptographically verifiable</strong> history of all account transactions that can prove records were never altered. Which database?',
    opts:['Amazon Aurora with audit triggers','Amazon QLDB','Amazon DynamoDB with Streams','Amazon Timestream'],correct:1,
-   exp:'<strong>QLDB</strong> is a ledger database providing an immutable, append-only, cryptographically verifiable transaction log — purpose-built for tamper-proof audit history. Aurora triggers (A) can be altered by a privileged user; DynamoDB Streams (C) is CDC, not an immutable ledger; Timestream (D) is time-series.'},
+   exp:'<strong>QLDB</strong> is a ledger database providing an immutable, append-only, cryptographically verifiable transaction log — purpose-built for tamper-proof audit history. Aurora triggers (A) can be altered by a privileged user; DynamoDB Streams (C) is CDC, not an immutable ledger; Timestream (D) is time-series. <em>Freshness note: QLDB reached end of support in Jul 2025 — AWS now steers ledger use cases to Aurora PostgreSQL, but SAA-C03 may still present QLDB as the "immutable ledger" answer, so recognise it.</em>'},
   {id:4,topic:'TimeSeries',diff:'medium',q:'An IoT platform ingests millions of <strong>time-stamped sensor measurements</strong> and queries them by time windows. Which database is purpose-built for this?',
    opts:['Amazon Timestream','Amazon DynamoDB','Amazon Redshift','Amazon Neptune'],correct:0,
    exp:'<strong>Timestream</strong> is a purpose-built time-series database optimized for time-stamped data (IoT, metrics) with time-based queries and lifecycle tiering. DynamoDB (B) can store it but isn\'t optimized for time-series analytics; Redshift (C) is a warehouse; Neptune (D) is graph.'},

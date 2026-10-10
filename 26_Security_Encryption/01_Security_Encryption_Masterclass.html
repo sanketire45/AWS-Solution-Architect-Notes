@@ -150,6 +150,14 @@
       <li><strong>Multi-Region keys</strong> for cross-region replicated encrypted data; <strong>symmetric</strong> (default) vs <strong>asymmetric</strong> keys.</li>
     </ul>
     <div class="price-tag">💵 <strong>AWS-managed keys are free</strong>; a <strong>customer-managed CMK is $1/month</strong> + $0.03 per 10,000 requests. Cheap, and the audit/control is usually worth it for sensitive data.</div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Envelope encryption</div>
+      <p>KMS directly encrypts only <strong>small data (≤4 KB)</strong>. For large objects an app calls <code>GenerateDataKey</code>: KMS returns a <strong>data key</strong> that encrypts the data locally; the <em>encrypted</em> data key is stored next to the ciphertext and handed back to KMS to decrypt later. This is how SSE-KMS / EBS / S3 encrypt big data — worth recognising by name.</p>
+    </div>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ The key policy is the gatekeeper</div>
+      <p>Unlike other resources, a KMS key is <strong>deny-by-default at the key</strong>: even if an IAM policy grants <code>kms:Decrypt</code>, the call fails unless the <strong>key policy</strong> also allows that principal (or delegates to IAM). For <em>temporary</em> programmatic access without editing policies, use a <strong>KMS grant</strong>. "IAM allows decrypt but the user is still denied" → fix the key policy.</p>
+    </div>
   </div>
 
   <div class="part-header purple" id="kms-p3">
@@ -187,6 +195,8 @@
     <div class="trigger-row"><div class="trigger-kw">"encrypt + key rotated yearly, full control/audit"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Customer-managed CMK + rotation</div></div>
     <div class="trigger-row"><div class="trigger-kw">"dedicated single-tenant HSM / own key material"</div><div class="trigger-arrow">→</div><div class="trigger-ans">CloudHSM</div></div>
     <div class="trigger-row"><div class="trigger-kw">"cross-account use of a KMS key"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Key policy (+ IAM)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"encrypt large data with a KMS key"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Envelope encryption (GenerateDataKey)</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"IAM allows kms:Decrypt but access still denied"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Key policy must allow it too</div></div>
   </div>
 </div>
 

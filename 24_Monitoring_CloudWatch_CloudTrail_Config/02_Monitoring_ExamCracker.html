@@ -135,6 +135,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Metrics, alarms, dashboards, performance</td><td><strong>CloudWatch</strong></td></tr>
       <tr><td>Collect EC2 memory / disk-space metrics</td><td><strong>CloudWatch Agent</strong> (not default)</td></tr>
       <tr><td>Alert / auto-scale on a threshold</td><td><strong>CloudWatch Alarm → SNS / ASG</strong></td></tr>
+      <tr><td>Alarm on a text pattern in application logs (count "ERROR" / 404s)</td><td><strong>CloudWatch Logs metric filter → Alarm</strong></td></tr>
       <tr><td>Auto-recover a failed EC2 instance</td><td><strong>CloudWatch Alarm (EC2 recover action)</strong></td></tr>
       <tr><td>React to an AWS event / scheduled cron</td><td><strong>EventBridge</strong></td></tr>
       <tr><td>Trace requests across microservices</td><td><strong>X-Ray</strong></td></tr>
@@ -144,6 +145,19 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Prove logs were not tampered with</td><td><strong>CloudTrail log file validation</strong></td></tr>
       <tr><td>Is this resource compliant? / config history</td><td><strong>AWS Config</strong></td></tr>
       <tr><td>Auto-fix non-compliant resources</td><td><strong>Config rule + SSM remediation</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>Almost every question here is "which of the three?" plus a couple of recurring gotchas.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>"<strong>who</strong> did it / audit an API call" vs "<strong>is it compliant</strong> / did config drift" vs "<strong>how is it performing</strong>"</td><td>Who/audit → <strong>CloudTrail</strong>. Compliance/drift/history → <strong>Config</strong>. Metrics/alarms/dashboards → <strong>CloudWatch</strong>. This 3-way split answers most of the section.</td></tr>
+      <tr><td>"monitor <strong>memory</strong> or <strong>disk-space used</strong> on EC2"</td><td><strong>CloudWatch Agent</strong> — memory &amp; disk-space are <em>not</em> default metrics (default = CPU, network, disk I/O). The #1 CloudWatch trap.</td></tr>
+      <tr><td>"who <strong>connected to an IP</strong> / rejected connections / network traffic"</td><td><strong>VPC Flow Logs</strong> (packets/metadata). Distractor is CloudTrail — but CloudTrail logs <em>API calls</em>, not network traffic.</td></tr>
+      <tr><td>"<strong>interactively query</strong> huge logs" vs "<strong>alarm when a pattern appears</strong>"</td><td>Ad-hoc search → <strong>CloudWatch Logs Insights</strong>. Turn a log pattern into an alarm → <strong>metric filter</strong>.</td></tr>
+      <tr><td>"<strong>automatically remediate</strong>" something</td><td>Non-compliant resource → <strong>Config rule + SSM Automation</strong>. React to any AWS event and act → <strong>EventBridge → target</strong> (Lambda/SSM/SNS).</td></tr>
+      <tr><td>"enable <strong>detailed monitoring</strong> to get metric X"</td><td>Trap — detailed monitoring only changes <em>frequency</em> (5-min → 1-min); it does <strong>not</strong> add new metrics like memory. Use the Agent for those.</td></tr>
     </tbody>
   </table></div>
 </div>

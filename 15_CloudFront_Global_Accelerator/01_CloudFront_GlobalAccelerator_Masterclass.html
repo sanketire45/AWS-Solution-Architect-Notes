@@ -232,6 +232,7 @@
       <a href="#cf-p5"><span class="idx-dot"></span>Security &amp; Access</a>
       <a href="#cf-p6"><span class="idx-dot"></span>Edge Compute</a>
       <a href="#cf-p7"><span class="idx-dot"></span>What It Costs</a>
+      <a href="#cf-arch"><span class="idx-dot"></span>Full Architecture</a>
       <a href="#cf-industry"><span class="idx-dot"></span>Industry &amp; Triggers</a>
     </div>
   </div>
@@ -315,7 +316,7 @@
       <p>Between the small edge locations and your origin sits a second, larger caching tier: <strong>Regional Edge Caches</strong>. When content is evicted from a small edge (they have limited space), CloudFront checks the bigger regional cache before going all the way back to your origin. This keeps less-popular content warm and further reduces origin load. You don't configure it — it's automatic.</p>
     </div>
 
-    <div class="price-tag">💰 A CloudFront distribution with <strong>zero traffic costs $0</strong> — there's no hourly fee. You pay only per-GB delivered and per-request. And the <strong>first 1 TB out + 10M requests every month are free forever</strong> (not just year one). <em>(Contrast this with Global Accelerator later, which has a fixed ~$18/month floor.)</em></p>
+    <div class="price-tag">💰 A CloudFront distribution with <strong>zero traffic costs $0</strong> — there's no hourly fee. You pay only per-GB delivered and per-request. And the <strong>first 1 TB out + 10M requests every month are free forever</strong> (not just year one). <em>(Contrast this with Global Accelerator later, which has a fixed ~$18/month floor.)</em></div>
   </div>
 
   <!-- PART 3: ORIGINS & OAC -->
@@ -513,7 +514,220 @@
     <div class="price-tag">💰 <strong>Combined feel:</strong> a small site serving 500 GB/mo and 5M requests from Europe sits comfortably <strong>inside the free tier → ~$0/month</strong>. A busy media site pushing 50 TB/mo lands around <strong>$3,500–$4,000/month</strong> in transfer — at which point Price Class tuning and high-volume tiers genuinely move the needle. eu-west-1 viewers are served from Europe edges at the same ~$0.085/GB tier as the US.</div>
   </div>
 
-  <!-- PART 8: INDUSTRY -->
+  <!-- PART 8: FULL ARCHITECTURE (CAPSTONE) -->
+  <div class="part-header teal" id="cf-arch">
+    <div class="part-number">CloudFront · Part 8</div>
+    <h2>The Complete Picture — A Real Production Architecture</h2>
+    <p>Everything wired together end-to-end: Route&nbsp;53 → CloudFront → the static/dynamic split → S3 (OAC), ALB, Auto Scaling, and the data tier.</p>
+  </div>
+
+  <div class="section">
+    <div class="prose">
+      <p class="lead">Here is how every piece you just learned snaps into one real-world web app — a <strong>React front-end</strong> plus a <strong>Spring&nbsp;Boot REST API</strong>. Memorise this shape: it's exactly what an interviewer expects you to sketch on a whiteboard when they say <em>"design a scalable global web app on AWS."</em></p>
+      <p>The heart of it is the <strong>one distribution, two behaviours</strong> pattern. CloudFront reads the <strong>URL path</strong> of each request and sends it down one of two roads: <strong>cacheable static files</strong> are served from a private S3 bucket, while <strong>uncacheable dynamic API calls</strong> pass straight through to your compute tier behind an ALB.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 1000" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+        <defs>
+          <marker id="a-blue" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1e5fa8"/></marker>
+          <marker id="a-purple" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#6b3fa0"/></marker>
+          <marker id="a-amber" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#c97d2e"/></marker>
+          <marker id="a-teal" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1d7a6e"/></marker>
+          <marker id="a-rust" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#b84c2a"/></marker>
+          <marker id="a-gray" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#8a7a66"/></marker>
+        </defs>
+
+        <!-- ===== TOP: USER → ROUTE 53 → CLOUDFRONT EDGE ===== -->
+        <circle cx="450" cy="34" r="26" fill="#cce0f5" stroke="#1e5fa8" stroke-width="2"/>
+        <text x="450" y="39" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1208">USER</text>
+        <text x="450" y="80" text-anchor="middle" font-size="11" fill="#6b5744">types <tspan font-weight="700" fill="#1a1208">https://www.mycompany.com</tspan></text>
+        <line x1="450" y1="60" x2="450" y2="92" stroke="#8a7a66" stroke-width="1.6" marker-end="url(#a-gray)"/>
+
+        <!-- Route 53 -->
+        <rect x="360" y="96" width="180" height="52" rx="10" fill="#ede4f5" stroke="#6b3fa0" stroke-width="2"/>
+        <text x="450" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1208">Route 53 (DNS)</text>
+        <text x="450" y="136" text-anchor="middle" font-size="10.5" fill="#6b5744">Alias record → CloudFront</text>
+        <line x1="450" y1="148" x2="450" y2="176" stroke="#6b3fa0" stroke-width="1.6" marker-end="url(#a-purple)"/>
+
+        <!-- CloudFront domain -->
+        <rect x="336" y="178" width="228" height="30" rx="15" fill="#fff9f2" stroke="#1e5fa8" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <text x="450" y="197" text-anchor="middle" font-size="11" fill="#1e5fa8" font-family="ui-monospace, Menlo, monospace">d1tpgebifsgeu7.cloudfront.net</text>
+        <text x="590" y="197" font-size="10.5" fill="#1d7a6e">🔒 HTTPS end-to-end</text>
+        <line x1="450" y1="208" x2="450" y2="232" stroke="#1e5fa8" stroke-width="1.6" marker-end="url(#a-blue)"/>
+
+        <!-- ===== EDGE ZONE (with built-in protections) ===== -->
+        <rect x="196" y="234" width="508" height="156" rx="14" fill="#fffaf3" stroke="#c97d2e" stroke-width="2"/>
+        <text x="450" y="257" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1208">CloudFront Edge Location</text>
+        <text x="450" y="275" text-anchor="middle" font-size="10.5" fill="#6b5744">nearest PoP · TLS terminated here · then routes by URL path</text>
+
+        <!-- protection chips: request passes through these at the edge -->
+        <rect x="210" y="286" width="112" height="46" rx="9" fill="#eaf6ec" stroke="#2d7a3e" stroke-width="1.5"/>
+        <text x="266" y="305" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1a1208">🛡️ AWS Shield</text>
+        <text x="266" y="321" text-anchor="middle" font-size="9.5" fill="#6b5744">DDoS · always-on</text>
+        <rect x="330" y="286" width="112" height="46" rx="9" fill="#fce8e0" stroke="#b84c2a" stroke-width="1.5"/>
+        <text x="386" y="305" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1a1208">🧱 AWS WAF</text>
+        <text x="386" y="321" text-anchor="middle" font-size="9.5" fill="#6b5744">bot &amp; rule filter</text>
+        <rect x="450" y="286" width="112" height="46" rx="9" fill="#e6f3f0" stroke="#1d7a6e" stroke-width="1.5"/>
+        <text x="506" y="305" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1a1208">🔒 TLS · ACM</text>
+        <text x="506" y="321" text-anchor="middle" font-size="9.5" fill="#6b5744">cert in us-east-1</text>
+        <rect x="570" y="286" width="112" height="46" rx="9" fill="#ede4f5" stroke="#6b3fa0" stroke-width="1.5"/>
+        <text x="626" y="305" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1a1208">⚡ Edge Functions</text>
+        <text x="626" y="321" text-anchor="middle" font-size="9.5" fill="#6b5744">CF Fn / Lambda@Edge</text>
+
+        <text x="450" y="356" text-anchor="middle" font-size="10.5" font-style="italic" fill="#6b5744">▼ then picks a cache behaviour by the URL path pattern</text>
+        <text x="450" y="378" text-anchor="middle" font-size="9.5" fill="#8a7a66">(also available: Geo-restriction · Signed URLs / Cookies for private content)</text>
+
+        <!-- split arrows -->
+        <path d="M395,390 C330,406 262,410 236,420" fill="none" stroke="#1e5fa8" stroke-width="1.8" marker-end="url(#a-blue)"/>
+        <path d="M505,390 C588,406 640,410 664,420" fill="none" stroke="#b84c2a" stroke-width="1.8" marker-end="url(#a-rust)"/>
+
+        <!-- ===== LEFT COLUMN: STATIC ===== -->
+        <rect x="92" y="420" width="280" height="66" rx="10" fill="#e0ecf8" stroke="#1e5fa8" stroke-width="1.6"/>
+        <text x="232" y="440" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="1" fill="#1e5fa8">STATIC REQUEST</text>
+        <text x="232" y="459" text-anchor="middle" font-size="11" fill="#3d2e1a">/index.html · /assets/* · /css/*</text>
+        <text x="232" y="476" text-anchor="middle" font-size="11" fill="#3d2e1a">/js/* · /images/*</text>
+        <line x1="232" y1="486" x2="232" y2="510" stroke="#1e5fa8" stroke-width="1.6" marker-end="url(#a-blue)"/>
+
+        <!-- cache -->
+        <rect x="112" y="512" width="240" height="50" rx="10" fill="#e6f3f0" stroke="#1d7a6e" stroke-width="1.8"/>
+        <text x="232" y="533" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1208">CloudFront Cache</text>
+        <text x="232" y="551" text-anchor="middle" font-size="10.5" fill="#6b5744">is a fresh copy already at the edge?</text>
+
+        <!-- hit / miss -->
+        <line x1="232" y1="562" x2="232" y2="576" stroke="#1d7a6e" stroke-width="1.4"/>
+        <rect x="112" y="578" width="114" height="34" rx="8" fill="#e7f6ea" stroke="#2d7a3e" stroke-width="1.4"/>
+        <text x="169" y="599" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2d7a3e">✓ HIT → instant</text>
+        <rect x="238" y="578" width="114" height="34" rx="8" fill="#fce8e0" stroke="#b84c2a" stroke-width="1.4"/>
+        <text x="295" y="599" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b84c2a">✗ MISS → origin</text>
+        <line x1="295" y1="612" x2="255" y2="640" stroke="#b84c2a" stroke-width="1.6" marker-end="url(#a-rust)"/>
+
+        <!-- S3 -->
+        <rect x="112" y="642" width="240" height="58" rx="10" fill="#e0f4f1" stroke="#1d7a6e" stroke-width="2"/>
+        <text x="232" y="665" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1208">S3 Bucket (origin)</text>
+        <text x="232" y="684" text-anchor="middle" font-size="10.5" fill="#6b5744">🔒 Private — reachable only via OAC</text>
+        <line x1="232" y1="700" x2="232" y2="724" stroke="#1d7a6e" stroke-width="1.6" marker-end="url(#a-teal)"/>
+
+        <!-- S3 contents -->
+        <rect x="112" y="726" width="240" height="52" rx="10" fill="#fff9f2" stroke="#b4ddd4" stroke-width="1.4"/>
+        <text x="232" y="747" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1208">index.html · React JS · CSS</text>
+        <text x="232" y="764" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1208">images (cached back at the edge)</text>
+        <line x1="232" y1="778" x2="232" y2="802" stroke="#8a7a66" stroke-width="1.6" marker-end="url(#a-gray)"/>
+
+        <!-- Browser -->
+        <rect x="112" y="804" width="240" height="50" rx="10" fill="#1b2438" stroke="#142a36" stroke-width="1.5"/>
+        <text x="232" y="825" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Browser</text>
+        <text x="232" y="843" text-anchor="middle" font-size="10.5" fill="#c5d2e0">renders the React app</text>
+
+        <!-- SPA calls the API (dashed, into dynamic road) -->
+        <path d="M352,818 C476,796 500,600 556,550" fill="none" stroke="#8a7a66" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-gray)"/>
+        <text x="454" y="712" text-anchor="middle" font-size="10.5" font-style="italic" fill="#6b5744">then the app calls /api/*</text>
+
+        <!-- ===== RIGHT COLUMN: DYNAMIC ===== -->
+        <rect x="530" y="420" width="280" height="66" rx="10" fill="#fce8e0" stroke="#b84c2a" stroke-width="1.6"/>
+        <text x="670" y="440" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="1" fill="#b84c2a">DYNAMIC / API REQUEST</text>
+        <text x="670" y="461" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1208">/api/*</text>
+        <text x="670" y="477" text-anchor="middle" font-size="10.5" fill="#6b5744">no cache — passed straight through</text>
+        <line x1="670" y1="486" x2="670" y2="510" stroke="#b84c2a" stroke-width="1.6" marker-end="url(#a-rust)"/>
+
+        <!-- ALB -->
+        <rect x="540" y="512" width="260" height="74" rx="10" fill="#fce8e0" stroke="#b84c2a" stroke-width="2"/>
+        <text x="670" y="534" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1208">Application Load Balancer</text>
+        <text x="670" y="553" text-anchor="middle" font-size="10.5" fill="#6b5744">health checks · SSL termination</text>
+        <text x="670" y="569" text-anchor="middle" font-size="10.5" fill="#6b5744">path routing · host routing</text>
+        <line x1="670" y1="586" x2="670" y2="610" stroke="#b84c2a" stroke-width="1.6" marker-end="url(#a-rust)"/>
+
+        <!-- ASG -->
+        <rect x="540" y="612" width="260" height="42" rx="10" fill="#fdf0e0" stroke="#c97d2e" stroke-width="1.8"/>
+        <text x="670" y="638" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1208">Auto Scaling Group</text>
+        <line x1="600" y1="654" x2="570" y2="680" stroke="#c97d2e" stroke-width="1.4" marker-end="url(#a-amber)"/>
+        <line x1="670" y1="654" x2="670" y2="680" stroke="#c97d2e" stroke-width="1.4" marker-end="url(#a-amber)"/>
+        <line x1="740" y1="654" x2="770" y2="680" stroke="#c97d2e" stroke-width="1.4" marker-end="url(#a-amber)"/>
+
+        <!-- EC2 x3 -->
+        <rect x="527" y="682" width="86" height="54" rx="9" fill="#fff9f2" stroke="#b84c2a" stroke-width="1.5"/>
+        <text x="570" y="702" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1208">EC2 #1</text>
+        <text x="570" y="717" text-anchor="middle" font-size="9.5" fill="#6b5744">Spring Boot</text>
+        <text x="570" y="729" text-anchor="middle" font-size="9.5" fill="#6b5744">REST API</text>
+        <rect x="627" y="682" width="86" height="54" rx="9" fill="#fff9f2" stroke="#b84c2a" stroke-width="1.5"/>
+        <text x="670" y="702" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1208">EC2 #2</text>
+        <text x="670" y="717" text-anchor="middle" font-size="9.5" fill="#6b5744">Spring Boot</text>
+        <text x="670" y="729" text-anchor="middle" font-size="9.5" fill="#6b5744">REST API</text>
+        <rect x="727" y="682" width="86" height="54" rx="9" fill="#fff9f2" stroke="#b84c2a" stroke-width="1.5"/>
+        <text x="770" y="702" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1208">EC2 #3</text>
+        <text x="770" y="717" text-anchor="middle" font-size="9.5" fill="#6b5744">Spring Boot</text>
+        <text x="770" y="729" text-anchor="middle" font-size="9.5" fill="#6b5744">REST API</text>
+        <line x1="670" y1="736" x2="670" y2="762" stroke="#b84c2a" stroke-width="1.6" marker-end="url(#a-rust)"/>
+
+        <!-- Business logic -->
+        <rect x="560" y="764" width="220" height="40" rx="10" fill="#fce8e0" stroke="#b84c2a" stroke-width="1.6"/>
+        <text x="670" y="789" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1208">Business Logic</text>
+        <line x1="640" y1="804" x2="605" y2="832" stroke="#b84c2a" stroke-width="1.5" marker-end="url(#a-rust)"/>
+        <line x1="700" y1="804" x2="735" y2="832" stroke="#b84c2a" stroke-width="1.5" marker-end="url(#a-rust)"/>
+
+        <!-- RDS + Redis -->
+        <rect x="527" y="834" width="150" height="48" rx="10" fill="#ede4f5" stroke="#6b3fa0" stroke-width="1.8"/>
+        <text x="602" y="855" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1208">RDS</text>
+        <text x="602" y="872" text-anchor="middle" font-size="10" fill="#6b5744">relational DB</text>
+        <rect x="693" y="834" width="120" height="48" rx="10" fill="#fdecea" stroke="#c0392b" stroke-width="1.8"/>
+        <text x="753" y="855" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1208">Redis</text>
+        <text x="753" y="872" text-anchor="middle" font-size="10" fill="#6b5744">in-memory cache</text>
+
+        <!-- Database cylinder under RDS -->
+        <line x1="602" y1="882" x2="602" y2="906" stroke="#6b3fa0" stroke-width="1.5" marker-end="url(#a-purple)"/>
+        <g transform="translate(552,910)">
+          <path d="M0,10 a50,10 0 0,1 100,0 v34 a50,10 0 0,1 -100,0 Z" fill="#f2ecfa" stroke="#6b3fa0" stroke-width="1.6"/>
+          <ellipse cx="50" cy="10" rx="50" ry="10" fill="#f7f2fc" stroke="#6b3fa0" stroke-width="1.6"/>
+          <text x="50" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1208">Database</text>
+        </g>
+      </svg>
+      <div class="diagram-caption">The request arrives over <strong>HTTPS</strong>, passes the edge's built-in defences — <strong>Shield</strong> (DDoS), <strong>WAF</strong> (filtering), <strong>TLS termination</strong> (ACM cert in us-east-1), optional <strong>edge functions</strong> — then splits by path: <code>/api/*</code> → ALB (no cache) · everything else → S3 via OAC (cached at the edge). This is the canonical <strong>CloudFront + S3 + ALB</strong> reference architecture — the static SPA is served from the edge, and its <code>/api/*</code> calls ride the dynamic road to the compute + data tier.</div>
+    </div>
+
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Follow one request through the whole thing</div>
+      <p><strong>1.</strong> User types the domain → <strong>Route 53</strong> alias resolves it to the CloudFront distribution. <strong>2.</strong> The request lands over <strong>HTTPS</strong> at the <strong>nearest edge</strong>, where it passes through the built-in defences: <strong>Shield</strong> absorbs DDoS, <strong>WAF</strong> filters bad bots / SQLi / abusive rates, <strong>TLS is terminated</strong> using the <strong>ACM cert (which must live in us-east-1)</strong>, and any <strong>edge function</strong> (CloudFront Functions / Lambda@Edge) runs. <strong>3.</strong> Only then does CloudFront read the <strong>URL path</strong> and pick a behaviour. <strong>3a.</strong> <code>/index.html</code> or <code>/assets/*</code> → served from the <strong>edge cache</strong> (HIT) or fetched once from the <strong>private S3 bucket via OAC</strong> (MISS), then cached. <strong>3b.</strong> <code>/api/*</code> → <strong>no caching</strong>, forwarded to the <strong>ALB</strong>, which health-checks and routes to a <strong>Spring Boot EC2</strong> in the <strong>Auto Scaling Group</strong>. <strong>4.</strong> The app runs its business logic against <strong>RDS</strong> (source of truth) with <strong>Redis</strong> in front for hot reads. <strong>5.</strong> The React app renders in the browser, and every subsequent <code>/api/*</code> call repeats step 3b.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Request path</th><th>Cache behaviour</th><th>Origin</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>/index.html</code>, <code>/assets/*</code>, <code>/css/*</code>, <code>/js/*</code>, <code>/images/*</code></td><td><strong>Cache</strong> (long TTL)</td><td>S3 (private, OAC)</td><td>Static, identical for everyone → serve from the edge, spare the origin.</td></tr>
+          <tr><td><code>/api/*</code></td><td><strong>No cache</strong> (TTL 0, forward headers/cookies)</td><td>ALB → ASG → EC2</td><td>Personalised &amp; live — caching would serve stale or wrong-user data.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-key">
+      <div class="callout-tag">🛡️ What CloudFront Protects You With (the edge security stack)</div>
+      <p>A huge part of why you put CloudFront in front of everything isn't just speed — it's that the edge becomes your <strong>security perimeter</strong>. These are the protections shown in the top band of the diagram, and each is a favourite exam topic:</p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Protection</th><th>What it does</th><th>Exam detail you must know</th></tr></thead>
+        <tbody>
+          <tr><td><strong>🛡️ AWS Shield Standard</strong></td><td>Automatic DDoS protection (layer 3/4) on every distribution.</td><td><strong>Free &amp; always-on</strong> — no setup. Shield <strong>Advanced</strong> ($3k/mo) adds L7 protection, cost protection &amp; a response team.</td></tr>
+          <tr><td><strong>🧱 AWS WAF</strong></td><td>Inspects each request and blocks bad bots, SQLi/XSS, or abusive rates before it's served/forwarded.</td><td>Attach a <strong>Web ACL</strong> to the distribution. Rate-based rules on <code>/login</code>, <code>/api/*</code>. Managed rule groups do the heavy lifting.</td></tr>
+          <tr><td><strong>🔒 HTTPS / TLS + ACM</strong></td><td>TLS is terminated at the edge; you can force <code>redirect-to-HTTPS</code> and set a minimum TLS version.</td><td>For a custom domain, the <strong>ACM certificate MUST be in us-east-1</strong> (N. Virginia) — regardless of where your origin is. Classic trap.</td></tr>
+          <tr><td><strong>🔐 OAC (Origin Access Control)</strong></td><td>Lets CloudFront reach a <strong>private</strong> S3 bucket; the bucket blocks all public access.</td><td>OAC is the <strong>modern replacement for OAI</strong>. Bucket policy trusts only the distribution. Never make the bucket public.</td></tr>
+          <tr><td><strong>🌍 Geo-restriction</strong></td><td>Allow/deny viewers by country at the edge (licensing, compliance).</td><td>Built into CloudFront (allowlist/blocklist). For finer rules, use <strong>WAF geo-match</strong> instead.</td></tr>
+          <tr><td><strong>🎟️ Signed URLs / Signed Cookies</strong></td><td>Time-limited access to private content (paid videos, premium files).</td><td><strong>Signed URL = one file</strong>; <strong>Signed Cookie = many files</strong> / whole area. Pairs with OAC-locked origins.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ Exam Traps Hiding in This Diagram</div>
+      <p><strong>S3 stays private.</strong> The bucket is never public — CloudFront reaches it through <strong>OAC</strong> (the modern replacement for OAI), and the bucket policy only trusts that distribution. "Make the bucket public" is always the wrong answer.</p>
+      <p><strong>The ACM cert lives in us-east-1.</strong> Custom-domain HTTPS on CloudFront needs its certificate in <strong>N. Virginia</strong>, even if every other resource is in eu-west-1. A cert in the "wrong" region is a classic distractor.</p>
+      <p><strong>Two behaviours, one distribution.</strong> You do <em>not</em> need two distributions for static + dynamic — you add a <strong>cache behaviour</strong> matched on the <code>/api/*</code> path pattern with caching disabled. Ordered path-pattern behaviours are the exam's favourite detail here.</p>
+      <p><strong>CloudFront can't point at the ALB <em>and</em> S3 as one origin.</strong> Each behaviour targets its own origin; the path pattern is what selects between them.</p>
+    </div>
+  </div>
+
+  <!-- PART 9: INDUSTRY -->
   <div class="industry-spotlight" id="cf-industry">
     <div class="industry-spotlight-tag">🏢 Dublin Industry — How CloudFront Is Actually Used</div>
     <h3>Ryanair fronts "MyRyanair" with CloudFront to cut latency across Europe</h3>

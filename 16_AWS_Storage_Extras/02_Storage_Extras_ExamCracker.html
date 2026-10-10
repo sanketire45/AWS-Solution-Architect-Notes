@@ -188,21 +188,23 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-snow" class="svc-panel active">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="snow" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="snow" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="snow" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="snow-cheat">
     <div class="sec-header"><h2>Snow Family — Cheat Sheet</h2><p>Offline transfer when the network can't keep up.</p></div>
+    <div style="background:var(--red-dim);border:1px solid var(--red);border-left:4px solid var(--red);border-radius:10px;padding:14px 18px;margin:2px 0 20px;font-size:14.5px;line-height:1.6;">
+      <strong style="color:var(--red);">⚠️ Freshness (2026):</strong> AWS is <strong>winding down the Snow Family</strong>. <strong>Snowcone was discontinued</strong> (Nov 2024 — no longer orderable) and <strong>Snowball Edge reaches end of support on Dec 31, 2026</strong> (commercial regions). The <em>concept</em> — offline transfer when the network can't meet the deadline — is still on the SAA-C03 exam, so keep recognising <strong>Snowball Edge</strong> as the "PB-scale / no-bandwidth / offline" answer; for online transfer AWS now steers you to <strong>DataSync</strong>.
+    </div>
     <div class="numbers-grid">
       <div class="num-card"><div class="num-val">~80 TB</div><div class="num-label">Snowball Edge usable capacity</div></div>
-      <div class="num-card"><div class="num-val">8 / 14 TB</div><div class="num-label">Snowcone HDD / SSD</div></div>
+      <div class="num-card"><div class="num-val">Dec 2026</div><div class="num-label">Snowball Edge end of support (commercial)</div></div>
       <div class="num-card"><div class="num-val">S3 only</div><div class="num-label">Where Snow data lands</div></div>
       <div class="num-card"><div class="num-val">FREE</div><div class="num-label">Inbound data transfer to AWS</div></div>
     </div>
     <div class="cheat-table-wrap"><table class="cheat-table">
       <thead><tr><th>Device</th><th>When</th></tr></thead>
       <tbody>
-        <tr><td><strong>Snowcone</strong></td><td>Small/edge, few TB, portable, DataSync agent</td></tr>
+        <tr><td><strong>Snowcone</strong> <em>(discontinued Nov 2024)</em></td><td>Small/edge, few TB, portable, DataSync agent — no longer orderable</td></tr>
         <tr><td><strong>Snowball Edge — Storage Optimized</strong></td><td>The workhorse: tens of TB offline migration</td></tr>
         <tr><td><strong>Snowball Edge — Compute Optimized</strong></td><td>Edge compute (EC2/Lambda/GPU) at disconnected sites</td></tr>
         <tr><td><strong>Snowmobile</strong></td><td>100 PB truck — <strong>retired</strong> (distractor for "100 PB")</td></tr>
@@ -215,19 +217,21 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td>PB-scale, low/no bandwidth, or deadline network can't meet</td><td><strong>Snowball</strong> (offline)</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="snow-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Snow — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"PB-scale / no bandwidth / offline"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowball Edge</div></div>
       <div class="trigger-item"><div class="trigger-kw">"X TB in Y days, limited bandwidth (won't fit)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowball — do the math</div></div>
-      <div class="trigger-item"><div class="trigger-kw">"edge compute, disconnected site"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowball Compute Optimized / Snowcone</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"edge compute, disconnected site"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Snowball Edge Compute Optimized</div></div>
     </div>
     <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
       <div class="trigger-item trap-item"><div class="trigger-kw">"Snow lands directly in EFS/FSx/Glacier vault"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">S3 only — then lifecycle/integrate</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Snowball for 5 TB with a 1 Gbps link</div><div class="trigger-arrow">✗</div><div class="trigger-ans">DataSync fits over the wire</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="snow-questions">
     <div class="sec-header"><h2>Snow — Practice Questions</h2><p>Select, then <strong>Check Answer</strong>.</p></div>
     <div id="qlist-snow"></div>
@@ -238,7 +242,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-sg" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="sg" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="sg" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="sg" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="sg-cheat">
@@ -256,8 +259,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <thead><tr><th>Gateway vs DataSync</th></tr></thead>
       <tbody><tr><td><strong>Storage Gateway</strong> = ongoing hybrid cached access. <strong>DataSync</strong> = one-time/scheduled bulk migration. Don't swap them.</td></tr></tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="sg-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Storage Gateway — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"on-prem NFS/SMB, store in S3, local cache"</div><div class="trigger-arrow">→</div><div class="trigger-ans">File Gateway</div></div>
@@ -269,7 +272,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">DataSync for "ongoing hybrid cached access"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">That's Storage Gateway</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Write tapes directly to S3/Glacier API</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Backup app expects a VTL → Tape Gateway</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="sg-questions">
     <div class="sec-header"><h2>Storage Gateway — Practice Questions</h2></div>
     <div id="qlist-sg"></div>
@@ -280,7 +285,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-fsx" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="fsx" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="fsx" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="fsx" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="fsx-cheat">
@@ -302,21 +306,33 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>Scratch vs Persistent</strong></td><td>Scratch = temp/cheap/no replication; Persistent = durable/replicated in-AZ</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="fsx-triggers">
+    <div class="cheat-table-wrap"><table class="cheat-table">
+      <thead><tr><th>EFS detail (the NFS option)</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Availability</strong></td><td>Standard = <strong>multi-AZ</strong> (regional); One Zone = single AZ (cheaper, less resilient)</td></tr>
+        <tr><td><strong>Storage classes</strong></td><td>Standard → Standard-IA → <strong>Archive</strong> (2023, ~50% cheaper than IA); <strong>lifecycle policies</strong> auto-tier by last access</td></tr>
+        <tr><td><strong>Throughput modes</strong></td><td><strong>Elastic</strong> (default — auto-scales, spiky/unpredictable) · Bursting (scales with size) · Provisioned (fixed MiB/s)</td></tr>
+        <tr><td><strong>Latency / fit</strong></td><td>~1 ms first-byte (Standard); tens of ms (IA/Archive). Linux <strong>NFS</strong> shared across many EC2 &amp; AZs — <strong>not for HPC</strong> (→ FSx Lustre)</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>FSx — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"Windows / SMB / Active Directory"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for Windows</div></div>
       <div class="trigger-item"><div class="trigger-kw">"HPC / ML / sub-ms / parallel / S3-linked"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for Lustre</div></div>
       <div class="trigger-item"><div class="trigger-kw">"multi-protocol / NetApp / SnapMirror"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for NetApp ONTAP</div></div>
       <div class="trigger-item"><div class="trigger-kw">"ZFS snapshots / low-latency NFS"</div><div class="trigger-arrow">→</div><div class="trigger-ans">FSx for OpenZFS</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"shared Linux NFS, cut cost on rarely-read files"</div><div class="trigger-arrow">→</div><div class="trigger-ans">EFS lifecycle → IA / Archive</div></div>
     </div>
     <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
       <div class="trigger-item trap-item"><div class="trigger-kw">EFS for "sub-ms / HPC / parallel"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">EFS is ms-class → FSx Lustre</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">EFS for "Windows SMB + AD"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">EFS is Linux/NFS → FSx Windows</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">FSx for "shared Linux NFS, many EC2, not HPC"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">That's EFS</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="fsx-questions">
     <div class="sec-header"><h2>FSx — Practice Questions</h2></div>
     <div id="qlist-fsx"></div>
@@ -327,7 +343,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-dt" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="dt" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="dt" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="dt" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="dt-cheat">
@@ -348,8 +363,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td>Migrating a <strong>database</strong>? → <strong>DMS (+SCT)</strong>, not DataSync.</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="dt-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>DataSync / Transfer / Backup — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"migrate files over network, scheduled, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DataSync</div></div>
@@ -361,7 +376,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">DataSync to migrate a live database</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Files only → use DMS + SCT</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Snowball "lands directly in FSx/EFS"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Snow = S3 only; DataSync = EFS/FSx ok</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="dt-questions">
     <div class="sec-header"><h2>DataSync / Transfer / Backup — Practice Questions</h2></div>
     <div id="qlist-dt"></div>

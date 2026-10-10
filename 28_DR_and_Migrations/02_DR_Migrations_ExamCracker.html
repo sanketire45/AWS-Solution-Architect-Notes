@@ -135,6 +135,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   <div class="cheat-table-wrap"><table class="cheat-table">
     <thead><tr><th>Clue</th><th>Answer</th></tr></thead>
     <tbody>
+      <tr><td><strong>RTO vs RPO</strong></td><td>RTO = max acceptable <em>downtime</em>; RPO = max acceptable <em>data loss</em>. Lower RTO/RPO → pricier DR strategy</td></tr>
       <tr><td>Cheapest DR, RTO of hours acceptable</td><td><strong>Backup &amp; Restore</strong></td></tr>
       <tr><td>Core DB running/replicated, compute OFF</td><td><strong>Pilot Light</strong></td></tr>
       <tr><td>Scaled-down full stack already running</td><td><strong>Warm Standby</strong></td></tr>
@@ -147,6 +148,20 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Discover on-prem inventory + dependencies</td><td><strong>Application Discovery Service</strong></td></tr>
       <tr><td>Track migration progress centrally</td><td><strong>Migration Hub</strong></td></tr>
       <tr><td>Move files/PB of data (not databases)</td><td><strong>DataSync / Snowball / Transfer</strong></td></tr>
+      <tr><td>Centralized, policy-based backups across many services (cross-region &amp; cross-account)</td><td><strong>AWS Backup</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>DR questions give you an RTO/RPO + a cost hint; migration questions test look-alike services. Match both.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>which of the <strong>4 DR strategies</strong>? (given an RTO/RPO + budget)</td><td>Ladder by speed &amp; cost: <strong>Backup &amp; Restore</strong> (hours, cheapest) → <strong>Pilot Light</strong> → <strong>Warm Standby</strong> → <strong>Multi-Site Active-Active</strong> (near-zero, priciest). Match the stated RTO/RPO to the cheapest one that meets it.</td></tr>
+      <tr><td>"DB replicated but <strong>compute is OFF</strong>" vs "<strong>scaled-down stack already running</strong>"</td><td>Compute off until failover → <strong>Pilot Light</strong>. Smaller-but-running full stack → <strong>Warm Standby</strong>. This is the single sharpest DR distinction — read whether compute is running.</td></tr>
+      <tr><td>"migrate a <strong>database</strong>, source stays online" vs "migrate <strong>files / NAS / objects</strong>"</td><td>Live DB with minimal downtime → <strong>DMS</strong> (full load + CDC). File/object data → <strong>DataSync</strong>. Never DataSync for a live database.</td></tr>
+      <tr><td>"migrate to a <strong>different DB engine</strong> (e.g. Oracle → PostgreSQL)"</td><td><strong>SCT</strong> (convert schema) <strong>+ DMS</strong> (move data). Same engine → DMS alone. "heterogeneous / different engine" is the SCT tell.</td></tr>
+      <tr><td>"<strong>lift-and-shift servers to EC2</strong> (one-time)" vs "<strong>ongoing replication for DR/failover</strong>"</td><td>One-time rehost → <strong>MGN</strong> (Application Migration Service). Continuous cross-Region DR replication → <strong>Elastic Disaster Recovery (DRS)</strong>. Both replicate servers — intent decides.</td></tr>
+      <tr><td>ongoing hybrid vs bulk vs offline data movement</td><td>Ongoing cached on-prem access → <strong>Storage Gateway</strong>. Scheduled bulk over the network → <strong>DataSync</strong>. Offline / no bandwidth / PB → <strong>Snowball</strong> (lands in S3 only).</td></tr>
     </tbody>
   </table></div>
 </div>

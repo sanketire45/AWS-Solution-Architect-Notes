@@ -186,7 +186,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-ecs" class="svc-panel active">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="ecs" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="ecs" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="ecs" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="ecs-cheat">
@@ -204,8 +203,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>Cost</strong></td><td>ECS is free; pay for EC2/Fargate underneath</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="ecs-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>ECS — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"run containers, no K8s, least ops"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECS on Fargate</div></div>
@@ -216,7 +215,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">Credentials baked into the image</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Use the Task Role</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">EKS chosen when no K8s requirement</div><div class="trigger-arrow">✗</div><div class="trigger-ans">ECS on Fargate (simpler, no $73/mo)</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="ecs-questions"><div class="sec-header"><h2>ECS — Practice Questions</h2></div><div id="qlist-ecs"></div></div>
 </div>
 
@@ -224,7 +225,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-far" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="far" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="far" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="far" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="far-cheat">
@@ -235,12 +235,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>What</strong></td><td>Serverless compute for containers (ECS &amp; EKS) — no EC2 to manage</td></tr>
         <tr><td><strong>Billing</strong></td><td>Per vCPU-hr + GB-hr (per second); ~$36/mo for 1 vCPU + 2 GB 24/7</td></tr>
         <tr><td><strong>Fargate Spot</strong></td><td>~70% off for interruptible tasks</td></tr>
+        <tr><td><strong>Graviton (ARM)</strong></td><td>Fargate runs on Graviton (arm64) for ~20% lower cost &amp; better price-performance — pick it if the image supports ARM</td></tr>
         <tr><td><strong>vs EC2 launch</strong></td><td>EC2 cheaper per-unit at steady high utilization</td></tr>
         <tr><td><strong>vs Lambda</strong></td><td>Fargate for >15min / >10GB / GPU / persistent conns / big images</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="far-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Fargate — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"containers, no servers/infrastructure to manage"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Fargate</div></div>
@@ -251,7 +252,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">Lambda for a >15-minute container job</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Fargate</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Fargate for huge steady fleet at lowest unit cost</div><div class="trigger-arrow">✗</div><div class="trigger-ans">EC2 (Spot+Graviton+Karpenter)</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="far-questions"><div class="sec-header"><h2>Fargate — Practice Questions</h2></div><div id="qlist-far"></div></div>
 </div>
 
@@ -259,7 +262,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-ecr" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="ecr" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="ecr" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="ecr" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="ecr-cheat">
@@ -274,15 +276,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>Cost</strong></td><td>$0.10/GB-month + data transfer out</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="ecr-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>ECR — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"private managed Docker registry"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon ECR</div></div>
       <div class="trigger-item"><div class="trigger-kw">"scan images for vulnerabilities"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECR enhanced scanning (Inspector)</div></div>
       <div class="trigger-item"><div class="trigger-kw">"auto-delete old images"</div><div class="trigger-arrow">→</div><div class="trigger-ans">ECR lifecycle policies</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="ecr-questions"><div class="sec-header"><h2>ECR — Practice Questions</h2></div><div id="qlist-ecr"></div></div>
 </div>
 
@@ -290,7 +294,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-eks" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="eks" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="eks" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="eks" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="eks-cheat">
@@ -302,6 +305,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>When</strong></td><td>Only if <strong>K8s / portability / ecosystem</strong> is explicit</td></tr>
         <tr><td><strong>Nodes</strong></td><td>EC2 (self/managed node groups) or <strong>Fargate</strong> (Fargate profiles)</td></tr>
         <tr><td><strong>Node scaling</strong></td><td>Cluster Autoscaler or <strong>Karpenter</strong></td></tr>
+        <tr><td><strong>Auto Mode</strong> (2024)</td><td>One-click <strong>fully-managed compute</strong>: AWS runs Karpenter, patches &amp; scales right-sized EC2 (incl. Graviton/Spot). ~12% fee on the EC2 cost. Lowest K8s node ops while keeping full EC2 features (GPU, DaemonSets)</td></tr>
         <tr><td><strong>Pod AWS access</strong></td><td><strong>IRSA / Pod Identity</strong> (not node role)</td></tr>
         <tr><td><strong>Cost</strong></td><td><strong>$0.10/hr (~$73/mo) per cluster</strong> + node compute</td></tr>
       </tbody>
@@ -316,19 +320,22 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td>Store images</td><td>ECR</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="eks-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>EKS — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"Kubernetes / K8s API / portability / existing K8s"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Amazon EKS</div></div>
       <div class="trigger-item"><div class="trigger-kw">"Kubernetes, no node management"</div><div class="trigger-arrow">→</div><div class="trigger-ans">EKS on Fargate</div></div>
+      <div class="trigger-item"><div class="trigger-kw">"K8s, least node ops, but still need GPU/DaemonSets"</div><div class="trigger-arrow">→</div><div class="trigger-ans">EKS Auto Mode (managed Karpenter)</div></div>
       <div class="trigger-item"><div class="trigger-kw">"most secure AWS access for specific pods"</div><div class="trigger-arrow">→</div><div class="trigger-ans">IRSA / Pod Identity</div></div>
     </div>
     <div class="trigger-section"><h3 style="color:var(--red);border-left-color:var(--red);">🚫 Traps</h3>
       <div class="trigger-item trap-item"><div class="trigger-kw">EKS for "just run containers, least ops"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">ECS on Fargate (no K8s, no $73/mo)</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Node instance role for pod AWS perms</div><div class="trigger-arrow">✗</div><div class="trigger-ans">IRSA (least privilege per pod)</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="eks-questions"><div class="sec-header"><h2>EKS — Practice Questions</h2></div><div id="qlist-eks"></div></div>
 </div>
 

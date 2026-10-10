@@ -753,8 +753,9 @@
   <div class="numbers">
     <div class="num-card"><div class="figure">Redis</div><div class="label">HA + persistence</div></div>
     <div class="num-card"><div class="figure">Memcached</div><div class="label">Multi-threaded, no HA</div></div>
+    <div class="num-card"><div class="figure">Valkey</div><div class="label">Redis-compatible, ~20% cheaper (2024+)</div></div>
     <div class="num-card"><div class="figure">µs</div><div class="label">Cache hit latency</div></div>
-    <div class="num-card"><div class="figure">6379</div><div class="label">Redis port</div></div>
+    <div class="num-card"><div class="figure">6379</div><div class="label">Redis / Valkey port</div></div>
   </div>
 
   <div class="callout memorize">
@@ -814,6 +815,10 @@
         <tr>
           <td><strong>Custom RDS</strong></td>
           <td>RDS Custom for Oracle/SQL Server lets you SSH into the underlying EC2 — for apps that need OS-level customisation. Rare exam topic but appears.</td>
+        </tr>
+        <tr>
+          <td><strong>Blue/Green Deployments</strong></td>
+          <td>Spins up a synced staging copy (green) on the new engine/version/schema; you test it, then switch over in <strong>~1 min with zero data loss</strong> and easy rollback. RDS MySQL/MariaDB/Postgres &amp; Aurora. Trigger: "upgrade the DB engine safely with minimal downtime / test-first / fast rollback."</td>
         </tr>
       </tbody>
     </table>
@@ -1037,6 +1042,10 @@
           <td><strong>Cost</strong></td>
           <td>~20% more than equivalent RDS. If question is cost-only and features overlap, RDS wins; if features matter, Aurora.</td>
         </tr>
+        <tr>
+          <td><strong>I/O-Optimized</strong></td>
+          <td>Cluster storage config with <strong>no per-request I/O charges</strong> — up to ~40% cheaper when I/O is &gt;25% of your Aurora bill (I/O-heavy OLTP). Gives predictable cost. Trigger: "Aurora bill is volatile / dominated by I/O charges."</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -1115,7 +1124,7 @@
       <tbody>
         <tr><td><strong>Unit of capacity</strong></td><td>ACU (Aurora Capacity Unit) ≈ 2 GB RAM + matching CPU</td></tr>
         <tr><td><strong>Scaling speed</strong></td><td>Fractions of a second (much faster than v1)</td></tr>
-        <tr><td><strong>Min/max</strong></td><td>You set both; instance auto-scales between them</td></tr>
+        <tr><td><strong>Min/max</strong></td><td>You set both; auto-scales between them. <strong>Min can be 0 ACU</strong> → auto-pause when idle (scale-to-zero, 2024+); otherwise the minimum runs 24/7</td></tr>
         <tr><td><strong>Engines</strong></td><td>Aurora MySQL &amp; Aurora PostgreSQL</td></tr>
         <tr><td><strong>Features</strong></td><td>Full Aurora: Multi-AZ, Global DB, Read Replicas, all supported in v2</td></tr>
         <tr><td><strong>Billing</strong></td><td>Per ACU per second</td></tr>
@@ -1151,8 +1160,8 @@
   </div>
 
   <div class="callout trap">
-    <div class="callout-label">Trap</div>
-    <p>"Serverless" does NOT mean "scales to zero" for v2 — it stays at your minimum. (V1 could scale to zero, but v1 is deprecated.) Don't pick Aurora Serverless if the requirement is "no charges when idle" — that's not v2 behaviour.</p>
+    <div class="callout-label">Update (2026): v2 now scales to zero</div>
+    <p>Aurora Serverless v2 <strong>can now scale to 0 ACU and auto-pause</strong> after an idle period you choose (5 min–24 h) — <strong>no compute charge while paused</strong> (storage still billed); first connection resumes in ~15 s. Needs a recent engine (Aurora PostgreSQL 13.15+/14.12+/15.7+/16.3+ or MySQL 3.08+). So "no charges when idle" <em>is</em> now valid for v2. Older courses still say "v2 can't scale to zero" — that's outdated.</p>
   </div>
 </section>
 
@@ -1282,6 +1291,12 @@
     persistence · multi-AZ · failover · pub/sub · sorted set · leaderboard · session that survives node restart · geospatial · encryption · transactions<br>
     → the answer is <strong>Redis</strong>.</p>
     <p>Memcached only wins when the question explicitly says "simple key-value, pure throughput, no HA required, ephemeral data, multi-threaded per node."</p>
+  </div>
+
+  <div class="callout memorize">
+    <div class="callout-label">New engines &amp; Serverless (2026)</div>
+    <p><strong>ElastiCache for Valkey</strong> — an open-source, Redis-OSS-compatible engine AWS now recommends: same data types &amp; features as Redis, <strong>~20% cheaper</strong> node-based (~33% cheaper Serverless), with in-place upgrades from Redis. If a scenario wants "Redis features at lower cost," Valkey fits.<br>
+    <strong>ElastiCache Serverless</strong> — no node sizing or capacity planning; scales instantly, pay per GB-hour + ECPU. Trigger: "in-memory caching with unpredictable traffic and zero cluster management."</p>
   </div>
 
   <div class="trigger-grid">
@@ -1493,8 +1508,8 @@
   </div>
 
   <div class="callout trap">
-    <div class="callout-label">Trap #10</div>
-    <p><strong>Aurora Serverless v2 doesn't scale to zero.</strong> If the requirement says "no charges when idle," v2 doesn't fit — you'd need to manually pause/delete the cluster.</p>
+    <div class="callout-label">Trap #10 (updated 2026)</div>
+    <p><strong>Aurora Serverless v2 now DOES scale to zero.</strong> With min = 0 ACU it auto-pauses when idle (no compute charge, storage still billed) and resumes in ~15 s — so "no charges when idle" is now a valid reason to pick v2 (recent engine versions only). The old "v2 can't scale to zero" is retired.</p>
   </div>
 
   <div class="callout trap">

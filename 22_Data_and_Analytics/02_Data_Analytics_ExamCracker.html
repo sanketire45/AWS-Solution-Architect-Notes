@@ -137,13 +137,27 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Serverless ETL / data catalog / crawl schema</td><td><strong>AWS Glue</strong></td></tr>
       <tr><td>Build &amp; secure a data lake, fine-grained (column/row) permissions</td><td><strong>Lake Formation</strong></td></tr>
       <tr><td>Petabyte analytics / OLAP / BI, frequent &amp; complex</td><td><strong>Redshift</strong></td></tr>
+      <tr><td>Data warehouse without managing clusters / sporadic or variable analytics</td><td><strong>Redshift Serverless</strong></td></tr>
       <tr><td>Query S3 from Redshift without loading</td><td><strong>Redshift Spectrum</strong></td></tr>
       <tr><td>Managed Hadoop/Spark/Hive/Presto, heavy custom processing</td><td><strong>EMR</strong></td></tr>
       <tr><td>Full-text search / log analytics + dashboards</td><td><strong>OpenSearch</strong></td></tr>
-      <tr><td>Stream → S3/Redshift/OpenSearch, least ops</td><td><strong>Kinesis Firehose</strong></td></tr>
+      <tr><td>Stream → S3/Redshift/OpenSearch, least ops</td><td><strong>Amazon Data Firehose</strong> (formerly Kinesis Data Firehose)</td></tr>
       <tr><td>Apache Kafka specifically / migrate Kafka</td><td><strong>Amazon MSK</strong></td></tr>
       <tr><td>Real-time SQL/aggregations on a stream</td><td><strong>Managed Service for Apache Flink</strong></td></tr>
       <tr><td>Serverless BI dashboards</td><td><strong>QuickSight</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>Analytics questions are mostly "which of these look-alikes?" Keep the boundaries crisp.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>"<strong>occasional / ad-hoc</strong> SQL on S3, no clusters" vs "<strong>frequent, complex</strong> warehouse"</td><td>Occasional &amp; serverless → <strong>Athena</strong> (pay per query). Always-on, heavy, joins/BI → <strong>Redshift</strong> (cluster). Reaching for Redshift when it says "occasional/serverless" is the trap.</td></tr>
+      <tr><td>"query S3 in place, but we <strong>already run Redshift</strong>"</td><td><strong>Redshift Spectrum</strong> (queries S3 <em>from</em> a Redshift cluster). Athena needs no cluster — if there's no Redshift, Spectrum is the wrong/costly pick.</td></tr>
+      <tr><td>"stream data, need <strong>custom processing / replay / many consumers</strong>" vs "just <strong>deliver</strong> to S3/Redshift/OpenSearch"</td><td>Process/replay → <strong>Kinesis Data Streams</strong> (shards, you build consumers). Deliver-only, no code, no replay → <strong>Data Firehose</strong>. The #1 analytics trap.</td></tr>
+      <tr><td>"transform/ETL data with <strong>least ops</strong>" vs "existing <strong>Hadoop/Spark</strong>, deep control"</td><td>Serverless ETL + catalog → <strong>Glue</strong>. Big custom clusters (Hive/Presto/Spark), full tuning → <strong>EMR</strong>.</td></tr>
+      <tr><td>"Athena queries are <strong>slow / expensive</strong> — reduce cost"</td><td><strong>Partition + columnar (Parquet/ORC) + compress</strong> → scans less data (Athena bills per TB scanned). It is <em>not</em> "use a bigger instance" — Athena has none.</td></tr>
+      <tr><td>"<strong>business BI dashboards</strong>" vs "<strong>log / full-text search</strong> + operational dashboards"</td><td>BI for business users → <strong>QuickSight</strong>. Search/log analytics → <strong>OpenSearch</strong> (with its dashboards).</td></tr>
     </tbody>
   </table></div>
 </div>

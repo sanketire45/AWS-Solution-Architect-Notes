@@ -107,6 +107,27 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 </section>
 
+<section class="weight-wrap" style="margin-top:18px;">
+  <div class="weight-box" style="border-left-color:var(--teal);">
+    <div class="wlabel" style="color:var(--teal);">🧠 Must-Know Reference — Step Functions Standard vs Express</div>
+    <p style="margin-bottom:14px;">The one orchestration distinction the exam expects but that's easy to miss: <strong>Standard</strong> = long, auditable, exactly-once; <strong>Express</strong> = short, high-volume, cheap.</p>
+    <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:15px;">
+      <thead><tr style="text-align:left;color:var(--teal);border-bottom:1px solid var(--border-2);">
+        <th style="padding:8px 10px;">Aspect</th><th style="padding:8px 10px;">Standard</th><th style="padding:8px 10px;">Express</th></tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 10px;"><strong>Max duration</strong></td><td style="padding:8px 10px;">Up to <strong>1 year</strong></td><td style="padding:8px 10px;">Up to <strong>5 minutes</strong></td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 10px;"><strong>Start rate</strong></td><td style="padding:8px 10px;">~2,000 /s</td><td style="padding:8px 10px;"><strong>100,000+ /s</strong> (very high volume)</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 10px;"><strong>Semantics</strong></td><td style="padding:8px 10px;">Exactly-once</td><td style="padding:8px 10px;">At-least-once (async) / at-most-once (sync)</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 10px;"><strong>Pricing</strong></td><td style="padding:8px 10px;">Per state transition</td><td style="padding:8px 10px;">Per request + duration (cheaper at high volume)</td></tr>
+        <tr><td style="padding:8px 10px;"><strong>Use for</strong></td><td style="padding:8px 10px;">Long-running, auditable, human approval, order/saga workflows</td><td style="padding:8px 10px;">High-volume, short event/stream processing, IoT ingestion</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="margin:14px 0 0;color:var(--text-soft);font-size:14px;">Orchestration picker: <strong style="color:var(--text);">Step Functions</strong> = coordinate multi-step workflow with retries/branching/audit · <strong style="color:var(--text);">EventBridge</strong> = content-based routing / SaaS &amp; scheduled events / archive-replay · <strong style="color:var(--text);">SQS</strong> = durable decoupling buffer · <strong style="color:var(--text);">SNS</strong> = fan-out one event to many.</p>
+  </div>
+</section>
+
 <div class="score-bar">
   <span class="score-label">SCORE</span>
   <span class="score-nums" id="scoreDisplay">0 / 0</span>

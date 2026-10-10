@@ -139,13 +139,26 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Translate languages</td><td><strong>Translate</strong></td></tr>
       <tr><td>Sentiment / entities / PII in text (NLP)</td><td><strong>Comprehend</strong></td></tr>
       <tr><td>Chatbot / voice bot / IVR</td><td><strong>Lex</strong> (+ Connect)</td></tr>
-      <tr><td>Build / train / deploy a custom model on your own data</td><td><strong>SageMaker</strong></td></tr>
+      <tr><td>Build / train / deploy a custom model on your own data</td><td><strong>SageMaker AI</strong> <em>(renamed from "SageMaker" at re:Invent 2024)</em></td></tr>
       <tr><td>Label a training dataset</td><td><strong>SageMaker Ground Truth</strong></td></tr>
       <tr><td>Intelligent enterprise/document search</td><td><strong>Kendra</strong></td></tr>
       <tr><td>Real-time recommendations</td><td><strong>Personalize</strong></td></tr>
-      <tr><td>Time-series demand forecasting</td><td><strong>Forecast</strong></td></tr>
+      <tr><td>Time-series demand forecasting</td><td><strong>Forecast</strong> <em>(closed to new customers Jul 2024 → modern answer SageMaker Canvas; Forecast may still appear on the exam)</em></td></tr>
       <tr><td>Detect online/payment fraud with ML</td><td><strong>Fraud Detector</strong></td></tr>
       <tr><td>Generative AI / foundation models / LLM apps</td><td><strong>Bedrock</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>The exam manufactures difficulty by putting two near-neighbour services in the same question. Drill these.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>"a <strong>general</strong> task (faces, speech, translation, sentiment)" vs "<strong>our own data / custom model</strong>"</td><td>General, pre-built → the managed <strong>AI service</strong> (Rekognition, etc.). Unique business problem needing training on your data → <strong>SageMaker AI</strong>. Picking SageMaker for a solved problem = over-engineering trap.</td></tr>
+      <tr><td>analyse an <strong>image/video</strong> vs extract from a <strong>scanned document/form</strong></td><td>Images/faces/moderation → <strong>Rekognition</strong>. Text/tables/key-values from PDFs, invoices, forms → <strong>Textract</strong> (not Rekognition).</td></tr>
+      <tr><td>"<strong>speech → text</strong>" vs "<strong>text → speech</strong>"</td><td>Transcribe = audio <em>in</em> (transcription). Polly = audio <em>out</em> (read text aloud). Easy to reverse under time pressure.</td></tr>
+      <tr><td>"<strong>understand</strong> text (sentiment/entities/PII)" vs "<strong>search</strong> text (find the right document)"</td><td>Analyse meaning → <strong>Comprehend</strong>. Natural-language enterprise document <em>search</em> → <strong>Kendra</strong>.</td></tr>
+      <tr><td>"build a <strong>conversational chatbot / IVR</strong>" vs "just <strong>speak</strong> a response"</td><td>Full bot (intents, dialog) → <strong>Lex</strong>. Only vocalise text → <strong>Polly</strong>.</td></tr>
+      <tr><td>"analyse sentiment of <strong>multilingual</strong> customer feedback"</td><td>Chain: <strong>Comprehend</strong> (detect language) → <strong>Translate</strong> → <strong>Comprehend</strong> (sentiment). A recurring "combine services" pattern.</td></tr>
     </tbody>
   </table></div>
 </div>

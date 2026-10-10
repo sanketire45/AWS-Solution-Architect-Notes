@@ -133,12 +133,14 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <thead><tr><th>Clue</th><th>Service</th></tr></thead>
     <tbody>
       <tr><td>Manage encryption keys / SSE-KMS / yearly rotation + control</td><td><strong>KMS (customer-managed CMK)</strong></td></tr>
+      <tr><td>S3 encryption-at-rest options</td><td><strong>SSE-S3</strong> (AWS keys, default) · <strong>SSE-KMS</strong> (KMS control + CloudTrail audit) · <strong>SSE-C</strong> (you supply the key) · <strong>DSSE-KMS</strong> (double)</td></tr>
+      <tr><td>Encrypt large data with a KMS key (how it works)</td><td><strong>Envelope encryption</strong> — <code>GenerateDataKey</code>; data key encrypts data, KMS encrypts the data key</td></tr>
       <tr><td>Dedicated single-tenant HSM / own key material</td><td><strong>CloudHSM</strong></td></tr>
       <tr><td>Store DB credentials with automatic rotation</td><td><strong>Secrets Manager</strong></td></tr>
       <tr><td>Store config / secure strings, free, no rotation</td><td><strong>SSM Parameter Store</strong></td></tr>
       <tr><td>Free auto-renewing TLS certs (ALB/CloudFront)</td><td><strong>ACM</strong> (CloudFront cert = us-east-1)</td></tr>
       <tr><td>Block SQLi/XSS/bots, rate-limit (L7)</td><td><strong>WAF</strong> (not on NLB)</td></tr>
-      <tr><td>DDoS cost protection + response team</td><td><strong>Shield Advanced</strong> ($3k/mo)</td></tr>
+      <tr><td>DDoS protection</td><td><strong>Shield Standard</strong> = free &amp; automatic for all (L3/L4). <strong>Shield Advanced</strong> ($3k/mo) = cost protection + 24/7 SRT + enhanced L7</td></tr>
       <tr><td>Detect threats/anomalies with ML from logs</td><td><strong>GuardDuty</strong> (agentless)</td></tr>
       <tr><td>Scan EC2/ECR/Lambda for vulnerabilities (CVEs)</td><td><strong>Inspector</strong></td></tr>
       <tr><td>Find PII / sensitive data in S3</td><td><strong>Macie</strong></td></tr>
@@ -146,6 +148,20 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Investigate root cause of a finding</td><td><strong>Detective</strong></td></tr>
       <tr><td>Central WAF/Shield/SG/firewall across org</td><td><strong>Firewall Manager</strong></td></tr>
       <tr><td>Stateful network firewall / IDS-IPS for VPC</td><td><strong>Network Firewall</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>Two moves crack most security questions: match the detection trio, and ask "does it say <em>prevent</em> or <em>detect</em>?"</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>"detect <strong>threats/anomalies</strong>" vs "find <strong>software vulnerabilities/CVEs</strong>" vs "find <strong>sensitive data/PII</strong>"</td><td>Threats (logs, ML) → <strong>GuardDuty</strong>. CVEs on EC2/ECR/Lambda → <strong>Inspector</strong>. PII in S3 → <strong>Macie</strong>. The detection trio is the most-tested set here.</td></tr>
+      <tr><td>"<strong>dedicated / single-tenant</strong> HSM / control the key material / FIPS 140-3 L3"</td><td><strong>CloudHSM</strong> — and only when it says dedicated/single-tenant. Otherwise <strong>KMS</strong> (multi-tenant, AWS-managed). "dedicated HSM" is the tell.</td></tr>
+      <tr><td>S3 encryption: "AWS handles keys" vs "we need <strong>control + audit</strong>" vs "we <strong>supply the key</strong>"</td><td>Default → <strong>SSE-S3</strong>. Control + CloudTrail audit → <strong>SSE-KMS</strong>. Customer-provided key → <strong>SSE-C</strong>. High KMS request cost? add <strong>S3 Bucket Keys</strong>.</td></tr>
+      <tr><td>"<strong>automatically rotate</strong> DB credentials" vs "store config/secret at <strong>lowest cost</strong>"</td><td>Auto-rotation → <strong>Secrets Manager</strong>. Cheap, no rotation → <strong>Parameter Store SecureString</strong>. "Rotate" is the switch.</td></tr>
+      <tr><td>"<strong>SQLi/XSS/bots/rate-limit/geo-block</strong>" (L7) vs "absorb a <strong>DDoS</strong>" (L3/4)</td><td>L7 filtering → <strong>WAF</strong> (on CloudFront/ALB/API GW/AppSync — <em>not</em> NLB). DDoS → <strong>Shield</strong> (Standard free; Advanced adds cost protection + SRT).</td></tr>
+      <tr><td>"<strong>IAM allows kms:Decrypt</strong> but the user is still denied"</td><td>A KMS key is <strong>deny-by-default at the key</strong> — the <strong>key policy</strong> must also allow the principal (or delegate to IAM). IAM alone is never enough for KMS.</td></tr>
+      <tr><td>does it say "<strong>prevent</strong>" or "<strong>detect</strong>"?</td><td>Prevent → preventive controls (bucket policy, Block Public Access, SCP, KMS key policy). Detect/alert → CloudTrail, Config, GuardDuty, Macie, Security Hub. This one word steers the whole answer.</td></tr>
     </tbody>
   </table></div>
 </div>

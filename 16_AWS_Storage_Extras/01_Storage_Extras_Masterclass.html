@@ -194,6 +194,10 @@
       <div class="callout-tag">🔑 Facts the exam checks</div>
       <p>Snow data <strong>lands in S3 only</strong> (then you lifecycle/integrate from there — it can't import straight to EFS/FSx/EBS/Glacier vault). Devices encrypt everything with <strong>KMS</strong>, use a tamper-evident enclosure, and carry an <strong>E-Ink shipping label</strong> that auto-updates the return address. The whole job is tracked and managed from the AWS console.</p>
     </div>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ Freshness (2026): Snow is winding down</div>
+      <p><strong>Snowcone was discontinued</strong> (Nov 2024 — no longer orderable) and <strong>Snowball Edge reaches end of support on Dec 31, 2026</strong> (commercial Regions). The <em>concept</em> — offline transfer when the network can't meet the deadline — is still on the exam, so recognise <strong>Snowball Edge</strong> as the "PB-scale / no-bandwidth / offline" answer; for online transfer AWS now steers you to <strong>DataSync</strong>.</p>
+    </div>
   </div>
 
   <div class="part-header blue" id="snow-p3">

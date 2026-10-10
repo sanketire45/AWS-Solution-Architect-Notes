@@ -224,6 +224,8 @@
       <a href="#sec-p1"><span class="idx-dot"></span>NAT Gateway</a>
       <a href="#sec-p2"><span class="idx-dot"></span>Security Groups vs NACLs</a>
       <a href="#sec-p3"><span class="idx-dot"></span>The Stateful/Stateless Trap</a>
+      <a href="#sec-p4"><span class="idx-dot"></span>Elastic IP &amp; Egress-Only IGW</a>
+      <a href="#sec-p5"><span class="idx-dot"></span>Private Access: Bastion vs SSM</a>
       <a href="#sec-triggers"><span class="idx-dot"></span>Triggers</a>
     </div>
   </div>
@@ -280,12 +282,50 @@
     </div>
   </div>
 
+  <div class="part-header rust" id="sec-p4">
+    <div class="part-number">NAT &amp; Security · Part 4</div>
+    <h2>Elastic IP &amp; Egress-Only Internet Gateway</h2>
+  </div>
+  <div class="section">
+    <ul class="nice-list">
+      <li><strong>Elastic IP (EIP)</strong> — a <strong>static public IPv4</strong> you own and can re-map between instances or NAT Gateways. Use it when something needs a <em>fixed</em> public IP: IP whitelisting, a NAT Gateway, or fast failover to a standby instance.</li>
+      <li><strong>Egress-Only Internet Gateway (EIGW)</strong> — the <strong>IPv6 equivalent of a NAT Gateway</strong>: lets private-subnet instances make <em>outbound</em> IPv6 connections while blocking all inbound. (A NAT Gateway is IPv4-only; IPv6 addresses are globally routable, so you need an EIGW to get "outbound-only" on IPv6.)</li>
+    </ul>
+    <div class="callout callout-trap">
+      <div class="callout-tag">⚠️ Two traps here</div>
+      <p>(1) <strong>Cost:</strong> since Feb 2024 AWS charges ~<strong>$0.005/hr (~$3.6/mo) for every public IPv4</strong>, including in-use and idle EIPs — release unattached ones. (2) <strong>IPv6 outbound</strong> "internet but no inbound" is <em>not</em> a NAT Gateway → it's an <strong>Egress-Only Internet Gateway</strong>.</p>
+    </div>
+  </div>
+
+  <div class="part-header rust" id="sec-p5">
+    <div class="part-number">NAT &amp; Security · Part 5</div>
+    <h2>Reaching Private Instances — Bastion vs SSM Session Manager</h2>
+  </div>
+  <div class="section">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th></th><th>Bastion Host (jump box)</th><th>SSM Session Manager</th></tr></thead>
+      <tbody>
+        <tr><td><strong>What</strong></td><td>A hardened EC2 in a public subnet you SSH <em>through</em> to reach private instances</td><td>Browser/CLI shell straight to private instances via the SSM Agent — <strong>no SSH</strong></td></tr>
+        <tr><td><strong>Inbound port 22?</strong></td><td>Yes — open 22 to your IP on the bastion</td><td><strong>None</strong> — no inbound ports, no public IP needed</td></tr>
+        <tr><td><strong>Needs</strong></td><td>Public subnet + SSH key management</td><td>SSM Agent + instance role + reach to SSM (via NAT or Interface Endpoints)</td></tr>
+        <tr><td><strong>Audit</strong></td><td>Manual</td><td>Fully logged to CloudTrail / CloudWatch / S3</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 The modern answer</div>
+      <p>"Access a private EC2 <strong>without opening port 22 / without a bastion / no public IP</strong>" → <strong>SSM Session Manager</strong> — the exam's preferred, most-secure pattern (works over private Interface Endpoints, fully audited). Bastion is the older approach offered as the distractor.</p>
+    </div>
+  </div>
+
   <div class="trigger-box" id="sec-triggers">
     <h3>⚡ NAT &amp; Security — Triggers</h3>
     <div class="trigger-row"><div class="trigger-kw">"private subnet outbound internet, HA"</div><div class="trigger-arrow">→</div><div class="trigger-ans">NAT Gateway per AZ</div></div>
     <div class="trigger-row"><div class="trigger-kw">"standard instance-level firewall"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Security Group (stateful)</div></div>
     <div class="trigger-row"><div class="trigger-kw">"block a specific IP / subnet-level deny"</div><div class="trigger-arrow">→</div><div class="trigger-ans">NACL (stateless, allow+deny)</div></div>
     <div class="trigger-row"><div class="trigger-kw">"allow one tier's SG to reach another"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SG referencing another SG</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"IPv6 outbound internet, no inbound"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Egress-Only Internet Gateway</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"access private EC2, no port 22 / no bastion / no public IP"</div><div class="trigger-arrow">→</div><div class="trigger-ans">SSM Session Manager</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"fixed public IP that can move to a standby"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Elastic IP</div></div>
   </div>
 </div>
 
@@ -370,6 +410,7 @@
       <a href="#hyb-p2"><span class="idx-dot"></span>Direct Connect</a>
       <a href="#hyb-p3"><span class="idx-dot"></span>VPN vs Direct Connect</a>
       <a href="#hyb-p4"><span class="idx-dot"></span>VPC Flow Logs</a>
+      <a href="#hyb-p5"><span class="idx-dot"></span>Route 53 Resolver (Hybrid DNS)</a>
       <a href="#hyb-triggers"><span class="idx-dot"></span>Triggers</a>
     </div>
   </div>
@@ -393,9 +434,15 @@
   <div class="section">
     <ul class="nice-list">
       <li>A <strong>dedicated, private physical fiber connection</strong> from your data center to AWS — consistent low latency, high bandwidth, and lower data-transfer costs.</li>
-      <li><strong>Not encrypted by default</strong> (it's private, not encrypted) — run a <strong>VPN over Direct Connect</strong> if you need encryption.</li>
+      <li><strong>Not encrypted by default</strong> (it's private, not encrypted) — run a <strong>VPN over Direct Connect</strong> for encryption, or <strong>MACsec</strong> (L2 encryption) on dedicated connections.</li>
       <li><strong>Provisioning takes weeks-to-months</strong> — so "needed immediately/soon" rules it out.</li>
+      <li><strong>Virtual interfaces (VIFs):</strong> <strong>Private VIF</strong> → reach VPC resources by private IP; <strong>Public VIF</strong> → reach AWS <em>public</em> services (S3, DynamoDB) over the private line; <strong>Transit VIF</strong> → connect to a Transit Gateway (many VPCs).</li>
+      <li><strong>Direct Connect Gateway</strong> — one DX connection reaching <strong>multiple VPCs across Regions</strong> (global, except China).</li>
     </ul>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 DX resilience</div>
+      <p>A single DX is a <strong>single point of failure</strong>. For HA: <strong>two DX connections</strong> (ideally at different DX locations), or a <strong>Site-to-Site VPN as an encrypted backup</strong>. "Resilient/HA hybrid link" → redundant DX, or DX + VPN failover.</p>
+    </div>
     <div class="callout callout-trap">
       <div class="callout-tag">⚠️ Two DX traps</div>
       <p>(1) <strong>Not encrypted by default</strong> — add a VPN for encryption. (2) <strong>Long lead time</strong> — if a scenario says "must be working in days," DX alone is wrong (use a VPN now, DX later, or VPN as the answer).</p>
@@ -435,6 +482,24 @@
     </ul>
   </div>
 
+  <div class="part-header teal" id="hyb-p5">
+    <div class="part-number">Hybrid · Part 5</div>
+    <h2>Route 53 Resolver — Hybrid DNS</h2>
+  </div>
+  <div class="section">
+    <div class="prose">
+      <p>A VPC already resolves DNS through the built-in <strong>Route 53 Resolver</strong> (the "VPC +2" address). For <strong>hybrid</strong> setups where on-prem and AWS must resolve <em>each other's</em> names across a VPN/Direct Connect, you add Resolver <strong>endpoints</strong>:</p>
+    </div>
+    <ul class="nice-list">
+      <li><strong>Inbound endpoint</strong> — lets <strong>on-prem servers resolve AWS private DNS</strong> (queries flow <em>into</em> the VPC).</li>
+      <li><strong>Outbound endpoint + forwarding rules</strong> — lets <strong>AWS resolve on-prem hostnames</strong> (queries flow <em>out</em> to your on-prem DNS).</li>
+    </ul>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Trigger</div>
+      <p>"Resolve DNS <strong>between on-prem and the VPC</strong> over DX/VPN" → <strong>Route 53 Resolver endpoints</strong>. Remember the direction: <strong>inbound</strong> = on-prem → AWS, <strong>outbound</strong> = AWS → on-prem.</p>
+    </div>
+  </div>
+
   <div class="trigger-box" id="hyb-triggers">
     <h3>⚡ Hybrid &amp; Flow Logs — Triggers</h3>
     <div class="trigger-row"><div class="trigger-kw">"quick encrypted hybrid over internet"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Site-to-Site VPN</div></div>
@@ -442,6 +507,8 @@
     <div class="trigger-row"><div class="trigger-kw">"encrypt Direct Connect"</div><div class="trigger-arrow">→</div><div class="trigger-ans">VPN over Direct Connect</div></div>
     <div class="trigger-row"><div class="trigger-kw">"needed immediately (DX too slow to provision)"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Site-to-Site VPN now</div></div>
     <div class="trigger-row"><div class="trigger-kw">"troubleshoot/capture network traffic metadata"</div><div class="trigger-arrow">→</div><div class="trigger-ans">VPC Flow Logs</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"one DX reaching many VPCs across Regions"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Direct Connect Gateway</div></div>
+    <div class="trigger-row"><div class="trigger-kw">"resolve DNS between on-prem and VPC"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Route 53 Resolver endpoints (in/out)</div></div>
   </div>
 </div>
 

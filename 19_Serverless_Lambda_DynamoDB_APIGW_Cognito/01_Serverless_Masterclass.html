@@ -204,6 +204,10 @@
       <div class="callout-tag">⚠️ The #1 Lambda trap</div>
       <p><strong>"The job runs longer than 15 minutes"</strong> → Lambda is the WRONG answer. Reach for <strong>Fargate</strong> (long-running container), <strong>Step Functions</strong> (orchestrate steps), or <strong>AWS Batch</strong>. Lambda is for short, event-driven units of work.</p>
     </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Lambda in a VPC</div>
+      <p>By default Lambda runs <strong>outside your VPC</strong> — it can reach the internet and AWS APIs, but <em>not</em> your private resources. To query a <strong>private RDS / ElastiCache / internal service</strong>, attach the function to your <strong>VPC subnets + a security group</strong>. A VPC-attached Lambda then needs a <strong>NAT Gateway (or interface endpoints)</strong> for internet/AWS-API access. "Lambda must reach a private RDS" → put the Lambda in the VPC.</p>
+    </div>
   </div>
 
   <div class="part-header blue" id="lam-p4">
@@ -309,6 +313,10 @@
     <div class="callout callout-key">
       <div class="callout-tag">🔑 Trigger</div>
       <p>"Unpredictable / spiky traffic, no capacity planning" → <strong>On-Demand</strong>. "Steady, predictable high volume, lowest cost" → <strong>Provisioned + auto-scaling</strong>. (Adaptive capacity automatically handles hot partitions.)</p>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-tag">🔑 Item size &amp; capacity units (tested)</div>
+      <p><strong>Max item size = 400 KB</strong> → store large blobs (images, documents) in <strong>S3</strong> and keep only a pointer/key in the item. Capacity math: <strong>1 RCU</strong> = one strongly-consistent read of up to 4 KB/s (or two eventually-consistent); <strong>1 WCU</strong> = one write of up to 1 KB/s — sizes round <em>up</em> to those blocks. A <strong>high-cardinality partition key</strong> spreads load and avoids hot partitions/throttling.</p>
     </div>
   </div>
 
@@ -529,7 +537,7 @@
       </svg>
       <div class="diagram-caption">Cognito authenticates → API Gateway validates the token + routes → Lambda runs logic → DynamoDB stores data (+ S3 for files/static site via CloudFront). Zero servers, scales to zero.</div>
     </div>
-    <div class="price-tag">💵 This whole stack for a small/medium app: Cognito free under 50,000 monthly active users; Lambda + DynamoDB on-demand + HTTP API often <strong>$0–a few $/month</strong>, scaling automatically with no idle cost. The serverless promise: pay for usage, not capacity.</div>
+    <div class="price-tag">💵 This whole stack for a small/medium app: Cognito free under 10,000 monthly active users (2026 Lite/Essentials tiers — the old 50,000 free tier is retired); Lambda + DynamoDB on-demand + HTTP API often <strong>$0–a few $/month</strong>, scaling automatically with no idle cost. The serverless promise: pay for usage, not capacity.</div>
   </div>
 
   <div class="trigger-box" id="cog-triggers">

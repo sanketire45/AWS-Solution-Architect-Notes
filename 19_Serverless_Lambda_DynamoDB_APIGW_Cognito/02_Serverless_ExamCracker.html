@@ -148,7 +148,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <section class="weight-wrap">
   <div class="weight-box">
     <div class="wlabel">📊 Exam Weightage — Serverless</div>
-    <p>Serverless is <strong>heavily tested</strong> — it threads through cost, resilience, performance, and security domains. Expect roughly <strong style="color:var(--green);">5–8 of the 65 questions</strong> to involve Lambda, DynamoDB, API Gateway, or Cognito. The big recurring decisions: <strong>Lambda 15-min limit, DynamoDB on-demand vs provisioned, GSI vs LSI, DAX, Global Tables, REST vs HTTP API, and User Pool vs Identity Pool.</strong></p>
+    <p>Serverless is <strong>heavily tested</strong> — it threads through cost, resilience, performance, and security domains. Expect roughly <strong style="color:var(--green);">5–8 of the 65 questions</strong> to involve Lambda, DynamoDB, API Gateway, or Cognito. The big recurring decisions: <strong>Lambda 15-min limit, DynamoDB on-demand vs provisioned, GSI vs LSI, DAX, Global Tables, REST vs HTTP API, and User Pool vs Identity Pool.</strong> <em>Orchestration (Step Functions Standard vs Express, EventBridge) is covered in Section 20.</em></p>
     <div class="weight-grid">
       <div class="wcard"><div class="wval" style="color:var(--green);">~5–8</div><div class="wsub">questions per exam (est.)</div></div>
       <div class="wcard"><div class="wval" style="color:var(--blue);">15 min</div><div class="wsub">Lambda hard limit</div></div>
@@ -187,7 +187,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-lam" class="svc-panel active">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="lam" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="lam" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="lam" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="lam-cheat">
@@ -197,6 +196,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="num-card"><div class="num-val">10 GB</div><div class="num-label">Max memory (CPU scales with it)</div></div>
       <div class="num-card"><div class="num-val">10 GB</div><div class="num-label">Container image / max /tmp</div></div>
       <div class="num-card"><div class="num-val">$0.20/M</div><div class="num-label">Requests + $0.0000167/GB-s</div></div>
+      <div class="num-card"><div class="num-val">1,000</div><div class="num-label">Default concurrency / region (soft limit)</div></div>
     </div>
     <div class="cheat-table-wrap"><table class="cheat-table">
       <thead><tr><th>Concept</th><th>Detail</th></tr></thead>
@@ -208,10 +208,14 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>Event source mapping</strong></td><td>Poll SQS / Kinesis / DynamoDB Streams in batches</td></tr>
         <tr><td><strong>Async retries</strong></td><td>2 retries → DLQ / Destinations</td></tr>
         <tr><td><strong>vs Fargate</strong></td><td>>15 min / >10 GB / GPU / persistent → Fargate</td></tr>
+        <tr><td><strong>Concurrency limit</strong></td><td>1,000/region default (soft, raise via quota); throttle → 429 <code>TooManyRequestsException</code>. Burst 500–3,000 then +500/min</td></tr>
+        <tr><td><strong>VPC access</strong></td><td>Attach to a VPC to reach RDS / ElastiCache / private subnets; needs <strong>NAT or VPC endpoints</strong> for internet &amp; AWS APIs</td></tr>
+        <tr><td><strong>Payload / package</strong></td><td>6 MB sync invoke · 256 KB async · deploy 50 MB zipped, 250 MB unzipped, 10 GB image</td></tr>
+        <tr><td><strong>Invoke / event sources</strong></td><td><strong>Sync</strong> (API GW) · <strong>Async</strong> (S3, SNS, EventBridge → 2 retries → DLQ) · <strong>Poll</strong> (SQS, Kinesis, DynamoDB Streams)</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="lam-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Lambda — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"run code on events, no servers, pay per use"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Lambda</div></div>
@@ -223,7 +227,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">Reserved vs Provisioned confusion</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Reserved=cap; Provisioned=pre-warm</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Credentials in code/env vars</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Use the execution role</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="lam-questions"><div class="sec-header"><h2>Lambda — Practice Questions</h2></div><div id="qlist-lam"></div></div>
 </div>
 
@@ -231,7 +237,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-ddb" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="ddb" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="ddb" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="ddb" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="ddb-cheat">
@@ -247,10 +252,14 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td><strong>DAX</strong></td><td>Microsecond in-memory cache (DynamoDB-specific)</td></tr>
         <tr><td><strong>Global Tables</strong></td><td>Multi-region <strong>active-active</strong></td></tr>
         <tr><td><strong>TTL / PITR / Transactions</strong></td><td>Auto-expire / 35-day recovery / ACID</td></tr>
+        <tr><td><strong>Item size limit</strong></td><td><strong>400 KB max</strong> per item → store large blobs in <strong>S3</strong>, keep the object key/pointer in the item</td></tr>
+        <tr><td><strong>Capacity units</strong></td><td>1 <strong>RCU</strong> = 1 strong read of 4 KB (or 2 eventual); 1 <strong>WCU</strong> = 1 write of 1 KB (rounded up)</td></tr>
+        <tr><td><strong>Consistency</strong></td><td>Eventually consistent by default; strongly consistent optional (2× RCU) — <strong>not available on a GSI</strong></td></tr>
+        <tr><td><strong>Partition key design</strong></td><td>High-cardinality key spreads load evenly → avoids hot partitions &amp; throttling</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="ddb-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>DynamoDB — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"single-digit ms, serverless, massive scale"</div><div class="trigger-arrow">→</div><div class="trigger-ans">DynamoDB</div></div>
@@ -262,8 +271,12 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">LSI added after table creation</div><div class="trigger-arrow">✗</div><div class="trigger-ans">LSI only at creation → use GSI</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">ElastiCache for "DynamoDB microsecond reads"</div><div class="trigger-arrow">✗</div><div class="trigger-ans">DAX (DynamoDB-specific)</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">Provisioned for unpredictable spiky traffic</div><div class="trigger-arrow">✗</div><div class="trigger-ans">On-Demand</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Storing large media/blobs directly (item > 400 KB)</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Blob in S3, pointer in DynamoDB</div></div>
+      <div class="trigger-item trap-item"><div class="trigger-kw">Strongly consistent read on a GSI</div><div class="trigger-arrow">✗</div><div class="trigger-ans">GSI = eventually consistent only</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="ddb-questions"><div class="sec-header"><h2>DynamoDB — Practice Questions</h2></div><div id="qlist-ddb"></div></div>
 </div>
 
@@ -271,7 +284,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-api" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="api" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="api" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="api" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="api-cheat">
@@ -289,11 +301,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tbody>
         <tr><td><strong>Authorizers</strong></td><td>Cognito User Pool · Lambda (custom) · IAM</td></tr>
         <tr><td><strong>Endpoint types</strong></td><td>Edge-optimized · Regional · Private (VPC)</td></tr>
-        <tr><td><strong>Throttling / caching / validation</strong></td><td>Protect &amp; speed up backends</td></tr>
+        <tr><td><strong>Throttling / caching / validation</strong></td><td>Protect &amp; speed up backends (account default 10,000 rps / 5,000 burst)</td></tr>
+        <tr><td><strong>Integration</strong></td><td>Lambda <strong>proxy</strong> = raw request passed straight to Lambda; <strong>non-proxy</strong> = mapping templates transform request/response</td></tr>
+        <tr><td><strong>HTTP API auth</strong></td><td>Native <strong>JWT / OIDC</strong> + IAM + Lambda authorizers — but <em>no</em> API keys / usage plans / WAF (those need REST API)</td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="api-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>API Gateway — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"managed API front door for Lambda"</div><div class="trigger-arrow">→</div><div class="trigger-ans">API Gateway</div></div>
@@ -305,7 +319,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">HTTP API when usage plans/API keys needed</div><div class="trigger-arrow">✗</div><div class="trigger-ans">REST API only</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">WAF on HTTP API</div><div class="trigger-arrow">✗</div><div class="trigger-ans">WAF attaches to REST API / CloudFront</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="api-questions"><div class="sec-header"><h2>API Gateway — Practice Questions</h2></div><div id="qlist-api"></div></div>
 </div>
 
@@ -313,7 +329,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="svc-cog" class="svc-panel">
   <nav class="sub-nav">
     <button class="sub-tab active" data-svc="cog" data-sub="cheat">📋 Cheat Sheets</button>
-    <button class="sub-tab" data-svc="cog" data-sub="triggers">⚡ Triggers &amp; Traps</button>
     <button class="sub-tab" data-svc="cog" data-sub="questions">🎯 Questions</button>
   </nav>
   <div class="sub-content active" id="cog-cheat">
@@ -324,17 +339,18 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <tr><td>Purpose</td><td><strong>Authentication</strong> (who are you)</td><td><strong>Authorization to AWS</strong> (what can you access)</td></tr>
         <tr><td>Gives you</td><td>User directory, sign-in, <strong>JWT tokens</strong></td><td><strong>Temporary AWS credentials</strong> (via IAM role)</td></tr>
         <tr><td>Use for</td><td>App login, MFA, social/SAML federation</td><td>Let users call AWS directly (e.g. own S3 prefix)</td></tr>
+        <tr><td>Tokens</td><td><strong>ID + Access + Refresh</strong> (JWT) — ID = identity, Access = authorize API calls</td><td>Exchanges the pool/social/SAML token for temp AWS creds</td></tr>
       </tbody>
     </table></div>
     <div class="cheat-table-wrap"><table class="cheat-table">
       <thead><tr><th>Don't confuse</th></tr></thead>
       <tbody>
         <tr><td><strong>Cognito</strong> = identity for your <em>app's end-users</em>. <strong>IAM Identity Center</strong> = SSO for your <em>workforce</em> into AWS accounts. Different audiences.</td></tr>
-        <tr><td>Cost: User Pools free under <strong>50,000 monthly active users</strong>.</td></tr>
+        <tr><td>Cost (2026): Cognito now has <strong>Lite / Essentials / Plus</strong> tiers. Free tier = <strong>10,000 MAU/month</strong> (Lite or Essentials; direct + social sign-in) — only <strong>50 MAU</strong> free for SAML/OIDC-federated users. New pools default to <strong>Essentials (~$0.015/MAU)</strong>. <em>The old "50,000 MAU free" is retired.</em></td></tr>
       </tbody>
     </table></div>
-  </div>
-  <div class="sub-content" id="cog-triggers">
+  
+    <div class="sec-header" style="margin-top:40px"></div>
     <div class="sec-header"><h2>Cognito — Triggers &amp; Traps</h2></div>
     <div class="trigger-section"><h3>⚡ Triggers</h3>
       <div class="trigger-item"><div class="trigger-kw">"managed app sign-up/sign-in"</div><div class="trigger-arrow">→</div><div class="trigger-ans">Cognito User Pool</div></div>
@@ -345,7 +361,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="trigger-item trap-item"><div class="trigger-kw">Cognito for workforce SSO into AWS accounts</div><div class="trigger-arrow">✗</div><div class="trigger-ans">IAM Identity Center</div></div>
       <div class="trigger-item trap-item"><div class="trigger-kw">User Pool to get AWS credentials</div><div class="trigger-arrow">✗</div><div class="trigger-ans">Identity Pool gives AWS creds</div></div>
     </div>
+  
   </div>
+  
   <div class="sub-content" id="cog-questions"><div class="sec-header"><h2>Cognito — Practice Questions</h2></div><div id="qlist-cog"></div></div>
 </div>
 

@@ -909,13 +909,13 @@
       </thead>
       <tbody>
         <tr><td><strong>T</strong> (t3, t4g)</td><td>Burstable</td><td>Cheap, low baseline CPU with burst capacity</td><td>Small websites, dev/test boxes, low-traffic apps</td></tr>
-        <tr><td><strong>M</strong> (m5, m6i, m7g)</td><td>General Purpose</td><td>Balanced CPU + RAM</td><td>Most web servers, small DBs, app tiers</td></tr>
-        <tr><td><strong>C</strong> (c5, c6i, c7g)</td><td>Compute Optimized</td><td>High CPU per dollar</td><td>Game servers, batch processing, scientific computing, CI/CD runners</td></tr>
-        <tr><td><strong>R</strong> (r5, r6i, r7g)</td><td>Memory Optimized</td><td>Lots of RAM</td><td>Caches (Redis), databases, real-time analytics</td></tr>
-        <tr><td><strong>X</strong> (x2idn, x2iezn)</td><td>High Memory</td><td>Massive RAM (up to 24 TB)</td><td>SAP HANA, huge in-memory databases</td></tr>
-        <tr><td><strong>I</strong> (i3, i4i)</td><td>Storage (IOPS)</td><td>Fast local NVMe SSD storage</td><td>NoSQL DBs, OLTP workloads, high-IOPS apps</td></tr>
-        <tr><td><strong>D</strong> (d2, d3)</td><td>Storage (Density)</td><td>Lots of cheap HDD</td><td>Hadoop, distributed file stores, data warehousing</td></tr>
-        <tr><td><strong>G</strong> / <strong>P</strong> (g4, p4)</td><td>GPU</td><td>NVIDIA graphics cards</td><td>ML training, video transcoding, 3D rendering, gaming</td></tr>
+        <tr><td><strong>M</strong> (m6i, m7i, m7g, m8g)</td><td>General Purpose</td><td>Balanced CPU + RAM</td><td>Most web servers, small DBs, app tiers</td></tr>
+        <tr><td><strong>C</strong> (c6i, c7i, c7g, c8g)</td><td>Compute Optimized</td><td>High CPU per dollar</td><td>Game servers, batch processing, scientific computing, CI/CD runners</td></tr>
+        <tr><td><strong>R</strong> (r6i, r7i, r7g, r8g)</td><td>Memory Optimized</td><td>Lots of RAM</td><td>Caches (Redis), databases, real-time analytics</td></tr>
+        <tr><td><strong>X</strong> / <strong>U</strong> (x2idn, x8g, u7i)</td><td>High Memory</td><td>Massive RAM (U-series up to 32 TiB)</td><td>SAP HANA, huge in-memory databases</td></tr>
+        <tr><td><strong>I</strong> (i4i, i7i, i8g)</td><td>Storage (IOPS)</td><td>Fast local NVMe SSD storage</td><td>NoSQL DBs, OLTP workloads, high-IOPS apps</td></tr>
+        <tr><td><strong>D</strong> (d3, d3en)</td><td>Storage (Density)</td><td>Lots of cheap HDD</td><td>Hadoop, distributed file stores, data warehousing</td></tr>
+        <tr><td><strong>G</strong> / <strong>P</strong> (g6, p5)</td><td>GPU</td><td>NVIDIA graphics cards</td><td>ML training, video transcoding, 3D rendering, gaming</td></tr>
         <tr><td><strong>F</strong> (f1)</td><td>FPGA</td><td>Programmable hardware</td><td>Genomics, financial analytics, custom acceleration</td></tr>
         <tr><td><strong>Mac</strong> (mac1, mac2)</td><td>Apple Silicon</td><td>Real Mac Mini hardware</td><td>iOS/macOS app build &amp; test</td></tr>
         <tr><td><strong>Hpc</strong> (hpc6a, hpc7a)</td><td>HPC Optimized</td><td>Tightly-coupled HPC</td><td>Computational fluid dynamics, weather modeling</td></tr>
@@ -1345,10 +1345,10 @@
         <tr><th>Type</th><th>Tech</th><th>Max IOPS</th><th>Max throughput</th><th>Use case</th></tr>
       </thead>
       <tbody>
-        <tr><td><strong>gp3</strong></td><td>SSD (general)</td><td>16,000</td><td>1,000 MB/s</td><td><strong>Default modern choice.</strong> IOPS &amp; throughput configured independently of size. Cheaper than gp2.</td></tr>
+        <tr><td><strong>gp3</strong></td><td>SSD (general)</td><td>80,000</td><td>2,000 MB/s</td><td><strong>Default modern choice.</strong> Up to 64 TiB. Baseline 3,000 IOPS + 125 MB/s free; IOPS &amp; throughput configured independently of size. Cheaper than gp2.</td></tr>
         <tr><td><strong>gp2</strong></td><td>SSD (general, older)</td><td>16,000</td><td>250 MB/s</td><td>Older general purpose. IOPS scales with size (3 IOPS per GB). Being phased out.</td></tr>
         <tr><td><strong>io1</strong></td><td>SSD (provisioned)</td><td>64,000</td><td>1,000 MB/s</td><td>Mission-critical low-latency apps, large databases. Multi-Attach capable.</td></tr>
-        <tr><td><strong>io2 / io2 Block Express</strong></td><td>SSD (provisioned, newer)</td><td>256,000</td><td>4,000 MB/s</td><td>Top tier. Higher durability than io1 (99.999%). Multi-Attach capable. SAP HANA, Oracle, MS SQL.</td></tr>
+        <tr><td><strong>io2 (Block Express)</strong></td><td>SSD (provisioned, newer)</td><td>256,000</td><td>4,000 MB/s</td><td>Top tier — <strong>io2 now runs on Block Express by default</strong> (256,000 IOPS needs a Nitro instance; non-Nitro caps ~32k–64k). Higher durability than io1 (99.999%). Multi-Attach capable. SAP HANA, Oracle, MS SQL.</td></tr>
         <tr><td><strong>st1</strong></td><td>HDD (throughput)</td><td>500</td><td>500 MB/s</td><td>Big sequential reads. Big data, log processing, data warehousing. <strong>Cannot be boot volume.</strong></td></tr>
         <tr><td><strong>sc1</strong></td><td>HDD (cold)</td><td>250</td><td>250 MB/s</td><td>Cheapest. Infrequently accessed cold data. <strong>Cannot be boot volume.</strong></td></tr>
       </tbody>
@@ -1358,12 +1358,13 @@
   <div class="callout exam">
     <div class="callout-label">Exam triggers for EBS types</div>
     <ul>
-      <li>"General-purpose, cost-effective" → <strong>gp3</strong></li>
-      <li>"High-performance database, &gt; 16,000 IOPS" → <strong>io1 / io2</strong></li>
+      <li>"General-purpose, cost-effective" → <strong>gp3</strong> (now handles up to 80,000 IOPS)</li>
+      <li>"High-performance database, &gt; 80,000 IOPS, sustained sub-ms latency, or Multi-Attach" → <strong>io1 / io2 Block Express</strong></li>
       <li>"Big data, sequential reads, cheap" → <strong>st1</strong></li>
       <li>"Cheapest, rarely accessed" → <strong>sc1</strong></li>
       <li>"Multi-instance shared block storage in same AZ" → <strong>io1/io2 Multi-Attach</strong></li>
     </ul>
+    <p style="margin-bottom:0;"><strong>⚠️ Freshness note (2026):</strong> AWS <strong>raised gp3's ceiling to 80,000 IOPS / 2,000 MB/s / 64 TiB</strong>. Older courses, dumps, and even some exam questions still quote the old <em>16,000 IOPS / 1,000 MB/s / 16 TB</em> — that's now the <em>Outposts-only</em> limit. Either way, if a scenario needs six-figure IOPS (SAP HANA, huge Oracle), the answer is still <strong>io2 Block Express</strong>, since gp3 tops out at 80,000.</p>
   </div>
 
   <h4>EBS Snapshots</h4>
@@ -1743,9 +1744,9 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
 
   <p>Constraints:</p>
   <ul>
-    <li>Specific instance types only (Nitro-based, RAM &lt; 150 GB)</li>
-    <li>EBS root volume must be encrypted</li>
-    <li>Maximum 60 days hibernated</li>
+    <li>Specific instance types only — Nitro-based, and <strong>now supported on Graviton</strong> too. RAM must be <strong>&lt; 150 GiB on Linux</strong> (≤ 16 GiB on Windows)</li>
+    <li>EBS root volume must be encrypted (and large enough to hold the RAM dump)</li>
+    <li>Enabled only at launch — you can't turn it on for an existing instance</li>
     <li>Linux and some Windows</li>
   </ul>
 
@@ -1775,13 +1776,13 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
   <ul>
     <li><strong>Higher performance</strong> — near-bare-metal speeds, lower latency, more throughput</li>
     <li><strong>Better security</strong> — security functions moved to dedicated hardware, smaller hypervisor attack surface</li>
-    <li><strong>Faster networking</strong> — up to 100+ Gbps</li>
+    <li><strong>Faster networking</strong> — up to 200 Gbps on modern Nitro instances (higher still with EFA)</li>
     <li><strong>Faster EBS</strong> — Multi-Attach, EBS Block Express, no encryption performance penalty</li>
     <li><strong>Required for newer features</strong> — ENA, EFA, Hibernate, EBS encryption performance</li>
   </ul>
 
   <h3>ENA — Elastic Network Adapter</h3>
-  <p>Nitro's modern network interface. Up to 100 Gbps on supported instance types. Default on all Nitro instances. You don't have to do anything special — just pick a Nitro instance.</p>
+  <p>Nitro's modern network interface. Up to 200 Gbps on supported instance types (older Nitro instances top out at 100 Gbps). Default on all Nitro instances. You don't have to do anything special — just pick a Nitro instance.</p>
 
   <h3>EFA — Elastic Fabric Adapter</h3>
   <p>A specialized network interface for HPC and ML workloads. Bypasses the OS kernel for networking ("OS bypass" via Libfabric), achieving sub-microsecond latency between nodes. Used with cluster placement groups for tightly-coupled HPC.</p>
@@ -1794,9 +1795,9 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
 
   <h3>Graviton — AWS's ARM processor</h3>
 
-  <p>The little <code>g</code> in instance names like <code>m6g</code>, <code>c7g</code>, <code>r7g</code>. Graviton is AWS's custom ARM processor. Compared to x86:</p>
+  <p>The little <code>g</code> in instance names like <code>m7g</code>, <code>c7g</code>, <code>r7g</code> (Graviton3) and the newest <code>m8g</code>, <code>c8g</code>, <code>r8g</code>, <code>x8g</code> (<strong>Graviton4 — GA and the current latest generation</strong>). Graviton is AWS's custom ARM processor. Compared to x86:</p>
   <ul>
-    <li>~20% better price/performance</li>
+    <li>~20% better price/performance than comparable x86 — and <strong>Graviton4 is up to 30% faster than Graviton3</strong> (up to 40% faster for databases, ~45% for large Java apps, ~30% for web apps)</li>
     <li>Lower power consumption</li>
     <li>Competitive raw performance</li>
     <li><strong>Catch:</strong> Your software has to be ARM-compatible. Most major languages and frameworks (Java, Python, Node, Go, Rust) just work. Some compiled C/C++ binaries need rebuilding. Most container images need an ARM build.</li>

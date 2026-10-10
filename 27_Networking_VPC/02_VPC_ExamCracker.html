@@ -134,8 +134,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <tbody>
       <tr><td>Make a subnet public</td><td><strong>Route 0.0.0.0/0 → Internet Gateway</strong></td></tr>
       <tr><td>Private subnet outbound internet, highly available</td><td><strong>NAT Gateway per AZ</strong></td></tr>
+      <tr><td>Private <strong>IPv6</strong> outbound to internet (no inbound)</td><td><strong>Egress-Only Internet Gateway</strong> (the IPv6 equivalent of NAT)</td></tr>
+      <tr><td>Fixed public IPv4 that can move to a standby instance</td><td><strong>Elastic IP</strong> (note: all public IPv4 now billed ~$3.6/mo)</td></tr>
       <tr><td>Standard instance firewall (stateful)</td><td><strong>Security Group</strong> (allow only)</td></tr>
       <tr><td>Subnet-level, explicit DENY, block an IP range (stateless)</td><td><strong>NACL</strong></td></tr>
+      <tr><td>Access a private EC2 — no port 22, no bastion, no public IP</td><td><strong>SSM Session Manager</strong></td></tr>
       <tr><td>Private access to S3/DynamoDB, free, no NAT</td><td><strong>Gateway VPC Endpoint</strong></td></tr>
       <tr><td>Private access to other AWS svc / your own service</td><td><strong>Interface Endpoint / PrivateLink</strong></td></tr>
       <tr><td>Connect two VPCs privately</td><td><strong>VPC Peering</strong> (non-transitive, no CIDR overlap)</td></tr>
@@ -143,7 +146,23 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <tr><td>Quick encrypted hybrid over the internet</td><td><strong>Site-to-Site VPN</strong></td></tr>
       <tr><td>Dedicated private, consistent low latency</td><td><strong>Direct Connect</strong> (weeks to provision; not encrypted)</td></tr>
       <tr><td>Encrypt Direct Connect</td><td><strong>VPN over Direct Connect</strong></td></tr>
+      <tr><td>Reach many VPCs / multiple regions over Direct Connect</td><td><strong>Direct Connect Gateway</strong></td></tr>
+      <tr><td>Resolve DNS between on-prem and the VPC (hybrid)</td><td><strong>Route 53 Resolver</strong> endpoints (inbound = on-prem→AWS, outbound = AWS→on-prem)</td></tr>
       <tr><td>Troubleshoot / capture network traffic metadata</td><td><strong>VPC Flow Logs</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sec-header" style="margin-top:34px"><h2>🎯 How the exam asks it — the traps that decide it</h2><p>VPC questions hinge on stateful-vs-stateless, and on "internet vs private AWS access". These are the discriminators.</p></div>
+  <div class="cheat-table-wrap"><table class="cheat-table">
+    <thead><tr><th>How it's phrased in the question</th><th>What actually decides the answer</th></tr></thead>
+    <tbody>
+      <tr><td>"<strong>block a specific IP / range</strong>" vs "normal instance firewall"</td><td><strong>NACL</strong> — only NACLs can explicitly <em>DENY</em> (stateless, subnet-level). <strong>Security Groups</strong> are stateful, allow-only, on the ENI. Can't "deny an IP" with an SG.</td></tr>
+      <tr><td>"private instances need the <strong>internet</strong>" vs "reach <strong>S3/an AWS service privately</strong>"</td><td>Internet (updates, egress) → <strong>NAT Gateway</strong>. Private AWS access, no internet/NAT → <strong>VPC endpoint</strong>. NAT is <em>not</em> for private AWS-service access — the #1 endpoint trap.</td></tr>
+      <tr><td>which VPC endpoint?</td><td><strong>S3 &amp; DynamoDB → Gateway endpoint</strong> (free, route-table entry). <strong>Everything else → Interface endpoint / PrivateLink</strong> (ENI, hourly + per-GB).</td></tr>
+      <tr><td>"connect <strong>a couple of VPCs</strong>" vs "connect <strong>many VPCs + on-prem</strong>"</td><td>A few 1:1 links → <strong>VPC Peering</strong> (non-transitive, <strong>CIDRs must not overlap</strong>). Many, as a hub → <strong>Transit Gateway</strong>. Overlapping CIDRs kill peering — a classic setup trap.</td></tr>
+      <tr><td>"<strong>consistent low latency / dedicated / private</strong>" vs "<strong>quick + encrypted</strong> hybrid"</td><td>Dedicated line → <strong>Direct Connect</strong> (weeks to set up, <em>not</em> encrypted by itself). Fast encrypted over internet → <strong>Site-to-Site VPN</strong>. Resilient hybrid → <strong>DX primary + VPN backup</strong>.</td></tr>
+      <tr><td>"inbound is allowed but <strong>responses are blocked</strong>"</td><td>A <strong>NACL</strong> is stateless → add an outbound rule for <strong>ephemeral ports</strong>. (Security Groups auto-allow the return, so this only bites with NACLs.)</td></tr>
+      <tr><td>"admin access to a <strong>private</strong> instance, most secure / no open ports"</td><td><strong>SSM Session Manager</strong> — no port 22, no bastion, no public IP, fully audited. A bastion host is the older distractor.</td></tr>
     </tbody>
   </table></div>
 </div>

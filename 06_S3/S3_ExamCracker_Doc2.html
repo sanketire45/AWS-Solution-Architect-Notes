@@ -506,7 +506,6 @@ body{
 <!-- ─── TAB NAV ─── -->
 <nav class="tab-nav">
   <button class="tab active" onclick="switchTab('cheatsheets',this)">📋 Cheat Sheets</button>
-  <button class="tab" onclick="switchTab('triggers',this)">⚡ Triggers &amp; Traps</button>
   <button class="tab" onclick="switchTab('questions',this)">🎯 Practice Questions</button>
 </nav>
 
@@ -700,14 +699,8 @@ body{
     </table>
   </div>
 
-</div><!-- end cheatsheets tab -->
 
-
-<!-- ═══════════════════════════════════════════════
-     TAB 2 — TRIGGERS & TRAPS
-═══════════════════════════════════════════════ -->
-<div id="tab-triggers" class="tab-content">
-
+    <div class="sec-header" style="margin-top:40px"></div>
   <div class="sec-header">
     <h2>Exam Triggers &amp; Traps</h2>
     <p>If the question says <strong style="color:var(--teal)">X</strong> → the answer is <strong style="color:var(--amber)">Y</strong>. Traps in red.</p>
@@ -783,12 +776,11 @@ body{
     <div class="trigger-item"><span class="trigger-kw">"What consistency model does S3 use?"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>Strong consistency</strong> (since December 2020, for all operations)</span></div>
     <div class="trigger-item trap-item"><span class="trigger-kw">⚠ TRAP: "Log S3 access to the same bucket"</span><span class="trigger-arrow">→</span><span class="trigger-ans"><strong>NEVER do this</strong> — creates infinite logging loop. Use a separate destination bucket.</span></div>
   </div>
-
-</div><!-- end triggers tab -->
+  </div><!-- end cheatsheets tab -->
 
 
 <!-- ═══════════════════════════════════════════════
-     TAB 3 — QUESTIONS
+     TAB 2 — QUESTIONS
 ═══════════════════════════════════════════════ -->
 <div id="tab-questions" class="tab-content">
 

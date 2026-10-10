@@ -414,10 +414,10 @@
 <tr><th>Type</th><th>Category</th><th>Max IOPS</th><th>Max Throughput</th><th>Size</th><th>Boot?</th><th>Pick When...</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>gp3</strong></td><td>SSD</td><td>16,000</td><td>1,000 MB/s</td><td>1 GB – 16 TB</td><td>✅</td><td><strong>Default.</strong> General purpose, set IOPS independently of size</td></tr>
+<tr><td><strong>gp3</strong></td><td>SSD</td><td>80,000</td><td>2,000 MB/s</td><td>1 GiB – 64 TiB</td><td>✅</td><td><strong>Default.</strong> 3,000 IOPS + 125 MB/s free baseline; set IOPS/throughput independently of size</td></tr>
 <tr><td><strong>gp2</strong></td><td>SSD (legacy)</td><td>16,000</td><td>250 MB/s</td><td>1 GB – 16 TB</td><td>✅</td><td>Old default; pick gp3 instead</td></tr>
-<tr><td><strong>io2 Block Express</strong></td><td>SSD</td><td>256,000</td><td>4,000 MB/s</td><td>4 GB – 64 TB</td><td>✅</td><td>Top-tier OLTP, SAP HANA, huge Oracle/SQL Server</td></tr>
-<tr><td><strong>io1 / io2</strong></td><td>SSD</td><td>64,000</td><td>1,000 MB/s</td><td>4 GB – 16 TB</td><td>✅</td><td>High-IOPS DBs, supports <strong>Multi-Attach</strong></td></tr>
+<tr><td><strong>io2 Block Express</strong></td><td>SSD</td><td>256,000</td><td>4,000 MB/s</td><td>4 GiB – 64 TiB</td><td>✅</td><td>Top-tier OLTP, SAP HANA, huge Oracle/SQL Server. <strong>io2 now runs on Block Express by default</strong> (256k IOPS needs Nitro)</td></tr>
+<tr><td><strong>io1</strong></td><td>SSD</td><td>64,000</td><td>1,000 MB/s</td><td>4 GiB – 16 TiB</td><td>✅</td><td>Older provisioned-IOPS DBs, supports <strong>Multi-Attach</strong> (so does io2)</td></tr>
 <tr><td><strong>st1</strong></td><td>HDD</td><td>500</td><td>500 MB/s</td><td>125 GB – 16 TB</td><td>❌</td><td>Throughput-oriented: logs, Hadoop, data warehouse</td></tr>
 <tr><td><strong>sc1</strong></td><td>HDD</td><td>250</td><td>250 MB/s</td><td>125 GB – 16 TB</td><td>❌</td><td>Cold, infrequent access, cheapest</td></tr>
 </tbody>
@@ -427,7 +427,8 @@
   <div class="callout-title">EBS Memory Anchors</div>
   <ul style="margin-bottom: 0;">
     <li><strong>gp3 = "general 3"</strong> = default for nearly everything</li>
-    <li><strong>io2 = "I/O 2"</strong> = top performance; <strong>Block Express</strong> = even more</li>
+    <li><strong>io2 = "I/O 2"</strong> = top performance, now always on <strong>Block Express</strong> (up to 256,000 IOPS on Nitro). io1 = older sibling, 64,000 IOPS</li>
+    <li><strong>gp3 was upgraded</strong> to 80,000 IOPS / 2,000 MB/s / 64 TiB — old dumps still say 16,000/1,000/16 TB (now Outposts-only)</li>
     <li><strong>st1 = "ST = streaming throughput"</strong> = sequential HDD</li>
     <li><strong>sc1 = "SC = super cold"</strong> = cheapest HDD</li>
     <li><strong>HDDs (st1, sc1) cannot be boot volumes</strong></li>
@@ -679,8 +680,8 @@
 <div class="quick-card">
 <ol>
   <li><strong>Is it a boot volume?</strong> → Must be SSD (gp3, gp2, io1, io2). Default: <strong>gp3</strong>.</li>
-  <li><strong>Database needing 200,000+ IOPS or low single-digit ms latency?</strong> → <strong>io2 Block Express</strong>.</li>
-  <li><strong>Database needing 32k–64k IOPS, Multi-Attach for cluster?</strong> → <strong>io1 / io2</strong>.</li>
+  <li><strong>Database needing 80,000+ IOPS or sustained sub-millisecond latency?</strong> → <strong>io2 Block Express</strong> (up to 256,000 IOPS).</li>
+  <li><strong>Clustered DB needing shared block storage (Multi-Attach)?</strong> → <strong>io1 / io2</strong> (gp3 can't Multi-Attach).</li>
   <li><strong>Big sequential workload (logs, Hadoop, data warehouse)?</strong> → <strong>st1</strong>.</li>
   <li><strong>Cold data, almost never accessed?</strong> → <strong>sc1</strong> (or consider S3 Glacier instead).</li>
   <li><strong>Everything else?</strong> → <strong>gp3</strong>.</li>
@@ -728,8 +729,8 @@
 <div class="answer-block">
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>3-year Compute Savings Plan, All Upfront.</strong> A Compute Savings Plan applies automatically across <em>any</em> instance family, size, region, OS and tenancy — and even Fargate/Lambda. So when the fleet moves from m5 to Graviton m7g, the commitment still applies and none of the upfront spend is wasted.</p>
-  <div class="why-wrong"><strong>Why the "obvious" answer is a trap:</strong> (A) Standard RIs give the <em>deepest</em> discount and would win <em>if nothing changed</em> — but they lock to the m5 family. The buried "moving to Graviton in 12 months" clause strands that commitment, so over the full term it is <em>not</em> most cost-effective. (C) Convertible RIs can be exchanged, but only via manual exchanges and at a lower discount than a Compute SP for this cross-family case. (D) A 1-year EC2 Instance Savings Plan is anchored to the m5 family/region and commits for a shorter term — less total saving and still stranded by the Graviton move.</p>
-  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> When two pricing options both "save money," let the <em>change</em> in the scenario decide. "Maximum discount, nothing ever changes" → Standard RI. The moment the workload may shift family/compute (Graviton, Fargate, Lambda) → <strong>Compute Savings Plan</strong>, even though its headline discount is lower.</p>
+  <div class="why-wrong"><strong>Why the "obvious" answer is a trap:</strong> (A) Standard RIs give the <em>deepest</em> discount and would win <em>if nothing changed</em> — but they lock to the m5 family. The buried "moving to Graviton in 12 months" clause strands that commitment, so over the full term it is <em>not</em> most cost-effective. (C) Convertible RIs can be exchanged, but only via manual exchanges and at a lower discount than a Compute SP for this cross-family case. (D) A 1-year EC2 Instance Savings Plan is anchored to the m5 family/region and commits for a shorter term — less total saving and still stranded by the Graviton move.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> When two pricing options both "save money," let the <em>change</em> in the scenario decide. "Maximum discount, nothing ever changes" → Standard RI. The moment the workload may shift family/compute (Graviton, Fargate, Lambda) → <strong>Compute Savings Plan</strong>, even though its headline discount is lower.</div>
 </div>
 </div>
 
@@ -746,8 +747,8 @@
 <div class="answer-block">
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>EC2 Fleet with an On-Demand base capacity + Spot for the rest.</strong> The On-Demand base guarantees enough capacity to always finish before the SLA even if every Spot pool is reclaimed at once, while Spot drives the bulk of the work at up to ~90% off. This is the standard "cost <em>and</em> reliability" pattern.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) Pure Spot is the cheapest and the usual recall answer for "fault-tolerant batch" — but a simultaneous reclaim across pools could blow the <em>hard</em> SLA, and here a miss breaches a contract. That buried deadline is the discriminator. (C) On-Demand-only meets the deadline but discards the savings the workload is eligible for. (D) RIs are billed 24/7 for a job that runs ~3 h/night — mostly idle spend.</p>
-  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Fault-tolerant + cheapest" alone → pure Spot. Add a <em>hard deadline / contractual SLA</em> and it shifts to <strong>Spot + an On-Demand base capacity</strong>: buy a guaranteed floor, let Spot do the cheap bulk.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Pure Spot is the cheapest and the usual recall answer for "fault-tolerant batch" — but a simultaneous reclaim across pools could blow the <em>hard</em> SLA, and here a miss breaches a contract. That buried deadline is the discriminator. (C) On-Demand-only meets the deadline but discards the savings the workload is eligible for. (D) RIs are billed 24/7 for a job that runs ~3 h/night — mostly idle spend.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "Fault-tolerant + cheapest" alone → pure Spot. Add a <em>hard deadline / contractual SLA</em> and it shifts to <strong>Spot + an On-Demand base capacity</strong>: buy a guaranteed floor, let Spot do the cheap bulk.</div>
 </div>
 </div>
 
@@ -764,8 +765,8 @@
 <div class="answer-block">
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>3-year Compute Savings Plan.</strong> It is the only single commitment that automatically covers <em>EC2 across any family</em>, <em>Fargate</em>, and <em>Lambda</em> — the exact three moving parts here — at up to 66% off, with zero manual changes as workloads shift.</p>
-  <div class="why-wrong"><strong>Why the close distractors fail:</strong> (A) An EC2 <em>Instance</em> Savings Plan gives a slightly <em>deeper</em> discount — and that's the trap — but it applies only to EC2 and is anchored to the c6i family/region, so it covers neither Fargate nor Lambda; 40%+ of the spend would get no discount. (C) Standard RIs maximise the EC2 baseline but cover nothing on Fargate/Lambda and lock the family. (D) Convertible RIs don't apply to Fargate/Lambda at all.</p>
-  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> EC2 <em>Instance</em> Savings Plan = deeper discount, but EC2-only and family-anchored. <em>Compute</em> Savings Plan = slightly less discount, but spans EC2 + Fargate + Lambda + any family. Any hint of Fargate/Lambda or family-hopping → <strong>Compute Savings Plan</strong>.</p>
+  <div class="why-wrong"><strong>Why the close distractors fail:</strong> (A) An EC2 <em>Instance</em> Savings Plan gives a slightly <em>deeper</em> discount — and that's the trap — but it applies only to EC2 and is anchored to the c6i family/region, so it covers neither Fargate nor Lambda; 40%+ of the spend would get no discount. (C) Standard RIs maximise the EC2 baseline but cover nothing on Fargate/Lambda and lock the family. (D) Convertible RIs don't apply to Fargate/Lambda at all.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> EC2 <em>Instance</em> Savings Plan = deeper discount, but EC2-only and family-anchored. <em>Compute</em> Savings Plan = slightly less discount, but spans EC2 + Fargate + Lambda + any family. Any hint of Fargate/Lambda or family-hopping → <strong>Compute Savings Plan</strong>.</div>
 </div>
 </div>
 
@@ -782,8 +783,8 @@
 <div class="answer-block">
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Dedicated Hosts with host resource groups + AWS License Manager.</strong> A Dedicated Host is the only option that exposes the physical sockets and cores, lets you pin instances to a specific physical host, and integrates with License Manager's host resource groups to auto-track per-physical-core consumption — satisfying all three requirements.</p>
-  <div class="why-wrong"><strong>Why the close ones fail:</strong> (A) Dedicated <em>Instances</em> give single-tenant hardware but expose <em>no</em> socket/core detail and no control over which physical host you land on — so they can't satisfy (1) or (2). (C) is the trap: License Manager <em>can</em> track licences, but on shared tenancy you have no hardware visibility or placement control, so per-physical-core BYOL fails. (D) Shared tenancy + RI is about cost, not licensing — fails the hardware-visibility requirement entirely.</p>
-  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Dedicated <em>Instance</em> = isolation only. Dedicated <em>Host</em> = isolation <em>plus</em> physical socket/core visibility, placement control, and License Manager tracking. "Per-physical-core BYOL / track licences / same host" → Dedicated Host.</p>
+  <div class="why-wrong"><strong>Why the close ones fail:</strong> (A) Dedicated <em>Instances</em> give single-tenant hardware but expose <em>no</em> socket/core detail and no control over which physical host you land on — so they can't satisfy (1) or (2). (C) is the trap: License Manager <em>can</em> track licences, but on shared tenancy you have no hardware visibility or placement control, so per-physical-core BYOL fails. (D) Shared tenancy + RI is about cost, not licensing — fails the hardware-visibility requirement entirely.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Dedicated <em>Instance</em> = isolation only. Dedicated <em>Host</em> = isolation <em>plus</em> physical socket/core visibility, placement control, and License Manager tracking. "Per-physical-core BYOL / track licences / same host" → Dedicated Host.</div>
 </div>
 </div>
 
@@ -800,8 +801,8 @@
 <div class="answer-block">
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Commit the baseline, burst the spikes.</strong> There is now a <em>known</em> 24/7 baseline, so committing it to a Savings Plan captures real savings immediately, while On-Demand + Auto Scaling handles the unpredictable surge capacity with no commitment. This "mix your pricing models" pattern is the cost-optimisation sweet spot.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) Sizing a 3-year commitment to the <em>peak</em> means paying for mostly-idle capacity for years — over-commitment. (C) is the trap — it's safe, but leaving the known always-on baseline at full On-Demand price isn't "cutting cost now." (D) Running the always-on baseline on Spot risks the customer-facing platform whenever Spot is reclaimed.</p>
-  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> No known baseline yet → start all On-Demand, optimise later. A <em>measured</em> steady baseline + unpredictable spikes → commit the baseline (Savings Plan/RI) and burst the spikes On-Demand. The word "baseline" is the switch.</p>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) Sizing a 3-year commitment to the <em>peak</em> means paying for mostly-idle capacity for years — over-commitment. (C) is the trap — it's safe, but leaving the known always-on baseline at full On-Demand price isn't "cutting cost now." (D) Running the always-on baseline on Spot risks the customer-facing platform whenever Spot is reclaimed.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> No known baseline yet → start all On-Demand, optimise later. A <em>measured</em> steady baseline + unpredictable spikes → commit the baseline (Savings Plan/RI) and burst the spikes On-Demand. The word "baseline" is the switch.</div>
 </div>
 </div>
 
@@ -818,8 +819,8 @@
 <div class="answer-block">
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">C</span><strong>io2 Block Express.</strong> It's the only EBS volume type that supports up to 256,000 IOPS, sub-ms latency, and 64 TB size. Designed exactly for SAP HANA / large Oracle / huge SQL Server.</p>
-  <div class="why-wrong"><strong>Why not the others:</strong> (A) gp3 caps at 16,000 IOPS. (B) io1 caps at 64,000 IOPS — not enough. (D) st1 is HDD with only 500 IOPS max — for sequential workloads, not random DB I/O.</div>
-  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Match the number to the ceiling: gp3 maxes ~16,000 IOPS, io1 ~64,000, io2 Block Express up to 256,000 IOPS at sub-ms latency and 64 TB. "&gt;64k IOPS," "SAP HANA," or "huge Oracle/SQL" → io2 Block Express.</div>
+  <div class="why-wrong"><strong>Why not the others:</strong> (A) gp3 now caps at 80,000 IOPS — higher than before, but still well short of 200,000. (B) io1 caps at 64,000 IOPS — not enough. (D) st1 is HDD with only 500 IOPS max — for sequential workloads, not random DB I/O.</div>
+  <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> Match the number to the ceiling: gp3 maxes ~80,000 IOPS, io1 ~64,000, io2 Block Express up to 256,000 IOPS at sub-ms latency and 64 TiB. "&gt;80k IOPS," "SAP HANA," or "huge Oracle/SQL" → io2 Block Express.</div>
 </div>
 </div>
 
@@ -962,7 +963,7 @@
 <div class="answer-block">
   <div class="answer-label">Answer</div>
   <p><span class="answer-letter">B</span><strong>Instance role that assumes a cross-account role in Account B.</strong> The instance gets temporary, auto-rotated credentials from its own role, then uses STS to assume a role in Account B that is trusted and granted to the bucket. No long-lived secrets exist anywhere. (Alternatively, Account B's bucket policy can directly grant the instance role — but assume-role is the canonical cross-account pattern.)</p>
-  <div class="why-wrong"><strong>Why the others fail:</strong> (A) User data is readable via IMDS — never store secrets there. (C) A public bucket is a severe exposure and unnecessary. (D) is the subtle trap: baking keys into the AMI just moves the same long-lived static credentials onto disk, and they now leak with every copy/share of the AMI.</p>
+  <div class="why-wrong"><strong>Why the others fail:</strong> (A) User data is readable via IMDS — never store secrets there. (C) A public bucket is a severe exposure and unnecessary. (D) is the subtle trap: baking keys into the AMI just moves the same long-lived static credentials onto disk, and they now leak with every copy/share of the AMI.</div>
   <div class="trigger-recall"><strong>🎯 How to discriminate:</strong> "EC2 calls AWS" → instance role, never static keys. "Across accounts" → instance role that <em>assumes</em> a role in the other account (cross-account trust), or the resource policy grants the instance role. Any answer involving stored access keys is wrong by default.</div>
 </div>
 </div>
